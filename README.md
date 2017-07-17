@@ -1,0 +1,2 @@
+# PopupBlocker
+Popup blocking userscript
