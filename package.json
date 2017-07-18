@@ -1,0 +1,15 @@
+{
+  "name": "PopupBlocker",
+  "version": "2.0.0",
+  "description": "Block popups preemptively by wrapping browser APIs for additional checsk",
+  "main": "index.js",
+  "repository": "https://github.com/AdguardTeam/PopupBlocker",
+  "author": "seanl-adg",
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-append-prepend": "^1.0.3",
+    "gulp-closure-compiler": "^0.4.0",
+    "gulp-preprocess": "^2.0.0"
+  }
+}
