@@ -1,8 +1,9 @@
-var popupBlocker = function() {
+var popupBlocker = function(window) {
 
 /************************************************************************************/
 var top = window.top;
 var PROP = typeof Symbol == 'function' ? Symbol() : Math.random().toString(36).substr(7);
+var MouseEvent = top.MouseEvent;
 /************************************************************************************/
 // Verify whether the current event handler that is being executed
 // is artificially created to generate popups.
@@ -15,15 +16,12 @@ var retrieveEvent = function() {
         try {
             var caller = arguments.callee;
             while (caller) { caller = caller.caller; }
-            log('Reached at the top of caller chain.')
+            log('Reached at the top of caller chain.');
             if (caller.arguments && caller.arguments[0] && caller.arguments[0].target) {
                 currentEvent = caller.arguments[0];
                 log('The function at the bottom of the stack has an expected type. The current event is:', currentEvent);
             }
         } catch (e) {
-            // @ifdef DEBUG
-            debugger;
-            // @endif
             log('Getting event from Function.caller failed, due to an error:', e);
         }
     } else {
@@ -234,7 +232,7 @@ var applyOnIframe = function (iframe) {
     // @endif
     try {
         log('An iframe called the contentWindow/Document getter for the first time, applying popupBlocker..', iframe);
-        getContentWindow.call(iframe).eval('(' + popupBlocker.toString() + ')();');
+        getContentWindow.call(iframe).eval('(' + popupBlocker.toString() + ')(window);');
     } catch(e) {
         log('Applying popupBlocker to an iframe failed, due to an error:', e);
     } finally {
@@ -278,4 +276,13 @@ var log = function (str, obj) {
 
 };
 
-popupBlocker();
+if (typeof InstallTrigger !== 'undefined') {
+    // Firefox
+    var script = document.createElement('script');
+    script.textContent = '(' + popupBlocker.toString() + ')(window);';
+    var el = document.body || document.head || document.documentElement;
+    el.appendChild(script);
+    el.removeChild(script);
+} else {
+    popupBlocker(typeof unsafeWindow !== 'undefined' ? unsafeWindow : window);
+}
