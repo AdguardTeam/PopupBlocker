@@ -29,6 +29,10 @@ var retrieveEvent = function() {
     }
 };
 
+/**
+ * @param {*} event Optional argument, an event to test with. Default value is currentEvent.
+ * @return {boolean} True if the event is legit, false if it is something that we should not allow window.open or dispatchEvent.
+ */
 var verifyEvent = function(event) {
     event = event || (retrieveEvent(), currentEvent);
     if (event) {
@@ -49,7 +53,11 @@ var verifyEvent = function(event) {
 };
 
 /************************************************************************************/
-// Detects common overlay pattern.
+/**
+ * Detects common overlay pattern.
+ * @param {Element} el an element to check whether it is an overlay.
+ * @return {boolean} true if el is an overlay.
+ */
 function maybeOverlay(el) {
     var w = window.innerWidth, h = window.innerHeight;
     if (el.offsetLeft << 4 < w && (w - el.offsetWidth) << 3 < w
@@ -68,11 +76,13 @@ function maybeOverlay(el) {
     return false;
 }
 
-// Some popup scripts adds transparent overlays on each of page's links
-// which disappears only when popups are opened.
-// To restore the expected behavior, we need to detect if the event is 'masked' by artificial layers
-// and redirect it to the correct element.
-// ToDo: touch events: https://developer.mozilla.org/en/docs/Web/API/Touch_events
+/**
+ * Some popup scripts adds transparent overlays on each of page's links
+ * which disappears only when popups are opened.
+ * To restore the expected behavior, we need to detect if the event is 'masked' by artificial layers
+ * and redirect it to the correct element.
+ * ToDo: touch events: https://developer.mozilla.org/en/docs/Web/API/Touch_events
+ */
 var dispatchIfBlockedByMask = function() {
     if (currentEvent) {
         if (currentEvent instanceof MouseEvent) {
@@ -260,7 +270,11 @@ Object.defineProperty(HTMLIFrameElement.prototype, 'contentDocument', {
 });
 
 /************************************************************************************/
-// Logger
+/**
+ * Logger
+ * @param {string} str A string to display in the console.
+ * @param {*} obj An object to display in the console.
+ */
 var log = function (str, obj) {
     // @ifdef DEBUG
     var date = (new Date).toISOString();
@@ -276,6 +290,10 @@ var log = function (str, obj) {
 
 };
 
+/**
+ * In Firefox, userscripts can't write properties of unsafeWindow, so we create a <script> tag
+ * to run the script in the page's context.
+ */
 if (typeof InstallTrigger !== 'undefined') {
     // Firefox
     var script = document.createElement('script');
