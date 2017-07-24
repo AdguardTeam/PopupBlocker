@@ -1,4 +1,4 @@
-var popupBlocker = function(window) {
+function popupBlocker(window) {
 
 /************************************************************************************/
 var top = window.top;
