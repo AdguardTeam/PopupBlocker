@@ -7,14 +7,17 @@
   "author": "seanl-adg",
   "license": "MIT",
   "devDependencies": {
+    "chai": "^4.1.0",
     "google-closure-compiler": "^20170626.0.0",
     "gulp": "^3.9.1",
     "gulp-append-prepend": "^1.0.3",
+    "gulp-clean": "^0.3.2",
     "gulp-closure-compiler": "^0.4.0",
     "gulp-concat": "^2.6.1",
     "gulp-insert": "^0.5.0",
     "gulp-preprocess": "^2.0.0",
     "gulp-rename": "^1.2.2",
-    "merge2": "^1.1.0"
+    "merge2": "^1.1.0",
+    "mocha": "^3.4.2"
   }
 }

@@ -85,7 +85,7 @@ function maybeOverlay(el) {
  */
 var dispatchIfBlockedByMask = function() {
     if (currentEvent) {
-        if (currentEvent instanceof MouseEvent) {
+        if (currentEvent instanceof MouseEvent && currentEvent.isTrusted) {
             log('Checking current MouseEvent for its genuine target..');
             var x = currentEvent.clientX, y = currentEvent.clientY, target = currentEvent.target;
             var elts;
@@ -148,7 +148,7 @@ var openVerifiedWindow = function (url, name) {
         // Return a mock window object, in order to ensure that the page's own script does not accidentally throw TypeErrors.
         var loc = document.createElement('a');
         loc.href = arguments[0];
-        var doc = new Document();
+        var doc = Object.create(HTMLDocument.prototype);
         win = {};
         Object.getOwnPropertyNames(window).forEach(function(prop) {
             switch(typeof prop) {

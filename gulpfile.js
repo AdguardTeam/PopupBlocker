@@ -6,6 +6,7 @@ const insert = require('gulp-insert');
 const concat = require('gulp-concat');
 const rename = require('gulp-rename');
 const merge = require('merge2');
+const clean = require('gulp-clean');
 
 
 const options = global.options = {
@@ -46,10 +47,10 @@ const makeTask = (preprocessContext, minify, metaConfig) => {
                 return text;
             }))
             .pipe(rename('popupblocker.meta.js'))
-            .pipe(gulp.dest('build'));
+            .pipe(gulp.dest(options.outputPath));
         return merge(meta, content)
             .pipe(concat('popupblocker.user.js'))
-            .pipe(gulp.dest('build'));
+            .pipe(gulp.dest(options.outputPath));
     };
 };
 
@@ -60,14 +61,27 @@ const makeMetaConfig = (url) => {
     };
 }
 
-gulp.task('dev', makeTask({ DEBUG: true }, false, makeMetaConfig(options.downloadUPDATE_URLDev)));
+gulp.task('dev', ['clean'], makeTask({ DEBUG: true }, false, makeMetaConfig(options.downloadUPDATE_URLDev)));
 
-gulp.task('beta', makeTask({}, true, makeMetaConfig(options.downloadUPDATE_URLBeta)));
+gulp.task('beta', ['clean'], makeTask({}, true, makeMetaConfig(options.downloadUPDATE_URLBeta)));
 
-gulp.task('release', makeTask({}, true, makeMetaConfig(options.downloadUPDATE_URLRelease)));
+gulp.task('release', ['clean'], makeTask({}, true, makeMetaConfig(options.downloadUPDATE_URLRelease)));
 
-gulp.task('watch', function(){
-  gulp.watch('*.js', ['dev']).on('change', (event) => {
-      console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
-  });
+gulp.task('clean', () => {
+    return gulp.src(options.outputPath, {read: false})
+        .pipe(clean());
+});
+
+gulp.task('testsToGhPages', ['dev'], () => {
+    return [
+        gulp.src('test/**').pipe(gulp.dest(options.outputPath + '/test/')),
+        gulp.src('node_modules/mocha/mocha.*').pipe(gulp.dest(options.outputPath + '/node_modules/mocha/')),
+        gulp.src('node_modules/chai/chai.js').pipe(gulp.dest(options.outputPath + '/node_modules/chai/'))
+    ];
+});
+
+gulp.task('watch', () => {
+    gulp.watch('*.js', ['dev']).on('change', (event) => {
+        console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
+    });
 });
