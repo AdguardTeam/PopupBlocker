@@ -1,23 +1,25 @@
-function popupBlocker(window) {
+/** @constructor */
+var PopupBlocker = function (window) {
 
 /************************************************************************************/
 var top = window.top;
 var PROP = typeof Symbol == 'function' ? Symbol() : Math.random().toString(36).substr(7);
 var MouseEvent = top.MouseEvent;
-/************************************************************************************/
-// Verify whether the current event handler that is being executed
-// is artificially created to generate popups.
-var currentEvent;
+
+/**
+ * Gets the event that is being currently handled.
+ * @return {Event}
+ */
 var retrieveEvent = function() {
     log('Retrieving event');
-    currentEvent = top.event;
+    var currentEvent = top.event;
     if (!currentEvent) {
         log('window.event does not exist, trying to get event from Function.caller');
         try {
             var caller = arguments.callee;
-            while (caller) { caller = caller.caller; }
+            while (caller.caller) { caller = caller.caller; }
             log('Reached at the top of caller chain.');
-            if (caller.arguments && caller.arguments[0] && caller.arguments[0].target) {
+            if (caller.arguments && caller.arguments[0] && 'target' in caller.arguments[0]) {
                 currentEvent = caller.arguments[0];
                 log('The function at the bottom of the stack has an expected type. The current event is:', currentEvent);
             }
@@ -27,6 +29,7 @@ var retrieveEvent = function() {
     } else {
         log('window.event exists, of which the value is:', currentEvent);
     }
+    return currentEvent;
 };
 
 /**
@@ -34,7 +37,6 @@ var retrieveEvent = function() {
  * @return {boolean} True if the event is legit, false if it is something that we should not allow window.open or dispatchEvent.
  */
 var verifyEvent = function(event) {
-    event = event || (retrieveEvent(), currentEvent);
     if (event) {
         log('Verifying event');
         var currentTarget = event.currentTarget;
@@ -52,7 +54,6 @@ var verifyEvent = function(event) {
     return true;
 };
 
-/************************************************************************************/
 /**
  * Detects common overlay pattern.
  * @param {Element} el an element to check whether it is an overlay.
@@ -127,13 +128,13 @@ var dispatchIfBlockedByMask = function() {
     }
 };
 
-/************************************************************************************/
+
 // Overrides window.open.
 var _open = window.open;
 
 var openVerifiedWindow = function (url, name) {
     log('Called window.open');
-    var passed = verifyEvent();
+    var passed = verifyEvent(retrieveEvent());
     var win;
     if (passed) {
         log('Test passed, calling original window.open...');
@@ -171,14 +172,13 @@ var openVerifiedWindow = function (url, name) {
 
 window.open = openVerifiedWindow;
 
-/************************************************************************************/
 // Overrides EventTarget.prototype.dispatchEvent;
 // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent
 var _dispatchEvent = typeof EventTarget == 'undefined' ? Node.prototype.dispatchEvent : EventTarget.prototype.dispatchEvent;
 var dispatchVerifiedEvent = function (evt) {
     if (evt instanceof MouseEvent && this instanceof HTMLAnchorElement && !evt.isTrusted) {
         log('It is a MouseEvent on an anchor tag.');
-        var passed = verifyEvent();
+        var passed = verifyEvent(retrieveEvent());
         if (!passed) {
             log('It did not pass the test, not dispatching event');
             return false;
@@ -196,7 +196,7 @@ var _click = HTMLElement.prototype.click;
 HTMLElement.prototype.click = function() {
     if (this instanceof HTMLAnchorElement) {
         log('click() was called on an anchor tag');
-        var passed = verifyEvent();
+        var passed = verifyEvent(retrieveEvent());
         if (!passed) {
             log('It did not pass the test, not clicking element');
             return;
@@ -231,6 +231,7 @@ Event.prototype.preventDefault = function() {
 
 /************************************************************************************/
 // Override HTMLIFrameElement.prototype.contentWindow.
+var self = arguments.callee;
 var getContentWindow = Object.getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow').get;
 var getContentDocument = Object.getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentDocument').get;
 var applyOnIframe = function (iframe) {
@@ -242,7 +243,7 @@ var applyOnIframe = function (iframe) {
     // @endif
     try {
         log('An iframe called the contentWindow/Document getter for the first time, applying popupBlocker..', iframe);
-        getContentWindow.call(iframe).eval('(' + popupBlocker.toString() + ')(window);');
+        getContentWindow.call(iframe).eval('(new ' + PopupBlocker.toString() + ')(window);');
     } catch(e) {
         log('Applying popupBlocker to an iframe failed, due to an error:', e);
     } finally {
@@ -288,6 +289,11 @@ var log = function (str, obj) {
 };
 /************************************************************************************/
 
+this.retrieveEvent = retrieveEvent;
+this.verifyEvent = verifyEvent;
+this.dispatchIfBlockedByMask = dispatchIfBlockedByMask;
+this.maybeOverlay = maybeOverlay;
+
 };
 
 /**
@@ -297,10 +303,10 @@ var log = function (str, obj) {
 if (typeof InstallTrigger !== 'undefined') {
     // Firefox
     var script = document.createElement('script');
-    script.textContent = '(' + popupBlocker.toString() + ')(window);';
+    script.textContent = '(new ' + PopupBlocker.toString() + ')(window);';
     var el = document.body || document.head || document.documentElement;
     el.appendChild(script);
     el.removeChild(script);
 } else {
-    popupBlocker(typeof unsafeWindow !== 'undefined' ? unsafeWindow : window);
+    var popupBlocker = new PopupBlocker(typeof unsafeWindow !== 'undefined' ? unsafeWindow : window);
 }
