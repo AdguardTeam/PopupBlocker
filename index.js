@@ -4,7 +4,6 @@ function PopupBlocker(window) {
 /************************************************************************************/
 var top = window.top;
 var PROP = typeof Symbol == 'function' ? Symbol() : Math.random().toString(36).substr(7);
-var MouseEvent = top.MouseEvent;
 
 /**
  * Gets the event that is being currently handled.
@@ -21,7 +20,12 @@ var retrieveEvent = function() {
             while (caller.caller) {
                 caller = caller.caller;
                 if (caller.hasOwnProperty(PROP)) {
+                    // @ifdef DEBUG
                     throw "Recursion in the call stack";
+                    // @endif
+                    // @ifndef DEBUG
+                    throw null;
+                    // @endif
                 }
                 caller[PROP] = undefined;
             }
@@ -94,7 +98,7 @@ function maybeOverlay(el) {
 var dispatchIfBlockedByMask = function() {
     var currentEvent = retrieveEvent();
     if (currentEvent) {
-        if (currentEvent instanceof MouseEvent && currentEvent.isTrusted) {
+        if ('clientX' in currentEvent && currentEvent.isTrusted) {
             log('Checking current MouseEvent for its genuine target..');
             var x = currentEvent.clientX, y = currentEvent.clientY, target = currentEvent.target;
             var elts;
@@ -184,7 +188,7 @@ window.open = openVerifiedWindow;
 // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent
 var _dispatchEvent = typeof EventTarget == 'undefined' ? Node.prototype.dispatchEvent : EventTarget.prototype.dispatchEvent;
 var dispatchVerifiedEvent = function (evt) {
-    if (evt instanceof MouseEvent && this instanceof HTMLAnchorElement && !evt.isTrusted) {
+    if ('clientX' in evt && this.nodeName.toLowerCase() == 'a' && !evt.isTrusted) {
         log('It is a MouseEvent on an anchor tag.');
         var passed = verifyEvent(retrieveEvent());
         if (!passed) {
@@ -202,7 +206,7 @@ else { EventTarget.prototype.dispatchEvent = dispatchVerifiedEvent; }
 // Overides HTMLElement.prototype.click
 var _click = HTMLElement.prototype.click;
 HTMLElement.prototype.click = function() {
-    if (this instanceof HTMLAnchorElement) {
+    if (this.nodeName.toLowerCase() == 'a') {
         log('click() was called on an anchor tag');
         var passed = verifyEvent(retrieveEvent());
         if (!passed) {
