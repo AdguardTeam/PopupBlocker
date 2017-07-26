@@ -82,6 +82,7 @@ gulp.task('check', () => {
 });
 
 gulp.task('testsToGhPages', ['dev', 'check'], () => {
+    require('fs').writeFileSync('build/.nojekyll', '');
     return [
         gulp.src('test/**').pipe(gulp.dest(options.outputPath + '/test/')),
         gulp.src('node_modules/mocha/mocha.*').pipe(gulp.dest(options.outputPath + '/node_modules/mocha/')),
