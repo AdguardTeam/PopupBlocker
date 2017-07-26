@@ -1,5 +1,5 @@
 /** @constructor */
-var PopupBlocker = function (window) {
+function PopupBlocker(window) {
 
 /************************************************************************************/
 var top = window.top;
@@ -18,7 +18,13 @@ var retrieveEvent = function() {
         log('window.event does not exist, trying to get event from Function.caller');
         try {
             var caller = arguments.callee;
-            while (caller.caller) { caller = caller.caller; }
+            while (caller.caller) {
+                caller = caller.caller;
+                if (caller.hasOwnProperty(PROP)) {
+                    throw "Recursion in the call stack";
+                }
+                caller[PROP] = undefined;
+            }
             log('Reached at the top of caller chain.');
             if (caller.arguments && caller.arguments[0] && 'target' in caller.arguments[0]) {
                 currentEvent = caller.arguments[0];
@@ -244,7 +250,7 @@ var applyOnIframe = function (iframe) {
     // @endif
     try {
         log('An iframe called the contentWindow/Document getter for the first time, applying popupBlocker..', iframe);
-        getContentWindow.call(iframe).eval('(new ' + PopupBlocker.toString() + ')(window);');
+        getContentWindow.call(iframe).eval('new ' + PopupBlocker.toString() + '(window);');
     } catch(e) {
         log('Applying popupBlocker to an iframe failed, due to an error:', e);
     } finally {
@@ -304,7 +310,7 @@ this.maybeOverlay = maybeOverlay;
 if (typeof InstallTrigger !== 'undefined') {
     // Firefox
     var script = document.createElement('script');
-    script.textContent = '(new ' + PopupBlocker.toString() + ')(window);';
+    script.textContent = 'new ' + PopupBlocker.toString() + '(window);';
     var el = document.body || document.head || document.documentElement;
     el.appendChild(script);
     el.removeChild(script);
