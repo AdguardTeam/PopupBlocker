@@ -311,7 +311,7 @@ this.maybeOverlay = maybeOverlay;
  * In Firefox, userscripts can't write properties of unsafeWindow, so we create a <script> tag
  * to run the script in the page's context.
  */
-if (typeof InstallTrigger !== 'undefined') {
+if (typeof unsafeWindow !== 'undefined' && typeof InstallTrigger !== 'undefined') {
     // Firefox
     var script = document.createElement('script');
     script.textContent = 'new ' + PopupBlocker.toString() + '(window);';
