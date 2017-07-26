@@ -75,7 +75,14 @@ gulp.task('clean', () => {
         .pipe(clean());
 });
 
-gulp.task('testsToGhPages', ['dev'], () => {
+gulp.task('check', () => {
+    return gulp.src('index.js')
+        .pipe(preprocess({ context: { DEBUG: true }}))
+        .pipe(closureCompiler(Object.assign({}, cc_options, { checks_only: true })));
+});
+
+gulp.task('testsToGhPages', ['dev', 'check'], () => {
+    require('fs').writeFileSync('build/.nojekyll', '');
     return [
         gulp.src('test/**').pipe(gulp.dest(options.outputPath + '/test/')),
         gulp.src('node_modules/mocha/mocha.*').pipe(gulp.dest(options.outputPath + '/node_modules/mocha/')),
