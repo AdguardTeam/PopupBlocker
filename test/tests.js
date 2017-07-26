@@ -1,12 +1,22 @@
+var getEvt = function() {
+    var evt = window.event = document.createEvent("MouseEvents");
+    evt.initMouseEvent("click", true, true, window, 0, 0, 0, 80, 20, false, false, false, false, 0, null);
+    return evt;
+}
+
 describe('retrieveEvent', function() {
     it('returns window.event if available', function() {
-        var evt = window.event = new MouseEvent('click');
-        expect(popupBlocker.retrieveEvent()).to.be.equal(evt);
-        window.event = undefined;
+        if ('event' in window) {
+            var desc = Object.getOwnPropertyDescriptor(window, 'event');
+            if (desc && desc.set) { // Otherwise, the 'hack' of setting window.event directly for testing won't work. IE works in this way.
+                var evt = window.event = getEvt();
+                expect(popupBlocker.retrieveEvent()).to.be.equal(evt);
+                window.event = undefined;
+            }
+        }
     });
     it('retrieves value from the call stack when window.event is unavailable', function(done) {
-        var evt =  new CustomEvent('test');
-        evt.target = document;
+        var evt = window.event = getEvt();
         var retrieved;
         setTimeout(function() {
             window.event = undefined;
@@ -20,11 +30,11 @@ describe('retrieveEvent', function() {
 
 describe('verifyEvent', function() {
     it('returns true for non-dispatched events', function() {
-        var evt = new MouseEvent('click', { clientX: 100, clientY: 100 });
+        var evt = window.event = getEvt();
         expect(popupBlocker.verifyEvent(evt)).to.be.true;
     });
     it('returns false for events of which currentTarget is document', function() {
-        var evt = new MouseEvent('click', { clientX: 100, clientY: 100 });
+        var evt = getEvt();
         document.addEventListener('click', function(evt) {
             expect(popupBlocker.verifyEvent(evt)).to.be.false;
         });
