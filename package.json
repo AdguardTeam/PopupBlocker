@@ -6,6 +6,9 @@
   "repository": "https://github.com/AdguardTeam/PopupBlocker",
   "author": "seanl-adg",
   "license": "MIT",
+  "scripts": {
+    "test": "mocha-phantomjs test/index.html"
+  },
   "devDependencies": {
     "chai": "^4.1.0",
     "google-closure-compiler": "^20170626.0.0",
@@ -18,6 +21,7 @@
     "gulp-preprocess": "^2.0.0",
     "gulp-rename": "^1.2.2",
     "merge2": "^1.1.0",
-    "mocha": "^3.4.2"
+    "mocha": "^3.4.2",
+    "mocha-phantomjs": "^4.1.0"
   }
 }

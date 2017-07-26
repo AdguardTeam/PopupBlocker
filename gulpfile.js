@@ -41,10 +41,11 @@ const makeTask = (preprocessContext, minify, metaConfig) => {
         }
         let meta = gulp.src('meta.js')
             .pipe(insert.transform((text) => {
-                text = text.replace(/^(\/\/\s@.*)\[([A-Za-g_]*?)\]/gm, (_, c1, c2) => {
+                return text.replace(/^\/\/\s@name(?:\:[\w-]*)?\s.*$/gm, (match) => {
+                    return match + ' ' + metaConfig['NAME_SUFFIX'];
+                }).replace(/^(\/\/\s@.*)\[([A-Za-g_]*?)\]/gm, (_, c1, c2) => {
                     return c1 + metaConfig[c2];
                 });
-                return text;
             }))
             .pipe(rename('popupblocker.meta.js'))
             .pipe(gulp.dest(options.outputPath));
@@ -54,18 +55,20 @@ const makeTask = (preprocessContext, minify, metaConfig) => {
     };
 };
 
-const makeMetaConfig = (url) => {
+const makeMetaConfig = (channel) => {
+    let url = options['downloadUPDATE_URL' + channel];
     return {
         'DOWNLOAD_URL': url + options.scriptName + '.user.js',
-        'UPDATE_URL': url + options.scriptName + '.meta.js'
+        'UPDATE_URL': url + options.scriptName + '.meta.js',
+        'NAME_SUFFIX': channel === 'Release' ? '' : channel
     };
 }
 
-gulp.task('dev', ['clean'], makeTask({ DEBUG: true }, false, makeMetaConfig(options.downloadUPDATE_URLDev)));
+gulp.task('dev', ['clean'], makeTask({ DEBUG: true }, false, makeMetaConfig('Dev')));
 
-gulp.task('beta', ['clean'], makeTask({}, true, makeMetaConfig(options.downloadUPDATE_URLBeta)));
+gulp.task('beta', ['clean'], makeTask({}, true, makeMetaConfig('Beta')));
 
-gulp.task('release', ['clean'], makeTask({}, true, makeMetaConfig(options.downloadUPDATE_URLRelease)));
+gulp.task('release', ['clean'], makeTask({}, true, makeMetaConfig('Release')));
 
 gulp.task('clean', () => {
     return gulp.src(options.outputPath, {read: false})
