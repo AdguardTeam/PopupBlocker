@@ -9,6 +9,7 @@ var MouseEvent = top.MouseEvent;
 /**
  * Gets the event that is being currently handled.
  * @return {Event}
+ * @suppress {es5Strict}
  */
 var retrieveEvent = function() {
     log('Retrieving event');
@@ -85,6 +86,7 @@ function maybeOverlay(el) {
  * ToDo: touch events: https://developer.mozilla.org/en/docs/Web/API/Touch_events
  */
 var dispatchIfBlockedByMask = function() {
+    var currentEvent = retrieveEvent();
     if (currentEvent) {
         if (currentEvent instanceof MouseEvent && currentEvent.isTrusted) {
             log('Checking current MouseEvent for its genuine target..');
@@ -108,7 +110,7 @@ var dispatchIfBlockedByMask = function() {
             var name = el.nodeName.toLowerCase();
             if ( name == 'iframe' || name == 'input' || name == 'a' || el.hasAttribute('onclick') || el.hasAttribute('onmousedown') ) {
                 log('A real target candidate has default event handlers');
-                var style = window.getComputedStyle(target);
+                var style = window.getComputedStyle(/** @type {Element} */(target));
                 var position = style.getPropertyValue('position');
                 var zIndex = style.getPropertyValue('z-index');
                 if ( (position == 'absolute' || position == 'fixed') && zIndex > 1000 ) {
@@ -231,7 +233,6 @@ Event.prototype.preventDefault = function() {
 
 /************************************************************************************/
 // Override HTMLIFrameElement.prototype.contentWindow.
-var self = arguments.callee;
 var getContentWindow = Object.getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow').get;
 var getContentDocument = Object.getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentDocument').get;
 var applyOnIframe = function (iframe) {
@@ -274,7 +275,7 @@ Object.defineProperty(HTMLIFrameElement.prototype, 'contentDocument', {
 /**
  * Logger
  * @param {string} str A string to display in the console.
- * @param {*} obj An object to display in the console.
+ * @param {*=} obj An object to display in the console.
  */
 var log = function (str, obj) {
     // @ifdef DEBUG
