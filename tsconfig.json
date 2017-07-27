@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "lib": ["DOM", "ES6"]
+    },
+    "include": [
+        "src/**/*.ts"
+    ]
+}

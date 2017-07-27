@@ -1,12 +1,15 @@
 const gulp = require('gulp');
 const closureCompiler = require('google-closure-compiler').gulp();
 const preprocess = require('gulp-preprocess');
-const gap = require('gulp-append-prepend');
 const insert = require('gulp-insert');
 const concat = require('gulp-concat');
 const rename = require('gulp-rename');
-const merge = require('merge2');
+const merge = require('merge-stream');
 const clean = require('gulp-clean');
+const rollup = require('gulp-rollup');
+const inject = require('gulp-inject');
+const fs = require('fs');
+const typescript = require('rollup-plugin-typescript2');
 
 
 const options = global.options = {
@@ -22,58 +25,80 @@ const cc_options = {
     compilation_level: 'ADVANCED',
     language_in: 'ECMASCRIPT6',
     language_out: 'ECMASCRIPT5',
-    js_output_file: 'user.min.js',
+    //js_output_file: 'user.min.js',
     assume_function_wrapper: true,
     warning_level: 'VERBOSE',
     strict_mode_input: false,
     externs: ['externs.js'],
-    use_types_for_optimization: true
+    use_types_for_optimization: true,
+    rewrite_polyfills: false
+};
+
+const rollup_options = {
+    entry: 'src/index.ts',
+    plugins: [typescript()],
+    format: 'es',
+    useStrict: false
+};
+
+const bundle = (preprocessContext) => {
+    let wrapper = fs.readFileSync('src/wrapper.js').toString().split('/*CONTENT*/');
+    return gulp.src('src/**/*.ts')
+        .pipe(preprocess({
+            context: preprocessContext
+        })).pipe(rollup(rollup_options))
+        .pipe(insert.transform((content) => {
+            content = content.replace(/^export\sdefault\s/m, 'return ');
+            content = wrapper[0] + content + wrapper[1];
+            return content;
+        }));
 };
 
 const makeTask = (preprocessContext, minify, metaConfig) => {
     return () => {
-        let content = gulp.src('index.js')
-            .pipe(preprocess({
-                context: preprocessContext
-            }));
+        let content = bundle(preprocessContext);
         if (minify) {
             content = content.pipe(closureCompiler(cc_options));
         }
         let meta = gulp.src('meta.js')
             .pipe(insert.transform((text) => {
-                text = text.replace(/^(\/\/\s@.*)\[([A-Za-g_]*?)\]/gm, (_, c1, c2) => {
+                return text.replace(/^\/\/\s@name(?:\:[\w-]*)?\s.*$/gm, (match) => {
+                    return match + ' ' + metaConfig['NAME_SUFFIX'];
+                }).replace(/^(\/\/\s@.*)\[([A-Za-g_]*?)\]/gm, (_, c1, c2) => {
                     return c1 + metaConfig[c2];
                 });
-                return text;
             }))
-            .pipe(rename('popupblocker.meta.js'))
+            .pipe(rename(options.scriptname + '.meta.js'))
             .pipe(gulp.dest(options.outputPath));
         return merge(meta, content)
-            .pipe(concat('popupblocker.user.js'))
+            .pipe(concat(options.scriptName + '.user.js'))
             .pipe(gulp.dest(options.outputPath));
     };
 };
 
-const makeMetaConfig = (url) => {
+const makeMetaConfig = (channel) => {
+    let url = options['downloadUPDATE_URL' + channel];
     return {
         'DOWNLOAD_URL': url + options.scriptName + '.user.js',
-        'UPDATE_URL': url + options.scriptName + '.meta.js'
+        'UPDATE_URL': url + options.scriptName + '.meta.js',
+        'NAME_SUFFIX': channel
     };
 }
 
-gulp.task('dev', ['clean'], makeTask({ DEBUG: true }, false, makeMetaConfig(options.downloadUPDATE_URLDev)));
+gulp.task('dev', makeTask({ DEBUG: true }, false, makeMetaConfig('Dev')));
 
-gulp.task('beta', ['clean'], makeTask({}, true, makeMetaConfig(options.downloadUPDATE_URLBeta)));
+gulp.task('beta', makeTask({}, true, makeMetaConfig('Beta')));
 
-gulp.task('release', ['clean'], makeTask({}, true, makeMetaConfig(options.downloadUPDATE_URLRelease)));
+gulp.task('release', makeTask({}, true, makeMetaConfig('Release')));
 
 gulp.task('clean', () => {
-    return gulp.src(options.outputPath, {read: false})
+    return gulp.src([options.outputPath], {read: false})
         .pipe(clean());
 });
 
-gulp.task('testsToGhPages', ['dev'], () => {
+gulp.task('testsToGhPages', ['dev', 'clean'], () => {
     return [
+        require('fs').writeFile('build/.nojekyll', ''),
         gulp.src('test/**').pipe(gulp.dest(options.outputPath + '/test/')),
         gulp.src('node_modules/mocha/mocha.*').pipe(gulp.dest(options.outputPath + '/node_modules/mocha/')),
         gulp.src('node_modules/chai/chai.js').pipe(gulp.dest(options.outputPath + '/node_modules/chai/'))
