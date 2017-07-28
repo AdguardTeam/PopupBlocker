@@ -6,10 +6,15 @@ function popupBlocker() {
  * In Firefox, userscripts can't write properties of unsafeWindow, so we create a <script> tag
  * to run the script in the page's context.
  */
-if (typeof unsafeWindow !== 'undefined' && typeof InstallTrigger !== 'undefined') {
-    // Firefox
+if (typeof InstallTrigger !== 'undefined' && document.currentScript === null) {
+    // Firefox userscript
     var script = document.createElement('script');
-    script.textContent = popupBlocker.toString() + '(window);'
+    var text =
+        // @ifdef DEBUG
+        'window.__t = ' +
+        // @endif
+        '(' + popupBlocker.toString() + ')();';
+    script.textContent = text;
     var el = document.body || document.head || document.documentElement;
     el.appendChild(script);
     el.removeChild(script);

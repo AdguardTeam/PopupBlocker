@@ -1,4 +1,4 @@
-import { ApplyHandler, wrapMethod } from '../proxy';
+import { ApplyHandler, ApplyOption, wrapMethod } from '../proxy';
 import { verifyCurrentEvent } from '../verify-event';
 import log from '../log';
 
@@ -16,14 +16,18 @@ const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _argu
     return _dispatchEvent.call(_this, evt);
 };
 
+const isUIEvent:ApplyOption = (target, _this, _arguments) => {
+    return 'view' in _this;
+};
+
 let _dispatchEvent;
 
 if (typeof EventTarget == 'undefined') {
     _dispatchEvent = Node.prototype.dispatchEvent;
-    wrapMethod(Node.prototype, 'dispatchEvent', dispatchVerifiedEvent);
+    wrapMethod(Node.prototype, 'dispatchEvent', dispatchVerifiedEvent, isUIEvent);
 } else {
     _dispatchEvent = EventTarget.prototype.dispatchEvent;
-    wrapMethod(EventTarget.prototype, 'dispatchEvent', dispatchVerifiedEvent);
+    wrapMethod(EventTarget.prototype, 'dispatchEvent', dispatchVerifiedEvent, isUIEvent);
 }
 
 export { _dispatchEvent };

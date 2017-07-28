@@ -1,15 +1,15 @@
+const fs = require('fs');
 const gulp = require('gulp');
-const closureCompiler = require('google-closure-compiler').gulp();
 const preprocess = require('gulp-preprocess');
 const insert = require('gulp-insert');
 const concat = require('gulp-concat');
 const rename = require('gulp-rename');
 const merge = require('merge-stream');
 const clean = require('gulp-clean');
-const rollup = require('gulp-rollup');
 const inject = require('gulp-inject');
-const fs = require('fs');
+const rollup = require('gulp-rollup');
 const typescript = require('rollup-plugin-typescript2');
+const closureCompiler = require('google-closure-compiler').gulp();
 
 
 const options = global.options = {
@@ -25,7 +25,6 @@ const cc_options = {
     compilation_level: 'ADVANCED',
     language_in: 'ECMASCRIPT6',
     language_out: 'ECMASCRIPT5',
-    //js_output_file: 'user.min.js',
     assume_function_wrapper: true,
     warning_level: 'VERBOSE',
     strict_mode_input: false,
@@ -68,7 +67,7 @@ const makeTask = (preprocessContext, minify, metaConfig) => {
                     return c1 + metaConfig[c2];
                 });
             }))
-            .pipe(rename(options.scriptname + '.meta.js'))
+            .pipe(rename(options.scriptName + '.meta.js'))
             .pipe(gulp.dest(options.outputPath));
         return merge(meta, content)
             .pipe(concat(options.scriptName + '.user.js'))
@@ -81,7 +80,8 @@ const makeMetaConfig = (channel) => {
     return {
         'DOWNLOAD_URL': url + options.scriptName + '.user.js',
         'UPDATE_URL': url + options.scriptName + '.meta.js',
-        'NAME_SUFFIX': channel
+        'NAME_SUFFIX': channel,
+        'ADG_PERMANENT': channel !== 'Dev'
     };
 }
 
@@ -106,7 +106,7 @@ gulp.task('testsToGhPages', ['dev', 'clean'], () => {
 });
 
 gulp.task('watch', () => {
-    gulp.watch('*.js', ['dev']).on('change', (event) => {
+    gulp.watch('**/*.ts', ['dev']).on('change', (event) => {
         console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
     });
 });

@@ -1,6 +1,8 @@
 import log from './log';
 import WeakMap from './weakmap';
 
+export const clonedEvents = new WeakMap();
+
 /**
  * Gets the event that is being currently handled.
  * @suppress {es5Strict}
@@ -47,9 +49,13 @@ export function retrieveEvent():Event {
 export function verifyEvent(event?):boolean {
     if (event) {
         log('Verifying event');
-        var currentTarget = event.currentTarget;
+        if (clonedEvents.has(event)) {
+            log('It is a cloned event');
+            return true;
+        }
+        let currentTarget = event.currentTarget;
         if (currentTarget) {
-            var tagName = currentTarget.nodeName.toLowerCase();
+            let tagName = currentTarget.nodeName.toLowerCase();
             if (tagName == '#document' || tagName == 'html' || tagName == 'body') {
                 log('VerifyEvent - the current event handler is suspicious, for the current target is either document, html, or body.');
                 return false;

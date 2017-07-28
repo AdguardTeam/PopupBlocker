@@ -1,3 +1,3 @@
 import { wrapAccessor } from '../proxy';
 
-wrapAccessor(HTMLIFrameElement.prototype, 'data');
+wrapAccessor(HTMLObjectElement.prototype, 'data');

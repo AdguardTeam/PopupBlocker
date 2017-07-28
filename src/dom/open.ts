@@ -1,6 +1,7 @@
 import { ApplyHandler, makeObjectProxy, wrapMethod } from '../proxy';
-import { retrieveEvent, verifyCurrentEvent } from '../verify-event';
+import { clonedEvents, retrieveEvent, verifyCurrentEvent } from '../verify-event';
 import { _dispatchEvent } from './dispatchEvent';
+import { timeline } from '../timeline/index';
 import log from '../log';
 
 /**
@@ -46,7 +47,8 @@ const dispatchIfBlockedByMask = function() {
                         log('A mask candidate has expected content, re-dispatching events..');
                         target.style.setProperty('display', 'none', 'important');
                         target.style.setProperty('pointer-events', 'none', 'important');
-                        var clone = new MouseEvent(currentEvent.type, currentEvent);
+                        let clone = new MouseEvent(currentEvent.type, currentEvent);
+                        clonedEvents.set(clone, true);
                         Event.prototype.stopPropagation.call(currentEvent);
                         currentEvent.stopImmediatePropagation();
                         _dispatchEvent.call(el, clone);
@@ -59,37 +61,41 @@ const dispatchIfBlockedByMask = function() {
 
 // keep in mind; it should log about window.open.call(newWindow, 'about:blank', '_blank').
 const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments) {
-    log('Called window.open');
+    log('Called window.open with url ' + _arguments[0]);
     let passed = verifyCurrentEvent();
     let win;
     if (passed) {
-        log('Test passed, calling original window.open...');
-        win = _open.apply(_this, _arguments);
-        win = makeObjectProxy(win);
-    } else {
-        dispatchIfBlockedByMask();
-        log('mock a window object');
-        // Return a mock window object, in order to ensure that the page's own script does not accidentally throw TypeErrors.
-        let loc = document.createElement('a');
-        loc.href = _arguments[0];
-        let doc = Object.create(HTMLDocument.prototype);
-        win = {};
-        Object.getOwnPropertyNames(window).forEach(function(prop) {
-            switch(typeof prop) {
-                case 'object': win[prop] = {}; break;
-                case 'function': win[prop] = function() {return true;}; break;
-                case 'string':  win[prop] = ''; break;
-                case 'number': win[prop] = NaN; break;
-                case 'boolean': win[prop] = false; break;
-                case 'undefined': win[prop] = undefined; break;
-            }
-        });
-        win.opener = window;
-        win.closed = false;
-        win.name = _arguments[1];
-        win.location = loc;
-        win.document = doc;
+        log('event verified, inquiring event timeline..');
+        if (timeline.canOpenPopup()) {
+            log('calling original window.open...');
+            win = _open.apply(_this, _arguments);
+            win = makeObjectProxy(win);
+            return win;
+        }
+        log('canOpenPopup returned false');
     }
+    dispatchIfBlockedByMask();
+    log('mock a window object');
+    // Return a mock window object, in order to ensure that the page's own script does not accidentally throw TypeErrors.
+    let loc = document.createElement('a');
+    loc.href = _arguments[0];
+    let doc = Object.create(HTMLDocument.prototype);
+    win = {};
+    Object.getOwnPropertyNames(window).forEach(function(prop) {
+        switch(typeof prop) {
+            case 'object': win[prop] = {}; break;
+            case 'function': win[prop] = function() {return true;}; break;
+            case 'string':  win[prop] = ''; break;
+            case 'number': win[prop] = NaN; break;
+            case 'boolean': win[prop] = false; break;
+            case 'undefined': win[prop] = undefined; break;
+        }
+    });
+    win.opener = window;
+    win.closed = false;
+    win.name = _arguments[1];
+    win.location = loc;
+    win.document = doc;
     return win;
 };
 
