@@ -1,4 +1,4 @@
-import log from './log';
+import * as log from './log';
 import WeakMap from './weakmap';
 
 export const clonedEvents = new WeakMap();
@@ -8,10 +8,10 @@ export const clonedEvents = new WeakMap();
  * @suppress {es5Strict}
  */
 export function retrieveEvent():Event {
-    log('Retrieving event');
+    log.call('Retrieving event');
     let currentEvent = top.event;
     if (!currentEvent) {
-        log('window.event does not exist, trying to get event from Function.caller');
+        log.print('window.event does not exist, trying to get event from Function.caller');
         try {
             let caller = arguments.callee;
             let touched = new WeakMap();
@@ -27,17 +27,18 @@ export function retrieveEvent():Event {
                 }
                 touched.set(caller, true);
             }
-            log('Reached at the top of caller chain.');
+            log.print('Reached at the top of caller chain.');
             if (caller.arguments && caller.arguments[0] && 'target' in caller.arguments[0]) {
                 currentEvent = caller.arguments[0];
-                log('The function at the bottom of the stack has an expected type. The current event is:', currentEvent);
+                log.print('The function at the bottom of the stack has an expected type. The current event is:', currentEvent);
             }
         } catch (e) {
-            log('Getting event from Function.caller failed, due to an error:', e);
+            log.print('Getting event from Function.caller failed, due to an error:', e);
         }
     } else {
-        log('window.event exists, of which the value is:', currentEvent);
+        log.print('window.event exists, of which the value is:', currentEvent);
     }
+    log.callEnd();
     return currentEvent;
 };
 
@@ -48,23 +49,26 @@ export function retrieveEvent():Event {
  */
 export function verifyEvent(event?):boolean {
     if (event) {
-        log('Verifying event');
+        log.call('Verifying event');
         if (clonedEvents.has(event)) {
-            log('It is a cloned event');
+            log.print('It is a cloned event');
             return true;
         }
         let currentTarget = event.currentTarget;
         if (currentTarget) {
             let tagName = currentTarget.nodeName.toLowerCase();
             if (tagName == '#document' || tagName == 'html' || tagName == 'body') {
-                log('VerifyEvent - the current event handler is suspicious, for the current target is either document, html, or body.');
+                log.print('VerifyEvent - the current event handler is suspicious, for the current target is either document, html, or body.');
+                log.callEnd();
                 return false;
             } else if (maybeOverlay(currentTarget)) {
-                log('VerifyEvent - the current event handler is suspicious, for the current target looks like an artificial overlay.');
+                log.print('VerifyEvent - the current event handler is suspicious, for the current target looks like an artificial overlay.');
+                log.callEnd();
                 return false;
             }
         }
     }
+    log.callEnd();
     return true;
 };
 
@@ -78,19 +82,22 @@ export function verifyCurrentEvent():boolean {
  * @return true if el is an overlay.
  */
 function maybeOverlay(el:HTMLElement):boolean {
+    log.call('maybeOverlay test');
     let w = window.innerWidth, h = window.innerHeight;
     if (el.offsetLeft << 4 < w && (w - el.offsetWidth) << 3 < w
         && el.offsetTop << 4 < h && (h - el.offsetHeight) << 3 < w) {
         let style = getComputedStyle(el);
         let position = style.getPropertyValue('position');
         let zIndex = parseInt(style.getPropertyValue('z-index'), 10);
-        log('An element passed offset test.');
+        log.print('An element passed offset test.');
         if ((position == 'fixed' || position == 'absolute') && zIndex > 1000) {
-            log('An element passed computedStyle test.');
+            log.print('An element passed computedStyle test.');
+            log.callEnd();
             return true;
         }
     }
     // ToDo: the element may have been modified in the event handler.
     // We may still test it using the inline style attribute.
+    log.callEnd();
     return false;
 }

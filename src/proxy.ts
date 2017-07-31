@@ -26,8 +26,12 @@ const isNativeFn = function (fn:Function):boolean {
     return typeof fn == 'function' && reIsNative.test(_reflect(_toStringFn, fn, []));
 }
 
-const proxyToReal = new WeakMap();
-const realToProxy = new WeakMap();
+// See HTMLIFrame.ts
+const proxyToReal = typeof KEY !== 'undefined' ? parent[KEY][0] : new WeakMap();
+const realToProxy = typeof KEY !== 'undefined' ? parent[KEY][1] : new WeakMap();
+
+export const expose = (key:PropertyKey) => { window[key] = [proxyToReal, realToProxy]; };
+export const unexpose = (key:PropertyKey) => { delete window[key]; };
 
 /**
  * An apply handler to be used to proxy Function#(bind, apply, call) methods.
@@ -81,34 +85,41 @@ function invokeWithUnproxiedThis(target, _this:Function, _arguments:IArguments|a
 };
 
 export function makeObjectProxy(obj) {
-    if (supported) {
-        let proxy = realToProxy.get(obj);
-        if (proxy) { return proxy; }
-        proxy = new Proxy(obj, {
-            get: function(target, prop, receiver) {
-                let _receiver = proxyToReal.get(receiver) || receiver;
-                timeline.registerEvent(new TimelineEvent('get ' + prop.toString(), _receiver));
-                var value = Reflect.get(target, prop, _receiver);
-                if (isNativeFn(value)) {
-                    return new Proxy(value, {
-                        apply: invokeWithUnproxiedThis
-                    });
-                } else {
-                    return value;
-                }
-            },
-            set: function(target, prop, value, receiver) {
-                let _receiver = proxyToReal.get(receiver) || receiver;
-                timeline.registerEvent(new TimelineEvent('set ' + prop.toString(), _receiver));
-                return Reflect.set(target, prop, value, _receiver);
+    if ( obj === null || typeof obj !== 'object' || !supported) { return obj; }
+    let proxy = realToProxy.get(obj);
+    if (proxy) { return proxy; }
+    proxy = new Proxy(obj, {
+        get: function(target, prop, receiver) {
+            console.log('get ' + prop.toString());
+            let _receiver = proxyToReal.get(receiver) || receiver;
+            timeline.registerEvent(new TimelineEvent('get ' + prop.toString(), _receiver));
+            var value = Reflect.get(target, prop, _receiver);
+            if (isNativeFn(value)) {
+                // SHOULD STORE THIS TOO!!!
+                return makeFunctionWrapper(value, invokeWithUnproxiedThis);
+            } else {
+                return value;
             }
-        });
-        realToProxy.set(obj, proxy);
-        proxyToReal.set(proxy, obj);
-        return proxy;
-    } else {
-        return obj;
-    }
+        },
+        set: function(target, prop, value, receiver) {
+            console.log('set ' + prop.toString());
+            let _receiver = proxyToReal.get(receiver) || receiver;
+            timeline.registerEvent(new TimelineEvent('set ' + prop.toString(), _receiver));
+            return Reflect.set(target, prop, value, _receiver);
+        },
+        getOwnPropertyDescriptor: function(target, prop) {
+            console.log('getOwnPropertyDescriptor ' + prop.toString());
+            return Object.getOwnPropertyDescriptor(target, prop);
+        },
+        has: function(target, prop) {
+            console.log('has ' + prop.toString());
+            return true;
+        }
+
+    });
+    realToProxy.set(obj, proxy);
+    proxyToReal.set(proxy, obj);
+    return proxy;
 }
 
 export type ApplyHandler = (target:Function, _this:any, _arguments:IArguments|any[]) => any;

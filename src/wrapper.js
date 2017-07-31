@@ -1,4 +1,4 @@
-function popupBlocker() {
+function popupBlocker(KEY) {
     /*CONTENT*/
 }
 

@@ -1,7 +1,7 @@
 import blurOnPopup from './after/blur-on-popup';
 import focusClose from './before/focus-close';
 import createOpen from './before/create';
-import log from '../log';
+import * as log from '../log';
 
 
 export type condition = (events:TimelineEvent[], event?:TimelineEvent) => boolean;
@@ -40,17 +40,21 @@ class Timeline {
                 this.events.splice(this.events.indexOf(event), 1);
             }.bind(this), 5000);
         } else {
-            log("TL: " + event.type, event.data);
+            log.print("Timeline.registerEvent: " + event.type, event.data);
         }
     }
     canOpenPopup():boolean {
-        log('inquiring events timeline to know whether window.open can be called...');
+        log.call('Inquiring events timeline about whether window.open can be called...');
         let i = beforeTest.length;
         while (i--) {
             if (!beforeTest[i](this.events)) {
+                log.print('false');
+                log.callEnd();
                 return false;
             }
         }
+        log.print('true');
+        log.callEnd();
         return true;
     }
     // @ifdef DEBUG

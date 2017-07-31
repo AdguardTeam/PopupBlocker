@@ -1,12 +1,14 @@
 import { getTime, TimelineEvent, condition } from '../index';
-import log from '../../log';
+import * as log from '../../log';
 
 const createOpen:condition = (events) => {
-    log('Performing create test');
+    log.call('Performing create test');
     let evt = events[0];
     if (evt.type == 'create' && getTime() - evt.timeStamp < 70) {
+        log.callEnd();
         return false;
     }
+    log.callEnd();
     return true;
 };
 

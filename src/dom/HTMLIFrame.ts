@@ -1,5 +1,5 @@
-import { ApplyHandler, makeObjectProxy, wrapAccessor } from '../proxy';
-import log from '../log';
+import { expose, unexpose, ApplyHandler, makeObjectProxy, wrapAccessor } from '../proxy';
+import * as log from '../log';
 import WeakMap from '../weakmap';
 
 const processed = new WeakMap();
@@ -13,16 +13,21 @@ const applyPopupBlockerOnGet:ApplyHandler = function(_get, _this) {
         // @ifdef DEBUG
         if (!beingProcessed.has(_this)) {
         // @endif
+            let key = Math.random().toString(36).substr(7);
             try {
-                log('An iframe called the contentWindow/Document getter for the first time, applying popupBlocker..', _this);
-                getContentWindow.call(_this).eval('(' + popupBlocker.toString() + ')();');
+                log.call('getContent');
+                log.print('An iframe called the contentWindow/Document getter for the first time, applying popupBlocker..', _this);
+                expose(key);
+                getContentWindow.call(_this).eval('(' + popupBlocker.toString() + ')("' + key + '");');
             } catch(e) {
-                log('Applying popupBlocker to an iframe failed, due to an error:', e);
+                log.print('Applying popupBlocker to an iframe failed, due to an error:', e);
             } finally {
+                unexpose(key);
                 processed.set(_this, true);
                 // @ifdef DEBUG
                 beingProcessed.delete(_this);
                 // @endif
+                log.callEnd();
             }
         // @ifdef DEBUG
         }

@@ -40,41 +40,6 @@ const rollup_options = {
     useStrict: false
 };
 
-const bundle = (preprocessContext) => {
-    let wrapper = fs.readFileSync('src/wrapper.js').toString().split('/*CONTENT*/');
-    return gulp.src('src/**/*.ts')
-        .pipe(preprocess({
-            context: preprocessContext
-        })).pipe(rollup(rollup_options))
-        .pipe(insert.transform((content) => {
-            content = content.replace(/^export\sdefault\s/m, 'return ');
-            content = wrapper[0] + content + wrapper[1];
-            return content;
-        }));
-};
-
-const makeTask = (preprocessContext, minify, metaConfig) => {
-    return () => {
-        let content = bundle(preprocessContext);
-        if (minify) {
-            content = content.pipe(closureCompiler(cc_options));
-        }
-        let meta = gulp.src('meta.js')
-            .pipe(insert.transform((text) => {
-                return text.replace(/^\/\/\s@name(?:\:[\w-]*)?\s.*$/gm, (match) => {
-                    return match + ' ' + metaConfig['NAME_SUFFIX'];
-                }).replace(/^(\/\/\s@.*)\[([A-Za-g_]*?)\]/gm, (_, c1, c2) => {
-                    return c1 + metaConfig[c2];
-                });
-            }))
-            .pipe(rename(options.scriptName + '.meta.js'))
-            .pipe(gulp.dest(options.outputPath));
-        return merge(meta, content)
-            .pipe(concat(options.scriptName + '.user.js'))
-            .pipe(gulp.dest(options.outputPath));
-    };
-};
-
 const makeMetaConfig = (channel) => {
     let url = options['downloadUPDATE_URL' + channel];
     return {
@@ -83,7 +48,45 @@ const makeMetaConfig = (channel) => {
         'NAME_SUFFIX': channel,
         'ADG_PERMANENT': channel !== 'Dev'
     };
-}
+};
+
+const replaceMeta = (config) => {
+    return (text) => {
+        return text.replace(/^\/\/\s@name(?:\:[\w-]*)?\s.*$/gm, (match) => (match + ' ' + config['NAME_SUFFIX']))
+            .replace(/^(\/\/\s@.*)\[([A-Za-g_]*?)\]/gm, (_, c1, c2) => (c1 + config[c2]));
+    }
+};
+
+const wrapModule = (wrap) => {
+    return (content) => {
+        content = content.replace(/^export\sdefault\s/m, 'return ');
+        content = wrap[0] + content + wrap[1];
+        return content;
+    };
+};
+
+const makeTask = (preprocessContext, minify, metaConfig) => {
+    return (done) => {
+        let content = gulp.src('src/**/*.ts')
+            .pipe(preprocess({ context: preprocessContext }))
+            .pipe(rollup(rollup_options));
+        let meta = gulp.src('meta.js')
+            .pipe(insert.transform(replaceMeta(metaConfig)))
+            .pipe(rename(options.scriptName + '.meta.js'))
+            .pipe(gulp.dest(options.outputPath));
+        let wrapper = gulp.src('src/wrapper.js')
+            .pipe(preprocess({ context: preprocessContext }))
+            .on('data', (file) => {
+                content = content.pipe(insert.transform(wrapModule(file.contents.toString().split('/*CONTENT*/'))));
+                if(minify) { content = content.pipe(closureCompiler(cc_options)); }
+                merge(meta, content)
+                    .pipe(concat(options.scriptName + '.user.js'))
+                    .pipe(gulp.dest(options.outputPath))
+                    .on('end', done);
+            });
+    };
+};
+
 
 gulp.task('dev', makeTask({ DEBUG: true }, false, makeMetaConfig('Dev')));
 
@@ -107,6 +110,12 @@ gulp.task('testsToGhPages', ['dev', 'clean'], () => {
 
 gulp.task('watch', () => {
     gulp.watch('**/*.ts', ['dev']).on('change', (event) => {
+        console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
+    });
+});
+
+gulp.task('watch-beta', () => {
+    gulp.watch('**/*.ts', ['beta']).on('change', (event) => {
         console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
     });
 });

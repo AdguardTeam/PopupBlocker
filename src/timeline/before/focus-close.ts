@@ -1,10 +1,10 @@
 import { getTime, TimelineEvent, condition } from '../index';
-import log from '../../log';
+import * as log from '../../log';
 
 const reJsFocusUri = /^javascript:window\.focus/;
 
 const focusClose:condition = (events) => {
-    log('Performing focusClose test');
+    log.call('Performing focusClose test');
     let l = events.length;
     let evt;
     let now = getTime();
@@ -18,17 +18,20 @@ const focusClose:condition = (events) => {
                 break;
             case 'get focus':
                 if (closeEvent.data === evt.data && closeEvent.timeStamp - evt.timeStamp < 100) {
-                    log('FOUND focusclose');
+                    log.print('FOUND focusclose');
+                    log.callEnd();
                     return false;
                 }
                 break;
             case 'apply open':
                 if (reJsFocusUri.test(evt.data.arguments[0])) {
-                    log('FOUND jsuri');
+                    log.print('FOUND jsuri');
+                    log.callEnd();
                     return false;
                 }
         }
     }
+    log.callEnd()
     return true;
 };
 
