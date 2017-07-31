@@ -23,15 +23,33 @@ const reIsNative = RegExp('^' + _toStringFn.call(Object.prototype.hasOwnProperty
  * which obviously does not have access to the internal slot of 'this'.
  */
 const isNativeFn = function (fn:Function):boolean {
-    return typeof fn == 'function' && reIsNative.test(_reflect(_toStringFn, fn, []));
+    if (typeof fn !== 'function') { return false; }
+    let tostr;
+    try {
+        tostr = _reflect(_toStringFn, fn, []);
+    } catch(e) {
+        // The above block throws if `fn` is a Proxy constructed over a function, from a third-party code.
+        // Such a proxy is still callable, so Function.prototype.(bind,apply,call) may be invoked on it.
+        // It is a common practice to bind the correct `this` to methods, so we try in that way.
+        try {
+            tostr = fn.toString();
+        } catch(e) {
+            // In this case, we bail out, hoping for a third-party code does not mess with internal slots.
+            return false;
+        }
+    }
+    return reIsNative.test(tostr);
 }
 
 // See HTMLIFrame.ts
-const proxyToReal = typeof KEY !== 'undefined' ? parent[KEY][0] : new WeakMap();
-const realToProxy = typeof KEY !== 'undefined' ? parent[KEY][1] : new WeakMap();
+const proxyToReal = typeof KEY !== 'undefined' ? window.parent[KEY][0] : new WeakMap();
+const realToProxy = typeof KEY !== 'undefined' ? window.parent[KEY][1] : new WeakMap();
 
 export const expose = (key:PropertyKey) => { window[key] = [proxyToReal, realToProxy]; };
 export const unexpose = (key:PropertyKey) => { delete window[key]; };
+
+export type ApplyHandler = (target:Function, _this:any, _arguments:IArguments|any[]) => any;
+export type ApplyOption = (target:Function, _this:any, _arguments:IArguments|any[]) => boolean;
 
 /**
  * An apply handler to be used to proxy Function#(bind, apply, call) methods.
@@ -45,7 +63,7 @@ export const unexpose = (key:PropertyKey) => { delete window[key]; };
  * @param _this A function which called (bind, apply, call).
  * @param _arguments
  */
-function applyWithUnproxiedThis(target:Function, _this:Function, _arguments:IArguments|any[]) {
+const applyWithUnproxiedThis:ApplyHandler = (target, _this:Function, _arguments) => {
     // Convert _arguments[0] to its unproxied version
     // When it is kind of object which may depend on its internal slot
     let _caller = proxyToReal.get(_this) || _this;
@@ -64,7 +82,7 @@ function applyWithUnproxiedThis(target:Function, _this:Function, _arguments:IArg
  * An apply handler to make Reflect.apply handler
  * Reflect.apply(EventTarget.prototype.addEventListener, proxideWindow, ['click', function(){}])
  */
-function reflectWithUnproxiedThis (target, _this:Function, _arguments:IArguments|any[]) {
+const reflectWithUnproxiedThis:ApplyHandler = (target, _this, _arguments) => {
     let appliedFn = _arguments[0];
     appliedFn = proxyToReal.get(appliedFn) || appliedFn;
     if (isNativeFn(appliedFn) && appliedFn !== _bind && appliedFn !== _apply && appliedFn !== _call) {
@@ -78,11 +96,21 @@ function reflectWithUnproxiedThis (target, _this:Function, _arguments:IArguments
 /**
  * An apply handler to make invoke handler.
  */
-function invokeWithUnproxiedThis(target, _this:Function, _arguments:IArguments|any[]) {
+const invokeWithUnproxiedThis:ApplyHandler = (target, _this:Function, _arguments) => {
     let unproxied = proxyToReal.get(_this);
     if (typeof unproxied == 'undefined') { unproxied = _this; }
     return _reflect(target, unproxied, _arguments);
 };
+
+/**
+ * An apply handler to be used for 
+ */
+const proxifyReturn:ApplyHandler = (target, _this, _arguments) => {
+    let ret = _reflect(target, _this, _arguments);
+    let proxy = realToProxy.get(ret);
+    if (proxy) { ret = proxy; }
+    return ret;
+}
 
 export function makeObjectProxy(obj) {
     if ( obj === null || typeof obj !== 'object' || !supported) { return obj; }
@@ -90,42 +118,34 @@ export function makeObjectProxy(obj) {
     if (proxy) { return proxy; }
     proxy = new Proxy(obj, {
         get: function(target, prop, receiver) {
-            console.log('get ' + prop.toString());
             let _receiver = proxyToReal.get(receiver) || receiver;
             timeline.registerEvent(new TimelineEvent('get ' + prop.toString(), _receiver));
             var value = Reflect.get(target, prop, _receiver);
             if (isNativeFn(value)) {
-                // SHOULD STORE THIS TOO!!!
                 return makeFunctionWrapper(value, invokeWithUnproxiedThis);
             } else {
                 return value;
             }
         },
         set: function(target, prop, value, receiver) {
-            console.log('set ' + prop.toString());
             let _receiver = proxyToReal.get(receiver) || receiver;
             timeline.registerEvent(new TimelineEvent('set ' + prop.toString(), _receiver));
             return Reflect.set(target, prop, value, _receiver);
         },
         getOwnPropertyDescriptor: function(target, prop) {
-            console.log('getOwnPropertyDescriptor ' + prop.toString());
-            return Object.getOwnPropertyDescriptor(target, prop);
+            return Reflect.getOwnPropertyDescriptor(target, prop);
         },
         has: function(target, prop) {
-            console.log('has ' + prop.toString());
-            return true;
+            return Reflect.has(target, prop);
         }
-
     });
     realToProxy.set(obj, proxy);
     proxyToReal.set(proxy, obj);
     return proxy;
 }
 
-export type ApplyHandler = (target:Function, _this:any, _arguments:IArguments|any[]) => any;
-export type ApplyOption = (target:Function, _this:any, _arguments:IArguments|any[]) => boolean;
-
 const defaultApplyHandler = supported ? _reflect : (_target, _this, _arguments) => (_target.apply(_this, _arguments));
+const defaultOption = () => (true);
 
 function makeFunctionWrapper(orig:Function, applyHandler:ApplyHandler) {
     let wrapped;
@@ -140,12 +160,17 @@ function makeFunctionWrapper(orig:Function, applyHandler:ApplyHandler) {
 
 /**
  * @param {Function=} applyHandler 
- * @param {Function=} option 
+ * @param {Function|boolean=} option Can be a boolean 'false' to disable logging, or can be a function which accepts the same type 
+ * of params as ApplyHandler and returns booleans which indicates whether to log it or not.
  */
-function makeLoggedFunctionWrapper(orig:Function, applyHandler?:ApplyHandler, option?:ApplyOption) {
+function makeLoggedFunctionWrapper(orig:Function, applyHandler?:ApplyHandler, option?:boolean|ApplyOption) {
     applyHandler = applyHandler || defaultApplyHandler;
+    if (typeof option === 'boolean' ) {
+        if (option === false) { return makeFunctionWrapper(orig, applyHandler); }
+        else { option = undefined; }
+    }
     return makeFunctionWrapper(orig, function(target, _this, _arguments) {
-        if (!option || option(target, _this, _arguments)) {
+        if (!option || (<ApplyHandler>option)(target, _this, _arguments)) {
             timeline.registerEvent(new TimelineEvent('apply ' + orig.name, {
                 this: _this,
                 arguments: _arguments
@@ -157,9 +182,9 @@ function makeLoggedFunctionWrapper(orig:Function, applyHandler?:ApplyHandler, op
 
 /** 
  * @param {Function=} applyHandler
- * @param {Function=} option
+ * @param {Function|boolean=} option
  */
-export function wrapMethod(obj, prop:string, applyHandler?:ApplyHandler, option?:ApplyOption) {
+export function wrapMethod(obj, prop:string, applyHandler?:ApplyHandler, option?:boolean|ApplyOption) {
     if (obj.hasOwnProperty(prop)) {
         obj[prop] = makeLoggedFunctionWrapper(obj[prop], applyHandler, option);
     }
@@ -167,14 +192,15 @@ export function wrapMethod(obj, prop:string, applyHandler?:ApplyHandler, option?
 
 /**
  * @param {Function=} getterApplyHandler 
- * @param {Function=} setterApplyHandler 
+ * @param {Function=} setterApplyHandler
+ * @param {Function|boolean=} option
  */
-export function wrapAccessor(obj, prop:string, getterApplyHandler?:ApplyHandler, setterApplyHandler?:ApplyHandler) {
+export function wrapAccessor(obj, prop:string, getterApplyHandler?:ApplyHandler, setterApplyHandler?:ApplyHandler, option?:boolean|ApplyOption) {
     var desc = Object.getOwnPropertyDescriptor(obj, prop);
     if (desc && desc.get && desc.configurable) {
-        var getter = makeFunctionWrapper(desc.get, getterApplyHandler);
+        var getter = makeLoggedFunctionWrapper(desc.get, getterApplyHandler, option);
         var setter;
-        if (desc.set) { setter = makeFunctionWrapper(desc.set, setterApplyHandler); }
+        if (desc.set) { setter = makeLoggedFunctionWrapper(desc.set, setterApplyHandler, option); }
         Object.defineProperty(obj, prop, {
             get: getter,
             set: setter,
@@ -184,22 +210,15 @@ export function wrapAccessor(obj, prop:string, getterApplyHandler?:ApplyHandler,
     }
 }
 
-/**
- * Wrap method without logging
- */
-function _wrap(obj, prop:string, applyHandler:ApplyHandler) {
-    if (obj.hasOwnProperty(prop)) {
-        obj[prop] = makeFunctionWrapper(obj[prop], applyHandler);
-    }
-}
-
 if (supported) {
-    _wrap(Function.prototype, 'bind', applyWithUnproxiedThis);
-    _wrap(Function.prototype, 'apply', applyWithUnproxiedThis);
-    _wrap(Function.prototype, 'call', applyWithUnproxiedThis);
+    wrapMethod(Function.prototype, 'bind', applyWithUnproxiedThis, false);
+    wrapMethod(Function.prototype, 'apply', applyWithUnproxiedThis, false);
+    wrapMethod(Function.prototype, 'call', applyWithUnproxiedThis, false);
 
-    _wrap(Function.prototype, 'toString', invokeWithUnproxiedThis);
-    _wrap(Function.prototype, 'toSource', invokeWithUnproxiedThis);
+    wrapMethod(Function.prototype, 'toString', invokeWithUnproxiedThis, false);
+    wrapMethod(Function.prototype, 'toSource', invokeWithUnproxiedThis, false);
 
-    _wrap(Reflect, 'apply', reflectWithUnproxiedThis);
+    wrapMethod(Reflect, 'apply', reflectWithUnproxiedThis, false);
+
+    wrapAccessor(MessageEvent.prototype, 'source', proxifyReturn, undefined, false);
 }

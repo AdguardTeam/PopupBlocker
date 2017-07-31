@@ -1,3 +1,4 @@
+/** @param {string=} KEY */
 function popupBlocker(KEY) {
     /*CONTENT*/
 }
