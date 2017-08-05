@@ -1,7 +1,7 @@
-window.addEventListener('beforeunload', function() {
-    confirm('unload page?');
-});
+window.onbeforeunload = function(e) {
+    return undefined;
+};
 
 window.addEventListener('unload', function() {
     
-})
+});

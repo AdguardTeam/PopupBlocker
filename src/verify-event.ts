@@ -1,8 +1,6 @@
 import * as log from './log';
 import WeakMap from './weakmap';
 
-export const clonedEvents = new WeakMap();
-
 /**
  * Gets the event that is being currently handled.
  * @suppress {es5Strict}
@@ -50,10 +48,6 @@ export function retrieveEvent():Event {
 export function verifyEvent(event?):boolean {
     if (event) {
         log.call('Verifying event');
-        if (clonedEvents.has(event)) {
-            log.print('It is a cloned event');
-            return true;
-        }
         let currentTarget = event.currentTarget;
         if (currentTarget) {
             let tagName = currentTarget.nodeName.toLowerCase();
@@ -81,7 +75,7 @@ export function verifyCurrentEvent():boolean {
  * @param el an element to check whether it is an overlay.
  * @return true if el is an overlay.
  */
-function maybeOverlay(el:HTMLElement):boolean {
+export function maybeOverlay(el:HTMLElement):boolean {
     log.call('maybeOverlay test');
     let w = window.innerWidth, h = window.innerHeight;
     if (el.offsetLeft << 4 < w && (w - el.offsetWidth) << 3 < w

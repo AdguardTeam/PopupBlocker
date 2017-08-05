@@ -1,5 +1,5 @@
 /** @param {string=} KEY */
-function popupBlocker(KEY) {
+function popupBlocker(window, KEY) {
     /*CONTENT*/
 }
 
@@ -14,14 +14,15 @@ if (typeof InstallTrigger !== 'undefined' && document.currentScript === null) {
         // @ifdef DEBUG
         'window.__t = ' +
         // @endif
-        '(' + popupBlocker.toString() + ')();';
+        '(' + popupBlocker.toString() + ')(window);';
     script.textContent = text;
     var el = document.body || document.head || document.documentElement;
     el.appendChild(script);
     el.removeChild(script);
 } else {
+    var win = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
     // @ifdef DEBUG
-    window['__t'] = 
+    win['__t'] =
     // @endif
-    popupBlocker();
+    popupBlocker(win);
 }

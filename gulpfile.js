@@ -6,10 +6,11 @@ const concat = require('gulp-concat');
 const rename = require('gulp-rename');
 const merge = require('merge-stream');
 const clean = require('gulp-clean');
-const inject = require('gulp-inject');
 const rollup = require('gulp-rollup');
-const typescript = require('rollup-plugin-typescript2');
+const typescript2 = require('rollup-plugin-typescript2');
+const typescript = require('@alexlur/rollup-plugin-typescript');
 const closureCompiler = require('google-closure-compiler').gulp();
+const runSequence = require('run-sequence');
 
 
 const options = global.options = {
@@ -35,6 +36,13 @@ const cc_options = {
 
 const rollup_options = {
     entry: 'src/index.ts',
+    plugins: [typescript2()],
+    format: 'es',
+    useStrict: false
+};
+
+const rollup_options_test = {
+    entry: 'test/index.ts',
     plugins: [typescript()],
     format: 'es',
     useStrict: false
@@ -89,9 +97,7 @@ const makeTask = (preprocessContext, minify, metaConfig) => {
 
 
 gulp.task('dev', makeTask({ DEBUG: true }, false, makeMetaConfig('Dev')));
-
 gulp.task('beta', makeTask({}, true, makeMetaConfig('Beta')));
-
 gulp.task('release', makeTask({}, true, makeMetaConfig('Release')));
 
 gulp.task('clean', () => {
@@ -99,14 +105,27 @@ gulp.task('clean', () => {
         .pipe(clean());
 });
 
-gulp.task('testsToGhPages', ['dev', 'clean'], () => {
+gulp.task('build-ghpage', (done) => {
+    runSequence('clean', ['dev', 'build-test'], done);
+});
+
+gulp.task('testsToGhPages', ['build-ghpage'], (done) => {
     return [
         require('fs').writeFile('build/.nojekyll', ''),
-        gulp.src('test/**').pipe(gulp.dest(options.outputPath + '/test/')),
+        gulp.src(['test/index.html', 'test/**/*.js']).pipe(gulp.dest(options.outputPath + '/test/')),
         gulp.src('node_modules/mocha/mocha.*').pipe(gulp.dest(options.outputPath + '/node_modules/mocha/')),
         gulp.src('node_modules/chai/chai.js').pipe(gulp.dest(options.outputPath + '/node_modules/chai/'))
     ];
 });
+
+gulp.task('build-test', function() {
+    return gulp.src(['./test/**/*.ts', './src/**/*.ts'])
+    .pipe(preprocess({ context: {} }))
+    .pipe(rollup(rollup_options_test))
+    .pipe(rename('index.js'))
+    .pipe(gulp.dest('./test/build'))
+});
+
 
 gulp.task('watch', () => {
     gulp.watch('**/*.ts', ['dev']).on('change', (event) => {

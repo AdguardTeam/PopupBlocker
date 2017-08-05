@@ -25,6 +25,7 @@ class Timeline {
         // @ifdef DEBUG
         try {
             if (window !== window.top && top['__t'].isRecording) {
+                log.print('top is recording');
                 this.isRecording = true;
             }
         } catch(e) { }
@@ -60,6 +61,7 @@ class Timeline {
     // @ifdef DEBUG
     startRecording():void {
         this.isRecording = true;
+        log.print('frames length: ' + frames.length)
         for (let i = 0, l = frames.length; i < l; i++) {
             let frame = frames[i];
             try {
@@ -79,6 +81,7 @@ class Timeline {
             else { break; }
         }
         if (window === window.top) {
+            log.print('frames length: ' + frames.length)
             for (let i = 0, l = frames.length; i < l; i++) {
                 let frame = frames[i];
                 try {

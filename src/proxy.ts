@@ -1,12 +1,24 @@
 import { timeline, TimelineEvent } from './timeline/index';
 import WeakMap from './weakmap';
 
-const supported = typeof Proxy !== 'undefined';
+let supported = false;
+/**
+ * Why not use Proxy on production version?
+ * Using proxy instead of an original object in some places require overriding Function#bind,apply,call,
+ * and replacing such native codes into js implies serious performance effects on codes completely unrelated to popups.
+ */
+// @ifdef DEBUG
+supported = typeof Proxy !== 'undefined';
+// @endif
+
 const _bind = Function.prototype.bind;
 const _apply = Function.prototype.apply;
 const _call = Function.prototype.call;
-const _reflect = Reflect.apply;
+
 const _toStringFn = Function.prototype.toString;
+
+let _reflect;
+if (supported) { _reflect = Reflect.apply; }
 
 // Lodash isNative
 const reRegExpChar = /[\\^$.*+?()[\]{}|]/g
@@ -39,6 +51,11 @@ const isNativeFn = function (fn:Function):boolean {
         }
     }
     return reIsNative.test(tostr);
+}
+
+function getName(fn:Function):string {
+    if (fn.hasOwnProperty('name')) { return fn.name; }
+    else { return _toStringFn.call(fn).match(/^\s*function\s*([^\s(]*)\(/)[1]; }
 }
 
 // See HTMLIFrame.ts
@@ -91,7 +108,7 @@ const reflectWithUnproxiedThis:ApplyHandler = (target, _this, _arguments) => {
         if (unproxied) { _arguments[1] = unproxied; }
     }
     return _reflect(target, _this, _arguments);
-}
+};
 
 /**
  * An apply handler to make invoke handler.
@@ -99,18 +116,20 @@ const reflectWithUnproxiedThis:ApplyHandler = (target, _this, _arguments) => {
 const invokeWithUnproxiedThis:ApplyHandler = (target, _this:Function, _arguments) => {
     let unproxied = proxyToReal.get(_this);
     if (typeof unproxied == 'undefined') { unproxied = _this; }
-    return _reflect(target, unproxied, _arguments);
+    return supported ? _reflect(target, unproxied, _arguments) : target.apply(unproxied, _arguments);
 };
 
 /**
- * An apply handler to be used for 
+ * An apply handler to be used for MessageEvent.prototype.source.
  */
 const proxifyReturn:ApplyHandler = (target, _this, _arguments) => {
     let ret = _reflect(target, _this, _arguments);
     let proxy = realToProxy.get(ret);
     if (proxy) { ret = proxy; }
     return ret;
-}
+};
+
+const overrideMethodsList = 'open,focus,close'.split(',');
 
 export function makeObjectProxy(obj) {
     if ( obj === null || typeof obj !== 'object' || !supported) { return obj; }
@@ -131,12 +150,6 @@ export function makeObjectProxy(obj) {
             let _receiver = proxyToReal.get(receiver) || receiver;
             timeline.registerEvent(new TimelineEvent('set ' + prop.toString(), _receiver));
             return Reflect.set(target, prop, value, _receiver);
-        },
-        getOwnPropertyDescriptor: function(target, prop) {
-            return Reflect.getOwnPropertyDescriptor(target, prop);
-        },
-        has: function(target, prop) {
-            return Reflect.has(target, prop);
         }
     });
     realToProxy.set(obj, proxy);
@@ -144,17 +157,20 @@ export function makeObjectProxy(obj) {
     return proxy;
 }
 
-const defaultApplyHandler = supported ? _reflect : (_target, _this, _arguments) => (_target.apply(_this, _arguments));
+const defaultApplyHandler:ApplyHandler = supported ? _reflect : (_target, _this, _arguments) => (_target.apply(_this, _arguments));
 const defaultOption = () => (true);
 
 function makeFunctionWrapper(orig:Function, applyHandler:ApplyHandler) {
     let wrapped;
+    let proxy = realToProxy.get(orig);
+    if (proxy) { return proxy; }
     if (supported) {
         wrapped = new Proxy(orig, { apply: applyHandler });
     } else {
         wrapped = function() { return applyHandler(orig, this, arguments); };
     }
     proxyToReal.set(wrapped, orig);
+    realToProxy.set(orig, wrapped);
     return wrapped;
 }
 
@@ -171,7 +187,7 @@ function makeLoggedFunctionWrapper(orig:Function, applyHandler?:ApplyHandler, op
     }
     return makeFunctionWrapper(orig, function(target, _this, _arguments) {
         if (!option || (<ApplyHandler>option)(target, _this, _arguments)) {
-            timeline.registerEvent(new TimelineEvent('apply ' + orig.name, {
+            timeline.registerEvent(new TimelineEvent('apply ' + getName(orig), {
                 this: _this,
                 arguments: _arguments
             }));
@@ -214,11 +230,9 @@ if (supported) {
     wrapMethod(Function.prototype, 'bind', applyWithUnproxiedThis, false);
     wrapMethod(Function.prototype, 'apply', applyWithUnproxiedThis, false);
     wrapMethod(Function.prototype, 'call', applyWithUnproxiedThis, false);
-
-    wrapMethod(Function.prototype, 'toString', invokeWithUnproxiedThis, false);
-    wrapMethod(Function.prototype, 'toSource', invokeWithUnproxiedThis, false);
-
     wrapMethod(Reflect, 'apply', reflectWithUnproxiedThis, false);
-
     wrapAccessor(MessageEvent.prototype, 'source', proxifyReturn, undefined, false);
 }
+
+wrapMethod(Function.prototype, 'toString', invokeWithUnproxiedThis, false);
+wrapMethod(Function.prototype, 'toSource', invokeWithUnproxiedThis, false);

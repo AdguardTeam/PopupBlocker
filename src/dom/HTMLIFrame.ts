@@ -13,12 +13,23 @@ const applyPopupBlockerOnGet:ApplyHandler = function(_get, _this) {
         // @ifdef DEBUG
         if (!beingProcessed.has(_this)) {
         // @endif
+            log.call('getContent');
+            // @ifdef DEBUG
+            beingProcessed.set(_this, true);
+            // @endif
             let key = Math.random().toString(36).substr(7);
+            let contentWindow = getContentWindow.call(_this);
             try {
-                log.call('getContent');
-                log.print('An iframe called the contentWindow/Document getter for the first time, applying popupBlocker..', _this);
-                expose(key);
-                getContentWindow.call(_this).eval('(' + popupBlocker.toString() + ')("' + key + '");');
+                if (contentWindow.location.href === 'about:blank') {
+                    log.print('An empty iframe called the contentWindow/Document getter for the first time, applying popupBlocker..', _this);
+                    expose(key);
+                    let code =
+                    // @ifdef DEBUG
+                    'window.__t = ' +
+                    // @endif
+                    '(' + popupBlocker.toString() + ')(window,"' + key + '");';
+                    contentWindow.eval(code);
+                }
             } catch(e) {
                 log.print('Applying popupBlocker to an iframe failed, due to an error:', e);
             } finally {
