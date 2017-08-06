@@ -7,7 +7,7 @@ import WeakMap from './weakmap';
  */
 export function retrieveEvent():Event {
     log.call('Retrieving event');
-    let currentEvent = top.event;
+    let currentEvent = window.top.event; // Attaching `window` to get around a bug of AG wrapper
     if (!currentEvent) {
         log.print('window.event does not exist, trying to get event from Function.caller');
         try {
@@ -16,12 +16,7 @@ export function retrieveEvent():Event {
             while (caller.caller) {
                 caller = caller.caller;
                 if (touched.has(caller)) {
-                    // @ifdef DEBUG
-                    throw "Recursion in the call stack";
-                    // @endif
-                    // @ifndef DEBUG
-                    throw null;
-                    // @endif
+                    throw /* @ifdef DEBUG */ "Recursion in the call stack"; /* @endif */ /* @ifndef DEBUG */ null; /* @endif */
                 }
                 touched.set(caller, true);
             }
@@ -29,6 +24,8 @@ export function retrieveEvent():Event {
             if (caller.arguments && caller.arguments[0] && 'target' in caller.arguments[0]) {
                 currentEvent = caller.arguments[0];
                 log.print('The function at the bottom of the stack has an expected type. The current event is:', currentEvent);
+            } else {
+                log.print('The function at the bottom of the call stack does not have an expected type.', caller.arguments[0]);
             }
         } catch (e) {
             log.print('Getting event from Function.caller failed, due to an error:', e);
@@ -50,6 +47,7 @@ export function verifyEvent(event?):boolean {
         log.call('Verifying event');
         let currentTarget = event.currentTarget;
         if (currentTarget) {
+            log.print('Event is:', event);
             let tagName = currentTarget.nodeName.toLowerCase();
             if (tagName == '#document' || tagName == 'html' || tagName == 'body') {
                 log.print('VerifyEvent - the current event handler is suspicious, for the current target is either document, html, or body.');

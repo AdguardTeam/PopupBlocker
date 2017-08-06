@@ -30,9 +30,18 @@ const cc_options = {
     warning_level: 'VERBOSE',
     strict_mode_input: false,
     externs: ['externs.js'],
-    use_types_for_optimization: true,
     rewrite_polyfills: false
 };
+
+const cc_options_dev = Object.assign({}, cc_options, {
+    compilation_level: 'WHITESPACE_ONLY',
+    assume_function_wrapper: false,
+    warning_level: 'QUIET'
+});
+
+const cc_options_test = Object.assign({}, cc_options_dev, {
+    compilation_level: 'SIMPLE'
+});
 
 const rollup_options = {
     entry: 'src/index.ts',
@@ -44,7 +53,7 @@ const rollup_options = {
 const rollup_options_test = {
     entry: 'test/index.ts',
     plugins: [typescript()],
-    format: 'es',
+    format: 'iife',
     useStrict: false
 };
 
@@ -73,7 +82,7 @@ const wrapModule = (wrap) => {
     };
 };
 
-const makeTask = (preprocessContext, minify, metaConfig) => {
+const makeTask = (preprocessContext, minify_option, metaConfig) => {
     return (done) => {
         let content = gulp.src('src/**/*.ts')
             .pipe(preprocess({ context: preprocessContext }))
@@ -86,7 +95,7 @@ const makeTask = (preprocessContext, minify, metaConfig) => {
             .pipe(preprocess({ context: preprocessContext }))
             .on('data', (file) => {
                 content = content.pipe(insert.transform(wrapModule(file.contents.toString().split('/*CONTENT*/'))));
-                if(minify) { content = content.pipe(closureCompiler(cc_options)); }
+                if(minify_option) { content = content.pipe(closureCompiler(minify_option)); }
                 merge(meta, content)
                     .pipe(concat(options.scriptName + '.user.js'))
                     .pipe(gulp.dest(options.outputPath))
@@ -95,10 +104,10 @@ const makeTask = (preprocessContext, minify, metaConfig) => {
     };
 };
 
-
-gulp.task('dev', makeTask({ DEBUG: true }, false, makeMetaConfig('Dev')));
-gulp.task('beta', makeTask({}, true, makeMetaConfig('Beta')));
-gulp.task('release', makeTask({}, true, makeMetaConfig('Release')));
+gulp.task('dev', makeTask({ DEBUG: true, RECORD: true }, false, makeMetaConfig('Dev')));
+gulp.task('beta', makeTask({}, cc_options, makeMetaConfig('Beta')));
+gulp.task('release', makeTask({}, cc_options, makeMetaConfig('Release')));
+gulp.task('dev-ghpages', makeTask({ DEBUG: true, RECORD: true }, cc_options_dev, makeMetaConfig('Dev')));
 
 gulp.task('clean', () => {
     return gulp.src([options.outputPath], {read: false})
@@ -106,7 +115,7 @@ gulp.task('clean', () => {
 });
 
 gulp.task('build-ghpage', (done) => {
-    runSequence('clean', ['dev', 'build-test'], done);
+    runSequence('clean', ['dev-ghpages', 'build-test'], done);
 });
 
 gulp.task('testsToGhPages', ['build-ghpage'], (done) => {
@@ -120,21 +129,20 @@ gulp.task('testsToGhPages', ['build-ghpage'], (done) => {
 
 gulp.task('build-test', function() {
     return gulp.src(['./test/**/*.ts', './src/**/*.ts'])
-    .pipe(preprocess({ context: {} }))
+    .pipe(preprocess({ context: { RECORD: true } }))
     .pipe(rollup(rollup_options_test))
+    .pipe(closureCompiler(cc_options_test))
     .pipe(rename('index.js'))
-    .pipe(gulp.dest('./test/build'))
+    .pipe(gulp.dest('./test/build'));
 });
-
 
 gulp.task('watch', () => {
-    gulp.watch('**/*.ts', ['dev']).on('change', (event) => {
-        console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
-    });
-});
-
-gulp.task('watch-beta', () => {
-    gulp.watch('**/*.ts', ['beta']).on('change', (event) => {
-        console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
-    });
+    const onerror = (error) => { console.log(error.toString()); };
+    const onchange = (event) => { console.log('File ' + event.path + ' was ' + event.type + ', building...'); };
+    gulp.watch('src/**/*.ts', ['dev'])
+        .on('change', onchange)
+        .on('error', onerror);
+    gulp.watch('test/**/*.ts', ['build-test'])
+        .on('change', onchange)
+        .on('error', onerror);
 });

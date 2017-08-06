@@ -1,15 +1,12 @@
-import { getTime, TimelineEvent, condition } from '../index';
+import { getTime, TimelineEvent, TLEventType, condition } from '../index';
 import * as log from '../../log';
 
-const createOpen:condition = (events) => {
-    log.call('Performing create test');
+const createOpen:condition = log.connect((events) => {
     let evt = events[0];
-    if (evt.type == 'create' && getTime() - evt.timeStamp < 200) {
-        log.callEnd();
+    if (evt.type == TLEventType.CREATE && getTime() - evt.timeStamp < 200) {
         return false;
     }
-    log.callEnd();
     return true;
-};
+}, 'Performing create test');
 
 export default createOpen;

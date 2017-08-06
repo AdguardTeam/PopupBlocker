@@ -6,13 +6,13 @@ if (typeof WeakMap == 'function') {
 } else {
     let counter = Date.now() % 1e9;
     let defineProperty = Object.defineProperty;
-    /** @constructor */
     wm = class <T> {
         private name;
+        /** @constructor */
         constructor() {
             this.name = '__st' + (Math.random() * 1e9 >>> 0) + (counter++ + '__');
         }
-        set(key, value) {
+        set(key, value:T) {
             let entry = key[this.name];
             if (entry && entry[0] === key)
                 entry[1] = value;

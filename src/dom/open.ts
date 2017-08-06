@@ -111,7 +111,7 @@ const mockWindow = (href, name) => {
     let doc = Object.create(HTMLDocument.prototype);
     let win = <any>{};
     Object.getOwnPropertyNames(window).forEach(function(prop) {
-        switch(typeof prop) {
+        switch(typeof window[prop]) {
             case 'object': win[prop] = {}; break;
             case 'function': win[prop] = function() {return true;}; break;
             case 'string':  win[prop] = ''; break;
@@ -121,6 +121,10 @@ const mockWindow = (href, name) => {
         }
     });
     doc.location = loc;
+    doc.open = function(){return this;}
+    doc.write = function(){};
+    doc.writeIn = function(){};
+    doc.close = function(){};
     win.opener = window;
     win.closed = false;
     win.name = name;

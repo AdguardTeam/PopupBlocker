@@ -1,5 +1,3 @@
-import blurOnPopup from './after/blur-on-popup';
-import focusClose from './before/focus-close';
 import createOpen from './before/create';
 import * as log from '../log';
 
@@ -12,25 +10,25 @@ export const getTime = 'now' in performance ? () => {
     return (new Date()).getTime()
 };
 
-const beforeTest:condition[] = [focusClose, createOpen];
-const afterTest = [blurOnPopup];
+const beforeTest:condition[] = [createOpen];
+const afterTest = [];
 
-/** @constructor */
 class Timeline {
     private events:TimelineEvent[];
     private isRecording:boolean;
+    /** @constructor */
     constructor() {
         this.events = [];
         this.isRecording = false;
         // @ifdef DEBUG
         try {
-            if (window !== window.top && top['__t'].isRecording) {
-                log.print('top is recording');
+            if (window !== window.parent && parent['__t'].isRecording) {
+                log.print('parent is recording');
                 this.isRecording = true;
             }
         } catch(e) { }
         // @endif
-        this.registerEvent(new TimelineEvent('create', null));
+        this.registerEvent(new TimelineEvent(TLEventType.CREATE, undefined, undefined));
     }
     registerEvent(event:TimelineEvent):void {
         let i = afterTest.length;
@@ -41,7 +39,7 @@ class Timeline {
                 this.events.splice(this.events.indexOf(event), 1);
             }.bind(this), 5000);
         } else {
-            log.print("Timeline.registerEvent: " + event.type, event.data);
+            log.print("Timeline.registerEvent: " + event.type + ' ' + event.name.toString(), event.data);
         }
     }
     canOpenPopup():boolean {
@@ -61,9 +59,9 @@ class Timeline {
     // @ifdef DEBUG
     startRecording():void {
         this.isRecording = true;
-        log.print('frames length: ' + frames.length)
-        for (let i = 0, l = frames.length; i < l; i++) {
-            let frame = frames[i];
+        for(let i = 0; ; i++) {
+            let frame = window[i];
+            if (typeof frame === 'undefined') { break; }
             try {
                 if (frame.hasOwnProperty('__t')) {
                     frame['__t'].startRecording();
@@ -71,41 +69,45 @@ class Timeline {
             } catch(e) { }
         }
     }
-    takeRecords():TimelineEvent[] {
-        if (!this.isRecording) { return; }
+    // @endif
+    // @ifdef RECORD
+    takeRecords():TimelineEvent[][] {
         this.isRecording = false;
-        let res = Array.prototype.slice.call(this.events);
+        let res = [Array.prototype.slice.call(this.events)];
         let current = getTime();
         while (this.events[0]) {
             if (current - this.events[0].timeStamp > 1000) { this.events.shift(); }
             else { break; }
         }
-        if (window === window.top) {
-            log.print('frames length: ' + frames.length)
-            for (let i = 0, l = frames.length; i < l; i++) {
-                let frame = frames[i];
-                try {
-                    if (frame.hasOwnProperty('__t')) {
-                        let records = frame['__t'].takeRecords();
-                        if (records) { top['__t' + i] = records; }
-                    }
-                } catch(e) { }
-            }
+        let fromFrames = [];
+        for(let i = 0; ; i++) {
+            let frame = window[i];
+            if (typeof frame === 'undefined') { break; }
+            try {
+                if (frame.hasOwnProperty('__t')) {
+                    Array.prototype.push.apply(res, frame['__t'].takeRecords());
+                }
+            } catch(e) { }
         }
         return res;
     }
     // @endif
+    
 }
 
-/**
- * @constructor
- * @final
- */
 export class TimelineEvent {
     public timeStamp:number
-    constructor(public type:string, public data) {
+    /** @constructor */
+    constructor(public type:TLEventType, public name:PropertyKey, public data) {
         this.timeStamp = getTime();
     }
-}
+};
+
+export const enum TLEventType {
+    CREATE,
+    APPLY,
+    GET,
+    SET
+};
 
 export const timeline = new Timeline();

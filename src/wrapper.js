@@ -1,7 +1,13 @@
-/** @param {string=} KEY */
-function popupBlocker(window, KEY) {
+/**
+ * @param {string=} KEY 
+ * @param {*=} option
+ */
+function popupBlocker(window, KEY, option) {
     /*CONTENT*/
 }
+
+// ToDo: do something with GM_getValue here to create option object
+// ToDo: register shortcuts ane notification here
 
 /**
  * In Firefox, userscripts can't write properties of unsafeWindow, so we create a <script> tag

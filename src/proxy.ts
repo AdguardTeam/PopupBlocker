@@ -1,4 +1,4 @@
-import { timeline, TimelineEvent } from './timeline/index';
+import { timeline, TimelineEvent, TLEventType } from './timeline/index';
 import WeakMap from './weakmap';
 
 let supported = false;
@@ -51,11 +51,6 @@ const isNativeFn = function (fn:Function):boolean {
         }
     }
     return reIsNative.test(tostr);
-}
-
-function getName(fn:Function):string {
-    if (fn.hasOwnProperty('name')) { return fn.name; }
-    else { return _toStringFn.call(fn).match(/^\s*function\s*([^\s(]*)\(/)[1]; }
 }
 
 // See HTMLIFrame.ts
@@ -138,7 +133,7 @@ export function makeObjectProxy(obj) {
     proxy = new Proxy(obj, {
         get: function(target, prop, receiver) {
             let _receiver = proxyToReal.get(receiver) || receiver;
-            timeline.registerEvent(new TimelineEvent('get ' + prop.toString(), _receiver));
+            timeline.registerEvent(new TimelineEvent(TLEventType.GET, prop, _receiver));
             var value = Reflect.get(target, prop, _receiver);
             if (isNativeFn(value)) {
                 return makeFunctionWrapper(value, invokeWithUnproxiedThis);
@@ -148,7 +143,7 @@ export function makeObjectProxy(obj) {
         },
         set: function(target, prop, value, receiver) {
             let _receiver = proxyToReal.get(receiver) || receiver;
-            timeline.registerEvent(new TimelineEvent('set ' + prop.toString(), _receiver));
+            timeline.registerEvent(new TimelineEvent(TLEventType.SET, prop, _receiver));
             return Reflect.set(target, prop, value, _receiver);
         }
     });
@@ -179,7 +174,7 @@ function makeFunctionWrapper(orig:Function, applyHandler:ApplyHandler) {
  * @param {Function|boolean=} option Can be a boolean 'false' to disable logging, or can be a function which accepts the same type 
  * of params as ApplyHandler and returns booleans which indicates whether to log it or not.
  */
-function makeLoggedFunctionWrapper(orig:Function, applyHandler?:ApplyHandler, option?:boolean|ApplyOption) {
+function makeLoggedFunctionWrapper(orig:Function, type:TLEventType, name:PropertyKey, applyHandler?:ApplyHandler, option?:boolean|ApplyOption) {
     applyHandler = applyHandler || defaultApplyHandler;
     if (typeof option === 'boolean' ) {
         if (option === false) { return makeFunctionWrapper(orig, applyHandler); }
@@ -187,7 +182,7 @@ function makeLoggedFunctionWrapper(orig:Function, applyHandler?:ApplyHandler, op
     }
     return makeFunctionWrapper(orig, function(target, _this, _arguments) {
         if (!option || (<ApplyHandler>option)(target, _this, _arguments)) {
-            timeline.registerEvent(new TimelineEvent('apply ' + getName(orig), {
+            timeline.registerEvent(new TimelineEvent(type, name, {
                 this: _this,
                 arguments: _arguments
             }));
@@ -202,7 +197,7 @@ function makeLoggedFunctionWrapper(orig:Function, applyHandler?:ApplyHandler, op
  */
 export function wrapMethod(obj, prop:string, applyHandler?:ApplyHandler, option?:boolean|ApplyOption) {
     if (obj.hasOwnProperty(prop)) {
-        obj[prop] = makeLoggedFunctionWrapper(obj[prop], applyHandler, option);
+        obj[prop] = makeLoggedFunctionWrapper(obj[prop], TLEventType.APPLY, prop, applyHandler, option);
     }
 }
 
@@ -214,9 +209,9 @@ export function wrapMethod(obj, prop:string, applyHandler?:ApplyHandler, option?
 export function wrapAccessor(obj, prop:string, getterApplyHandler?:ApplyHandler, setterApplyHandler?:ApplyHandler, option?:boolean|ApplyOption) {
     var desc = Object.getOwnPropertyDescriptor(obj, prop);
     if (desc && desc.get && desc.configurable) {
-        var getter = makeLoggedFunctionWrapper(desc.get, getterApplyHandler, option);
+        var getter = makeLoggedFunctionWrapper(desc.get, TLEventType.GET, prop, getterApplyHandler, option);
         var setter;
-        if (desc.set) { setter = makeLoggedFunctionWrapper(desc.set, setterApplyHandler, option); }
+        if (desc.set) { setter = makeLoggedFunctionWrapper(desc.set, TLEventType.SET, prop, setterApplyHandler, option); }
         Object.defineProperty(obj, prop, {
             get: getter,
             set: setter,

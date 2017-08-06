@@ -1,8 +1,8 @@
-import { TimelineEvent, condition } from '../index';
+import { TimelineEvent, TLEventType, condition } from '../index';
 import * as log from '../../log';
 
 const blurOnPopup = (events, incoming) => {
-    if (incoming.type == 'get blur') {
+    if (incoming.type == TLEventType.GET && incoming.name === 'blur') {
         log.call('blurOnPopup - window.blur found');
         let l = events.length;
         let evt;
@@ -10,8 +10,8 @@ const blurOnPopup = (events, incoming) => {
             evt = events[l];
             if (evt.data === incoming.data && incoming.timeStamp - evt.timeStamp < 10) {
                 log.print('blur called quickly');
-                log.callEnd();
                 evt.data.close();
+                log.callEnd();
                 break;
             }
         }

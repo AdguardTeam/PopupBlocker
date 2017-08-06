@@ -1,3 +1,4 @@
+// @ifdef DEBUG
 window.onbeforeunload = function(e) {
     return undefined;
 };
@@ -5,3 +6,4 @@ window.onbeforeunload = function(e) {
 window.addEventListener('unload', function() {
     
 });
+// @endif

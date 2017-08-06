@@ -1,7 +1,10 @@
 {
     "compilerOptions": {
         "target": "es5",
-        "lib": ["DOM", "ES6"]
+        "lib": ["DOM", "ES6"],
+//        "outFile": "build/tsc/index.js",
+        "outDir": "build/tsc",
+        "module": "commonjs"
     },
     "include": [
         "src/**/*.ts"
