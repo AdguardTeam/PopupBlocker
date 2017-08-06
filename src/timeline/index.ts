@@ -39,7 +39,8 @@ class Timeline {
                 this.events.splice(this.events.indexOf(event), 1);
             }.bind(this), 5000);
         } else {
-            log.print("Timeline.registerEvent: " + event.type + ' ' + event.name.toString(), event.data);
+            let name:string = event.name ? event.name.toString() : '';
+            log.print(`Timeline.registerEvent: ${event.type} ${name}`, event.data);
         }
     }
     canOpenPopup():boolean {
