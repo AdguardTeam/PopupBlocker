@@ -1,12 +1,12 @@
 {
   "name": "PopupBlocker",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Block popups preemptively by wrapping browser APIs for additional checsk",
   "scripts": {
     "dev": "gulp dev && gulp watch",
     "prep": "gulp prep-tscc && tsickle --externs=build/tsc/generated-externs.js -- -p tasks/prod",
-    "beta": "npm run prep && gulp beta",
-    "release": "npm run prep && gulp release"
+    "beta": "yarn run prep && gulp beta",
+    "release": "yarn run prep && gulp release"
   },
   "repository": "https://github.com/AdguardTeam/PopupBlocker",
   "author": "seanl-adg",

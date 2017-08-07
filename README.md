@@ -16,6 +16,6 @@ This will compile `popupblocker.user.js` file without minification.
 
 For production build run:
 
-    $ npm run release
+    $ yarn run release
 
 This will compile `popupblocker.user.js` file with minification.
