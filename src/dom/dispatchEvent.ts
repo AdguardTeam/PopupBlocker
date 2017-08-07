@@ -22,14 +22,7 @@ const isUIEvent:ApplyOption = (target, _this, _arguments) => {
     return 'view' in _this;
 };
 
-let _dispatchEvent;
+const eventTargetPType = typeof EventTarget == 'undefined' ? Node.prototype : EventTarget.prototype;
 
-if (typeof EventTarget == 'undefined') {
-    _dispatchEvent = Node.prototype.dispatchEvent;
-    wrapMethod(Node.prototype, 'dispatchEvent', dispatchVerifiedEvent, isUIEvent);
-} else {
-    _dispatchEvent = EventTarget.prototype.dispatchEvent;
-    wrapMethod(EventTarget.prototype, 'dispatchEvent', dispatchVerifiedEvent, isUIEvent);
-}
-
-export { _dispatchEvent };
+export const _dispatchEvent = eventTargetPType.dispatchEvent;
+wrapMethod(eventTargetPType, 'dispatchEvent', dispatchVerifiedEvent, isUIEvent);

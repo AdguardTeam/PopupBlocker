@@ -1,14 +1,9 @@
 import createOpen from './before/create';
+import { TimelineEvent, TLEventType } from './event';
+import getTime from './time';
 import * as log from '../log';
 
-
 export type condition = (events:TimelineEvent[], event?:TimelineEvent) => boolean;
-
-export const getTime = 'now' in performance ? () => {
-    return performance.now()
-} : () => {
-    return (new Date()).getTime()
-};
 
 const beforeTest:condition[] = [createOpen];
 const afterTest = [];
@@ -20,14 +15,12 @@ class Timeline {
     constructor() {
         this.events = [];
         this.isRecording = false;
-        // @ifdef DEBUG
         try {
-            if (window !== window.parent && parent['__t'].isRecording) {
+            if (window !== window.parent && window.parent['__t'].isRecording) {
                 log.print('parent is recording');
                 this.isRecording = true;
             }
         } catch(e) { }
-        // @endif
         this.registerEvent(new TimelineEvent(TLEventType.CREATE, undefined, undefined));
     }
     registerEvent(event:TimelineEvent):void {
@@ -57,7 +50,7 @@ class Timeline {
         log.callEnd();
         return true;
     }
-    // @ifdef DEBUG
+    // @ifdef RECORD
     startRecording():void {
         this.isRecording = true;
         for(let i = 0; ; i++) {
@@ -70,8 +63,6 @@ class Timeline {
             } catch(e) { }
         }
     }
-    // @endif
-    // @ifdef RECORD
     takeRecords():TimelineEvent[][] {
         this.isRecording = false;
         let res = [Array.prototype.slice.call(this.events)];
@@ -93,22 +84,6 @@ class Timeline {
         return res;
     }
     // @endif
-    
 }
-
-export class TimelineEvent {
-    public timeStamp:number
-    /** @constructor */
-    constructor(public type:TLEventType, public name:PropertyKey, public data) {
-        this.timeStamp = getTime();
-    }
-};
-
-export const enum TLEventType {
-    CREATE,
-    APPLY,
-    GET,
-    SET
-};
 
 export const timeline = new Timeline();

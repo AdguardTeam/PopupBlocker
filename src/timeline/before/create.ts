@@ -1,4 +1,6 @@
-import { getTime, TimelineEvent, TLEventType, condition } from '../index';
+import { condition } from '../index';
+import { TimelineEvent, TLEventType } from '../event';
+import getTime from '../time';
 import * as log from '../../log';
 
 const createOpen:condition = log.connect((events) => {

@@ -6,7 +6,7 @@ if (typeof WeakMap == 'function') {
 } else {
     let counter = Date.now() % 1e9;
     let defineProperty = Object.defineProperty;
-    wm = class <T> {
+    wm = class WM<T> {
         private name;
         /** @constructor */
         constructor() {

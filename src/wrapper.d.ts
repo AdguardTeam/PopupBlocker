@@ -1,2 +1,2 @@
-declare function popupBlocker():any;
-declare const KEY:PropertyKey;
+declare function popupBlocker(window, KEY?:string, option?):any;
+declare const KEY:string;

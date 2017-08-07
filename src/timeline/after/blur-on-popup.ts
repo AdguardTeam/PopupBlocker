@@ -1,4 +1,5 @@
-import { TimelineEvent, TLEventType, condition } from '../index';
+import { condition } from '../index';
+import { TimelineEvent, TLEventType } from '../event';
 import * as log from '../../log';
 
 const blurOnPopup = (events, incoming) => {

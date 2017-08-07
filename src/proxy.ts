@@ -1,4 +1,5 @@
-import { timeline, TimelineEvent, TLEventType } from './timeline/index';
+import { timeline } from './timeline/index';
+import { TimelineEvent, TLEventType } from './timeline/event';
 import WeakMap from './weakmap';
 
 let supported = false;

@@ -1,4 +1,6 @@
-import { getTime, TimelineEvent, condition } from '../index';
+import { condition } from '../index';
+import { TimelineEvent, TLEventType } from '../event';
+import getTime from '../time';
 import * as log from '../../log';
 
 const reJsFocusUri = /^javascript:window\.focus/;
@@ -12,23 +14,24 @@ const focusClose:condition = (events) => {
     while (l-- > 0) {
         evt = events[l];
         if (now - evt.timeStamp > 1000) { break; }
-        switch(evt.type) {
-            case 'get close':
+
+
+        if (evt.type === TLEventType.GET) {
+            if (evt.name === 'close') {
                 closeEvent = evt;
-                break;
-            case 'get focus':
+            } else if (evt.name === 'focus') {
                 if (closeEvent.data === evt.data && closeEvent.timeStamp - evt.timeStamp < 100) {
-                    log.print('FOUND focusclose');
+                    log.print('found focusclose');
                     log.callEnd();
                     return false;
                 }
-                break;
-            case 'apply open':
-                if (reJsFocusUri.test(evt.data.arguments[0])) {
-                    log.print('FOUND jsuri');
-                    log.callEnd();
-                    return false;
-                }
+            }
+        } else if (evt.type === TLEventType.APPLY && evt.name === 'open') {
+            if (reJsFocusUri.test(evt.data.arguments[0])) {
+                log.print('found jsuri');
+                log.callEnd();
+                return false;
+            }
         }
     }
     log.callEnd()
@@ -36,4 +39,3 @@ const focusClose:condition = (events) => {
 };
 
 export default focusClose;
-

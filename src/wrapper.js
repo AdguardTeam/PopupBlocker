@@ -3,7 +3,7 @@
  * @param {*=} option
  */
 function popupBlocker(window, KEY, option) {
-    /*CONTENT*/
+    "CONTENT";
 }
 
 // ToDo: do something with GM_getValue here to create option object

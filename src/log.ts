@@ -1,5 +1,5 @@
 // @ifdef DEBUG
-import { getTime } from './timeline/index';
+import getTime from './timeline/time';
 
 let prefix = '';
 let win = window;
