@@ -2,7 +2,8 @@
 /// <reference path="../../node_modules/@types/chai/index.d.ts" />
 
 import '../../src/dom/HTMLIFrame';
-import { timeline, TLEventType } from '../../src/timeline';
+import { timeline } from '../../src/timeline';
+import { TLEventType } from '../../src/timeline/event';
 
 const expect = chai.expect;
 

@@ -171,8 +171,7 @@ function makeFunctionWrapper(orig:Function, applyHandler:ApplyHandler) {
 }
 
 /**
- * @param {Function=} applyHandler 
- * @param {Function|boolean=} option Can be a boolean 'false' to disable logging, or can be a function which accepts the same type 
+ * @param option Can be a boolean 'false' to disable logging, or can be a function which accepts the same type 
  * of params as ApplyHandler and returns booleans which indicates whether to log it or not.
  */
 function makeLoggedFunctionWrapper(orig:Function, type:TLEventType, name:PropertyKey, applyHandler?:ApplyHandler, option?:boolean|ApplyOption) {
@@ -192,21 +191,12 @@ function makeLoggedFunctionWrapper(orig:Function, type:TLEventType, name:Propert
     });
 }
 
-/** 
- * @param {Function=} applyHandler
- * @param {Function|boolean=} option
- */
 export function wrapMethod(obj, prop:string, applyHandler?:ApplyHandler, option?:boolean|ApplyOption) {
     if (obj.hasOwnProperty(prop)) {
         obj[prop] = makeLoggedFunctionWrapper(obj[prop], TLEventType.APPLY, prop, applyHandler, option);
     }
 }
 
-/**
- * @param {Function=} getterApplyHandler 
- * @param {Function=} setterApplyHandler
- * @param {Function|boolean=} option
- */
 export function wrapAccessor(obj, prop:string, getterApplyHandler?:ApplyHandler, setterApplyHandler?:ApplyHandler, option?:boolean|ApplyOption) {
     var desc = Object.getOwnPropertyDescriptor(obj, prop);
     if (desc && desc.get && desc.configurable) {

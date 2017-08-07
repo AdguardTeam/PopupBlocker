@@ -1,3 +1,5 @@
+const cc = require('google-closure-compiler');
+
 const base = {
     compilation_level: 'ADVANCED',
     language_in: 'ECMASCRIPT6',
@@ -16,7 +18,7 @@ module.exports = {
         warning_level: 'QUIET'
     }),
     test: Object.assign({}, base, {
-        compilation_level: 'SIMPLE'
+        compilation_level: 'WHITESPACE_ONLY'
     }),
     ts: Object.assign({}, base, {
         externs: ['build/tsc/generated-externs.js', 'externs.js'],

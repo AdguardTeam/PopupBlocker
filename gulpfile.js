@@ -29,8 +29,7 @@ const options = global.options = {
         return {
             'DOWNLOAD_URL': url + this.name,
             'UPDATE_URL': url + this.metaName,
-            'NAME_SUFFIX': this.channel,
-            'ADG_PERMANENT': this.channel !== 'Dev'
+            'NAME_SUFFIX': this.channel
         };
     },
     rollup_options: {},
@@ -102,7 +101,7 @@ gulp.task('dev', (done) => {
 
 gulp.task('dev-ghpages', (done) => {
     options.channel = "Dev";
-    options.rollup_options = rollup_options_test;
+    options.rollup_options = rollup_options;
     options.preprocessContext = {
         DEBUG: true,
         RECORD: true
@@ -120,7 +119,7 @@ gulp.task('rollup', () => {
         .pipe(insert.transform((content) => {
             return wrapper[0] + content.replace(/^export\sdefault\s/m, 'return ') + wrapper[1];
         }));
-    if (options.minify) { content = content.pipe(closureCompiler(options.cc_options)); }
+    if (options.cc_options) { content = content.pipe(closureCompiler(options.cc_options)); }
     return content
         .pipe(rename(options.name))
         .pipe(gulp.dest(options.outputPath));
@@ -145,7 +144,7 @@ gulp.task('testsToGhPages', ['build-ghpage'], (done) => {
 });
 
 gulp.task('build-test', function() {
-    return gulp.src(['./test/**/*.ts', './src/**/*.ts'])
+    return gulp.src(['test/**/*.ts', 'src/**/*.ts'])
         .pipe(preprocess({ context: { RECORD: true } }))
         .pipe(rollup(rollup_options_test))
         .pipe(closureCompiler(cc.test))
@@ -169,7 +168,7 @@ gulp.task('watch', () => {
 const reWorkaroundTsickleBug = new RegExp('(goog.[A-Za-z]*\\(").*?\\.build\\.' + options.tmp_build_dir + '\\.', 'g');
 const workaround = (content) => (content.replace(reWorkaroundTsickleBug, (_, c1, c2) => (c1 + 'build.tsc.')));
 
-gulp.task('prep-tscc', () => {
+gulp.task('prep-tscc', ['clean'], () => {
     return gulp.src('src/**/*.ts')
         .pipe(preprocess({ context: {}}))
         .pipe(gulp.dest(options.outputPath + '/' + options.tmp_build_dir));

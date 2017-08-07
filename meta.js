@@ -28,7 +28,6 @@
 // @description:vi	Chặn quảng cáo popup trên các trang web
 // @description:es	Bloquea popups de anuncios en sitios web
 // @version 2.1
-// @adg:permanent	[ADG_PERMANENT]
 // @downloadURL [DOWNLOAD_URL]
 // @updateURL [UPDATE_URL]
 // @match http://*/*

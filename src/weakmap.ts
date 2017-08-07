@@ -8,7 +8,6 @@ if (typeof WeakMap == 'function') {
     let defineProperty = Object.defineProperty;
     wm = class WM<T> {
         private name;
-        /** @constructor */
         constructor() {
             this.name = '__st' + (Math.random() * 1e9 >>> 0) + (counter++ + '__');
         }

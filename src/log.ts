@@ -23,9 +23,6 @@ export function callEnd (): void {
     // @endif
 }
 
-/**
- * @param {*=} obj
- */
 export function print(str: string, obj?): void {
     // @ifdef DEBUG
     let date = getTime().toFixed(3);

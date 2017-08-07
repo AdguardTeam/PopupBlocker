@@ -123,7 +123,6 @@ const mockWindow = (href, name) => {
     doc.location = loc;
     doc.open = function(){return this;}
     doc.write = function(){};
-    doc.writeIn = function(){};
     doc.close = function(){};
     win.opener = window;
     win.closed = false;
