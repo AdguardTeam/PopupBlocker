@@ -1,27 +1,25 @@
 import createOpen from './before/create';
+import aboutBlank from './before/about-blank';
 import { TimelineEvent, TLEventType } from './event';
 import getTime from './time';
+import WeakMap from '../weakmap';
 import * as log from '../log';
 
-export type condition = (events:TimelineEvent[], event?:TimelineEvent) => boolean;
+export type condition = (index:number, events:TimelineEvent[][], event?:TimelineEvent) => boolean;
 
-const beforeTest:condition[] = [createOpen];
+const beforeTest:condition[] = [createOpen, aboutBlank];
 const afterTest = [];
 
+const EVENT_RETENTION_LENGTH = 5000;
+
 class Timeline {
-    private events:TimelineEvent[];
+    private events:TimelineEvent[][];
     private isRecording:boolean;
     constructor() {
-        this.events = [];
+        this.events = [[]];
         this.isRecording = false;
-        try {
-            if (window !== window.parent && window.parent['__t'].isRecording) {
-                log.print('parent is recording');
-                this.isRecording = true;
-            }
-        } catch(e) { }
         // Registers a unique event when it is first created.
-        this.registerEvent(new TimelineEvent(TLEventType.CREATE, undefined, undefined));
+        this.registerEvent(new TimelineEvent(TLEventType.CREATE, undefined, undefined), 0);
     }
     /**
      * When an event is registered, it performs some checks by calling functions of type `condition`
@@ -29,14 +27,15 @@ class Timeline {
      * An object at which the event is happened is included in the event as a `data` property,
      * and such functions can act on it appropriately, for example, it can close a popup window.
      */
-    registerEvent(event:TimelineEvent):void {
+    registerEvent(event:TimelineEvent, index:number):void {
         let i = afterTest.length;
-        while (i--) { afterTest[i](this.events, event); }
-        this.events.push(event);
+        while (i--) { afterTest[i](index, this.events, event); }
+        let frameEvents = this.events[index];
+        frameEvents.push(event);
         if (!this.isRecording) {
-            setTimeout(function() {
-                this.events.splice(this.events.indexOf(event), 1);
-            }.bind(this), 5000);
+            setTimeout(() => {
+                frameEvents.splice(frameEvents.indexOf(event), 1);
+            }, EVENT_RETENTION_LENGTH);
         } else {
             let name:string = event.name ? event.name.toString() : '';
             log.print(`Timeline.registerEvent: ${event.type} ${name}`, event.data);
@@ -47,11 +46,11 @@ class Timeline {
      * beforeTests are basically the same as the afterTests except that
      * it does not accept a second argument.
      */
-    canOpenPopup():boolean {
+    canOpenPopup(index:number):boolean {
         log.call('Inquiring events timeline about whether window.open can be called...');
         let i = beforeTest.length;
         while (i--) {
-            if (!beforeTest[i](this.events)) {
+            if (!beforeTest[i](index, this.events)) {
                 log.print('false');
                 log.callEnd();
                 return false;
@@ -61,26 +60,23 @@ class Timeline {
         log.callEnd();
         return true;
     }
+    onNewFrame():number {
+        let pos = this.events.push([]) - 1;
+        // Registers a unique event when a frame is first created.
+        this.registerEvent(new TimelineEvent(TLEventType.CREATE, undefined, undefined), pos);
+        return pos;
+    }
     /**
      * Below methods are used only for logging & testing purposes.
      * It does not provide any functionality to block popups,
      * and is stipped out in production builds.
      * In dev build, the timeline instance is exposed to the global scope with a name '__t',
-     * and one can call below methods to it to inspect how the popup script calls browser apis.
+     * and one can call below methods of it to inspect how the popup script calls browser apis.
      * In test builds, it is used to access a private member `events`.
      */
     // @ifdef RECORD
     startRecording():void {
         this.isRecording = true;
-        for(let i = 0; ; i++) {
-            let frame = window[i];
-            if (typeof frame === 'undefined') { break; }
-            try {
-                if (frame.hasOwnProperty('__t')) {
-                    frame['__t'].startRecording();
-                }
-            } catch(e) { }
-        }
     }
     /**
      * Returns an array. Its elements corresponds to frames to which the current window
@@ -88,25 +84,20 @@ class Timeline {
      */
     takeRecords():TimelineEvent[][] {
         this.isRecording = false;
-        let res = [Array.prototype.slice.call(this.events)];
-        let current = getTime();
-        while (this.events[0]) {
-            if (current - this.events[0].timeStamp > 1000) { this.events.shift(); }
-            else { break; }
-        }
-        // Recursively visits child frames.
-        for(let i = 0; ; i++) {
-            let frame = window[i];
-            if (typeof frame === 'undefined') { break; }
-            try {
-                if (frame.hasOwnProperty('__t')) {
-                    Array.prototype.push.apply(res, frame['__t'].takeRecords());
-                }
-            } catch(e) { }
+        let res = this.events.map((el) => (Array.prototype.slice.call(el)));
+        let now = getTime();
+        let l = this.events.length;
+        while (l-- > 0) {
+            let frameEvents = this.events[l];
+            while (frameEvents[0]) {
+                if (now - frameEvents[0].timeStamp > EVENT_RETENTION_LENGTH) { frameEvents.shift(); }
+                else { break; }
+            }
         }
         return res;
     }
     // @endif
 }
 
-export const timeline = new Timeline();
+export const timeline:Timeline = typeof KEY !== 'undefined' ? window.parent[KEY][2] : new Timeline();
+export const position:number = typeof KEY !== 'undefined' ? timeline.onNewFrame() : 0;

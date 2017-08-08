@@ -7,7 +7,19 @@ import WeakMap from './weakmap';
  */
 export function retrieveEvent():Event {
     log.call('Retrieving event');
-    let currentEvent = window.top.event; // Attaching `window` to get around a bug of AG wrapper
+    let win = window;
+    let currentEvent = win.event;
+    while( !currentEvent ) {
+        let parent = win.parent;
+        if (parent === win) { break; }
+        win = parent;
+        try {
+            currentEvent = win.event;
+        } catch (e) {
+            // Cross-origin error
+            break;
+        }
+    }
     if (!currentEvent) {
         log.print('window.event does not exist, trying to get event from Function.caller');
         try {

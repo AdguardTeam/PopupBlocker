@@ -1,18 +1,17 @@
 import { ApplyHandler, makeObjectProxy, wrapMethod } from '../proxy';
 import { verifyEvent, retrieveEvent, verifyCurrentEvent } from '../verify-event';
 import { _dispatchEvent } from './dispatchEvent';
-import { timeline } from '../timeline/index';
+import { timeline, position } from '../timeline/index';
 import * as log from '../log';
 
-// keep in mind; it should log about window.open.call(newWindow, 'about:blank', '_blank').
-const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments) {
+const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, context) {
     log.call('Called window.open with url ' + _arguments[0]);
     let currentEvent = retrieveEvent();
     let passed = verifyEvent(currentEvent);
     let win;
     if (passed) {
         log.print('event verified, inquiring event timeline..');
-        if (timeline.canOpenPopup()) {
+        if (timeline.canOpenPopup(position)) {
             log.print('calling original window.open...');
             win = _open.apply(_this, _arguments);
             win = makeObjectProxy(win);
@@ -22,27 +21,30 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments) {
         log.print('canOpenPopup returned false');
         log.callEnd();
     }
-    let redispatched = dispatchIfBlockedByMask(currentEvent);
-    // Determines whether to return null or a mocked window object.
-    // If an url is first-party or the target is an anchor, the original page may try to navigate away
-    // In such cases we return null to signal that the request was unsuccessful.
-    let target = currentEvent.target;
-    let targetIsAnchor = 'nodeName' in target && (<Element>target).nodeName.toLowerCase() == 'a';
-    let urlIsHrefOfAnchor;
-    if (targetIsAnchor) {
-        let anchor = <HTMLAnchorElement>target;
-        if (anchor.href == _arguments[0]) { urlIsHrefOfAnchor = true; }
-    }
-    let urlIsCurrentHref;
-    if (location.href === _arguments[0]) { urlIsCurrentHref = true; }
-    if (redispatched || urlIsHrefOfAnchor || urlIsCurrentHref) {
-        log.print("An event is re-dispatched or the opened url is equal to the target's href or the url is equal to the current href");
-        log.callEnd();
-        return null;
+    if (currentEvent) {
+        let redispatched = dispatchIfBlockedByMask(currentEvent);
+        // Determines whether to return null or a mocked window object.
+        // If an url is first-party or the target is an anchor, the original page may try to navigate away
+        // In such cases we return null to signal that the request was unsuccessful.
+        let target = currentEvent.target;
+        let targetIsAnchor = 'nodeName' in target && (<Element>target).nodeName.toLowerCase() == 'a';
+        let urlIsHrefOfAnchor;
+        if (targetIsAnchor) {
+            let anchor = <HTMLAnchorElement>target;
+            if (anchor.href == _arguments[0]) { urlIsHrefOfAnchor = true; }
+        }
+        let urlIsCurrentHref;
+        if (location.href === _arguments[0]) { urlIsCurrentHref = true; }
+        if (redispatched || urlIsHrefOfAnchor || urlIsCurrentHref) {
+            log.print("An event is re-dispatched or the opened url is equal to the target's href or the url is equal to the current href");
+            log.callEnd();
+            return null;
+        }
     }
     log.print('mock a window object');
     // Return a mock window object, in order to ensure that the page's own script does not accidentally throw TypeErrors.
     win = mockWindow(_arguments[0], _arguments[1]);
+    context.mocked = true;
     log.callEnd();
     return win;
 };
@@ -121,9 +123,9 @@ const mockWindow = (href, name) => {
         }
     });
     doc.location = loc;
-    doc.open = function(){return this;}
-    doc.write = function(){};
-    doc.close = function(){};
+    // doc.open = function(){return this;}
+    // doc.write = function(){};
+    // doc.close = function(){};
     win.opener = window;
     win.closed = false;
     win.name = name;

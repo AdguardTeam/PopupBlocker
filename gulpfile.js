@@ -37,7 +37,32 @@ const options = global.options = {
     preprocessContext: {},
 };
 
-const cc = require('./tasks/cc-options');
+const base = {
+    compilation_level: 'ADVANCED',
+    language_in: 'ECMASCRIPT6',
+    language_out: 'ECMASCRIPT5',
+    assume_function_wrapper: true,
+    warning_level: 'VERBOSE',
+    strict_mode_input: false,
+    externs: ['externs.js'],
+    rewrite_polyfills: false
+};
+
+const cc = {
+    dev: Object.assign({}, base, {
+        compilation_level: 'WHITESPACE_ONLY',
+        assume_function_wrapper: false,
+        warning_level: 'QUIET'
+    }),
+    test: Object.assign({}, base, {
+        compilation_level: 'WHITESPACE_ONLY'
+    }),
+    ts: Object.assign({}, base, {
+        externs: ['build/tsc/generated-externs.js', 'externs.js'],
+        dependency_mode: 'STRICT',
+        entry_point: 'goog:build.tsc.index',
+    })
+};
 
 const rollup_options = {
     entry: 'src/index.ts',
@@ -65,26 +90,6 @@ const wrapModule = (wrap) => {
         content = content.replace(/^export\sdefault\s/m, 'return ');
         content = wrap[0] + content + wrap[1];
         return content;
-    };
-};
-
-const attachMeta = (content, preprocessContext, metaConfig, minify_option) => {
-    return (done) => {
-        let meta = gulp.src('meta.js')
-            .pipe(insert.transform(replaceMeta(metaConfig)))
-            .pipe(rename(options.scriptName + '.meta.js'))
-            .pipe(gulp.dest(options.outputPath));
-        let wrapper = gulp.src('src/wrapper.js')
-            .pipe(preprocess({ context: preprocessContext }))
-            .pipe(closureCompiler({ compilation_level: 'ADVANCED', externs: ['externs.js'] }))
-            .on('data', (file) => {
-                content = content.pipe(insert.transform(wrapModule(file.contents.toString().split('/"CONTENT"/'))));
-                if(minify_option) { content = content.pipe(closureCompiler(minify_option)); }
-                merge(meta, content)
-                    .pipe(concat(options.scriptName + '.user.js'))
-                    .pipe(gulp.dest(options.outputPath))
-                    .on('end', done);
-            });
     };
 };
 
@@ -121,6 +126,9 @@ gulp.task('rollup', () => {
         }));
     if (options.cc_options) { content = content.pipe(closureCompiler(options.cc_options)); }
     return content
+        .pipe(insert.transform((content) => {
+            return meta + content;
+        }))
         .pipe(rename(options.name))
         .pipe(gulp.dest(options.outputPath));
 });
@@ -163,7 +171,6 @@ gulp.task('watch', () => {
         .on('error', onerror);
 });
 
-
 // https://github.com/angular/tsickle/issues/481
 const reWorkaroundTsickleBug = new RegExp('(goog.[A-Za-z]*\\(").*?\\.build\\.' + options.tmp_build_dir + '\\.', 'g');
 const workaround = (content) => (content.replace(reWorkaroundTsickleBug, (_, c1, c2) => (c1 + 'build.tsc.')));
@@ -173,16 +180,6 @@ gulp.task('prep-tscc', ['clean'], () => {
         .pipe(preprocess({ context: {}}))
         .pipe(gulp.dest(options.outputPath + '/' + options.tmp_build_dir));
 });
-
-const makeTsccTask = (channel) => {
-    return (done) => {
-        let content = gulp.src('build/tsc/**/*.js')
-            .pipe(insert.transform(workaround))
-            .pipe(closureCompiler(cc.ts));
-        attachMeta(content, {}, options.metaConfig)(done);
-    };
-};
-
 
 gulp.task('meta', () => {
     return gulp.src('meta.js')
@@ -198,27 +195,32 @@ gulp.task('minify-wrapper', () => {
         .pipe(gulp.dest(options.outputPath));
 });
 
-
-gulp.task('tscc', () => {
-    let wrapper = fs.readFileSync(options.outputPath + '/wrapper.js').toString().split('"CONTENT"');
+gulp.task('tscc', (done) => {
     let meta = fs.readFileSync(options.outputPath + '/' + options.metaName);
     let content = gulp.src('build/tsc/**/*.js')
         .pipe(insert.transform(workaround))
-        .pipe(closureCompiler(options.cc_options))
-        .pipe(insert.transform(wrapModule(wrapper)))
-        .pipe(insert.transform((content) => { return meta + content; }))
-        .pipe(rename(options.name))
-        .pipe(gulp.dest(options.outputPath));
-    return content;
+        .pipe(closureCompiler(options.cc_options));
+    gulp.src('src/wrapper.js')
+        .pipe(preprocess({}))
+        .on('data', (file) => {
+            let wrapper = file.contents.toString().split('"CONTENT"');
+            content = content.pipe(insert.transform(wrapModule(wrapper)))
+                .pipe(closureCompiler({
+                    compilation_level: 'SIMPLE',
+                    strict_mode_input: false,
+                    assume_function_wrapper: true
+                }))
+                .pipe(insert.transform((content) => { return meta + content; }))
+                .pipe(rename(options.name))
+                .pipe(gulp.dest(options.outputPath))
+                .on('end', done);
+        });
 });
 
 gulp.task('tscc-clean', () => {
     return gulp.src([options.outputPath + '/' + options.tmp_build_dir, options.outputPath + '/tsc', options.outputPath + '/wrapper.js'], {read: false})
         .pipe(clean());
 });
-
-gulp.task('tscc-beta', makeTsccTask('Beta'));
-gulp.task('tscc-release', makeTsccTask('Release'));
 
 gulp.task('beta', (done) => {
     options.channel = 'Beta';

@@ -1,4 +1,4 @@
-import { timeline } from './timeline/index';
+import { timeline, position } from './timeline/index';
 import { TimelineEvent, TLEventType } from './timeline/event';
 import WeakMap from './weakmap';
 
@@ -23,7 +23,7 @@ if (supported) { _reflect = Reflect.apply; }
 
 // Lodash isNative
 const reRegExpChar = /[\\^$.*+?()[\]{}|]/g
-const reIsNative = RegExp('^' + _toStringFn.call(Object.prototype.hasOwnProperty).replace(reRegExpChar, '\\$&').replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$');
+const reIsNative = new RegExp('^' + _toStringFn.call(Object.prototype.hasOwnProperty).replace(reRegExpChar, '\\$&').replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$');
 
 /**
  * Certain built-in functions depends on internal slots of 'this' of its execution context.
@@ -58,10 +58,10 @@ const isNativeFn = function (fn:Function):boolean {
 const proxyToReal = typeof KEY !== 'undefined' ? window.parent[KEY][0] : new WeakMap();
 const realToProxy = typeof KEY !== 'undefined' ? window.parent[KEY][1] : new WeakMap();
 
-export const expose = (key:PropertyKey) => { window[key] = [proxyToReal, realToProxy]; };
+export const expose = (key:PropertyKey) => { window[key] = [proxyToReal, realToProxy, timeline]; };
 export const unexpose = (key:PropertyKey) => { delete window[key]; };
 
-export type ApplyHandler = (target:Function, _this:any, _arguments:IArguments|any[]) => any;
+export type ApplyHandler = (target:Function, _this:any, _arguments:IArguments|any[], context?:any) => any;
 export type ApplyOption = (target:Function, _this:any, _arguments:IArguments|any[]) => boolean;
 
 /**
@@ -134,7 +134,7 @@ export function makeObjectProxy(obj) {
     proxy = new Proxy(obj, {
         get: function(target, prop, receiver) {
             let _receiver = proxyToReal.get(receiver) || receiver;
-            timeline.registerEvent(new TimelineEvent(TLEventType.GET, prop, _receiver));
+            timeline.registerEvent(new TimelineEvent(TLEventType.GET, prop, _receiver), position);
             var value = Reflect.get(target, prop, _receiver);
             if (isNativeFn(value)) {
                 return makeFunctionWrapper(value, invokeWithUnproxiedThis);
@@ -144,7 +144,7 @@ export function makeObjectProxy(obj) {
         },
         set: function(target, prop, value, receiver) {
             let _receiver = proxyToReal.get(receiver) || receiver;
-            timeline.registerEvent(new TimelineEvent(TLEventType.SET, prop, _receiver));
+            timeline.registerEvent(new TimelineEvent(TLEventType.SET, prop, _receiver), position);
             return Reflect.set(target, prop, value, _receiver);
         }
     });
@@ -176,18 +176,20 @@ function makeFunctionWrapper(orig:Function, applyHandler:ApplyHandler) {
  */
 function makeLoggedFunctionWrapper(orig:Function, type:TLEventType, name:PropertyKey, applyHandler?:ApplyHandler, option?:boolean|ApplyOption) {
     applyHandler = applyHandler || defaultApplyHandler;
-    if (typeof option === 'boolean' ) {
-        if (option === false) { return makeFunctionWrapper(orig, applyHandler); }
-        else { option = undefined; }
+    if (option === false) {
+        return makeFunctionWrapper(orig, applyHandler);
     }
     return makeFunctionWrapper(orig, function(target, _this, _arguments) {
-        if (!option || (<ApplyHandler>option)(target, _this, _arguments)) {
-            timeline.registerEvent(new TimelineEvent(type, name, {
+        let context = {};
+        if (typeof option == 'undefined' || (<ApplyOption>option)(target, _this, _arguments)) {
+            let data = {
                 this: _this,
-                arguments: _arguments
-            }));
+                arguments: _arguments,
+                context: context
+            };
+            timeline.registerEvent(new TimelineEvent(type, name, data), position);
         }
-        return applyHandler(target, _this, _arguments);
+        return applyHandler(target, _this, _arguments, context);
     });
 }
 
