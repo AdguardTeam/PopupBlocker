@@ -2,7 +2,6 @@ import { condition } from '../index';
 import { TimelineEvent, TLEventType } from '../event';
 import getTime from '../time';
 import * as log from '../../log';
-import { isMocked } from '../../dom/utils/mock-window';
 
 const aboutBlank:condition = (index, events) => {
     // if there is a blocked popup within 100 ms, do not allow opening popup with url about:blank.
