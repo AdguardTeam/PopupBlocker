@@ -1,6 +1,12 @@
 import * as log from './log';
 import WeakMap from './weakmap';
 
+let supported = false;
+// @ifndef NO_EVENT
+supported = 'event' in window;
+// @endif
+
+
 /**
  * Gets the event that is being currently handled.
  * @suppress {es5Strict}
@@ -10,17 +16,21 @@ export function retrieveEvent():Event {
     let win = window;
     let currentEvent;
     // @ifndef NO_EVENT
-    currentEvent = win.event;
-    while( !currentEvent ) {
-        let parent = win.parent;
-        if (parent === win) { break; }
-        win = parent;
-        try {
-            currentEvent = win.event;
-        } catch (e) {
-            // Cross-origin error
-            break;
+    if (supported) {
+        currentEvent = win.event;
+        while( !currentEvent ) {
+            let parent = win.parent;
+            if (parent === win) { break; }
+            win = parent;
+            try {
+                currentEvent = win.event;
+            } catch (e) {
+                // Cross-origin error
+                break;
+            }
         }
+    } else {
+
     }
     // @endif
     if (!currentEvent) {
