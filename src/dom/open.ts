@@ -44,7 +44,7 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
     log.print('mock a window object');
     // Return a mock window object, in order to ensure that the page's own script does not accidentally throw TypeErrors.
     win = mockWindow(_arguments[0], _arguments[1]);
-    context.mocked = true;
+    context['mocked'] = true;
     log.callEnd();
     return win;
 };

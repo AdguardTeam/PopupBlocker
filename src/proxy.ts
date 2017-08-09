@@ -3,14 +3,14 @@ import { TimelineEvent, TLEventType } from './timeline/event';
 import WeakMap from './weakmap';
 
 let supported = false;
+// @ifndef NO_PROXY
+supported = typeof Proxy !== 'undefined';
+// @endif
 /**
  * Why not use Proxy on production version?
  * Using proxy instead of an original object in some places require overriding Function#bind,apply,call,
  * and replacing such native codes into js implies serious performance effects on codes completely unrelated to popups.
  */
-// @ifdef DEBUG
-supported = typeof Proxy !== 'undefined';
-// @endif
 
 const _bind = Function.prototype.bind;
 const _apply = Function.prototype.apply;
@@ -164,10 +164,24 @@ function makeFunctionWrapper(orig:Function, applyHandler:ApplyHandler) {
         wrapped = new Proxy(orig, { apply: applyHandler });
     } else {
         wrapped = function() { return applyHandler(orig, this, arguments); };
+        copyProperty(orig, wrapped, 'name');
+        copyProperty(orig, wrapped, 'length');
     }
     proxyToReal.set(wrapped, orig);
     realToProxy.set(orig, wrapped);
     return wrapped;
+}
+
+function copyProperty(orig, wrapped, prop) {
+    let desc = Object.getOwnPropertyDescriptor(orig, prop);
+    if (desc && desc.configurable) {
+        Object.defineProperty(wrapped, prop, {
+            value: orig[prop],
+            configurable: desc.configurable,
+            enumerable: desc.enumerable,
+            writable: desc.writable
+        });
+    }
 }
 
 /**

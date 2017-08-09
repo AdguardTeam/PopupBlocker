@@ -11,19 +11,19 @@ let loc = location.href;
 let suffix = `    (at ${loc})`;
 // @endif
 
-export function call(msg: string): void {
+export function call(msg:string) {
     // @ifdef DEBUG
     console.group(prefix + msg + suffix);
     // @endif
 }
 
-export function callEnd (): void {
+export function callEnd() {
     // @ifdef DEBUG
     console.groupEnd();
     // @endif
 }
 
-export function print(str: string, obj?): void {
+export function print(str:string, obj?):void {
     // @ifdef DEBUG
     let date = getTime().toFixed(3);
     let indent = 10 - date.length;
@@ -39,8 +39,7 @@ export function print(str: string, obj?): void {
     // @endif
 }
 
-
-export function connect(fn, message:string) {
+export function connect (fn, message:string) {
     // @ifdef DEBUG
     return function () {
         call(message);

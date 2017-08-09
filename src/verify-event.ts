@@ -8,7 +8,9 @@ import WeakMap from './weakmap';
 export function retrieveEvent():Event {
     log.call('Retrieving event');
     let win = window;
-    let currentEvent = win.event;
+    let currentEvent;
+    // @ifndef NO_EVENT
+    currentEvent = win.event;
     while( !currentEvent ) {
         let parent = win.parent;
         if (parent === win) { break; }
@@ -20,6 +22,7 @@ export function retrieveEvent():Event {
             break;
         }
     }
+    // @endif
     if (!currentEvent) {
         log.print('window.event does not exist, trying to get event from Function.caller');
         try {

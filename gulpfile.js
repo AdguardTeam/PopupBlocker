@@ -11,6 +11,7 @@ const typescript2 = require('rollup-plugin-typescript2');
 const typescript = require('@alexlur/rollup-plugin-typescript');
 const closureCompiler = require('google-closure-compiler').gulp();
 const runSequence = require('run-sequence');
+const exec = require('child_process').exec;
 
 
 const options = global.options = {
@@ -93,6 +94,19 @@ const wrapModule = (wrap) => {
     };
 };
 
+/**
+ * There are currently 4 preprocess variables that are being used.
+ * @param DEBUG: if defined, it will print information in console, which reveals
+ * what code path was chosen. Also, it will wrap some browser apis which are not
+ * currently being used to detect popups, but may provide helpful insights.
+ * @param RECORD: if defined, it will expose the `Timeline` class to the global scope,
+ * and class methods `startRecording` and `takeRecords` will be defined. It can
+ * be used to investigated collected events.
+ * @param NO_PROXY: Forces proxy.ts not to use Proxy even if it is supported.
+ * It is used in production builds.
+ * @param NO_EVENT: Do not use `window.event`, emulate FF environment.
+ */
+
 gulp.task('dev', (done) => {
     options.channel = "Dev";
     options.rollup_options = rollup_options;
@@ -115,22 +129,53 @@ gulp.task('dev-ghpages', (done) => {
     runSequence('meta', 'rollup', done);
 });
 
-gulp.task('rollup', () => {
+gulp.task('dev-noevent', (done) => {
+    options.channel = "Dev";
+    options.rollup_options = rollup_options;
+    option.preprocessContext = {
+        DEBUG: true,
+        RECORD: true,
+        NO_EVENT: true
+    };
+    options.cc_options = false;
+    runSequence('meta', 'rollup', done);
+});
+
+gulp.task('rollup', (done) => {
     let wrapper = fs.readFileSync('src/wrapper.js').toString().split('"CONTENT"');
     let meta = fs.readFileSync(options.outputPath + '/'+ options.metaName);
     let content = gulp.src('src/**/*.ts')
         .pipe(preprocess({ context: options.preprocessContext }))
-        .pipe(rollup(options.rollup_options))
-        .pipe(insert.transform((content) => {
-            return wrapper[0] + content.replace(/^export\sdefault\s/m, 'return ') + wrapper[1];
-        }));
-    if (options.cc_options) { content = content.pipe(closureCompiler(options.cc_options)); }
-    return content
-        .pipe(insert.transform((content) => {
-            return meta + content;
+        .pipe(rollup(options.rollup_options));
+    gulp.src('src/wrapper.js')
+        .pipe(preprocess({ context: options.preprocessContext }))
+        .on('data', (file) => {
+            let wrapper = file.contents.toString().split('"CONTENT"');
+            content = content.pipe(insert.transform((content) => {
+                return wrapper[0] + content.replace(/^export\sdefault\s/m, 'return ') + wrapper[1];
+            }));
+            if (options.cc_options) { content = content.pipe(closureCompiler(options.cc_options)); }
+            content
+                .pipe(insert.transform((content) => {
+                    return meta + content;
+                }))
+                .pipe(rename(options.name))
+                .pipe(gulp.dest(options.outputPath))
+                .on('end', done);
+        });
+});
+
+gulp.task('build-test', function() {
+    return gulp.src(['test/**/*.ts', 'src/**/*.ts'])
+        .pipe(preprocess({
+            context: {
+                RECORD: true
+            }
         }))
-        .pipe(rename(options.name))
-        .pipe(gulp.dest(options.outputPath));
+        .pipe(rollup(rollup_options_test))
+        .pipe(closureCompiler(cc.test))
+        .pipe(rename('index.js'))
+        .pipe(gulp.dest('./test/build'));
 });
 
 gulp.task('clean', () => {
@@ -151,15 +196,6 @@ gulp.task('testsToGhPages', ['build-ghpage'], (done) => {
     ];
 });
 
-gulp.task('build-test', function() {
-    return gulp.src(['test/**/*.ts', 'src/**/*.ts'])
-        .pipe(preprocess({ context: { RECORD: true } }))
-        .pipe(rollup(rollup_options_test))
-        .pipe(closureCompiler(cc.test))
-        .pipe(rename('index.js'))
-        .pipe(gulp.dest('./test/build'));
-});
-
 gulp.task('watch', () => {
     const onerror = (error) => { console.log(error.toString()); };
     const onchange = (event) => { console.log('File ' + event.path + ' was ' + event.type + ', building...'); };
@@ -177,8 +213,16 @@ const workaround = (content) => (content.replace(reWorkaroundTsickleBug, (_, c1,
 
 gulp.task('prep-tscc', ['clean'], () => {
     return gulp.src('src/**/*.ts')
-        .pipe(preprocess({ context: {}}))
+        .pipe(preprocess({ context: options.preprocessContext}))
         .pipe(gulp.dest(options.outputPath + '/' + options.tmp_build_dir));
+});
+
+gulp.task('tsickle', (done) => {
+    exec('tsickle --externs=build/tsc/generated-externs.js -- -p tasks/prod', (err, stdout, stderr) => {
+        console.log(stdout);
+        console.error(stderr);
+        done(err);
+    });
 });
 
 gulp.task('meta', () => {
@@ -188,27 +232,24 @@ gulp.task('meta', () => {
         .pipe(gulp.dest(options.outputPath));
 });
 
-gulp.task('minify-wrapper', () => {
-    return gulp.src('src/wrapper.js')
-        .pipe(preprocess({ context: options.preprocessContext }))
-        //.pipe(closureCompiler({ compilation_level: 'SIMPLE', warning_level: 'VERBOSE', js_output_file: 'wrapper.js', externs: ['externs.js']}))
-        .pipe(gulp.dest(options.outputPath));
-});
-
 gulp.task('tscc', (done) => {
     let meta = fs.readFileSync(options.outputPath + '/' + options.metaName);
     let content = gulp.src('build/tsc/**/*.js')
         .pipe(insert.transform(workaround))
-        .pipe(closureCompiler(options.cc_options));
+        .pipe(closureCompiler(options.cc_options))
+        .pipe(insert.transform((content) => {
+            return content.replace(/"REMOVE_START"[\s\S]*?"REMOVE_END"/, '');
+        }));
     gulp.src('src/wrapper.js')
-        .pipe(preprocess({}))
+        .pipe(preprocess({ context: options.preprocessContext }))
         .on('data', (file) => {
             let wrapper = file.contents.toString().split('"CONTENT"');
             content = content.pipe(insert.transform(wrapModule(wrapper)))
                 .pipe(closureCompiler({
                     compilation_level: 'SIMPLE',
                     strict_mode_input: false,
-                    assume_function_wrapper: true
+                    assume_function_wrapper: true,
+                    rewrite_polyfills: false
                 }))
                 .pipe(insert.transform((content) => { return meta + content; }))
                 .pipe(rename(options.name))
@@ -225,11 +266,17 @@ gulp.task('tscc-clean', () => {
 gulp.task('beta', (done) => {
     options.channel = 'Beta';
     options.cc_options = cc.ts;
-    runSequence('minify-wrapper', 'meta', 'tscc', 'tscc-clean', done);
+    options.preprocessContext = {
+        NO_PROXY: true
+    };
+    runSequence('prep-tscc', 'tsickle', 'meta', 'tscc', 'tscc-clean', done);
 });
 
 gulp.task('release', (done) => {
-    options.channel = 'Release';
+    options.channel = 'Beta';
     options.cc_options = cc.ts;
-    runSequence('minify-wrapper', 'meta', 'tscc', 'tscc-clean', done);
+    options.preprocessContext = {
+        NO_PROXY: true
+    };
+    runSequence('prep-tscc', 'tsickle', 'meta', 'tscc', 'tscc-clean', done);
 });

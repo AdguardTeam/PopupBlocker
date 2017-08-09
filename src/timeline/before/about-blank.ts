@@ -18,7 +18,7 @@ const aboutBlank:condition = (index, events) => {
                 let event = frameEvents[k];
                 if (now - event.timeStamp > 200) { break; }
                 if (event.name === 'open' && event.type === TLEventType.APPLY) {
-                    if (event.data.context.mocked) {
+                    if (event.data.context['mocked']) {
                         return false;
                     }
                 }

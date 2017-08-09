@@ -18,6 +18,7 @@ const processed = new WeakMap();
 // @ifdef DEBUG
 const beingProcessed = new WeakMap();
 // @endif
+
 const getContentWindow = Object.getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow').get;
 
 const applyPopupBlockerOnGet:ApplyHandler = function(_get, _this) {
@@ -36,10 +37,10 @@ const applyPopupBlockerOnGet:ApplyHandler = function(_get, _this) {
                     log.print('An empty iframe called the contentWindow/Document getter for the first time, applying popupBlocker..', _this);
                     expose(key);
                     let code =
-                    // @ifdef DEBUG
-                    'window.__t = ' +
-                    // @endif
-                    '(' + popupBlocker.toString() + ')(window,"' + key + '");';
+                        // @ifdef RECORD
+                        'window.__t = '  +
+                        // @endif
+                        '(' + popupBlocker.toString() + ')(window,"' + key + '");';
                     contentWindow.eval(code);
                 }
             } catch(e) {
@@ -62,5 +63,7 @@ const applyPopupBlockerOnGet:ApplyHandler = function(_get, _this) {
 wrapAccessor(HTMLIFrameElement.prototype, 'contentWindow', applyPopupBlockerOnGet);
 wrapAccessor(HTMLIFrameElement.prototype, 'contentDocument', applyPopupBlockerOnGet);
 
+// @ifdef DEBUG
 wrapAccessor(HTMLIFrameElement.prototype, 'src'); // logging only
-wrapAccessor(HTMLIFrameElement.prototype, 'srcdoc'); 
+wrapAccessor(HTMLIFrameElement.prototype, 'srcdoc');
+// @endif
