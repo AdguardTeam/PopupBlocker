@@ -12,8 +12,8 @@ const clean = require('gulp-clean');
 const options = global.options = {
     src: '',
     scriptName: 'popupblocker',
-    downloadUPDATE_URLRelease: 'https://cdn.adguard.com/public/Userscripts/PopupBlocker/2.0/',
-    downloadUPDATE_URLBeta: 'https://cdn.adguard.com/public/Userscripts/Beta/PopupBlocker/2.0/',
+    downloadUPDATE_URLRelease: 'https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.0/',
+    downloadUPDATE_URLBeta: 'https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.0/',
     downloadUPDATE_URLDev: 'https://AdguardTeam.github.io/PopupBlocker/',
     outputPath: 'build'
 };
