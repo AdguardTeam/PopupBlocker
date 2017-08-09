@@ -3,7 +3,7 @@ import { TimelineEvent, TLEventType } from '../event';
 import * as log from '../../log';
 
 const blurOnPopup:condition = (index, events, incoming) => {
-    if (incoming.type == TLEventType.GET && incoming.name === 'blur') {
+    if (incoming.$type == TLEventType.GET && incoming.$name === 'blur') {
         log.call('blurOnPopup - window.blur found');
         let l = events.length;
         while (l-- > 0) {
@@ -12,7 +12,7 @@ const blurOnPopup:condition = (index, events, incoming) => {
             let evt;
             while (k-- > 0) {
                 evt = frameEvents[l];
-                    if (evt.data === incoming.data && incoming.timeStamp - evt.timeStamp < 10) {
+                    if (evt.data === incoming.$data && incoming.$timeStamp - evt.timeStamp < 10) {
                     log.print('blur called quickly');
                     evt.data.close();
                     log.callEnd();

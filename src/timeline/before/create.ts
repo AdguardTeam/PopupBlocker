@@ -6,7 +6,7 @@ import * as log from '../../log';
 const createOpen:condition = (index, events) => {
     log.print('index:', index);
     let evt = events[index][0];
-    if (evt.type == TLEventType.CREATE && getTime() - evt.timeStamp < 200) {
+    if (evt.$type == TLEventType.CREATE && getTime() - evt.$timeStamp < 200) {
         return false;
     }
     return true;

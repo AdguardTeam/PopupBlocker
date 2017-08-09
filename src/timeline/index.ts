@@ -37,8 +37,8 @@ class Timeline {
                 frameEvents.splice(frameEvents.indexOf(event), 1);
             }, EVENT_RETENTION_LENGTH);
         } else {
-            let name:string = event.name ? event.name.toString() : '';
-            log.print(`Timeline.registerEvent: ${event.type} ${name}`, event.data);
+            let name:string = event.$name ? event.$name.toString() : '';
+            log.print(`Timeline.registerEvent: ${event.$type} ${name}`, event.$data);
         }
     }
     /**
@@ -90,7 +90,7 @@ class Timeline {
         while (l-- > 0) {
             let frameEvents = this.events[l];
             while (frameEvents[0]) {
-                if (now - frameEvents[0].timeStamp > EVENT_RETENTION_LENGTH) { frameEvents.shift(); }
+                if (now - frameEvents[0].$timeStamp > EVENT_RETENTION_LENGTH) { frameEvents.shift(); }
                 else { break; }
             }
         }
@@ -105,11 +105,15 @@ export const position:number = typeof KEY !== 'undefined' ? timeline.onNewFrame(
 // These are called from the outside of the code, so we have to make sure that call structures of those are not modified.
 // It is removed in minified builds, see the gulpfile.
 // @ifndef RECORD
-"REMOVE_START"
-window['TEMP0'] = timeline.registerEvent;
-window['TEMP1'] = timeline.canOpenPopup;
-window['TEMP2'] = timeline.onNewFrame;
-"REMOVE_END"
+/** @suppress {uselessCode} */
+function cc_export() {
+    "REMOVE_START"
+    window['registerEvent'] = timeline.registerEvent;
+    window['canOpenPopup'] = timeline.canOpenPopup;
+    window['onNewFrame'] = timeline.onNewFrame;
+    "REMOVE_END"
+}
+cc_export();
 // @endif
 
 // @ifdef RECORD

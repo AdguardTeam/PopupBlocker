@@ -175,12 +175,8 @@ function makeFunctionWrapper(orig:Function, applyHandler:ApplyHandler) {
 function copyProperty(orig, wrapped, prop) {
     let desc = Object.getOwnPropertyDescriptor(orig, prop);
     if (desc && desc.configurable) {
-        Object.defineProperty(wrapped, prop, {
-            value: orig[prop],
-            configurable: desc.configurable,
-            enumerable: desc.enumerable,
-            writable: desc.writable
-        });
+        desc.value = orig[prop];
+        Object.defineProperty(wrapped, prop, desc);
     }
 }
 

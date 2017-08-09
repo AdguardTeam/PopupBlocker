@@ -8,8 +8,8 @@ export const enum TLEventType {
 };
 
 export class TimelineEvent {
-    public timeStamp:number
-    constructor(public type:TLEventType, public name:PropertyKey, public data) {
-        this.timeStamp = getTime();
+    public $timeStamp:number
+    constructor(public $type:TLEventType, public $name:PropertyKey, public $data) {
+        this.$timeStamp = getTime();
     }
 };
