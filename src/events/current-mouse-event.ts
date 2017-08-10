@@ -35,7 +35,7 @@ export default class CurrentMouseEvent {
             let l = queue.length;
             let evt;
             while (!evt || !evt.currentTarget) {
-                if (l === 0) { break; }
+                if (l === 0) { return undefined; }
                 evt = queue[--l];
             }
             return evt;

@@ -55,6 +55,7 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
  * To restore the expected behavior, we need to detect if the event is 'masked' by artificial layers
  * and redirect it to the correct element.
  * ToDo: touch events: https://developer.mozilla.org/en/docs/Web/API/Touch_events
+ * ToDo: check for real target's ancestors for anchor or input elements.
  * @return true if an event is re-dispatched.
  */
 const dispatchIfBlockedByMask = function(event) {

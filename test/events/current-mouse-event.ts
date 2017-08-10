@@ -18,17 +18,33 @@ const getType = () => {
 
 describe('CurrentClickEvent', function () {
     it('retrieves a current click event in multiple nested event handlers', function(done) {
-        const LIMIT = 100;
+        this.timeout(5000);
+        const LIMIT = 1000;
         let counter = 0;
+
+        let pr = typeof Promise !== 'undefined' ? Promise : { resolve: () => ({ then: (fn) => {fn();} }) };
 
         const callback = function(evt) {
             counter++;
             // Tests whether currentEvent returns the right event.
-            expect(currentEvent()).to.equal(evt);
+            let retrieved = currentEvent();
+            expect(retrieved).to.equal(evt);
             
             if (counter < LIMIT) {
                 console.log('dispatching...');
-                document.body.dispatchEvent(getEvt(getType()));
+                switch (counter % 7) {
+                    case 0:
+                        setTimeout(document.body.dispatchEvent(getEvt(getType())));
+                        break;
+                    case 1:
+                        pr.resolve().then(() => { document.body.dispatchEvent(getEvt(getType())); });
+                        break;
+                    case 2:
+                    case 3:
+                    case 4:
+                        document.body.dispatchEvent(getEvt(getType()));
+                        break;
+                }
             }
             // Occasionally stops bubbling.
             switch (counter % 10) {
@@ -62,7 +78,7 @@ describe('CurrentClickEvent', function () {
             setTimeout(() => {
                 setTimeout(() => {
                     setTimeout(() => {
-                        setTimeout(done);
+                        setTimeout(done, 500);
                     })
                 })
             })
