@@ -11,6 +11,7 @@ const getEvt = (type) => {
 
 const types = ['mousedown', 'mouseup', 'click'];
 
+// Gets a random mouseevent type.
 const getType = () => {
     return types[Math.floor(Math.random() * 3)]
 };
@@ -22,11 +23,14 @@ describe('CurrentClickEvent', function () {
 
         const callback = function(evt) {
             counter++;
+            // Tests whether currentEvent returns the right event.
             expect(currentEvent()).to.equal(evt);
+            
             if (counter < LIMIT) {
                 console.log('dispatching...');
                 document.body.dispatchEvent(getEvt(getType()));
             }
+            // Occasionally stops bubbling.
             switch (counter % 10) {
                 case 0:
                     evt.stopPropagation();
