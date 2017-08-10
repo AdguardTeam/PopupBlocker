@@ -19,6 +19,6 @@ This will compile `popupblocker.user.js` file without minification.
 
 For production build run:
 
-    $ gulp build
+    $ gulp release
 
 This will compile `popupblocker.user.js` file with minification.

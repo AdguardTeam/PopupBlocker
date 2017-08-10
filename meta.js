@@ -27,12 +27,11 @@
 // @description:it	Blocca gli annunci di popup nelle pagine internet
 // @description:vi	Chặn quảng cáo popup trên các trang web
 // @description:es	Bloquea popups de anuncios en sitios web
-// @version 2.0.0
-// @adg:permanent	true
+// @version 2.1.0
 // @downloadURL [DOWNLOAD_URL]
 // @updateURL [UPDATE_URL]
 // @match http://*/*
 // @match https://*/*
-// @grant unsafeWindow
+// @grant none
 // @run-at document-start
 // ==/UserScript==

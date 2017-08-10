@@ -3,8 +3,6 @@
         <title>Popup Blocker Tests</title>
         <meta charset="utf-8" />
         <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
-        <script src="../build/popupblocker.user.js"></script>
-        <script src="../popupblocker.user.js"></script>
     </head>
     <body>
         <div id="mocha"></div>
@@ -13,11 +11,11 @@
         <script>
             mocha.setup({
               ui: 'bdd'
-            });
-            var expect = chai.expect;
+            });            
         </script>
-        <script src="./tests.js"></script>
+        <script src="./build/index.js"></script>
         <script>
+            function popupBlocker() {};
             mocha.run();
         </script>
     </body>
