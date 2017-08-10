@@ -1,5 +1,5 @@
 import { ApplyHandler, ApplyOption, wrapMethod } from '../proxy';
-import { verifyCurrentEvent } from '../verify-event';
+import { verifyCurrentEvent } from '../events/verify-event';
 import * as log from '../log';
 
 const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _arguments) {

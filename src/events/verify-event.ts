@@ -1,11 +1,16 @@
-import * as log from './log';
-import WeakMap from './weakmap';
+import * as log from '../log';
+import WeakMap from '../weakmap';
+import CurrentMouseEvent from './current-mouse-event';
 
-let supported = false;
-// @ifndef NO_EVENT
-supported = 'event' in window;
-// @endif
+let supported = 'event' in window;
+let currentMouseEvent;
 
+if (!supported) {
+    log.print('window.event is not supported.');
+    currentMouseEvent = (new CurrentMouseEvent()).getCurrentMouseEvent;
+} else {
+    log.print('window.event is supported.');
+}
 
 /**
  * Gets the event that is being currently handled.
@@ -30,7 +35,7 @@ export function retrieveEvent():Event {
             }
         }
     } else {
-
+        currentEvent = currentMouseEvent();
     }
     // @endif
     if (!currentEvent) {

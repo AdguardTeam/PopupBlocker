@@ -1,5 +1,5 @@
 import { ApplyHandler, makeObjectProxy, wrapMethod } from '../proxy';
-import { verifyEvent, retrieveEvent, verifyCurrentEvent } from '../verify-event';
+import { verifyEvent, retrieveEvent, verifyCurrentEvent } from '../events/verify-event';
 import { _dispatchEvent } from './dispatchEvent';
 import { timeline, position } from '../timeline/index';
 import * as log from '../log';

@@ -1,5 +1,5 @@
 import { ApplyHandler, wrapMethod } from '../proxy';
-import { verifyCurrentEvent } from '../verify-event';
+import { verifyCurrentEvent } from '../events/verify-event';
 import * as log from '../log';
 
 let clickVerified:ApplyHandler = function(_click, _this) {

@@ -1,7 +1,4 @@
-/// <reference path="../node_modules/@types/mocha/index.d.ts" />
-/// <reference path="../node_modules/@types/chai/index.d.ts" />
-
-import { retrieveEvent, verifyEvent, maybeOverlay } from '../src/verify-event';
+import { retrieveEvent, verifyEvent, maybeOverlay } from '../../src/events/verify-event';
 
 const expect = chai.expect;
 const getEvt = () => {
