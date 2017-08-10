@@ -15,9 +15,6 @@ module.exports = {
         assume_function_wrapper: false,
         warning_level: 'QUIET'
     }),
-    test: Object.assign({}, base, {
-        compilation_level: 'WHITESPACE_ONLY'
-    }),
     ts: Object.assign({}, base, {
         externs: [
             options.tscc_path + '/generated-externs.js',

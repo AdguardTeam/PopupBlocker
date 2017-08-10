@@ -14,7 +14,6 @@ module.exports = () => {
             }
         }))
         .pipe(rollup(require('./options/rollup').test))
-        .pipe(closureCompiler(cc.test))
         .pipe(rename('index.js'))
         .pipe(gulp.dest('./test/build'));
 };

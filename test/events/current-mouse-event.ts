@@ -16,8 +16,8 @@ const getType = () => {
     return types[Math.floor(Math.random() * 3)]
 };
 
-describe('CurrentClickEvent', function () {
-    it('retrieves a current click event in multiple nested event handlers', function(done) {
+describe('CurrentMouseEvent', function () {
+    it('retrieves a current mouse event in multiple nested event handlers', function(done) {
         this.timeout(5000);
         const LIMIT = 1000;
         let counter = 0;
