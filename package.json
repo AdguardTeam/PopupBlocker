@@ -3,17 +3,11 @@
   "version": "2.1.0",
   "description": "Block popups preemptively by wrapping browser APIs for additional checsk",
   "scripts": {
-    "dev": "gulp dev && gulp watch",
-    "prep": "gulp prep-tscc && tsickle --externs=build/tsc/generated-externs.js -- -p tasks/prod",
-    "beta": "yarn run prep && gulp beta",
-    "release": "yarn run prep && gulp release"
+    "test": "mocha-phantomjs test/index.html"
   },
   "repository": "https://github.com/AdguardTeam/PopupBlocker",
   "author": "seanl-adg",
   "license": "MIT",
-  "scripts": {
-    "test": "mocha-phantomjs test/index.html"
-  },
   "devDependencies": {
     "@alexlur/rollup-plugin-typescript": "^1.0.4",
     "chai": "^4.1.0",
@@ -34,6 +28,7 @@
   },
   "dependencies": {
     "@types/chai": "^4.0.2",
-    "@types/mocha": "^2.2.41"
+    "@types/mocha": "^2.2.41",
+    "html-minifier": "^3.5.3"
   }
 }

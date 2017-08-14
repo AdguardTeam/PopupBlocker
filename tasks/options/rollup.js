@@ -9,6 +9,12 @@ const rollup_options = {
     useStrict: false
 };
 
+const rollup_options_wrapper = {
+    entry: 'src/wrapper.ts',
+    plugins: [typescript2()],
+    format: 'iife'
+};
+
 const rollup_options_test = {
     entry: 'test/index.ts',
     plugins: [typescript()],
@@ -18,5 +24,6 @@ const rollup_options_test = {
 
 module.exports = {
     dev: rollup_options,
+    wrapper: rollup_options_wrapper,
     test: rollup_options_test
 };

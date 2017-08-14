@@ -5,6 +5,9 @@ const rename = require('gulp-rename');
 const preprocess = require('gulp-preprocess');
 const fs = require('fs');
 
+const minifyHtml = require('html-minifier').minify;
+
+
 const textHelper = require('../utill/transform-text');
 const wrapModule = textHelper.wrapModule;
 const removeCcExport = textHelper.removeCcExport;
@@ -22,17 +25,39 @@ const tsickleWorkaround = (content) => (content.replace(reWorkaroundTsickleBug, 
 
 module.exports = (done) => {
     let meta = fs.readFileSync(options.outputPath + '/' + options.metaName);
+    
+    let wrapper = fs.readFileSync(options.tscc_path + '/wrapper-nocompile.js').toString().split('"CONTENT"');
+
+    let alerthtml = minifyHtml(fs.readFileSync('src/ui/template.html').toString(), {
+        collapseWhitespace: true,
+        minifyCSS: true,
+        removeAttributeQuotes: true,
+    }).replace(/[\\"]/g, (m) => {
+        return "\\" + m;
+    });
+    
     let content = gulp.src(options.tscc_path + '/**/*.js')
         .pipe(insert.transform(tsickleWorkaround))
         .pipe(closureCompiler(options.cc_options))
-        .pipe(insert.transform(removeCcExport));
-    gulp.src('src/wrapper.js')
-        .pipe(preprocess({ context: options.preprocessContext }))
-        .on('data', (file) => {
-            let wrapper = file.contents.toString().split('"CONTENT"');
-            content = content.pipe(insert.transform(wrapModule(wrapper)))
-                .pipe(closureCompiler(require('../options/cc').after_ts))
-                .pipe(insert.transform((content) => { return meta + content; }))
+        .pipe(insert.transform(removeCcExport))
+        .pipe(insert.transform(wrapModule(wrapper)))
+        .pipe(rename('wrapper-nocompile.js'))
+        .pipe(gulp.dest(options.tscc_path))
+        .on('end', () => {
+            console.log('first compilation finished.');
+            gulp.src(options.tscc_path + '/**/*.js')
+                .pipe(insert.transform(tsickleWorkaround))
+                .pipe(insert.transform((content, file) => {
+                    if (/show\-alert/.test(file.path)) {
+                        return content.replace(/ALERT\_TEMPLATE/, alerthtml);
+                    } else {
+                        return content;
+                    }
+                }))
+                .pipe(closureCompiler(require('../options/cc').ts_wrapper))
+                .pipe(insert.transform((content) => {
+                    return meta + content;
+                }))
                 .pipe(rename(options.name))
                 .pipe(gulp.dest(options.outputPath))
                 .on('end', done);
