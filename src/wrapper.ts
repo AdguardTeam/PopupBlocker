@@ -2,8 +2,6 @@ import bridge from './ui/create-bridge';
 import BRIDGE_KEY from './ui/bridge';
 import popupBlocker from './wrapper-nocompile';
 
-
-
 if (!bridge.domainOption.whitelisted) {
     /**
      * In Firefox, userscripts can't write properties of unsafeWindow, so we create a <script> tag
@@ -12,7 +10,7 @@ if (!bridge.domainOption.whitelisted) {
     if (typeof InstallTrigger !== 'undefined' && document.currentScript === null) {
         // Firefox userscript
         var script = document.createElement('script');
-        var text = `(${popupBlocker.toString()})(this,!1,${BRIDGE_KEY})`;
+        var text = `(${popupBlocker.toString()})(this,!1,'${BRIDGE_KEY}')`;
         script.textContent = text;
         var el = document.body || document.head || document.documentElement;
         el.appendChild(script);

@@ -6,7 +6,7 @@ const preprocess = require('gulp-preprocess');
 const fs = require('fs');
 
 const minifyHtml = require('html-minifier').minify;
-
+const insertResource = require('../insert-resource');
 
 const textHelper = require('../utill/transform-text');
 const wrapModule = textHelper.wrapModule;
@@ -27,14 +27,6 @@ module.exports = (done) => {
     let meta = fs.readFileSync(options.outputPath + '/' + options.metaName);
     
     let wrapper = fs.readFileSync(options.tscc_path + '/wrapper-nocompile.js').toString().split('"CONTENT"');
-
-    let alerthtml = minifyHtml(fs.readFileSync('src/ui/template.html').toString(), {
-        collapseWhitespace: true,
-        minifyCSS: true,
-        removeAttributeQuotes: true,
-    }).replace(/[\\"]/g, (m) => {
-        return "\\" + m;
-    });
     
     let content = gulp.src(options.tscc_path + '/**/*.js')
         .pipe(insert.transform(tsickleWorkaround))
@@ -44,16 +36,10 @@ module.exports = (done) => {
         .pipe(rename('wrapper-nocompile.js'))
         .pipe(gulp.dest(options.tscc_path))
         .on('end', () => {
-            console.log('first compilation finished.');
+            console.log('First compilation has finished.');
             gulp.src(options.tscc_path + '/**/*.js')
                 .pipe(insert.transform(tsickleWorkaround))
-                .pipe(insert.transform((content, file) => {
-                    if (/show\-alert/.test(file.path)) {
-                        return content.replace(/ALERT\_TEMPLATE/, alerthtml);
-                    } else {
-                        return content;
-                    }
-                }))
+                .pipe(insert.transform(insertResource))
                 .pipe(closureCompiler(require('../options/cc').ts_wrapper))
                 .pipe(insert.transform((content) => {
                     return meta + content;

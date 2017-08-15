@@ -1,6 +1,6 @@
 import { requestDomainWhitelist, requestDestinationWhitelist } from './storage';
 
-const innerHTML = "ALERT_TEMPLATE";
+const innerHTML = "RESOURCE:ALERT_TEMPLATE";
 
 const enum STYLE {
     top_offset = 10,
@@ -25,6 +25,13 @@ interface AlertIntf {
     readonly pushdown:(amount:number)=>void    
 }
 
+function attachClickListenerForEach (iterable:NodeList, listener:(this:Node,evt:MouseEvent)=>any) {
+    let l = iterable.length;
+    while (l-- > 0) {
+        iterable[l].addEventListener('click', listener);
+    }
+}
+
 class Alert implements AlertIntf {
     public element:HTMLIFrameElement;
     public collapsed:boolean;
@@ -44,23 +51,16 @@ class Alert implements AlertIntf {
             document.close();
 
             if (showCollapsed) {
-                document.getElementsByClassName('popup')[0].classList.add('popup--min');
+                document[getElementsByClassName]('popup')[0].classList.add('popup--min');
             }
 
-            let allowBtns = document.getElementsByClassName('popup__link--allow');
-            let l = allowBtns.length;
-            while (l-- > 0) {
-                allowBtns[l].addEventListener('click', () => {
-                    requestDestinationWhitelist(popup_domain);
-                });
-            }
-            let allBtns = document.getElementsByClassName('popup__link--all');
-            l = allBtns.length;
-            while (l-- > 0) {
-                allBtns[l].addEventListener('click', () => {
-                    requestDomainWhitelist(orig_domain);
-                });
-            }
+            attachClickListenerForEach(document[getElementsByClassName]('popup__link--allow'), () => {
+                requestDestinationWhitelist(popup_domain);
+            });
+
+            attachClickListenerForEach(document[getElementsByClassName]('popup__link--all'), () => {
+                requestDomainWhitelist(orig_domain);
+            });
         });
 
         // Adjust css of an iframe
@@ -78,7 +78,7 @@ class Alert implements AlertIntf {
     }
     collapse() {
         if (this.collapsed) { return; }
-        let root = this.element.contentDocument.getElementsByClassName('popup')[0];
+        let root = this.element.contentDocument[getElementsByClassName]('popup')[0];
         root.classList.add('popup--min');
         this.collapsed = true;
     }
@@ -95,32 +95,24 @@ class AlertController {
     }
     createAlert(orig_domain:string, popup_domain:string, showCollapsed:boolean) {
         let alert = new Alert(orig_domain, popup_domain, showCollapsed);
-
         // Pushes previous alerts down
         let l = this.alerts.length;
         let offset = STYLE.middle_offset + alert.height;
         while (l-- > 0) {
             this.alerts[l].pushdown(offset);
         }
-
         // Appends an alert to DOM
         document.body.appendChild(alert.element);
-
         // Adds event listeners that needs to run in this context
-        let closeBtns = alert.element.contentDocument.getElementsByClassName('popup__close');
-        l = closeBtns.length;
-        while (l-- > 0) {
-            closeBtns[l].addEventListener('click', () => {
-                this.destroyAlert(alert);    
-            });
-        }
+        attachClickListenerForEach(alert.element.contentDocument[getElementsByClassName]('popup__close'), () => {
+            this.destroyAlert(alert);    
+        });
         
         // Schedules collapsing
         let self = this;
         let destroy = () => {
             self.destroyAlert(alert);
         };
-
         if (showCollapsed) {
             setTimeout(destroy, COLLAPSED_ALERT_TIMEOUT);
         } else {
@@ -137,5 +129,8 @@ class AlertController {
         this.alerts.splice(this.alerts.indexOf(alert), 1);
     }
 }
+
+// Minifiers will not inline below strings
+var getElementsByClassName = 'getElementsByClassName';
 
 export default new AlertController();

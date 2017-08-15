@@ -11,6 +11,8 @@ const closureCompiler = require('google-closure-compiler').gulp();
 const textHelper = require('./utill/transform-text');
 const fs = require('fs');
 const minifyHtml = require('html-minifier').minify;
+const insertResource = require('./insert-resource');
+
 
 const rollup_options_wrapper = require('./options/rollup').wrapper;
 
@@ -20,26 +22,12 @@ const wrapModule = textHelper.wrapModule;
 module.exports = (done) => {
     let meta = fs.readFileSync(options.outputPath + '/'+ options.metaName);
 
-    let alerthtml = minifyHtml(fs.readFileSync('src/ui/template.html').toString(), {
-        collapseWhitespace: true,
-        minifyCSS: true,
-        removeAttributeQuotes: true,
-    }).replace(/[\\"]/g, (m) => {
-        return "\\" + m;
-    });
-
     let content = gulp.src('src/**/*.ts')
         .pipe(preprocess({ context: options.preprocessContext }))
         .pipe(rollup(options.rollup_options));
     gulp.src('src/**/*.ts')
         .pipe(preprocess({ context: options.preprocessContext }))
-        .pipe(insert.transform((content, file) => {
-            if (/show\-alert/.test(file.path)) {
-                return content.replace(/ALERT\_TEMPLATE/, alerthtml);
-            } else {
-                return content;
-            }
-        }))
+        .pipe(insert.transform(insertResource))
         .pipe(rollup(rollup_options_wrapper))
         .on('data', (file) => {
             let wrapper = file.contents.toString().split('"CONTENT"');
