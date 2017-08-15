@@ -25,7 +25,6 @@ if (supported) {
     const MAGIC_CHILD = 'handshake-child';
     const connectedFrames = new WeakMap();
     const channel = isTopOrEmpty ? null : new MessageChannel(); // Do not initialize messagechannel when it is not going to be used
-
     /**
      * A `message` event handler to store private messaging channel.
      * Each iframe posts a message to its parent frame with a port of a newly created
@@ -54,7 +53,6 @@ if (supported) {
         evt.stopImmediatePropagation();
         evt.preventDefault();
     };
-
     /**
      * This is a function that will be used as a message event handler for private
      * messaging channel we establishes.

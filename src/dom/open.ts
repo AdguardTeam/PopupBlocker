@@ -45,7 +45,7 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
         if (redispatched || urlIsHrefOfAnchor || urlIsCurrentHref) {
             log.print("An event is re-dispatched or the opened url is equal to the target's href or the url is equal to the current href");
             log.callEnd();
-            bridge.showAlert(bridge.domain, url, true);
+            bridge.showAlert(bridge.domain, url, false);
             return null;
         }
     }
@@ -54,7 +54,7 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
     win = mockWindow(_arguments[0], _arguments[1]);
     context['mocked'] = true;
     log.callEnd();
-    bridge.showAlert(bridge.domain, url, true);
+    bridge.showAlert(bridge.domain, url, false);
     return win;
 };
 

@@ -14,7 +14,7 @@ let clickVerified:ApplyHandler = function(_click, _this) {
         var passed = verifyCurrentEvent();
         if (!passed) {
             log.print('It did not pass the test, not clicking element');
-            bridge.showAlert(bridge.domain, _this.host, true);
+            bridge.showAlert(bridge.domain, _this.host, false);
             log.callEnd();
             return;
         }

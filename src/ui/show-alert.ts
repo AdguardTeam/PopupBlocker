@@ -1,21 +1,33 @@
 import { requestDomainWhitelist, requestDestinationWhitelist } from './storage';
 import * as log from '../log';
 
-
 const innerHTML = "RESOURCE:ALERT_TEMPLATE";
 
-const enum STYLE {
+const enum STYLE_CONST {
     top_offset = 10,
     right_offset = 10,
-    height = 73,
-    collapsed_height = 64,
-    middle_offset = 0
-}
+    height = 78,
+    collapsed_height = 48,
+    middle_offset = 10
+};
 
 const FULL_ALERT_TIMEOUT = 2000;
-const COLLAPSED_ALERT_TIMEOUT = 105000;
+const COLLAPSED_ALERT_TIMEOUT = 5000;
+
+const MAX_ALERT_NUM = 4;
 
 const px = 'px';
+
+const initialAlertFrameStyle = {
+    "position": "fixed",
+    "right": STYLE_CONST.right_offset + px,
+    "width": "574px",
+    "top": STYLE_CONST.top_offset + px,
+    "border": "none",
+    "opacity": "0",
+    "transition": "opacity 500ms, top 500ms",
+    "transitionTimingFunction": "cubic-bezier(0.86, 0, 0.07, 1), cubic-bezier(0.86, 0, 0.07, 1)"
+};
 
 interface AlertIntf {
     readonly element: HTMLIFrameElement,
@@ -42,7 +54,6 @@ class Alert implements AlertIntf {
     constructor(orig_domain:string, popup_domain:string, showCollapsed:boolean) {
         let iframe = document.createElement('iframe');
         let loaded = false;
-
         iframe.addEventListener('load', (evt) => {
             // Attach event handlers
             if (loaded) { return; }
@@ -62,31 +73,15 @@ class Alert implements AlertIntf {
             // Unless this, the background of the iframe will be white in IE11
             document.body.setAttribute('style', 'background-color:transparent;');
         });
-
         // Adjust css of an iframe
         iframe.setAttribute('allowTransparency', 'true');
-
-        let height = this.height = showCollapsed ? STYLE.collapsed_height : STYLE.height;
-
-        const iframeStyle = {
-            "position": "fixed",
-            "right": STYLE.right_offset + px,
-            "max-width": "574px",
-            "height": height + px,
-            "top": STYLE.top_offset + px,
-            "border": "none",
-            "opacity": "0",
-            "transition": "opacity 500ms, top 500ms",
-            "transitionTimingFunction": "cubic-bezier(0.86, 0, 0.07, 1), cubic-bezier(0.86, 0, 0.07, 1)"
-        };
-
-        for(let prop in iframeStyle) {
-            iframe.style[prop] = iframeStyle[prop];
-        }
+        for (let prop in initialAlertFrameStyle) { iframe.style[prop] = initialAlertFrameStyle[prop]; }
+        let height = this.height = showCollapsed ? STYLE_CONST.collapsed_height : STYLE_CONST.height;
+        iframe.style['height'] = height + px;
 
         this.element = iframe;
         this.collapsed = showCollapsed;
-        this.top = STYLE.top_offset;
+        this.top = STYLE_CONST.top_offset;
     }
     pushdown(amount:number) {
         let newTop = this.top + amount;
@@ -95,10 +90,11 @@ class Alert implements AlertIntf {
     }
     collapse() {
         if (this.collapsed) { return; }
+        this.element.style['height'] = STYLE_CONST.collapsed_height + px;
         let root = this.element.contentDocument[getElementsByClassName]('popup')[0];
         root.classList.add('popup--min');
         this.collapsed = true;
-        this.height = STYLE.collapsed_height;
+        this.height = STYLE_CONST.collapsed_height;
     }
     destroy() {
         let parentNode = this.element.parentNode;
@@ -115,23 +111,16 @@ class AlertController {
         let alert = new Alert(orig_domain, popup_domain, showCollapsed);
         // Pushes previous alerts down
         let l = this.alerts.length;
-        let offset = STYLE.middle_offset + alert.height;
-        while (l-- > 0) {
-            this.alerts[l].pushdown(offset);
-        }
-
+        let offset = STYLE_CONST.middle_offset + alert.height;
+        this.moveBunch(l, offset);
         // Adds event listeners that needs to run in this context
         alert.element.addEventListener('load', () => {
             attachClickListenerForEach(alert.element.contentDocument[getElementsByClassName]('popup__close'), () => {
                 this.destroyAlert(alert);
             });
         });
-
         // Appends an alert to DOM
         document.body.appendChild(alert.element);
-        // Force reflow
-        alert.element.getBoundingClientRect();
-        
         // Schedules collapsing
         let self = this;
         let destroy = () => {
@@ -145,13 +134,14 @@ class AlertController {
                 setTimeout(destroy, COLLAPSED_ALERT_TIMEOUT);
             }, FULL_ALERT_TIMEOUT);
         }
-
-        this.alerts.push(alert);
+        // Pushes the new alerts to an array, destroy from the oldest alert when needed
+        if ((l = this.alerts.push(alert)) > MAX_ALERT_NUM) {
+            l -= MAX_ALERT_NUM;
+            while (l-- > 0) { this.destroyAlert(this.alerts[l]); }
+        }
     }
     private moveBunch(index:number, offset:number) {
-        for (let j = 0; j < index; j++) {
-            this.alerts[j].pushdown(offset);
-        }
+        while (index-- > 0) { this.alerts[index].pushdown(offset); }
     }
     private collapseAlert(alert:Alert) {
         let prevHeight = alert.height;
@@ -163,7 +153,7 @@ class AlertController {
     private destroyAlert(alert:Alert) {
         alert.destroy();
         let i = this.alerts.indexOf(alert);
-        let offset = alert.height + STYLE.middle_offset;
+        let offset = alert.height + STYLE_CONST.middle_offset;
         this.moveBunch(i, -offset);
         this.alerts.splice(i, 1);
     }

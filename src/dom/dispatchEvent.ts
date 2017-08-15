@@ -15,7 +15,7 @@ const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _argu
         if (!passed) {
             log.print('It did not pass the test, not dispatching event');
             log.callEnd();
-            bridge.showAlert(bridge.domain, _this.host, true);
+            bridge.showAlert(bridge.domain, _this.host, false);
             return false;
             // Or, we may open a new widnow with window.open to save a reference and do additional checks.
         }
