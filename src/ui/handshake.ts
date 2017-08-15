@@ -36,7 +36,7 @@ if (supported) {
         if (evt.origin === "null" || evt.origin === "about://") {
             // For such empty frames, PopupBlocker inject itself and shares the bridge object.
             // So there is no need to use a messaging channel.
-            // IE and Edge recognizes empty frames' origin as `about://`.
+            // IE and Edge recognize empty frames' origin as `about://`.
             return;
         }
         if (evt.data !== MAGIC) {

@@ -49,14 +49,15 @@ class Alert implements AlertIntf {
             loaded = true;
             let document = iframe.contentDocument;
             document.documentElement.innerHTML = innerHTML; // document.write('..') does not work on FF Greasemonkey
-            if (showCollapsed) {
-                document[getElementsByClassName]('popup')[0].classList.add('popup--min');
-            }
+            if (showCollapsed) { document[getElementsByClassName]('popup')[0].classList.add('popup--min'); }
             attachClickListenerForEach(document[getElementsByClassName]('popup__link--allow'), () => {
                 requestDestinationWhitelist(popup_domain);
             });
             attachClickListenerForEach(document[getElementsByClassName]('popup__link--all'), () => {
                 requestDomainWhitelist(orig_domain);
+            });
+            requestAnimationFrame(() => {
+                iframe.style['opacity'] = '1';
             });
             // Unless this, the background of the iframe will be white in IE11
             document.body.setAttribute('style', 'background-color:transparent;');
@@ -64,8 +65,25 @@ class Alert implements AlertIntf {
 
         // Adjust css of an iframe
         iframe.setAttribute('allowTransparency', 'true');
+
         let height = this.height = showCollapsed ? STYLE.collapsed_height : STYLE.height;
-        iframe.setAttribute('style', `position:fixed;right:${STYLE.right_offset + px};max-width:574px;height:${height + px};top:${STYLE.top_offset + px};border:none;`);
+
+        const iframeStyle = {
+            "position": "fixed",
+            "right": STYLE.right_offset + px,
+            "max-width": "574px",
+            "height": height + px,
+            "top": STYLE.top_offset + px,
+            "border": "none",
+            "opacity": "0",
+            "transition": "opacity 500ms, top 500ms",
+            "transitionTimingFunction": "cubic-bezier(0.86, 0, 0.07, 1), cubic-bezier(0.86, 0, 0.07, 1)"
+        };
+
+        for(let prop in iframeStyle) {
+            iframe.style[prop] = iframeStyle[prop];
+        }
+
         this.element = iframe;
         this.collapsed = showCollapsed;
         this.top = STYLE.top_offset;

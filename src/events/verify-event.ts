@@ -4,9 +4,9 @@ import CurrentMouseEvent from './current-mouse-event';
 
 /**
  * On IE 10 and lower, window.event is a `MSEventObj` instance which does not implement `target` property.
- * We uses a polyfill for such cases.
+ * We use a polyfill for such cases.
  */
-let supported = 'event' in window && (!('documentMode' in document) || (document.documentMode === 11));
+const supported = 'event' in window && (!('documentMode' in document) || (document.documentMode === 11));
 let currentMouseEvent;
 
 if (!supported) {

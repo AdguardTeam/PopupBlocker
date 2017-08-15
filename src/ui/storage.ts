@@ -31,5 +31,3 @@ export function requestDomainWhitelist(domain) {
     domainOption['whitelisted'] = true;
     GM_setValue(domain, JSON.stringify(domainOption));
 }
-
-export const salt = getValue('salt', Math.random().toString(36).substr(7));

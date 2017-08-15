@@ -126,8 +126,6 @@ const proxifyReturn:ApplyHandler = (target, _this, _arguments) => {
     return ret;
 };
 
-const overrideMethodsList = 'open,focus,close'.split(',');
-
 export function makeObjectProxy(obj) {
     if ( obj === null || typeof obj !== 'object' || !supported) { return obj; }
     let proxy = realToProxy.get(obj);
