@@ -23,3 +23,7 @@ interface PopupNotificationMsgIntf {
     popup_domain:string,
     isGeneric:boolean
 }
+
+interface Document {
+    documentMode?: number;
+}

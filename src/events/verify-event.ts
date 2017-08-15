@@ -2,7 +2,11 @@ import * as log from '../log';
 import WeakMap from '../weakmap';
 import CurrentMouseEvent from './current-mouse-event';
 
-let supported = 'event' in window;
+/**
+ * On IE 10 and lower, window.event is a `MSEventObj` instance which does not implement `target` property.
+ * We uses a polyfill for such cases.
+ */
+let supported = 'event' in window && (!('documentMode' in document) || (document.documentMode === 11));
 let currentMouseEvent;
 
 if (!supported) {
@@ -66,7 +70,6 @@ export function retrieveEvent():Event {
     log.callEnd();
     return currentEvent;
 };
-
 
 /**
  * @param event Optional argument, an event to test with. Default value is currentEvent.

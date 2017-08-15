@@ -2,16 +2,26 @@ import BRIDGE_KEY from './bridge';
 import { domainOption, whitelistedDestinations } from './storage';
 import createAlertInTopFrame from './handshake';
 
-const bridge:Bridge = createObjectIn(unsafeWindow, {
+// Shim for AG Win
+let clone = typeof cloneInto === 'function' ? cloneInto : x=>x;
+let createObject = typeof createObjectIn === 'function' ? createObjectIn : function(target:Object, option:DefineAs) {
+    let obj = {};
+    target[option.defineAs] = obj;
+    return obj;
+};
+let exportFn = typeof exportFunction === 'function' ? exportFunction : function(fn, target, option:DefineAs) {
+    target[option.defineAs] = fn;
+};
+//
+
+const bridge:Bridge = createObject(unsafeWindow, {
     defineAs: BRIDGE_KEY
 });
-
-let clone = typeof cloneInto === 'function' ? cloneInto : x=>x; // Shim for userscript hosts that does not implement cloneInto
 
 bridge.domain = location.host;
 bridge.domainOption = clone(domainOption, bridge, { defineAs: 'domainOption' });
 bridge.whitelistedDestinations = clone(whitelistedDestinations, bridge, { defineAs: 'whitelistedDestinations' });
-exportFunction(createAlertInTopFrame, bridge, {
+exportFn(createAlertInTopFrame, bridge, {
     defineAs: 'showAlert'
 });
 

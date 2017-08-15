@@ -13,7 +13,7 @@ const enum STYLE {
 }
 
 const FULL_ALERT_TIMEOUT = 2000;
-const COLLAPSED_ALERT_TIMEOUT = 5000;
+const COLLAPSED_ALERT_TIMEOUT = 105000;
 
 const px = 'px';
 
@@ -52,18 +52,18 @@ class Alert implements AlertIntf {
             if (showCollapsed) {
                 document[getElementsByClassName]('popup')[0].classList.add('popup--min');
             }
-
             attachClickListenerForEach(document[getElementsByClassName]('popup__link--allow'), () => {
                 requestDestinationWhitelist(popup_domain);
             });
-
             attachClickListenerForEach(document[getElementsByClassName]('popup__link--all'), () => {
                 requestDomainWhitelist(orig_domain);
             });
+            // Unless this, the background of the iframe will be white in IE11
+            document.body.setAttribute('style', 'background-color:transparent;');
         });
 
         // Adjust css of an iframe
-        iframe.setAttribute('allowtransparency', 'true');
+        iframe.setAttribute('allowTransparency', 'true');
         let height = this.height = showCollapsed ? STYLE.collapsed_height : STYLE.height;
         iframe.setAttribute('style', `position:fixed;right:${STYLE.right_offset + px};max-width:574px;height:${height + px};top:${STYLE.top_offset + px};border:none;`);
         this.element = iframe;
@@ -80,6 +80,7 @@ class Alert implements AlertIntf {
         let root = this.element.contentDocument[getElementsByClassName]('popup')[0];
         root.classList.add('popup--min');
         this.collapsed = true;
+        this.height = STYLE.collapsed_height;
     }
     destroy() {
         let parentNode = this.element.parentNode;
@@ -110,6 +111,8 @@ class AlertController {
 
         // Appends an alert to DOM
         document.body.appendChild(alert.element);
+        // Force reflow
+        alert.element.getBoundingClientRect();
         
         // Schedules collapsing
         let self = this;
@@ -120,16 +123,31 @@ class AlertController {
             setTimeout(destroy, COLLAPSED_ALERT_TIMEOUT);
         } else {
             setTimeout(() => {
-                alert.collapse();
+                self.collapseAlert(alert);
                 setTimeout(destroy, COLLAPSED_ALERT_TIMEOUT);
             }, FULL_ALERT_TIMEOUT);
         }
 
         this.alerts.push(alert);
     }
+    private moveBunch(index:number, offset:number) {
+        for (let j = 0; j < index; j++) {
+            this.alerts[j].pushdown(offset);
+        }
+    }
+    private collapseAlert(alert:Alert) {
+        let prevHeight = alert.height;
+        alert.collapse();
+        let offset = alert.height - prevHeight;
+        let index = this.alerts.indexOf(alert);
+        this.moveBunch(index, offset);
+    }
     private destroyAlert(alert:Alert) {
         alert.destroy();
-        this.alerts.splice(this.alerts.indexOf(alert), 1);
+        let i = this.alerts.indexOf(alert);
+        let offset = alert.height + STYLE.middle_offset;
+        this.moveBunch(i, -offset);
+        this.alerts.splice(i, 1);
     }
 }
 
