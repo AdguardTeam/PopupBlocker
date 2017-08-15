@@ -1,4 +1,6 @@
 import { requestDomainWhitelist, requestDestinationWhitelist } from './storage';
+import * as log from '../log';
+
 
 const innerHTML = "RESOURCE:ALERT_TEMPLATE";
 
@@ -46,10 +48,7 @@ class Alert implements AlertIntf {
             if (loaded) { return; }
             loaded = true;
             let document = iframe.contentDocument;
-            document.open();
-            document.write(innerHTML);
-            document.close();
-
+            document.documentElement.innerHTML = innerHTML; // document.write('..') does not work on FF Greasemonkey
             if (showCollapsed) {
                 document[getElementsByClassName]('popup')[0].classList.add('popup--min');
             }
@@ -101,12 +100,16 @@ class AlertController {
         while (l-- > 0) {
             this.alerts[l].pushdown(offset);
         }
+
+        // Adds event listeners that needs to run in this context
+        alert.element.addEventListener('load', () => {
+            attachClickListenerForEach(alert.element.contentDocument[getElementsByClassName]('popup__close'), () => {
+                this.destroyAlert(alert);
+            });
+        });
+
         // Appends an alert to DOM
         document.body.appendChild(alert.element);
-        // Adds event listeners that needs to run in this context
-        attachClickListenerForEach(alert.element.contentDocument[getElementsByClassName]('popup__close'), () => {
-            this.destroyAlert(alert);    
-        });
         
         // Schedules collapsing
         let self = this;
