@@ -1,0 +1,17 @@
+{
+    "popup_text_full": {
+        "message": "Blocked an attempt to open a <0/> pop-up window"
+    },
+    "popup_allow_dest": {
+        "message": "Allow always ${dest}"
+    },
+    "popup_allow_origin": {
+        "message": "Allow all pop-ups on this website"
+    },
+    "popup_text_min":{
+        "message": "Blocked"
+    },
+    "popup_allow_dest_min": {
+        "message": "pop-up"
+    }
+}

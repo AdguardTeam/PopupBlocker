@@ -1,4 +1,5 @@
 import { requestDomainWhitelist, requestDestinationWhitelist } from './storage';
+import translate from './localization';
 import * as log from '../log';
 
 const innerHTML = "RESOURCE:ALERT_TEMPLATE";
@@ -54,12 +55,17 @@ class Alert implements AlertIntf {
     constructor(orig_domain:string, popup_domain:string, showCollapsed:boolean) {
         let iframe = document.createElement('iframe');
         let loaded = false;
+        // Prepare innerHTML
+        let _innerHTML = innerHTML.replace(/\${dest}/g, popup_domain);
         iframe.addEventListener('load', (evt) => {
             // Attach event handlers
             if (loaded) { return; }
             loaded = true;
             let document = iframe.contentDocument;
-            document.documentElement.innerHTML = innerHTML; // document.write('..') does not work on FF Greasemonkey
+            document.documentElement.innerHTML = _innerHTML; // document.write('..') does not work on FF Greasemonkey
+            translate(document.body, {
+                'dest': popup_domain
+            });
             if (showCollapsed) { document[getElementsByClassName]('popup')[0].classList.add('popup--min'); }
             attachClickListenerForEach(document[getElementsByClassName]('popup__link--allow'), () => {
                 requestDestinationWhitelist(popup_domain);

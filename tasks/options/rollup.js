@@ -12,7 +12,8 @@ const rollup_options = {
 const rollup_options_wrapper = {
     entry: 'src/wrapper.ts',
     plugins: [typescript2()],
-    format: 'iife'
+    format: 'iife',
+    useStrict: false
 };
 
 const rollup_options_test = {

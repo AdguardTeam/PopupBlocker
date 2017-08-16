@@ -111,7 +111,7 @@ gulp.task('beta', (done) => {
     options.preprocessContext = {
         NO_PROXY: true
     };
-    runSequence('clean', 'prep-tscc', 'tsickle', 'meta', 'tscc', /*'tscc-clean',*/ done);
+    runSequence('clean', 'prep-tscc', 'tsickle', 'meta', 'tscc', 'tscc-clean', done);
 });
 
 gulp.task('release', (done) => {
