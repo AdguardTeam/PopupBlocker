@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: "Gotham Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            margin:0px;
+        }
+
+        .popup {
+            position: fixed;
+            top: 0px;
+            right: 0px;
+            padding: 15px 35px 15px 20px;
+            font-size: 13px;
+            white-space: nowrap;
+            background-color: #fff;
+            border: 1px solid #D6D6D6;
+            box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .2);
+        }
+
+        .popup--min {
+            padding: 8px 38px 8px 14px;
+        }
+
+        .popup--min .popup__text-min {
+            display: block
+        }
+
+        .popup--min .popup__text-full {
+            display: none
+        }
+
+        .popup--min .popup__logo {
+            width: 24px;
+            height: 24px;
+            margin-right: 9px;
+        }
+
+        .popup--min .popup__text {
+            font-size: 11px;
+            line-height: 1.2;
+        }
+
+        .popup--min .popup__close {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .popup__logo {
+            display: inline-block;
+            vertical-align: middle;
+            width: 30px;
+            height: 30px;
+            margin-right: 12px;
+            background-repeat: no-repeat;
+            background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNS4zIDI1LjkiPjxwYXRoIGZpbGw9IiM2OGJjNzEiIGQ9Ik0xMi43IDBDOC43IDAgMy45LjkgMCAzYzAgNC40LS4xIDE1LjQgMTIuNyAyM0MyNS40IDE4LjQgMjUuMyA3LjQgMjUuMyAzIDIxLjQuOSAxNi42IDAgMTIuNyAweiIvPjxwYXRoIGZpbGw9IiM2N2IyNzkiIGQ9Ik0xMi42IDI1LjlDLS4xIDE4LjQgMCA3LjQgMCAzYzMuOS0yIDguNy0zIDEyLjYtM3YyNS45eiIvPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0xMi4yIDE3LjNMMTkuOCA3YS45OS45OSAwIDAgMC0xLjMuMWwtNi40IDYuNi0yLjQtMi45Yy0xLjEtMS4zLTIuNy0uMy0zLjEgMGw1LjYgNi41Ii8+PC9zdmc+);
+        }
+
+        .popup__text {
+            display: inline-block;
+            vertical-align: middle;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .popup__text-min {
+            display: none
+        }
+
+        .popup__text-blocked {
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .popup__link {
+            display: inline-block;
+            vertical-align: middle;
+            color: #66b574;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .popup__link--url {
+            max-width: 130px;
+            vertical-align: bottom;
+        }
+
+        .popup__link--allow {
+            max-width: 215px;
+            margin-right: 5px; 
+        }
+
+        .popup__close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 15px;
+            height: 15px;
+            border: 0;
+            background-color: #fff;
+            background-repeat: no-repeat;
+            background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMC41IDIwLjUiPjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xMS4zIDEwLjNsOS05Yy4zLS4zLjMtLjggMC0xLjFzLS44LS4zLTEuMSAwbC05IDktOS05QzEtLjEuNS0uMS4yLjJzLS4zLjggMCAxLjFsOSA5LTkgOWMtLjMuMy0uMy44IDAgMS4xLjEuMS4zLjIuNS4ycy40LS4xLjUtLjJsOS05IDkgOWMuMS4xLjMuMi41LjJzLjQtLjEuNS0uMmMuMy0uMy4zLS44IDAtMS4xbC04LjktOXoiLz48L3N2Zz4=);
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="popup">
+        <div class="popup__logo"></div>
+        <div class="popup__text">
+            <div class="popup__text-full">
+                Blocked an attempt to open a pop-up window from 
+                <a href="#" class="popup__link popup__link--url">example.org</a>
+                <div class="popup__actions">
+                    <a href="" class="popup__link popup__link--allow">
+                        Always allow example.org
+                    </a>
+                    <a href="" class="popup__link popup__link--all">
+                        Allow all pop-ups on this website
+                    </a>
+                </div>
+            </div>
+            <div class="popup__text-min">
+                <div class="popup__text-blocked">
+                    Blocked
+                </div>
+                <div class="popup__actions">
+                    <a href="" class="popup__link popup__link--allow">
+                        pop-up
+                    </a>
+                </div>
+            </div>
+        </div>
+        <button class="popup__close"></button>
+    </div>
+</body>
+</html>

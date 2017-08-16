@@ -3,9 +3,16 @@ import { verifyEvent, retrieveEvent, verifyCurrentEvent } from '../events/verify
 import { _dispatchEvent } from './dispatchEvent';
 import { timeline, position } from '../timeline/index';
 import * as log from '../log';
+import bridge from '../bridge';
+
 
 const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, context) {
-    log.call('Called window.open with url ' + _arguments[0]);
+    let url = _arguments[0];
+    log.call('Called window.open with url ' + url);
+    // Checks if an url is in a whitelist
+    if (bridge.whitelistedDestinations.indexOf(url) !== -1) {
+        return _open.apply(_this, _arguments);
+    }
     let currentEvent = retrieveEvent();
     let passed = verifyEvent(currentEvent);
     let win;
@@ -38,6 +45,7 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
         if (redispatched || urlIsHrefOfAnchor || urlIsCurrentHref) {
             log.print("An event is re-dispatched or the opened url is equal to the target's href or the url is equal to the current href");
             log.callEnd();
+            bridge.showAlert(bridge.domain, url, false);
             return null;
         }
     }
@@ -46,6 +54,7 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
     win = mockWindow(_arguments[0], _arguments[1]);
     context['mocked'] = true;
     log.callEnd();
+    bridge.showAlert(bridge.domain, url, false);
     return win;
 };
 
@@ -58,7 +67,7 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
  * ToDo: check for real target's ancestors for anchor or input elements.
  * @return true if an event is re-dispatched.
  */
-const dispatchIfBlockedByMask = function(event) {
+const dispatchIfBlockedByMask = function(event:Event) {
     var currentEvent = event;
     if (currentEvent) {
         if ('clientX' in currentEvent && currentEvent.isTrusted) {
@@ -75,7 +84,7 @@ const dispatchIfBlockedByMask = function(event) {
                 return;
             }
             log.print('Elements at the clicked position are:', elts);
-            let el;
+            let el:HTMLElement;
             if ( elts[0] === target ) {
                 log.print('The target is staying.');
                 el = elts[1];
@@ -83,6 +92,7 @@ const dispatchIfBlockedByMask = function(event) {
                 log.print('The target has modified inside event handlers.');
                 el = elts[0];
             }
+            if (!el) { log.callEnd(); return; }
             let name = el.nodeName.toLowerCase();
             if ( name == 'iframe' || name == 'input' || name == 'a' || el.hasAttribute('onclick') || el.hasAttribute('onmousedown') ) {
                 log.print('A real target candidate has default event handlers');
@@ -99,6 +109,7 @@ const dispatchIfBlockedByMask = function(event) {
                         currentEvent.stopPropagation();
                         currentEvent.stopImmediatePropagation();
                         _dispatchEvent.call(el, clone);
+                        log.callEnd();
                         return true;
                     }
                 }

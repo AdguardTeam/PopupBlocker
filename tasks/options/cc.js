@@ -23,6 +23,14 @@ module.exports = {
         dependency_mode: 'STRICT',
         entry_point: 'goog:build.tsickle.index',
     }),
+    ts_wrapper: Object.assign({}, base, {
+        externs: [
+            options.tscc_path + '/generated-externs.js',
+            'externs.js'
+        ],
+        dependency_mode: 'STRICT',
+        entry_point: 'goog:build.tsickle.wrapper'
+    }),
     after_ts: Object.assign({}, base, {
         compilation_level: 'SIMPLE',
         warning_level: 'DEFAULT'

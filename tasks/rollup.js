@@ -10,18 +10,25 @@ const rollup = require('gulp-rollup');
 const closureCompiler = require('google-closure-compiler').gulp();
 const textHelper = require('./utill/transform-text');
 const fs = require('fs');
+const minifyHtml = require('html-minifier').minify;
+const insertResource = require('./insert-resource');
+
+
+const rollup_options_wrapper = require('./options/rollup').wrapper;
 
 const exportDefaultToReturn = textHelper.exportDefaultToReturn;
 const wrapModule = textHelper.wrapModule;
 
 module.exports = (done) => {
-    let wrapper = fs.readFileSync('src/wrapper.js').toString().split('"CONTENT"');
     let meta = fs.readFileSync(options.outputPath + '/'+ options.metaName);
+
     let content = gulp.src('src/**/*.ts')
         .pipe(preprocess({ context: options.preprocessContext }))
         .pipe(rollup(options.rollup_options));
-    gulp.src('src/wrapper.js')
+    gulp.src('src/**/*.ts')
         .pipe(preprocess({ context: options.preprocessContext }))
+        .pipe(insert.transform(insertResource))
+        .pipe(rollup(rollup_options_wrapper))
         .on('data', (file) => {
             let wrapper = file.contents.toString().split('"CONTENT"');
             content = content

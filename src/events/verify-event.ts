@@ -2,7 +2,11 @@ import * as log from '../log';
 import WeakMap from '../weakmap';
 import CurrentMouseEvent from './current-mouse-event';
 
-let supported = 'event' in window;
+/**
+ * On IE 10 and lower, window.event is a `MSEventObj` instance which does not implement `target` property.
+ * We use a polyfill for such cases.
+ */
+const supported = 'event' in window && (!('documentMode' in document) || (document.documentMode === 11));
 let currentMouseEvent;
 
 if (!supported) {
@@ -67,26 +71,27 @@ export function retrieveEvent():Event {
     return currentEvent;
 };
 
-
 /**
  * @param event Optional argument, an event to test with. Default value is currentEvent.
  * @return True if the event is legit, false if it is something that we should not allow window.open or dispatchEvent.
  */
-export function verifyEvent(event?):boolean {
+export function verifyEvent(event?:Event):boolean {
     if (event) {
         log.call('Verifying event');
         let currentTarget = event.currentTarget;
         if (currentTarget) {
             log.print('Event is:', event);
-            let tagName = currentTarget.nodeName.toLowerCase();
-            if (tagName == '#document' || tagName == 'html' || tagName == 'body') {
-                log.print('VerifyEvent - the current event handler is suspicious, for the current target is either document, html, or body.');
-                log.callEnd();
-                return false;
-            } else if (maybeOverlay(currentTarget)) {
-                log.print('VerifyEvent - the current event handler is suspicious, for the current target looks like an artificial overlay.');
-                log.callEnd();
-                return false;
+            if ('nodeName' in currentTarget) {
+                let tagName = (<Element>currentTarget).nodeName.toLowerCase();
+                if (tagName == '#document' || tagName == 'html' || tagName == 'body') {
+                    log.print('VerifyEvent - the current event handler is suspicious, for the current target is either document, html, or body.');
+                    log.callEnd();
+                    return false;
+                } else if ('offsetHeight' in currentTarget && maybeOverlay(<HTMLElement>currentTarget)) {
+                    log.print('VerifyEvent - the current event handler is suspicious, for the current target looks like an artificial overlay.');
+                    log.callEnd();
+                    return false;
+                }
             }
         }
     }

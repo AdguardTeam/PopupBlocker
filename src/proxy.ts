@@ -1,6 +1,7 @@
 import { timeline, position } from './timeline/index';
 import { TimelineEvent, TLEventType } from './timeline/event';
 import WeakMap from './weakmap';
+import bridge from './bridge';
 
 let supported = false;
 // @ifndef NO_PROXY
@@ -55,10 +56,10 @@ const isNativeFn = function (fn:Function):boolean {
 }
 
 // See HTMLIFrame.ts
-const proxyToReal = typeof KEY !== 'undefined' ? window.parent[KEY][0] : new WeakMap();
-const realToProxy = typeof KEY !== 'undefined' ? window.parent[KEY][1] : new WeakMap();
+const proxyToReal = typeof KEY === 'string' ? window.parent[KEY][0] : new WeakMap();
+const realToProxy = typeof KEY === 'string' ? window.parent[KEY][1] : new WeakMap();
 
-export const expose = (key:PropertyKey) => { window[key] = [proxyToReal, realToProxy, timeline]; };
+export const expose = (key:PropertyKey) => { window[key] = [proxyToReal, realToProxy, timeline, bridge]; };
 export const unexpose = (key:PropertyKey) => { delete window[key]; };
 
 export type ApplyHandler = (target:Function, _this:any, _arguments:IArguments|any[], context?:any) => any;
@@ -124,8 +125,6 @@ const proxifyReturn:ApplyHandler = (target, _this, _arguments) => {
     if (proxy) { ret = proxy; }
     return ret;
 };
-
-const overrideMethodsList = 'open,focus,close'.split(',');
 
 export function makeObjectProxy(obj) {
     if ( obj === null || typeof obj !== 'object' || !supported) { return obj; }

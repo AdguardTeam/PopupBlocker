@@ -99,8 +99,8 @@ class Timeline {
     // @endif
 }
 
-export const timeline:Timeline = typeof KEY !== 'undefined' ? window.parent[KEY][2] : new Timeline();
-export const position:number = typeof KEY !== 'undefined' ? timeline.onNewFrame() : 0;
+export const timeline:Timeline = typeof KEY === 'string' ? window.parent[KEY][2] : new Timeline();
+export const position:number = typeof KEY === 'string' ? timeline.onNewFrame() : 0;
 
 // These are called from the outside of the code, so we have to make sure that call structures of those are not modified.
 // It is removed in minified builds, see the gulpfile.

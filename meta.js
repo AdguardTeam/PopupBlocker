@@ -32,6 +32,8 @@
 // @updateURL [UPDATE_URL]
 // @match http://*/*
 // @match https://*/*
-// @grant none
+// @grant GM_getValue
+// @grant GM_setValue
+// @grant unsafeWindow
 // @run-at document-start
 // ==/UserScript==
