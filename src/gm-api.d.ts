@@ -249,3 +249,14 @@ interface DefineAs {
 declare function createObjectIn(target:Object, option:DefineAs):any;
 declare function cloneInto<T extends Object>(obj:T, target:Object, option:DefineAs):T;
 declare function exportFunction<T extends Function>(fn:T, obj:object, option:DefineAs):T
+
+declare const AdguardSettings:{
+    feedbackUrl:string,
+    applicationId:string,
+    locale:string,
+    appVersion:string,
+    uniqueName:string,
+    version:string,
+    sendAnonymousStatistic:string,
+    nonce:string
+};

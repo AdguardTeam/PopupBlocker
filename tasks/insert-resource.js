@@ -2,7 +2,8 @@ const minifyHtml = require('html-minifier').minify;
 const fs = require('fs');
 
 const RESOURCE_PATH_MAP = {
-    "ALERT_TEMPLATE": 'src/ui/template.html'
+    "ALERT_TEMPLATE": 'src/ui/template.html',
+    "EN_TRANSLATIONS": 'src/locales/en.json'
 };
 const RESOURCE_MAP = Object.create(null);
 const reResourceMarker = /(['"])RESOURCE:([A-Za-z_\-]*?)\1/gm;
@@ -21,11 +22,14 @@ module.exports = (content, file) => {
                         collapseWhitespace: true,
                         minifyCSS: true,
                         removeAttributeQuotes: true,
+                        removeComments: false
                     });
+                        resource = c1 + resource.replace(/[\\"]/g, (m) => {
+                        return "\\" + m;
+                    }) + c1;
+                } else if (/\.json$/.test(path)) {
+                    resource = JSON.stringify(JSON.parse(resource));
                 }
-                resource = c1 + resource.replace(/[\\"]/g, (m) => {
-                    return "\\" + m;
-                }) + c1;
                 RESOURCE_MAP[c2] = resource;
             }
             console.log('A resource ' + c2 + ' in ' + file.path + ' was inserted');

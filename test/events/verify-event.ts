@@ -23,7 +23,6 @@ describe('retrieveEvent', function() {
         var retrieved;
         setTimeout(function() {
             window.event = undefined;
-            expect(window.event).to.be.an('undefined');
             retrieved = retrieveEvent();
             expect(retrieved).to.be.equal(evt);
             done();

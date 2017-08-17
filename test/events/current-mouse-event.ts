@@ -31,7 +31,6 @@ describe('CurrentMouseEvent', function () {
             expect(retrieved).to.equal(evt);
             
             if (counter < LIMIT) {
-                console.log('dispatching...');
                 switch (counter % 7) {
                     case 0:
                         setTimeout(document.body.dispatchEvent(getEvt(getType())));
@@ -78,7 +77,10 @@ describe('CurrentMouseEvent', function () {
             setTimeout(() => {
                 setTimeout(() => {
                     setTimeout(() => {
-                        setTimeout(done, 500);
+                        setTimeout(() => {
+                            console.log(`dispatched total ${counter} events`)
+                            done();
+                        }, 500);
                     })
                 })
             })
