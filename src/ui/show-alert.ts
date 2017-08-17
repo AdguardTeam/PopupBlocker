@@ -31,11 +31,11 @@ const initialAlertFrameStyle = {
 };
 
 interface AlertIntf {
-    readonly element: HTMLIFrameElement,
-    readonly collapsed:boolean,
-    readonly top:number,
-    readonly height:number,
-    readonly collapse:()=>void,
+    readonly $element: HTMLIFrameElement,
+    readonly $collapsed:boolean,
+    readonly $top:number,
+    readonly $height:number,
+    readonly $collapse:()=>void,
     readonly destroy:()=>void,
     readonly pushdown:(amount:number)=>void,
     readonly lastUpdate:number,
@@ -50,10 +50,10 @@ function attachClickListenerForEach (iterable:NodeList, listener:(this:Node,evt:
 }
 
 class Alert implements AlertIntf {
-    public element:HTMLIFrameElement;
-    public collapsed:boolean;
-    public top:number;
-    public height:number;
+    public $element:HTMLIFrameElement;
+    public $collapsed:boolean;
+    public $top:number;
+    public $height:number;
     constructor(orig_domain:string, popup_domain:string, showCollapsed:boolean) {
         let iframe = document.createElement('iframe');
         let loaded = false;
@@ -79,38 +79,38 @@ class Alert implements AlertIntf {
         // Adjust css of an iframe
         iframe.setAttribute('allowTransparency', 'true');
         for (let prop in initialAlertFrameStyle) { iframe.style[prop] = initialAlertFrameStyle[prop]; }
-        let height = this.height = showCollapsed ? STYLE_CONST.collapsed_height : STYLE_CONST.height;
+        let height = this.$height = showCollapsed ? STYLE_CONST.collapsed_height : STYLE_CONST.height;
         let width = showCollapsed ? STYLE_CONST.collapsed_width : STYLE_CONST.width;
         iframe.style['height'] = height + px;
         iframe.style['width'] = width + px;
         // Enable sandboxing
         iframe.setAttribute('sandbox', 'allow-same-origin');
 
-        this.element = iframe;
-        this.collapsed = showCollapsed;
-        this.top = STYLE_CONST.top_offset;
+        this.$element = iframe;
+        this.$collapsed = showCollapsed;
+        this.$top = STYLE_CONST.top_offset;
         this.lastUpdate = new Date().getTime();
     }
     pushdown(amount:number) {
-        let newTop = this.top + amount;
-        this.element.style.top = newTop + px;
-        this.top = newTop;
+        let newTop = this.$top + amount;
+        this.$element.style.top = newTop + px;
+        this.$top = newTop;
     }
-    collapse() {
-        if (this.collapsed) { return; }
-        this.element.style['height'] = STYLE_CONST.collapsed_height + px;
-        this.element.style['width'] = STYLE_CONST.collapsed_width + px;
-        let root = this.element.contentDocument[getElementsByClassName]('popup')[0];
+    $collapse() {
+        if (this.$collapsed) { return; }
+        this.$element.style['height'] = STYLE_CONST.collapsed_height + px;
+        this.$element.style['width'] = STYLE_CONST.collapsed_width + px;
+        let root = this.$element.contentDocument[getElementsByClassName]('popup')[0];
         root.classList.add('popup--min');
-        this.collapsed = true;
-        this.height = STYLE_CONST.collapsed_height;
+        this.$collapsed = true;
+        this.$height = STYLE_CONST.collapsed_height;
         // Since its state was changed, update its lastUpdate property.
         this.lastUpdate = new Date().getTime();
     }
     destroy() {
         clearTimeout(this.timerId);
-        let parentNode = this.element.parentNode;
-        if (parentNode) { parentNode.removeChild(this.element); }
+        let parentNode = this.$element.parentNode;
+        if (parentNode) { parentNode.removeChild(this.$element); }
     }
     public lastUpdate:number
     public timerId:number // This will be initialized when an alert is created by AlertController#createAlert.
@@ -125,18 +125,18 @@ class AlertController {
         let alert = new Alert(orig_domain, popup_domain, showCollapsed);
         // Pushes previous alerts down
         let l = this.alerts.length;
-        let offset = STYLE_CONST.middle_offset + alert.height;
+        let offset = STYLE_CONST.middle_offset + alert.$height;
         this.moveBunch(l, offset);
         // Adds event listeners that needs to run in this context
-        alert.element.addEventListener('load', () => {
-            attachClickListenerForEach(alert.element.contentDocument[getElementsByClassName]('popup__close'), () => {
+        alert.$element.addEventListener('load', () => {
+            attachClickListenerForEach(alert.$element.contentDocument[getElementsByClassName]('popup__close'), () => {
                 this.destroyAlert(alert);
             });
         });
-        alert.element.addEventListener('mouseover', () => { this.onMouseOver(); });
-        alert.element.addEventListener('mouseout', () => { this.onMouseOut(); });
+        alert.$element.addEventListener('mouseover', () => { this.onMouseOver(); });
+        alert.$element.addEventListener('mouseout', () => { this.onMouseOut(); });
         // Appends an alert to DOM
-        document.body.appendChild(alert.element);
+        document.body.appendChild(alert.$element);
         // Schedules collapsing & destroying
         if (showCollapsed) {
             alert.timerId = setTimeout(() => {
@@ -160,9 +160,9 @@ class AlertController {
      * Collapses an alert and schedules its destruction
      */
     private collapseAlert(alert:Alert) {
-        let prevHeight = alert.height;
-        alert.collapse();
-        let offset = alert.height - prevHeight;
+        let prevHeight = alert.$height;
+        alert.$collapse();
+        let offset = alert.$height - prevHeight;
         let index = this.alerts.indexOf(alert);
         this.moveBunch(index, offset);
         const self = this;
@@ -173,7 +173,7 @@ class AlertController {
     private destroyAlert(alert:Alert) {
         alert.destroy();
         let i = this.alerts.indexOf(alert);
-        let offset = alert.height + STYLE_CONST.middle_offset;
+        let offset = alert.$height + STYLE_CONST.middle_offset;
         this.moveBunch(i, -offset);
         this.alerts.splice(i, 1);
     }
@@ -201,7 +201,7 @@ class AlertController {
         const time = this.getImminentDue();
         const pastDue = now > time ? now - time : 0;
         this.alerts.forEach((alert) => {
-            if (alert.collapsed) {
+            if (alert.$collapsed) {
                 alert.timerId = setTimeout(() => {
                     this.destroyAlert(alert);
                 // This value will be 0 for the oldest callback.
@@ -217,7 +217,7 @@ class AlertController {
         let amongCollapsed, amongUncollapsed;
         const alerts = this.alerts;
         for (let i = 0, l = alerts.length; i < l; i++) {
-            if (alerts[i].collapsed) {
+            if (alerts[i].$collapsed) {
                 if (amongCollapsed) { continue; }
                 amongCollapsed = alerts[i].lastUpdate + COLLAPSED_ALERT_TIMEOUT;
                 if (amongUncollapsed) { break; }
