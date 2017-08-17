@@ -83,6 +83,8 @@ class Alert implements AlertIntf {
         let width = showCollapsed ? STYLE_CONST.collapsed_width : STYLE_CONST.width;
         iframe.style['height'] = height + px;
         iframe.style['width'] = width + px;
+        // Enable sandboxing
+        iframe.setAttribute('sandbox', 'allow-same-origin');
 
         this.element = iframe;
         this.collapsed = showCollapsed;
@@ -97,10 +99,12 @@ class Alert implements AlertIntf {
     collapse() {
         if (this.collapsed) { return; }
         this.element.style['height'] = STYLE_CONST.collapsed_height + px;
+        this.element.style['width'] = STYLE_CONST.collapsed_width + px;
         let root = this.element.contentDocument[getElementsByClassName]('popup')[0];
         root.classList.add('popup--min');
         this.collapsed = true;
         this.height = STYLE_CONST.collapsed_height;
+        // Since its state was changed, update its lastUpdate property.
         this.lastUpdate = new Date().getTime();
     }
     destroy() {
