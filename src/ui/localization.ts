@@ -110,6 +110,10 @@ class InsertTask {
 
 function nthElemSib(node:Node, index:number) {
     let el = node;
-    while (index-- >= 0) { el = el['nextElementSibling']; }
+    while (index >= 0) {
+        // Edge and old browsers does not support `nextElementSibling` property on non-Element Nodes.
+        el = el.nextSibling;
+        if (el.nodeType === Node.ELEMENT_NODE) { index--; }
+    }
     return el;
 }

@@ -125,12 +125,12 @@ describe('Localization', function() {
 
             **/
             
-            const iterator = document.createNodeIterator(translateTestRoot, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT, {
-                acceptNode: function(el) {
-                    if (el.nodeType === Node.TEXT_NODE && el.nodeValue.trim().length === 0) { return NodeFilter.FILTER_REJECT; }
-                    return NodeFilter.FILTER_ACCEPT;
-                }
-            }, false);
+            const filter = (el) => {
+                if (el.nodeType === Node.TEXT_NODE && el.nodeValue.trim().length === 0) { return NodeFilter.FILTER_SKIP; }
+                return NodeFilter.FILTER_ACCEPT;
+            };
+
+            const iterator = document.createNodeIterator(translateTestRoot, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT, <NodeFilter>('documentMode' in document ? filter : { acceptNode: filter }), false); // IE accepts a different type of `NodeFilter` arguments.
             let current:Node;
             const res = [];
             while(current = iterator.nextNode()) {
