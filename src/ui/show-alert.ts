@@ -26,6 +26,7 @@ const initialAlertFrameStyle = {
     "top": STYLE_CONST.top_offset + px,
     "border": "none",
     "opacity": "0",
+    "z-index": String(-1 - (1 << 31)),
     "transition": "opacity 500ms, top 500ms",
     "transitionTimingFunction": "cubic-bezier(0.86, 0, 0.07, 1), cubic-bezier(0.86, 0, 0.07, 1)"
 };
