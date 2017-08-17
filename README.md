@@ -1,7 +1,9 @@
 # PopupBlocker [![Build Status](https://travis-ci.org/AdguardTeam/PopupBlocker.svg?branch=master)](https://travis-ci.org/AdguardTeam/PopupBlocker)
 PopupBlocker is a userscript that blocks unwanted popups.
 
-## How is this work?
+Release channel: 
+
+## How does this work?
 
 It adds a layer of check on top of browser's native apis, that are used to create popups, so that it can be called only when it is caused by a human input, not by popup/popunder scripts.
 
