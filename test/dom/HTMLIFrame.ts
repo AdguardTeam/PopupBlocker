@@ -14,7 +14,6 @@ describe('HTMLIFrameElement#src', function() {
         document.body.appendChild(ifr);
         if (!('location' in ifr.contentDocument)) { throw new Error(); }
         let records = timeline.takeRecords()[0];
-        console.log(records);
         let lastEvent = records[records.length - 1];
         document.body.removeChild(ifr);
         expect(lastEvent.$type).to.equal(TLEventType.GET);

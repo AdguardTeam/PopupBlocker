@@ -1,4 +1,5 @@
-const SupportedLocales = {
+// Below is exposed for testing. It shouldn't be used for other purposes.
+export const SupportedLocales = {
     "en": "RESOURCE:EN_TRANSLATIONS"
 };
 
@@ -27,7 +28,8 @@ type stringmap = {
 
 // Marks start of placeholders, ${...} or <.../>.
 const rePhStart = /(?:\${|<)/;
-function parseMessage(message:string, context:stringmap):(string|number)[] {
+// Below is exposed for testing. It shouldn't be used for other purposes.
+export function parseMessage(message:string, context:stringmap):(string|number)[] {
     const res:(string|number)[] = [];
     let text:string = '';
     let match:RegExpMatchArray;
@@ -36,7 +38,7 @@ function parseMessage(message:string, context:stringmap):(string|number)[] {
         match = rePhStart.exec(message);
         if (!match) {
             text += message;
-            res.push(text);
+            if (text) { res.push(text); }
             return res;
         } else {
             ind = match.index;
@@ -51,7 +53,7 @@ function parseMessage(message:string, context:stringmap):(string|number)[] {
             } else {
                 ind++;
                 i = message.indexOf('/>', ind);
-                res.push(text);
+                if (text) { res.push(text); }
                 text = '';
                 let num = message.charCodeAt(ind) - 48; // parseInt(*, 10)
                 res.push(num);
@@ -63,33 +65,46 @@ function parseMessage(message:string, context:stringmap):(string|number)[] {
     return res;
 }
 
+const reCommentPh = /^i18n:/;
+const option = 128 /* NodeFilter.SHOW_COMMENT */
 export default function translate(root:Element, context:stringmap) {
-    const nodeIterator = document.createNodeIterator(root, NodeFilter.SHOW_COMMENT);
+    const nodeIterator = document.createNodeIterator(root, option, null, false);
     let current:Node;
     let val:string;
+    // If DOM order is modified during iteration, 
+    // NodeIterator may skip some nodes,
+    // so we do a batch process.
+    const tasks:InsertTask[] = [];
     while (current = nodeIterator.nextNode()) {
         val = current.nodeValue;
-        if (/^i18n:/.test(val)) {
+        if (reCommentPh.test(val)) {
             val = val.slice(5);
             let message = getMessage(val);
             let parsed = parseMessage(message, context);
             let pr:Element = <Element><any>current.parentNode;
-            if (parsed.length === 1) {
-                pr.insertBefore(document.createTextNode(<string>parsed[0]), current);
-                pr.removeChild(current);
-            } else {
+            tasks.push(new InsertTask(pr, current,
                 parsed.map((el) => {
                     if (typeof el == 'number') {
                         return nthElemSib(current, el);
                     } else {
                         return document.createTextNode(el);
                     }
-                }).forEach((el) => {
-                    pr.insertBefore(el, current);
-                });
-                pr.removeChild(current);
-            }
+                })
+            ));
         }
+    }
+    for (let i = 0, l = tasks.length; i < l; i++) {
+        tasks[i].insert();
+    }
+}
+
+class InsertTask {
+    constructor(private pr:Element, private before:Node, private toInsert:Node[]) { }
+    insert() {
+        for (let i = 0, l = this.toInsert.length; i < l; i++) {
+            this.pr.insertBefore(this.toInsert[i], this.before);
+        }
+        this.pr.removeChild(this.before);
     }
 }
 
