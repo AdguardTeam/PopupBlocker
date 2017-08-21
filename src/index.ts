@@ -1,6 +1,6 @@
 import './dom/open';
 import './dom/click';
-import './dom/dispatchEvent';
+import './dom/dispatchEvent/index';
 import './dom/HTMLIFrame';
 import './dom/HTMLObject';
 import './dom/removeChild';

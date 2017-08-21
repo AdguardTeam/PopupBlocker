@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Bridge object is the object shared between userscript's priviliged context and
+ * the page's context. Mostly due to FF restrictions, we cannot directly pass objects and functions of
+ * priviliged context to the page's context. We attach them on bridge object with extension APIs
+ * designed to selectively expose object/functions.
+ */
+
 import BRIDGE_KEY from './bridge';
 import { domainOption, whitelistedDestinations } from './storage';
 import createAlertInTopFrame from './handshake';

@@ -79,49 +79,31 @@ describe('Localization', function() {
             const after = logPerf ? performance.now() : 0;
             console.log(`translate call ended in ${after-before} milliseconds.`);
             
-            /*******************************************************
+            /***************************************************************************
 
-                Initial html:
+                Initial html:                       Expected html after translation:
 
-                <div id="translateTestRoot">
-                    <!--i18n:phrase1-->
-                    <div id='0'>
-                        <div id='0-0'></div>
-                        <!--i18n:phrase2-->
-                        <div id='0-1'></div>
-                        <div id='0-2'></div>
-                    </div>
-                    <div id='1'></div>
-                    <div id='2'></div>
-                    <!--i18n:phrase3-->
-                    <div id='3'></div>
-                    <div id='4'></div>
-                    <div id='5'></div>
-                </div>
-                
-                Expected html after translation:
-
-                <div id="translateTestRoot">
-                    a
-                    <div id='2'></div>
-                    b
-                    <div id='1'></div>
-                    c
-                    <div id='0'>
-                        <div id='0-0'></div>
-                        d
-                        <div id='0-2'></div>
-                        e
-                        <div id='0-1'></div>
-                        f
-                    </div>
-                    gvalue1
-                    <div id='5'></div>
-                    h
-                    <div id='3'></div>
-                    value2i
-                    <div id='4'></div>
-                </div>
+                <div id="translateTestRoot">        <div id="translateTestRoot">
+                    <!--i18n:phrase1-->                 a
+                    <div id='0'>                        <div id='2'></div>
+                        <div id='0-0'></div>            b
+                        <!--i18n:phrase2-->             <div id='1'></div>
+                        <div id='0-1'></div>            c
+                        <div id='0-2'></div>            <div id='0'>
+                    </div>                                  <div id='0-0'></div>
+                    <div id='1'></div>                      d
+                    <div id='2'></div>                      <div id='0-2'></div>
+                    <!--i18n:phrase3-->                     e
+                    <div id='3'></div>                      <div id='0-1'></div>
+                    <div id='4'></div>                      f
+                    <div id='5'></div>                  </div>
+                </div>                                  gvalue1
+                                                        <div id='5'></div>
+                                                        h
+                                                        <div id='3'></div>
+                                                        value2i
+                                                        <div id='4'></div>
+                                                    </div>
 
             **/
             

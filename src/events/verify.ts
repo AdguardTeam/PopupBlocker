@@ -78,6 +78,7 @@ export function retrieveEvent():Event {
 export function verifyEvent(event?:Event):boolean {
     if (event) {
         log.call('Verifying event');
+        log.print('Phase is: ' + event.eventPhase);
         let currentTarget = event.currentTarget;
         if (currentTarget) {
             log.print('Event is:', event);

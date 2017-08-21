@@ -24,6 +24,13 @@ interface PopupNotificationMsgIntf {
     isGeneric:boolean
 }
 
+// Non-standard DOM apis
+
 interface Document {
     documentMode?: number;
+}
+
+interface Event {
+    path?: EventTarget[],
+    composedPath?:()=>EventTarget[]
 }

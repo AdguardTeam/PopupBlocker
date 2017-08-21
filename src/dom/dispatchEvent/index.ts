@@ -1,10 +1,11 @@
-import { ApplyHandler, ApplyOption, wrapMethod } from '../proxy';
-import { retrieveEvent, verifyEvent, verifyCurrentEvent } from '../events/verify';
-import examineTarget from '../events/examine-target';
-import { setBeforeunloadHandler } from './unload';
-import abort from '../abort';
-import * as log from '../log';
-import bridge from '../bridge';
+import eventTargetPType from './orig';
+import { ApplyHandler, ApplyOption, wrapMethod } from '../../proxy';
+import { retrieveEvent, verifyEvent, verifyCurrentEvent } from '../../events/verify';
+import examineTarget from '../../events/examine-target';
+import { setBeforeunloadHandler } from '../unload';
+import abort from '../../abort';
+import * as log from '../../log';
+import bridge from '../../bridge';
 
 const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _arguments) {
     let evt = _arguments[0];
@@ -33,7 +34,4 @@ const isUIEvent:ApplyOption = (target, _this, _arguments) => {
     return 'view' in _this;
 };
 
-const eventTargetPType = typeof EventTarget == 'undefined' ? Node.prototype : EventTarget.prototype;
-
-export const _dispatchEvent = eventTargetPType.dispatchEvent;
 wrapMethod(eventTargetPType, 'dispatchEvent', dispatchVerifiedEvent, isUIEvent);

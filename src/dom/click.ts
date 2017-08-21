@@ -1,5 +1,7 @@
 import { ApplyHandler, wrapMethod } from '../proxy';
-import { verifyCurrentEvent } from '../events/verify-event';
+import { retrieveEvent, verifyEvent, verifyCurrentEvent } from '../events/verify';
+import examineTarget from '../events/examine-target';
+import abort from '../abort';
 import * as log from '../log';
 import bridge from '../bridge';
 
@@ -11,10 +13,11 @@ let clickVerified:ApplyHandler = function(_click, _this) {
             _click.call(_this);
             return;
         }
-        var passed = verifyCurrentEvent();
-        if (!passed) {
+        let currentEvent = retrieveEvent();
+        if (!verifyEvent(currentEvent)) {
             log.print('It did not pass the test, not clicking element');
             bridge.showAlert(bridge.domain, _this.host, false);
+            examineTarget(currentEvent, _this.href);
             log.callEnd();
             return;
         }
@@ -23,5 +26,5 @@ let clickVerified:ApplyHandler = function(_click, _this) {
 };
 
 clickVerified = log.connect(clickVerified, 'Verifying click')
-
+export const _click = HTMLElement.prototype.click;
 wrapMethod(HTMLElement.prototype, 'click', clickVerified);

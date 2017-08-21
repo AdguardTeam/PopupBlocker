@@ -9,17 +9,29 @@ while (win.parent !== win) {
 }
 let loc = location.href;
 let suffix = `    (at ${loc})`;
+let depth = 0;
 // @endif
 
 export function call(msg:string) {
     // @ifdef DEBUG
+    depth++;
     console.group(prefix + msg + suffix);
     // @endif
 }
 
 export function callEnd() {
     // @ifdef DEBUG
+    depth--;
     console.groupEnd();
+    // @endif
+}
+
+export function closeAllGroup() {
+    // @ifdef DEBUG
+    while (depth > 0) {
+        console.groupEnd();
+        depth--;
+    }
     // @endif
 }
 
@@ -39,9 +51,9 @@ export function print(str:string, obj?):void {
     // @endif
 }
 
-export function connect (fn, message:string) {
+export function connect<T extends (...args)=>any>(fn:T, message:string):T {
     // @ifdef DEBUG
-    return function () {
+    return <T>function () {
         call(message);
         let ret = fn.apply(this, arguments);
         callEnd();
