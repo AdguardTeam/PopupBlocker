@@ -66,11 +66,11 @@ let initialized = false;
 
 const mockWindow = (href, name) => {
     if (!initialized) {
-        const windowPType = mockObject(Window.prototype);
-        const win = Object.create(windowPType);
+        windowPType = mockObject(Window.prototype);
+        win = Object.create(windowPType);
         mockObject(window, win);
-        const docPType = mockObject(Document.prototype);
-        const doc = Object.create(docPType);
+        docPType = mockObject(Document.prototype);
+        doc = Object.create(docPType);
         win.opener = window;
         win.closed = false;
         win.name = name;
