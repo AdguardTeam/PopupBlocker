@@ -13,6 +13,10 @@
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.0.2.tgz#cce9666f5ee2fa27ffd505d2dfaf53bb02ed2584"
 
+"@types/greasemonkey@^0.0.28":
+  version "0.0.28"
+  resolved "https://registry.yarnpkg.com/@types/greasemonkey/-/greasemonkey-0.0.28.tgz#bb03070b334964836343e00d264bd0ecff9ec60d"
+
 "@types/mocha@^2.2.41":
   version "2.2.41"
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-2.2.41.tgz#e27cf0817153eb9f2713b2d3f6c68f1e1c3ca608"

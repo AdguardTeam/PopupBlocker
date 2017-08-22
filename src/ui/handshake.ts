@@ -21,8 +21,7 @@ let createAlertInTopFrame = (orig_domain:string, popup_domain:string, isGeneric:
 };
 
 if (supported) {
-    const MAGIC = 'handshake';
-    const MAGIC_CHILD = 'handshake-child';
+    const MAGIC = 'pb_handshake';
     const connectedFrames = new WeakMap();
     const channel = isTopOrEmpty ? null : new MessageChannel(); // Do not initialize messagechannel when it is not going to be used
     /**
@@ -48,7 +47,11 @@ if (supported) {
         }
         log.print('received a message from:', evt.source);
         let port = evt.ports[0]; // This is a port that a child frame sent.
-        port.onmessage = onMessage; // Registers a listener
+        if (isTopOrEmpty) {
+            port.onmessage = onMessage;
+        } else {
+            channel.port2.postMessage(MAGIC, [port]);
+        }
         connectedFrames.set(evt.source, true);
         evt.stopImmediatePropagation();
         evt.preventDefault();
@@ -59,7 +62,8 @@ if (supported) {
      */
     const onMessage = (evt:MessageEvent) => {
         log.call('Received a message from a private channel');
-        if (evt.data === MAGIC_CHILD) {
+        log.print('data is:', evt.data);
+        if (evt.data === MAGIC) {
             log.print('It is a request to pass a MessagePort to a parent frame');
             let port = evt.ports[0];
             port.onmessage = onMessage;
@@ -67,8 +71,6 @@ if (supported) {
             if (isTopOrEmpty) {
                 let data:PopupNotificationMsgIntf = JSON.parse(evt.data);
                 alertController.createAlert(data.orig_domain, data.popup_domain, data.isGeneric);
-            } else {
-                channel.port2.postMessage(MAGIC_CHILD, [evt.ports[0]]);
             }
         }
         log.callEnd();
@@ -78,7 +80,6 @@ if (supported) {
 
     if (!isTopOrEmpty) {
         parent.postMessage(MAGIC, '*', [channel.port1]); // Passes a messeging channel to parent.
-
         createAlertInTopFrame = (orig_domain:string, popup_domain:string, isGeneric:boolean):void => {
             channel.port2.postMessage(JSON.stringify({
                 orig_domain,

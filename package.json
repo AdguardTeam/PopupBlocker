@@ -20,15 +20,16 @@
     "gulp-preprocess": "^2.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-rollup": "^2.14.0",
+    "html-minifier": "^3.5.3",
     "merge-stream": "^1.0.1",
     "mocha": "^3.4.2",
     "rollup-plugin-typescript2": "^0.4.6",
     "run-sequence": "^2.1.0",
-    "tsickle": "^0.23.5",
-    "html-minifier": "^3.5.3"
+    "tsickle": "^0.23.5"
   },
   "dependencies": {
     "@types/chai": "^4.0.2",
+    "@types/greasemonkey": "^0.0.28",
     "@types/mocha": "^2.2.41"
   }
 }

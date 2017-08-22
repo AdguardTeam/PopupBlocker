@@ -1,6 +1,7 @@
 import * as log from '../log';
 import WeakMap from '../weakmap';
 import CurrentMouseEvent from './current-mouse-event';
+import { maybeOverlay } from './element-tests';
 
 /**
  * On IE 10 and lower, window.event is a `MSEventObj` instance which does not implement `target` property.
@@ -78,16 +79,18 @@ export function retrieveEvent():Event {
 export function verifyEvent(event?:Event):boolean {
     if (event) {
         log.call('Verifying event');
+        log.print('Phase is: ' + event.eventPhase);
         let currentTarget = event.currentTarget;
         if (currentTarget) {
             log.print('Event is:', event);
+            log.print('currentTarget is: ', currentTarget);
             if ('nodeName' in currentTarget) {
                 let tagName = (<Element>currentTarget).nodeName.toLowerCase();
                 if (tagName == '#document' || tagName == 'html' || tagName == 'body') {
                     log.print('VerifyEvent - the current event handler is suspicious, for the current target is either document, html, or body.');
                     log.callEnd();
                     return false;
-                } else if ('offsetHeight' in currentTarget && maybeOverlay(<HTMLElement>currentTarget)) {
+                } else if (maybeOverlay(<Element>currentTarget)) {
                     log.print('VerifyEvent - the current event handler is suspicious, for the current target looks like an artificial overlay.');
                     log.callEnd();
                     return false;
@@ -101,30 +104,4 @@ export function verifyEvent(event?:Event):boolean {
 
 export function verifyCurrentEvent():boolean {
     return verifyEvent(retrieveEvent());
-}
-
-/**
- * Detects common overlay pattern.
- * @param el an element to check whether it is an overlay.
- * @return true if el is an overlay.
- */
-export function maybeOverlay(el:HTMLElement):boolean {
-    log.call('maybeOverlay test');
-    let w = window.innerWidth, h = window.innerHeight;
-    if (el.offsetLeft << 4 < w && (w - el.offsetWidth) << 3 < w
-        && el.offsetTop << 4 < h && (h - el.offsetHeight) << 3 < w) {
-        let style = getComputedStyle(el);
-        let position = style.getPropertyValue('position');
-        let zIndex = parseInt(style.getPropertyValue('z-index'), 10);
-        log.print('An element passed offset test.');
-        if ((position == 'fixed' || position == 'absolute') && zIndex > 1000) {
-            log.print('An element passed computedStyle test.');
-            log.callEnd();
-            return true;
-        }
-    }
-    // ToDo: the element may have been modified in the event handler.
-    // We may still test it using the inline style attribute.
-    log.callEnd();
-    return false;
 }

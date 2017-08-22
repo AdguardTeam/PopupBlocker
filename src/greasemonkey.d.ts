@@ -1,7 +1,3 @@
-/**
- * @fileoverview Borrowed from https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/greasemonkey/index.d.ts, 
- * augmented with missing type definitions.
- */
 // Type definitions for Greasemonkey
 // Project: http://www.greasespot.net/
 // Definitions by: Kota Saito <https://github.com/kotas>
@@ -237,26 +233,3 @@ interface GMXMLHttpRequestResult extends GMXMLHttpRequestAsyncResult, GMXMLHttpR
  * @see      {@link http://wiki.greasespot.net/GM_setClipboard}
  */
 declare function GM_xmlhttpRequest(options: GMXMLHttpRequestOptions): GMXMLHttpRequestResult;
-
-/////////////////////////////////////////////////////
-/**
- * PATCHED, this is not a very precise definition, it needs to be improved.
- */
-interface DefineAs {
-    defineAs:PropertyKey
-}
-
-declare function createObjectIn(target:Object, option:DefineAs):any;
-declare function cloneInto<T extends Object>(obj:T, target:Object, option:DefineAs):T;
-declare function exportFunction<T extends Function>(fn:T, obj:object, option:DefineAs):T
-
-declare const AdguardSettings:{
-    feedbackUrl:string,
-    applicationId:string,
-    locale:string,
-    appVersion:string,
-    uniqueName:string,
-    version:string,
-    sendAnonymousStatistic:string,
-    nonce:string
-};

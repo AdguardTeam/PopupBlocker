@@ -30,6 +30,8 @@
 // @version 2.1.0
 // @downloadURL [DOWNLOAD_URL]
 // @updateURL [UPDATE_URL]
+// @supportURL https://github.com/AdguardTeam/PopupBlocker/issues
+// @homepageURL https://github.com/AdguardTeam/PopupBlocker
 // @match http://*/*
 // @match https://*/*
 // @grant GM_getValue

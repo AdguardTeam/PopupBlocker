@@ -1,14 +1,15 @@
 import createOpen from './before/create';
 import aboutBlank from './before/about-blank';
+import navigatePopupToItself from './after/navigate-popup-to-itself';
 import { TimelineEvent, TLEventType } from './event';
 import getTime from './time';
 import WeakMap from '../weakmap';
 import * as log from '../log';
 
-export type condition = (index:number, events:TimelineEvent[][], event?:TimelineEvent) => boolean;
+export type condition = (index:number, events:TimelineEvent[][], event?:TimelineEvent) => boolean|never;
 
 const beforeTest:condition[] = [createOpen, aboutBlank];
-const afterTest = [];
+const afterTest = [navigatePopupToItself];
 
 const EVENT_RETENTION_LENGTH = 5000;
 

@@ -1,6 +1,14 @@
+/**
+ * @fileoverview Bridge object is the object shared between userscript's priviliged context and
+ * the page's context. Mostly due to FF restrictions, we cannot directly pass objects and functions of
+ * priviliged context to the page's context. We attach them on bridge object with extension APIs
+ * designed to selectively expose object/functions.
+ */
+
 import BRIDGE_KEY from './bridge';
 import { domainOption, whitelistedDestinations } from './storage';
 import createAlertInTopFrame from './handshake';
+import { getMessage } from './localization';
 
 // Shim for AG Win
 let clone = typeof cloneInto === 'function' ? cloneInto : x=>x;
@@ -23,6 +31,9 @@ bridge.domainOption = clone(domainOption, bridge, { defineAs: 'domainOption' });
 bridge.whitelistedDestinations = clone(whitelistedDestinations, bridge, { defineAs: 'whitelistedDestinations' });
 exportFn(createAlertInTopFrame, bridge, {
     defineAs: 'showAlert'
+});
+exportFn(getMessage, bridge, {
+    defineAs: 'getMessage'
 });
 
 export default bridge;

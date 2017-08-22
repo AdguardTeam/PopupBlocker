@@ -1,16 +1,20 @@
 import { ApplyHandler, makeObjectProxy, wrapMethod } from '../proxy';
-import { verifyEvent, retrieveEvent, verifyCurrentEvent } from '../events/verify-event';
-import { _dispatchEvent } from './dispatchEvent';
+import { verifyEvent, retrieveEvent, verifyCurrentEvent } from '../events/verify';
+import examineTarget from '../events/examine-target';
+import { _dispatchEvent } from './dispatchEvent/orig';
 import { timeline, position } from '../timeline/index';
+import { TLEventType, TimelineEvent } from '../timeline/event';
+import createUrl from '../url';
 import * as log from '../log';
 import bridge from '../bridge';
-
 
 const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, context) {
     let url = _arguments[0];
     log.call('Called window.open with url ' + url);
     // Checks if an url is in a whitelist
-    if (bridge.whitelistedDestinations.indexOf(url) !== -1) {
+    const destDomain = createUrl(url).hostname;
+    if (bridge.whitelistedDestinations.indexOf(destDomain) !== -1) {
+        log.print(`The domain ${destDomain} is in whitelist.`);
         return _open.apply(_this, _arguments);
     }
     let currentEvent = retrieveEvent();
@@ -28,123 +32,77 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
         log.print('canOpenPopup returned false');
         log.callEnd();
     }
-    if (currentEvent) {
-        let redispatched = dispatchIfBlockedByMask(currentEvent);
-        // Determines whether to return null or a mocked window object.
-        // If an url is first-party or the target is an anchor, the original page may try to navigate away
-        // In such cases we return null to signal that the request was unsuccessful.
-        let target = currentEvent.target;
-        let targetIsAnchor = 'nodeName' in target && (<Element>target).nodeName.toLowerCase() == 'a';
-        let urlIsHrefOfAnchor;
-        if (targetIsAnchor) {
-            let anchor = <HTMLAnchorElement>target;
-            if (anchor.href == _arguments[0]) { urlIsHrefOfAnchor = true; }
-        }
-        let urlIsCurrentHref;
-        if (location.href === _arguments[0]) { urlIsCurrentHref = true; }
-        if (redispatched || urlIsHrefOfAnchor || urlIsCurrentHref) {
-            log.print("An event is re-dispatched or the opened url is equal to the target's href or the url is equal to the current href");
-            log.callEnd();
-            bridge.showAlert(bridge.domain, url, false);
-            return null;
-        }
-    }
+    bridge.showAlert(bridge.domain, url , false);
+    if (currentEvent) { examineTarget(currentEvent, _arguments[0]); }
     log.print('mock a window object');
     // Return a mock window object, in order to ensure that the page's own script does not accidentally throw TypeErrors.
     win = mockWindow(_arguments[0], _arguments[1]);
+    win = makeObjectProxy(win);
     context['mocked'] = true;
     log.callEnd();
-    bridge.showAlert(bridge.domain, url, false);
     return win;
 };
 
-/**
- * Some popup scripts adds transparent overlays on each of page's links
- * which disappears only when popups are opened.
- * To restore the expected behavior, we need to detect if the event is 'masked' by artificial layers
- * and redirect it to the correct element.
- * ToDo: touch events: https://developer.mozilla.org/en/docs/Web/API/Touch_events
- * ToDo: check for real target's ancestors for anchor or input elements.
- * @return true if an event is re-dispatched.
- */
-const dispatchIfBlockedByMask = function(event:Event) {
-    var currentEvent = event;
-    if (currentEvent) {
-        if ('clientX' in currentEvent && currentEvent.isTrusted) {
-            log.call('Checking current MouseEvent for its genuine target..');
-            let mouseEvent = <MouseEvent>currentEvent;
-            let x = mouseEvent.clientX, y = mouseEvent.clientY, target = <HTMLElement>mouseEvent.target;
-            if (target.nodeType !== Node.ELEMENT_NODE) { log.callEnd(); return; }
-            let elts;
-            if (document.elementsFromPoint) { elts = document.elementsFromPoint(x, y); }
-            else if (document.msElementsFromPoint) { elts = document.msElementsFromPoint(x, y); }
-            else {
-                log.print('document.elementsFromPoint API is not available, exiting');
-                log.callEnd();
-                return;
-            }
-            log.print('Elements at the clicked position are:', elts);
-            let el:HTMLElement;
-            if ( elts[0] === target ) {
-                log.print('The target is staying.');
-                el = elts[1];
-            } else {
-                log.print('The target has modified inside event handlers.');
-                el = elts[0];
-            }
-            if (!el) { log.callEnd(); return; }
-            let name = el.nodeName.toLowerCase();
-            if ( name == 'iframe' || name == 'input' || name == 'a' || el.hasAttribute('onclick') || el.hasAttribute('onmousedown') ) {
-                log.print('A real target candidate has default event handlers');
-                var style = getComputedStyle(<Element>target);
-                var position = style.getPropertyValue('position');
-                var zIndex = parseInt(style.getPropertyValue('z-index'), 10);
-                if ( (position == 'absolute' || position == 'fixed') && zIndex > 1000 ) {
-                    log.print('A mask candidate has expected style');
-                    if (target.textContent.trim().length === 0 && target.getElementsByTagName('img').length === 0) {
-                        log.print('A mask candidate has expected content, re-dispatching events..');
-                        target.style.setProperty('display', 'none', 'important');
-                        target.style.setProperty('pointer-events', 'none', 'important');
-                        let clone = new MouseEvent(currentEvent.type, currentEvent);
-                        currentEvent.stopPropagation();
-                        currentEvent.stopImmediatePropagation();
-                        _dispatchEvent.call(el, clone);
-                        log.callEnd();
-                        return true;
-                    }
-                }
-            }
-            log.callEnd();
+const mockObject = (orig:Object, mocked?:Object):Object => {
+    mocked = mocked || <any>{};
+    const mockPropValue = (prop:PropertyKey) => {
+        switch(typeof orig[prop]) {
+            case 'object':
+            mocked[prop] = {}; break;
+            case 'function':
+            mocked[prop] = function() {return true;}; break;
+            default:
+            mocked[prop] = orig[prop];
         }
     }
-};
+    Object.getOwnPropertyNames(orig).forEach(mockPropValue);
+    if (Object.getOwnPropertySymbols) Object.getOwnPropertySymbols(orig).forEach(mockPropValue);
+    return mocked;
+}
+
+// used by mockWindow
+let windowPType:Object, win:any, docPType:Object, doc:any;
+let initialized = false;
 
 const mockWindow = (href, name) => {
-    let loc = document.createElement('a');
+    if (!initialized) {
+        const windowPType = mockObject(Window.prototype);
+        const win = Object.create(windowPType);
+        mockObject(window, win);
+        const docPType = mockObject(Document.prototype);
+        const doc = Object.create(docPType);
+        win.opener = window;
+        win.closed = false;
+        win.name = name;
+        win.document = doc;
+        initialized = true;
+    }
+    const loc = document.createElement('a');
     loc.href = href;
-    let doc = Object.create(HTMLDocument.prototype);
-    let win = <any>{};
-    Object.getOwnPropertyNames(window).forEach(function(prop) {
-        switch(typeof window[prop]) {
-            case 'object': win[prop] = {}; break;
-            case 'function': win[prop] = function() {return true;}; break;
-            case 'string':  win[prop] = ''; break;
-            case 'number': win[prop] = NaN; break;
-            case 'boolean': win[prop] = false; break;
-            case 'undefined': win[prop] = undefined; break;
-        }
-    });
-    doc.location = loc;
+    doc[_location] = loc;
     // doc.open = function(){return this;}
     // doc.write = function(){};
     // doc.close = function(){};
-    win.opener = window;
-    win.closed = false;
-    win.name = name;
-    win.location = loc;
-    win.document = doc;
+
+    Object.defineProperty(win, _location, {
+        get: function() {
+            timeline.registerEvent(new TimelineEvent(TLEventType.GET, _location, {
+                this: this
+            }), position);
+            return loc;
+        },
+        set: function(incoming) {
+            timeline.registerEvent(new TimelineEvent(TLEventType.SET, _location, {
+                this: this,
+                arguments: [incoming]
+            }), position);
+        }
+    });
+
     return win;
 };
+
+var _location = 'location';
 
 wrapMethod(window, 'open', openVerifiedWindow);
 wrapMethod(Window.prototype, 'open', openVerifiedWindow); // for IE

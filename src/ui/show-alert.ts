@@ -7,7 +7,7 @@ const innerHTML = "RESOURCE:ALERT_TEMPLATE";
 const enum STYLE_CONST {
     top_offset = 10,
     right_offset = 10,
-    height = 78,
+    height = 76,
     collapsed_height = 48,
     width = 574,
     collapsed_width = 135,
@@ -28,8 +28,9 @@ const initialAlertFrameStyle = {
     "border": "none",
     "opacity": "0",
     "z-index": String(-1 - (1 << 31)),
-    "transition": "opacity 500ms, top 500ms",
-    "transitionTimingFunction": "cubic-bezier(0.86, 0, 0.07, 1), cubic-bezier(0.86, 0, 0.07, 1)"
+    "transform": "translate3d(0,0,0)", // GPU acceleration
+    "transition": "opacity 200ms,top 200ms",
+    "transitionTimingFunction": "cubic-bezier(0.86,0,0.07,1),cubic-bezier(0.645,0.045,0.355,1)"
 };
 
 interface AlertIntf {
@@ -47,7 +48,7 @@ interface AlertIntf {
 function attachClickListenerForEach (iterable:NodeList, listener:(this:Node,evt:MouseEvent)=>any) {
     let l = iterable.length;
     while (l-- > 0) {
-        iterable[l].addEventListener('click', listener);
+        iterable[l][addEventListener]('click', listener);
     }
 }
 
@@ -61,7 +62,7 @@ class Alert implements AlertIntf {
         let loaded = false;
         // Prepare innerHTML
         let _innerHTML = innerHTML.replace(/\${dest}/g, popup_domain);
-        iframe.addEventListener('load', (evt) => {
+        iframe[addEventListener]('load', (evt) => {
             // Attach event handlers
             if (loaded) { return; }
             loaded = true;
@@ -80,7 +81,7 @@ class Alert implements AlertIntf {
             requestAnimationFrame(() => {
                 iframe.style['opacity'] = '1';
             });
-            // Unless this, the background of the iframe will be white in IE11
+            // Without this, the background of the iframe will be white in IE11
             document.body.setAttribute('style', 'background-color:transparent;');
         });
         // Adjust css of an iframe
@@ -90,8 +91,8 @@ class Alert implements AlertIntf {
         let width = showCollapsed ? STYLE_CONST.collapsed_width : STYLE_CONST.width;
         iframe.style['height'] = height + px;
         iframe.style['width'] = width + px;
-        // Enable sandboxing
-        iframe.setAttribute('sandbox', 'allow-same-origin');
+        // Commenting out the below due to https://bugs.chromium.org/p/chromium/issues/detail?id=489431,
+        // iframe.setAttribute('sandbox', 'allow-same-origin');
 
         this.$element = iframe;
         this.$collapsed = showCollapsed;
@@ -135,13 +136,13 @@ class AlertController {
         let offset = STYLE_CONST.middle_offset + alert.$height;
         this.moveBunch(l, offset);
         // Adds event listeners that needs to run in this context
-        alert.$element.addEventListener('load', () => {
+        alert.$element[addEventListener]('load', () => {
             attachClickListenerForEach(alert.$element.contentDocument[getElementsByClassName]('popup__close'), () => {
                 this.destroyAlert(alert);
             });
         });
-        alert.$element.addEventListener('mouseover', () => { this.onMouseOver(); });
-        alert.$element.addEventListener('mouseout', () => { this.onMouseOut(); });
+        alert.$element[addEventListener]('mouseover', () => { this.onMouseOver(); });
+        alert.$element[addEventListener]('mouseout', () => { this.onMouseOut(); });
         // Appends an alert to DOM
         document.body.appendChild(alert.$element);
         // Schedules collapsing & destroying
@@ -240,5 +241,6 @@ class AlertController {
 
 // Minifiers will not inline below strings
 var getElementsByClassName = 'getElementsByClassName';
+var addEventListener = 'addEventListener';
 
 export default new AlertController();
