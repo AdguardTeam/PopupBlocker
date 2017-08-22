@@ -15,8 +15,6 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
     const destDomain = createUrl(url).hostname;
     if (bridge.whitelistedDestinations.indexOf(destDomain) !== -1) {
         log.print(`The domain ${destDomain} is in whitelist.`);
-        console.log(destDomain);
-        console.log(bridge.whitelistedDestinations);
         return _open.apply(_this, _arguments);
     }
     let currentEvent = retrieveEvent();

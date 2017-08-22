@@ -144,8 +144,10 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
 const preventPointerEvent = (el:Element):void => {
     if (!('style' in el)) { return; }
     let _el:HTMLElement = <HTMLElement>el;
-    _el.style.setProperty('display', 'none', 'important');
-    _el.style.setProperty('pointer-events', 'none', 'important');
+    _el.style.setProperty('display', "none", important);
+    _el.style.setProperty('pointer-events', "none", important);
 };
+
+var important = 'important';
 
 export default log.connect(examineTarget, 'Examining Target');

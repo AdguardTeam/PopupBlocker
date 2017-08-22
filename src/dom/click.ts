@@ -9,7 +9,9 @@ const clickVerified:ApplyHandler = function(_click, _this) {
     if (_this.nodeName.toLowerCase() == 'a') {
         log.print('click() was called on an anchor tag');
         // Checks if an url is in a whitelist
-        if (bridge.whitelistedDestinations.indexOf(_this.hostname) !== -1) {
+        let destDomain = _this.hostname;
+        if (bridge.whitelistedDestinations.indexOf(destDomain) !== -1) {
+            log.print(`The domain ${destDomain} is in whitelist.`);
             _click.call(_this);
             return;
         }
