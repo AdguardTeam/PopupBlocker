@@ -48,7 +48,11 @@ if (supported) {
         }
         log.print('received a message from:', evt.source);
         let port = evt.ports[0]; // This is a port that a child frame sent.
-        port.onmessage = onMessage; // Registers a listener
+        if (isTopOrEmpty) {
+            port.onmessage = onMessage;
+        } else {
+            channel.port2.postMessage(MAGIC_CHILD, [port]);
+        }
         connectedFrames.set(evt.source, true);
         evt.stopImmediatePropagation();
         evt.preventDefault();
@@ -59,6 +63,7 @@ if (supported) {
      */
     const onMessage = (evt:MessageEvent) => {
         log.call('Received a message from a private channel');
+        log.print('data is:', evt.data);
         if (evt.data === MAGIC_CHILD) {
             log.print('It is a request to pass a MessagePort to a parent frame');
             let port = evt.ports[0];
@@ -67,8 +72,6 @@ if (supported) {
             if (isTopOrEmpty) {
                 let data:PopupNotificationMsgIntf = JSON.parse(evt.data);
                 alertController.createAlert(data.orig_domain, data.popup_domain, data.isGeneric);
-            } else {
-                channel.port2.postMessage(MAGIC_CHILD, [evt.ports[0]]);
             }
         }
         log.callEnd();

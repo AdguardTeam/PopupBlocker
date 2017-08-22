@@ -53,9 +53,9 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
     log.print('ElementsFromPoint:', candidates);
     // Use Event#deepPath API
     let path:EventTarget[];
-    if (Event.prototype.hasOwnProperty('path')) {
+    if ('path' in Event.prototype) {
         path = currentEvent.path;
-    } else if (Event.prototype.hasOwnProperty('composedPath')) {
+    } else if ('composedPath' in Event.prototype) {
         path = currentEvent.composedPath();
     }
     /**
