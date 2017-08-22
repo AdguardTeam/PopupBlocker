@@ -12,7 +12,7 @@ const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _argu
     if ('clientX' in evt && _this.nodeName.toLowerCase() == 'a' && !evt.isTrusted) {
         log.call('It is a MouseEvent on an anchor tag.');
         // Checks if an url is in a whitelist
-        if (bridge.whitelistedDestinations.indexOf(_this.host) !== -1) {
+        if (bridge.whitelistedDestinations.indexOf(_this.hostname) !== -1) {
             return _dispatchEvent.call(_this, evt);
         }
         let currentEvent = retrieveEvent();

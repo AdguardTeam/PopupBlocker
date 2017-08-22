@@ -2,6 +2,7 @@
 PopupBlocker is a userscript that blocks unwanted popups.
 
 Current release version: https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.0/popupblocker.user.js
+
 Curent beta version: https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.0/popupblocker.user.js
 
 ## How does it work?
@@ -15,7 +16,7 @@ https://AdguardTeam.github.io/PopupBlocker/popupblocker.user.js
 
 Development builds have logging enabled and overrides significantly more browser apis to introspect behavior of popup/popunder script. It is not suitable for normal usage.
 
-Unit test for dev build is [here](https://AdguardTeam.github.io/PopupBlocker/test/)
+Unit test for dev build is [here](https://AdguardTeam.github.io/PopupBlocker/test/).
 
 ## How to build
 

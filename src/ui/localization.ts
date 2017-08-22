@@ -14,7 +14,7 @@ if (!currentLocale) {
     currentLocale = 'en';
 }
 
-const getMessage = (messageId:string):string => {
+export const getMessage = (messageId:string):string => {
     let message = SupportedLocales[currentLocale][messageId];
     // @ifdef DEBUG
     if (!message) { throw messageId + ' not localized'; }

@@ -8,6 +8,7 @@
 import BRIDGE_KEY from './bridge';
 import { domainOption, whitelistedDestinations } from './storage';
 import createAlertInTopFrame from './handshake';
+import { getMessage } from './localization';
 
 // Shim for AG Win
 let clone = typeof cloneInto === 'function' ? cloneInto : x=>x;
@@ -30,6 +31,9 @@ bridge.domainOption = clone(domainOption, bridge, { defineAs: 'domainOption' });
 bridge.whitelistedDestinations = clone(whitelistedDestinations, bridge, { defineAs: 'whitelistedDestinations' });
 exportFn(createAlertInTopFrame, bridge, {
     defineAs: 'showAlert'
+});
+exportFn(getMessage, bridge, {
+    defineAs: 'getMessage'
 });
 
 export default bridge;

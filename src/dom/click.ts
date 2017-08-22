@@ -5,11 +5,11 @@ import abort from '../abort';
 import * as log from '../log';
 import bridge from '../bridge';
 
-let clickVerified:ApplyHandler = function(_click, _this) {
+const clickVerified:ApplyHandler = function(_click, _this) {
     if (_this.nodeName.toLowerCase() == 'a') {
         log.print('click() was called on an anchor tag');
         // Checks if an url is in a whitelist
-        if (bridge.whitelistedDestinations.indexOf(_this.host) !== -1) {
+        if (bridge.whitelistedDestinations.indexOf(_this.hostname) !== -1) {
             _click.call(_this);
             return;
         }
@@ -25,6 +25,4 @@ let clickVerified:ApplyHandler = function(_click, _this) {
     _click.call(_this);
 };
 
-clickVerified = log.connect(clickVerified, 'Verifying click')
-export const _click = HTMLElement.prototype.click;
-wrapMethod(HTMLElement.prototype, 'click', clickVerified);
+wrapMethod(HTMLElement.prototype, 'click', log.connect(clickVerified, 'Verifying click'));

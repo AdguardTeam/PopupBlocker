@@ -1,5 +1,7 @@
 import { _dispatchEvent } from '../dom/dispatchEvent/orig';
+import { _preventDefault } from '../dom/preventDefault/orig';
 import { setBeforeunloadHandler } from '../dom/unload';
+import { hasDefaultHandler, maskStyleTest, maskContentTest, maybeOverlay } from './element-tests';
 import abort from '../abort';
 import * as log from '../log';
 
@@ -12,7 +14,6 @@ const initMouseEventArgs = 'type,canBubble,cancelable,view,detail,screenX,screen
  * and redirect it to the correct element.
  * It will return true if no mask was detected and we should throw to abort script execution.
  * ToDo: we may need to prevent `preventDefault` in touch events
- * @return true indicates that we should throw.
  */
 const examineTarget = (currentEvent:Event, targetHref:string):void => {
     log.print('Event is:', currentEvent);
@@ -58,10 +59,9 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
         path = currentEvent.composedPath();
     }
     /**
-     * This is a heuristic that works on most of cases.
+     * This is a heuristic. I won't try to make it robust by following specs for now.
      * https://drafts.csswg.org/cssom-view/#dom-document-elementsfrompoint
      * https://philipwalton.com/articles/what-no-one-told-you-about-z-index/
-     * https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition
      */
     let candidate:Element;
     let i = 0;
@@ -87,13 +87,18 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
         } else { parent = parent.parentElement; }
     }
     if (check) {
-        if (currentEvent.defaultPrevented) {
-            // Needs to re-dispatch event so that default action cannot be prevented
-        }
-        if (parent && parent.nodeName.toLowerCase() === 'a' && (<HTMLAnchorElement>parent).href === targetHref) {
-            log.print("Throwing, because the target url is an href of an eventTarget or its ancestor");
+        if (parent && parent.nodeName.toLowerCase() === 'a') {
             // Can't set beforeunload handler here; it may prevent legal navigations.
-            abort();
+            if ((<HTMLAnchorElement>parent).href === targetHref) {
+                log.print("Throwing, because the target url is an href of an eventTarget or its ancestor");
+                abort();
+            }
+            if (maybeOverlay(parent)) {
+                log.print("Preventing default, because the current target looks like an overlay");
+                _preventDefault.call(currentEvent);
+                preventPointerEvent(parent);
+            }
+            // Perform overlay test;
         }
         return;
     }
@@ -106,7 +111,7 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
         return;
     }    
     if (!check) {
-        iterate_candidates: while (i < l) {
+        iterate_candidates: while (i < l - 1) {
             if (candidate.parentElement === (candidate = candidates[++i])) { continue; }
             parent = candidate;
             while (parent) {
@@ -126,12 +131,7 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
     // Performs mask neutralization and event delivery
     if (check) {
         log.print("Detected a mask");
-        while (i-- > 0) {
-            if (!('style' in candidates[i])) { continue; }
-            let el = <HTMLElement>candidates[i];
-            el.style.setProperty('display', 'none', 'important');
-            el.style.setProperty('pointer-events', 'none', 'important');
-        }
+        while (i-- > 0) { preventPointerEvent(candidates[i]); }
         const clonedEvent = document.createEvent('MouseEvents');
         clonedEvent.initMouseEvent.apply(clonedEvent, initMouseEventArgs.map((prop) => currentEvent[prop]));
         currentEvent.stopPropagation();
@@ -141,29 +141,11 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
     }
 };
 
-const hasDefaultHandler = (el:Element) => {
-    const name = el.nodeName.toLowerCase();
-    if (name == 'iframe' || name == 'input' || name == 'a' || name == 'button' || el.hasAttribute('onclick') || el.hasAttribute('onmousedown') || el.hasAttribute('onmouseup')) {
-        return true;
-    }
-    return false;
-};
-
-const maskStyleTest = (el:Element):boolean => {
-    const style = getComputedStyle(el);
-    const position = style.getPropertyValue('position');
-    const zIndex = style.getPropertyValue('z-index');
-    // Theoretically, opacity css property can be used to make masks as well
-    // but hasn't encountered such usage in the wild, so not including it.
-    if (position !== 'static' && parseInt(zIndex, 10) > 1000) { return true; }
-    return false;
-};
-
-const maskContentTest = (el:Element):boolean => {
-    if (el.textContent.trim().length === 0 && el.getElementsByTagName('img').length === 0) {
-        return true;
-    }
-    return false;
+const preventPointerEvent = (el:Element):void => {
+    if (!('style' in el)) { return; }
+    let _el:HTMLElement = <HTMLElement>el;
+    _el.style.setProperty('display', 'none', 'important');
+    _el.style.setProperty('pointer-events', 'none', 'important');
 };
 
 export default log.connect(examineTarget, 'Examining Target');

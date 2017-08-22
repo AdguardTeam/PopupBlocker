@@ -1,8 +1,10 @@
 import { ApplyHandler, makeObjectProxy, wrapMethod } from '../proxy';
 import { verifyEvent, retrieveEvent, verifyCurrentEvent } from '../events/verify';
 import examineTarget from '../events/examine-target';
-import { _dispatchEvent } from './dispatchEvent';
+import { _dispatchEvent } from './dispatchEvent/orig';
 import { timeline, position } from '../timeline/index';
+import { TLEventType, TimelineEvent } from '../timeline/event';
+import createUrl from '../url';
 import * as log from '../log';
 import bridge from '../bridge';
 
@@ -10,7 +12,11 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
     let url = _arguments[0];
     log.call('Called window.open with url ' + url);
     // Checks if an url is in a whitelist
-    if (bridge.whitelistedDestinations.indexOf(url) !== -1) {
+    const destDomain = createUrl(url).hostname;
+    if (bridge.whitelistedDestinations.indexOf(destDomain) !== -1) {
+        log.print(`The domain ${destDomain} is in whitelist.`);
+        console.log(destDomain);
+        console.log(bridge.whitelistedDestinations);
         return _open.apply(_this, _arguments);
     }
     let currentEvent = retrieveEvent();
@@ -33,6 +39,7 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
     log.print('mock a window object');
     // Return a mock window object, in order to ensure that the page's own script does not accidentally throw TypeErrors.
     win = mockWindow(_arguments[0], _arguments[1]);
+    win = makeObjectProxy(win);
     context['mocked'] = true;
     log.callEnd();
     return win;
@@ -60,7 +67,22 @@ const mockWindow = (href, name) => {
     win.opener = window;
     win.closed = false;
     win.name = name;
-    win.location = loc;
+
+    Object.defineProperty(win, 'location', {
+        get: function() {
+            timeline.registerEvent(new TimelineEvent(TLEventType.GET, 'location', {
+                this: this
+            }), position);
+            return loc;
+        },
+        set: function(incoming) {
+            timeline.registerEvent(new TimelineEvent(TLEventType.SET, 'location', {
+                this: this,
+                arguments: [incoming]
+            }), position);
+        }
+    });
+
     win.document = doc;
     return win;
 };

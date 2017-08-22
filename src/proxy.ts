@@ -126,31 +126,42 @@ const proxifyReturn:ApplyHandler = (target, _this, _arguments) => {
     return ret;
 };
 
+const reportGetToTL = (target, prop:PropertyKey, receiver) => {
+    let _receiver = proxyToReal.get(receiver) || receiver;
+    timeline.registerEvent(new TimelineEvent(TLEventType.GET, prop, _receiver), position);
+    var value = Reflect.get(target, prop, _receiver);
+    if (isNativeFn(value)) {
+        return makeFunctionWrapper(value, invokeWithUnproxiedThis);
+    } else {
+        return value;
+    }
+};
+
+const reportSetToTL = (target, prop:PropertyKey, value, receiver) => {
+    let _receiver = proxyToReal.get(receiver) || receiver;
+    let data = {
+        this: _receiver,
+        arguments: [value]
+    };
+    timeline.registerEvent(new TimelineEvent(TLEventType.SET, prop, data), position);
+    return Reflect.set(target, prop, value, _receiver);
+};
+
 export function makeObjectProxy(obj) {
     if ( obj === null || typeof obj !== 'object' || !supported) { return obj; }
     let proxy = realToProxy.get(obj);
     if (proxy) { return proxy; }
     proxy = new Proxy(obj, {
-        get: function(target, prop, receiver) {
-            let _receiver = proxyToReal.get(receiver) || receiver;
-            timeline.registerEvent(new TimelineEvent(TLEventType.GET, prop, _receiver), position);
-            var value = Reflect.get(target, prop, _receiver);
-            if (isNativeFn(value)) {
-                return makeFunctionWrapper(value, invokeWithUnproxiedThis);
-            } else {
-                return value;
-            }
-        },
-        set: function(target, prop, value, receiver) {
-            let _receiver = proxyToReal.get(receiver) || receiver;
-            timeline.registerEvent(new TimelineEvent(TLEventType.SET, prop, _receiver), position);
-            return Reflect.set(target, prop, value, _receiver);
-        }
+        get: reportGetToTL, // Avoid creating the same function many times
+        set: reportSetToTL
     });
     realToProxy.set(obj, proxy);
     proxyToReal.set(proxy, obj);
     return proxy;
 }
+
+// A predefined list of property keys are required to polyfill Proxy.
+const propsToObserve = 'location'.split(',');
 
 const defaultApplyHandler:ApplyHandler = supported ? _reflect : (_target, _this, _arguments) => (_target.apply(_this, _arguments));
 const defaultOption = () => (true);

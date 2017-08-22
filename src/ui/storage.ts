@@ -19,7 +19,7 @@ const INITIAL_DOMAIN_OPTION = JSON.stringify({
 });
 
 export const domainOption = <DomainOption>JSON.parse(GM_getValue(location.host, INITIAL_DOMAIN_OPTION));
-export const whitelistedDestinations = getValue('whitelist', '').split(',');
+export const whitelistedDestinations = getValue('whitelist', '').split(',').filter(host => host.length);
 
 export function requestDestinationWhitelist(dest) {
     whitelistedDestinations.push(dest);

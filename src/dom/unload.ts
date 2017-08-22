@@ -1,19 +1,18 @@
-const MSG = "This page navigation attempt is likely to be a popunder (with popup blocked) do you wish to continue?";
+import eventTargetPType from './dispatchEvent/orig';
+import bridge from '../bridge';
+const MSG = bridge.getMessage('on_navigation_by_popunder');
 
-const onbeforeunloadHandler = (evt) => {
+const onbeforeunloadHandler = (evt:BeforeUnloadEvent) => {
     evt.returnValue = MSG;
     return MSG;
 };
 
 export const setBeforeunloadHandler = () => {
-    // ToDo: if this found to be useful, consider making it work on cross-origin iframes
+    // ToDo: if this is found to be useful, consider making it work on cross-origin iframes
     if (window === window.top) {
-        const prev = window.onbeforeunload;
-        window.onbeforeunload = onbeforeunloadHandler;
+        eventTargetPType.addEventListener.call(window, 'beforeunload', onbeforeunloadHandler);
         setTimeout(() => {
-            if (onbeforeunloadHandler === window.onbeforeunload) {
-                window.onbeforeunload = prev;
-            }
+            eventTargetPType.removeEventListener.call(window, 'beforeunload', onbeforeunloadHandler);
         }, 1000);
     }
 };
