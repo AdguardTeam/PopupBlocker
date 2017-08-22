@@ -1,4 +1,4 @@
-import { _preventDefault } from './orig';
+import eventPType from './orig';
 import { ApplyHandler, wrapMethod } from '../../proxy';
 import { retrieveEvent, verifyEvent } from '../../events/verify';
 import * as log from '../../log';
@@ -14,4 +14,4 @@ const allowVerifiedCall:ApplyHandler = (_orig, _this) => {
     return _orig.call(_this);
 };
 
-wrapMethod(_preventDefault, 'preventDefault', log.connect(allowVerifiedCall, 'Performing verification on preventDefault..'));
+wrapMethod(eventPType, 'preventDefault', log.connect(allowVerifiedCall, 'Performing verification on preventDefault..'));
