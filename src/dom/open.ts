@@ -43,47 +43,66 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
     return win;
 };
 
-const mockWindow = (href, name) => {
-    let loc = document.createElement('a');
-    loc.href = href;
-    let doc = Object.create(HTMLDocument.prototype);
-    let win = <any>{};
-    Object.getOwnPropertyNames(window).forEach(function(prop) {
-        switch(typeof window[prop]) {
-            case 'object': win[prop] = {}; break;
-            case 'function': win[prop] = function() {return true;}; break;
-            case 'string':  win[prop] = ''; break;
-            case 'number': win[prop] = NaN; break;
-            case 'boolean': win[prop] = false; break;
-            case 'undefined': win[prop] = undefined; break;
+const mockObject = (orig:Object, mocked?:Object):Object => {
+    mocked = mocked || <any>{};
+    const mockPropValue = (prop:PropertyKey) => {
+        switch(typeof orig[prop]) {
+            case 'object':
+            mocked[prop] = {}; break;
+            case 'function':
+            mocked[prop] = function() {return true;}; break;
+            default:
+            mocked[prop] = orig[prop];
         }
-    });
-    doc.location = loc;
+    }
+    Object.getOwnPropertyNames(orig).forEach(mockPropValue);
+    if (Object.getOwnPropertySymbols) Object.getOwnPropertySymbols(orig).forEach(mockPropValue);
+    return mocked;
+}
+
+// used by mockWindow
+let windowPType:Object, win:any, docPType:Object, doc:any;
+let initialized = false;
+
+const mockWindow = (href, name) => {
+    if (!initialized) {
+        const windowPType = mockObject(Window.prototype);
+        const win = Object.create(windowPType);
+        mockObject(window, win);
+        const docPType = mockObject(Document.prototype);
+        const doc = Object.create(docPType);
+        win.opener = window;
+        win.closed = false;
+        win.name = name;
+        win.document = doc;
+        initialized = true;
+    }
+    const loc = document.createElement('a');
+    loc.href = href;
+    doc[_location] = loc;
     // doc.open = function(){return this;}
     // doc.write = function(){};
     // doc.close = function(){};
-    win.opener = window;
-    win.closed = false;
-    win.name = name;
 
-    Object.defineProperty(win, 'location', {
+    Object.defineProperty(win, _location, {
         get: function() {
-            timeline.registerEvent(new TimelineEvent(TLEventType.GET, 'location', {
+            timeline.registerEvent(new TimelineEvent(TLEventType.GET, _location, {
                 this: this
             }), position);
             return loc;
         },
         set: function(incoming) {
-            timeline.registerEvent(new TimelineEvent(TLEventType.SET, 'location', {
+            timeline.registerEvent(new TimelineEvent(TLEventType.SET, _location, {
                 this: this,
                 arguments: [incoming]
             }), position);
         }
     });
 
-    win.document = doc;
     return win;
 };
+
+var _location = 'location';
 
 wrapMethod(window, 'open', openVerifiedWindow);
 wrapMethod(Window.prototype, 'open', openVerifiedWindow); // for IE

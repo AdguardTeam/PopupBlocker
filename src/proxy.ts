@@ -160,9 +160,6 @@ export function makeObjectProxy(obj) {
     return proxy;
 }
 
-// A predefined list of property keys are required to polyfill Proxy.
-const propsToObserve = 'location'.split(',');
-
 const defaultApplyHandler:ApplyHandler = supported ? _reflect : (_target, _this, _arguments) => (_target.apply(_this, _arguments));
 const defaultOption = () => (true);
 
