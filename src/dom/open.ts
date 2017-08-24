@@ -8,11 +8,15 @@ import createUrl from '../url';
 import * as log from '../log';
 import bridge from '../bridge';
 
+import { createAlertInTopFrame } from '../messaging';
+
+
 const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, context) {
     let url = _arguments[0];
     log.call('Called window.open with url ' + url);
     // Checks if an url is in a whitelist
-    const destDomain = createUrl(url).hostname;
+    const url2 = createUrl(url);
+    const destDomain = url2.canonical;
     if (bridge.whitelistedDestinations.indexOf(destDomain) !== -1) {
         log.print(`The domain ${destDomain} is in whitelist.`);
         return _open.apply(_this, _arguments);
@@ -32,7 +36,7 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
         log.print('canOpenPopup returned false');
         log.callEnd();
     }
-    bridge.showAlert(bridge.domain, url , false);
+    createAlertInTopFrame(bridge.domain, url2.display, false);
     if (currentEvent) { examineTarget(currentEvent, _arguments[0]); }
     log.print('mock a window object');
     // Return a mock window object, in order to ensure that the page's own script does not accidentally throw TypeErrors.
@@ -45,32 +49,33 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
 
 const mockObject = (orig:Object, mocked?:Object):Object => {
     mocked = mocked || <any>{};
-    const mockPropValue = (prop:PropertyKey) => {
-        switch(typeof orig[prop]) {
-            case 'object':
-            mocked[prop] = {}; break;
-            case 'function':
-            mocked[prop] = function() {return true;}; break;
-            default:
-            mocked[prop] = orig[prop];
+    for (let prop in orig) {
+        let desc = Object.getOwnPropertyDescriptor(orig, prop);
+        if (desc) {
+            switch(typeof desc.value) {
+                case 'undefined':
+                break;
+                case 'object':
+                mocked[prop] = {}; break;
+                case 'function':
+                mocked[prop] = function() { return true; }; break;
+                default:
+                mocked[prop] = orig[prop];
+            }
         }
     }
-    Object.getOwnPropertyNames(orig).forEach(mockPropValue);
-    if (Object.getOwnPropertySymbols) Object.getOwnPropertySymbols(orig).forEach(mockPropValue);
     return mocked;
-}
+};
 
-// used by mockWindow
-let windowPType:Object, win:any, docPType:Object, doc:any;
+let win:any, doc:any;
 let initialized = false;
 
 const mockWindow = (href, name) => {
     if (!initialized) {
-        windowPType = mockObject(Window.prototype);
-        win = Object.create(windowPType);
-        mockObject(window, win);
-        docPType = mockObject(Document.prototype);
-        doc = Object.create(docPType);
+        win = mockObject(window);
+        mockObject(Window.prototype, win);
+        doc = mockObject(document);
+        mockObject(Document.prototype, doc);
         win.opener = window;
         win.closed = false;
         win.name = name;

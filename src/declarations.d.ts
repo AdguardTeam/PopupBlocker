@@ -6,6 +6,7 @@ declare function InstallTrigger();
 
 declare function exporter();
 
+
 interface Bridge {
     domain:string,
     domainOption:DomainOption,

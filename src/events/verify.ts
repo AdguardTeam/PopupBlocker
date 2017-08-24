@@ -87,9 +87,19 @@ export function verifyEvent(event?:Event):boolean {
             if ('nodeName' in currentTarget) {
                 let tagName = (<Element>currentTarget).nodeName.toLowerCase();
                 if (tagName == '#document' || tagName == 'html' || tagName == 'body') {
-                    log.print('VerifyEvent - the current event handler is suspicious, for the current target is either document, html, or body.');
-                    log.callEnd();
-                    return false;
+                    let eventPhase = event.eventPhase;
+                    // https://github.com/AdguardTeam/PopupBlocker/issues/30
+                    // jquery event delegation may conflict with this. jquery attaches a listener without useCapture,
+                    // but for popup scripts to effectively fire popups without being blocked by other listener's stopPropagation call,
+                    // they need to attach listener with useCapture, and it is reasonable to expect that.
+                    if (eventPhase === Event.CAPTURING_PHASE || eventPhase === Event.AT_TARGET) {
+                        log.print('VerifyEvent - the current event handler is suspicious, for the current target is either document, html, or body.');
+                        log.callEnd();
+                        return false;
+                    } else {
+                        log.print('VerifyEvent - the current target is document/htmo/body, but the event is in a bubbling phase.');
+                    }
+                // When an overlay is being used, useCapture is not necessary.
                 } else if (maybeOverlay(<Element>currentTarget)) {
                     log.print('VerifyEvent - the current event handler is suspicious, for the current target looks like an artificial overlay.');
                     log.callEnd();

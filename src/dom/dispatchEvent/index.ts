@@ -6,13 +6,16 @@ import { setBeforeunloadHandler } from '../unload';
 import abort from '../../abort';
 import * as log from '../../log';
 import bridge from '../../bridge';
+import { createAlertInTopFrame } from '../../messaging';
+import createUrl from '../../url';
 
 const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _arguments) {
     let evt = _arguments[0];
     if ('clientX' in evt && _this.nodeName.toLowerCase() == 'a' && !evt.isTrusted) {
         log.call('It is a MouseEvent on an anchor tag.');
         // Checks if an url is in a whitelist
-        let destDomain = _this.hostname
+        let url = createUrl(_this.href);
+        let destDomain = url.canonical;
         if (bridge.whitelistedDestinations.indexOf(destDomain) !== -1) {
             log.print(`The domain ${destDomain} is in whitelist.`);
             return _dispatchEvent.call(_this, evt);
@@ -20,7 +23,7 @@ const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _argu
         let currentEvent = retrieveEvent();
         if (!verifyEvent(currentEvent)) {
             log.print('It did not pass the test, not dispatching event');
-            bridge.showAlert(bridge.domain, _this.host, false);
+            createAlertInTopFrame(bridge.domain, url.display, false);
             examineTarget(currentEvent, _this.href);
             log.callEnd();
             return false;

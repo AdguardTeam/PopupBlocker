@@ -4,6 +4,8 @@ import { setBeforeunloadHandler } from '../dom/unload';
 import { hasDefaultHandler, maskStyleTest, maskContentTest, maybeOverlay } from './element-tests';
 import abort from '../abort';
 import * as log from '../log';
+import { dispatchMouseEvent, initMouseEventArgs } from '../messaging';
+import bridge from '../bridge';
 
 const initMouseEventArgs = 'type,canBubble,cancelable,view,detail,screenX,screenY,clientX,clientY,ctrlKey,altKey,shiftKey,metaKey,button,relatedTarget'.split(',');
 
@@ -94,13 +96,14 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
                 abort();
             }
             if (maybeOverlay(parent)) {
-                log.print("Preventing default, because the current target looks like an overlay");
-                _preventDefault.call(currentEvent);
+                // We should check elements behind this if there is a real target.
+                log.print("current target looks like an overlay");
+                check = false;
                 preventPointerEvent(parent);
             }
-            // Perform overlay test;
+        } else {
+            return;
         }
-        return;
     }
     if (location.href === targetHref) {
         log.print("Throwing, because the target url is the same as the current url");
@@ -131,13 +134,10 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
     // Performs mask neutralization and event delivery
     if (check) {
         log.print("Detected a mask");
+        preventPointerEvent(target);
         while (i-- > 0) { preventPointerEvent(candidates[i]); }
-        const clonedEvent = document.createEvent('MouseEvents');
-        clonedEvent.initMouseEvent.apply(clonedEvent, initMouseEventArgs.map((prop) => currentEvent[prop]));
-        currentEvent.stopPropagation();
-        currentEvent.stopImmediatePropagation();
-        _dispatchEvent.call(candidate, clonedEvent);
-        log.print("An event is re-dispatched");
+        let args = initMouseEventArgs.map((prop) => currentEvent[prop]);
+        dispatchMouseEvent(<initMouseEventArgs><any>args, candidate);
     }
 };
 

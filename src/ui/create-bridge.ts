@@ -7,7 +7,8 @@
 
 import BRIDGE_KEY from './bridge';
 import { domainOption, whitelistedDestinations } from './storage';
-import createAlertInTopFrame from './handshake';
+// import { createAlertInTopFrame, dispatchMouseEventToFrame } from './messaging';
+import alertController from './alert-controller';
 import { getMessage } from './localization';
 
 // Shim for AG Win
@@ -22,6 +23,7 @@ let exportFn = typeof exportFunction === 'function' ? exportFunction : function(
 };
 //
 
+
 const bridge:Bridge = createObject(unsafeWindow, {
     defineAs: BRIDGE_KEY
 });
@@ -29,7 +31,7 @@ const bridge:Bridge = createObject(unsafeWindow, {
 bridge.domain = location.host;
 bridge.domainOption = clone(domainOption, bridge, { defineAs: 'domainOption' });
 bridge.whitelistedDestinations = clone(whitelistedDestinations, bridge, { defineAs: 'whitelistedDestinations' });
-exportFn(createAlertInTopFrame, bridge, {
+exportFn(alertController.createAlert.bind(alertController), bridge, {
     defineAs: 'showAlert'
 });
 exportFn(getMessage, bridge, {

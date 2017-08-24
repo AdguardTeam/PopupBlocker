@@ -38,7 +38,7 @@ interface AlertIntf {
     readonly $collapsed:boolean,
     readonly $top:number,
     readonly $height:number,
-    readonly $collapse:()=>void,
+    readonly toggleCollapse:()=>void,
     readonly destroy:()=>void,
     readonly pushdown:(amount:number)=>void,
     readonly lastUpdate:number,
@@ -48,7 +48,7 @@ interface AlertIntf {
 function attachClickListenerForEach (iterable:NodeList, listener:(this:Node,evt:MouseEvent)=>any) {
     let l = iterable.length;
     while (l-- > 0) {
-        iterable[l][addEventListener]('click', listener);
+        iterable[l].addEventListener('click', listener);
     }
 }
 
@@ -62,7 +62,7 @@ class Alert implements AlertIntf {
         let loaded = false;
         // Prepare innerHTML
         let _innerHTML = innerHTML.replace(/\${dest}/g, popup_domain);
-        iframe[addEventListener]('load', (evt) => {
+        iframe.addEventListener('load', (evt) => {
             // Attach event handlers
             if (loaded) { return; }
             loaded = true;
@@ -71,11 +71,11 @@ class Alert implements AlertIntf {
             translate(document.body, {
                 'dest': popup_domain
             });
-            if (showCollapsed) { document[getElementsByClassName]('popup')[0].classList.add('popup--min'); }
-            attachClickListenerForEach(document[getElementsByClassName]('popup__link--allow'), () => {
+            if (showCollapsed) { document.getElementsByClassName('popup')[0].classList.add('popup--min'); }
+            attachClickListenerForEach(document.getElementsByClassName('popup__link--allow'), () => {
                 requestDestinationWhitelist(popup_domain);
             });
-            attachClickListenerForEach(document[getElementsByClassName]('popup__link--all'), () => {
+            attachClickListenerForEach(document.getElementsByClassName('popup__link--all'), () => {
                 requestDomainWhitelist(orig_domain);
             });
             requestAnimationFrame(() => {
@@ -104,14 +104,12 @@ class Alert implements AlertIntf {
         this.$element.style.top = newTop + px;
         this.$top = newTop;
     }
-    $collapse() {
-        if (this.$collapsed) { return; }
-        this.$element.style['height'] = STYLE_CONST.collapsed_height + px;
-        this.$element.style['width'] = STYLE_CONST.collapsed_width + px;
-        let root = this.$element.contentDocument[getElementsByClassName]('popup')[0];
-        root.classList.add('popup--min');
-        this.$collapsed = true;
-        this.$height = STYLE_CONST.collapsed_height;
+    toggleCollapse() {
+        const collapsed = this.$collapsed = !this.$collapsed;
+        this.$element.style['height'] = (this.$height = (collapsed ? STYLE_CONST.collapsed_height : STYLE_CONST.height)) + px;
+        this.$element.style['width'] = (collapsed ? STYLE_CONST.collapsed_width : STYLE_CONST.width) + px;
+        let root = this.$element.contentDocument.getElementsByClassName('popup')[0];
+        root.classList.toggle('popup--min');
         // Since its state was changed, update its lastUpdate property.
         this.lastUpdate = new Date().getTime();
     }
@@ -136,13 +134,17 @@ class AlertController {
         let offset = STYLE_CONST.middle_offset + alert.$height;
         this.moveBunch(l, offset);
         // Adds event listeners that needs to run in this context
-        alert.$element[addEventListener]('load', () => {
-            attachClickListenerForEach(alert.$element.contentDocument[getElementsByClassName]('popup__close'), () => {
+        alert.$element.addEventListener('load', () => {
+            let alertDoc = alert.$element.contentDocument;
+            attachClickListenerForEach(alertDoc.getElementsByClassName('popup__close'), () => {
                 this.destroyAlert(alert);
             });
+            attachClickListenerForEach(alertDoc.getElementsByClassName('popup__link--expand'), () => {
+                this.toggleCollapseAlert(alert);
+            });
         });
-        alert.$element[addEventListener]('mouseover', () => { this.onMouseOver(); });
-        alert.$element[addEventListener]('mouseout', () => { this.onMouseOut(); });
+        alert.$element.addEventListener('mouseover', () => { this.onMouseOver(); });
+        alert.$element.addEventListener('mouseout', () => { this.onMouseOut(); });
         // Appends an alert to DOM
         document.body.appendChild(alert.$element);
         // Schedules collapsing & destroying
@@ -152,7 +154,7 @@ class AlertController {
             }, COLLAPSED_ALERT_TIMEOUT);
         } else {
             alert.timerId = setTimeout(() => {
-                this.collapseAlert(alert);
+                this.toggleCollapseAlert(alert);
             }, FULL_ALERT_TIMEOUT);
         }
         // Pushes the new alert to an array, destroy from the oldest alert when needed
@@ -167,16 +169,18 @@ class AlertController {
     /**
      * Collapses an alert and schedules its destruction
      */
-    private collapseAlert(alert:Alert) {
+    private toggleCollapseAlert(alert:Alert) {
         let prevHeight = alert.$height;
-        alert.$collapse();
+        alert.toggleCollapse();
         let offset = alert.$height - prevHeight;
         let index = this.alerts.indexOf(alert);
         this.moveBunch(index, offset);
-        const self = this;
-        alert.timerId = setTimeout(() => {
-            self.destroyAlert(alert);
-        }, COLLAPSED_ALERT_TIMEOUT);
+        clearTimeout(alert.timerId);
+        alert.timerId = alert.$collapsed ? setTimeout(() => {
+            this.destroyAlert(alert);
+        }, COLLAPSED_ALERT_TIMEOUT) : setTimeout(() => {
+            this.toggleCollapseAlert(alert);
+        }, FULL_ALERT_TIMEOUT);
     }
     private destroyAlert(alert:Alert) {
         alert.destroy();
@@ -216,7 +220,7 @@ class AlertController {
                 }, alert.lastUpdate + COLLAPSED_ALERT_TIMEOUT - now + pastDue);
             } else {
                 alert.timerId = setTimeout(() => {
-                    this.collapseAlert(alert);
+                    this.toggleCollapseAlert(alert);
                 }, alert.lastUpdate + FULL_ALERT_TIMEOUT - now + pastDue);
             }
         });
@@ -238,9 +242,5 @@ class AlertController {
         return amongCollapsed > amongUncollapsed ? amongUncollapsed : amongCollapsed;
     }
 }
-
-// Minifiers will not inline below strings
-var getElementsByClassName = 'getElementsByClassName';
-var addEventListener = 'addEventListener';
 
 export default new AlertController();
