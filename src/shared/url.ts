@@ -1,10 +1,9 @@
 interface url {
-    display:string, // to be used to show in alerts
-    canonical:string // to be used to test against blacklist/whitelist rules
+    displayUrl:string, // to be used to show in alerts
+    canonicalUrl:string // to be used to test against blacklist/whitelist rules
 }
 
 const reCommonProtocol = /^http/;
-
 const createUrl = (href:string):url => {
     const location = document.createElement('a');
     location.href = href;
@@ -13,19 +12,18 @@ const createUrl = (href:string):url => {
         location.href = location.href;
     }
 
-    let display:string, canonical:string;
-
+    let displayUrl:string, canonicalUrl:string;
     let protocol = location.protocol;
     if (reCommonProtocol.test(protocol)) {
-        display = href.slice(protocol.length + 2);
-        canonical = location.hostname;
+        displayUrl = href.slice(protocol.length + 2);
+        canonicalUrl = location.hostname;
     } else {
-        display = href;
-        canonical = href.slice(0, href.indexOf(','));
+        displayUrl = href;
+        canonicalUrl = href.slice(0, href.indexOf(','));
     }
     return {
-        display,
-        canonical
+        displayUrl,
+        canonicalUrl
     };
 };
 

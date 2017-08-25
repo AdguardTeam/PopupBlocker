@@ -1,13 +1,12 @@
 import { _dispatchEvent } from '../dom/dispatchEvent/orig';
 import { _preventDefault } from '../dom/preventDefault/orig';
 import { setBeforeunloadHandler } from '../dom/unload';
-import { hasDefaultHandler, maskStyleTest, maskContentTest, maybeOverlay } from './element-tests';
-import abort from '../abort';
-import * as log from '../log';
+import { hasDefaultHandler, maskStyleTest, maskContentTest, maybeOverlay } from './element_tests';
+import { isMouseEvent, isTouchEvent, isElement, isHTMLElement } from '../shared/instanceof';
 import { dispatchMouseEvent, initMouseEventArgs } from '../messaging';
+import abort from '../shared/abort';
+import * as log from '../shared/log';
 import bridge from '../bridge';
-
-const initMouseEventArgs = 'type,canBubble,cancelable,view,detail,screenX,screenY,clientX,clientY,ctrlKey,altKey,shiftKey,metaKey,button,relatedTarget'.split(',');
 
 /**
  * Some popup scripts adds transparent overlays on each of page's links
@@ -24,14 +23,14 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
     let target:Element;
     let x:number, y:number;
     // Normalize mouseevent and touchevent
-    if ('clientX' in currentEvent) {
+    if (isMouseEvent(currentEvent)) {
         // mouse event
         log.print("It is a mouse event");
         let mouseEvent = <MouseEvent>currentEvent;
         _target = mouseEvent.target;
         x = mouseEvent.clientX;
         y = mouseEvent.clientY;      
-    } else if ('touches' in currentEvent) {
+    } else if (isTouchEvent(currentEvent)) {
         // This is just a stuff. It needs more research.
         let touchEvent = <TouchEvent>currentEvent;
         _target = touchEvent.target;
@@ -39,7 +38,7 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
         x = touch.clientX;
         y = touch.clientY;
     }
-    if (!('id' in _target)) { return; }
+    if (!isElement(_target)) { return; }
     target = <Element>_target;
     // Use elementsFromPoint API
     let candidates:Element[]|NodeListOf<Element>;
@@ -84,7 +83,7 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
         }
         if (maskStyleTest(parent)) { break; }
         if (path) {
-            if (!('id' in path[++j])) { parent = null; }
+            if (!isElement(path[++j])) { parent = null; }
             else { parent = <Element>path[j]; }
         } else { parent = parent.parentElement; }
     }
@@ -142,7 +141,7 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
 };
 
 const preventPointerEvent = (el:Element):void => {
-    if (!('style' in el)) { return; }
+    if (!isHTMLElement(el)) { return; }
     let _el:HTMLElement = <HTMLElement>el;
     _el.style.setProperty('display', "none", important);
     _el.style.setProperty('pointer-events', "none", important);

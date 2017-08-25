@@ -1,4 +1,4 @@
-import bridge from './ui/create-bridge';
+import bridge from './ui/create_bridge';
 import BRIDGE_KEY from './ui/bridge';
 import popupBlocker from './wrapper-nocompile';
 

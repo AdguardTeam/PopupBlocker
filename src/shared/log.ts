@@ -1,5 +1,5 @@
 // @ifdef DEBUG
-import getTime from './timeline/time';
+import getTime from './time';
 
 let prefix = '';
 let win = window;
@@ -51,12 +51,13 @@ export function print(str:string, obj?):void {
     // @endif
 }
 
-export function connect<T extends (...args)=>any>(fn:T, message:string):T {
+export function connect<T extends (...args)=>any>(fn:T, message:string, cond?:(this:null)=>boolean):T {
     // @ifdef DEBUG
     return <T>function () {
-        call(message);
+        let shouldLog = cond ? cond.apply(null, arguments) : true;
+        if (shouldLog) { call(message); }
         let ret = fn.apply(this, arguments);
-        callEnd();
+        if (shouldLog) { callEnd(); }
         return ret;
     };
     // @endif

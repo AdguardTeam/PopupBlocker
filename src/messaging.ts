@@ -1,5 +1,5 @@
+import * as log from './shared/log';
 import bridge from './bridge';
-import * as log from './log';
 
 const supported = typeof WeakMap === 'function';
 const parent = window.parent;
@@ -73,7 +73,8 @@ if (supported) {
     }
 }
 
-/*******************************/
+/**********************************************************************/
+// SHOW_ALERT
 
 export const createAlertInTopFrame = supported && !isTopOrEmpty ? (orig_domain:string, popup_domain:string, isGeneric:boolean):void => {
     let data:ShowAlertDataIntf = {
@@ -87,9 +88,10 @@ export const createAlertInTopFrame = supported && !isTopOrEmpty ? (orig_domain:s
     bridge.showAlert(orig_domain, popup_domain, isGeneric);
 } : /* noop */(orig_domain:string, popup_domain:string, isGeneric:boolean):void => {};
 
-/**
- * It expects to receive a initMouseEventArgs that is already modified according to the targetFrame's position.
- */
+/**********************************************************************/
+// DISPATCH_MOUSE_EVENT
+
+// It expects to receive a initMouseEventArgs that is already modified according to the targetFrame's position.
 function dispatchMouseEventToFrame(initMouseEventArgs:initMouseEventArgs, targetWin:Window):void {
     const port = framePortMap.get(targetWin);
     if (!port) {
@@ -122,7 +124,8 @@ export function dispatchMouseEvent(initMouseEventArgs:initMouseEventArgs, target
         dispatchMouseEventToFrame(initMouseEventArgs, _target.contentWindow);
     } else {
         log.print('target is not an iframe, directly dispatching event...', target);
-        // quick and dirty hack :(
+        // The purpose of this is to prevent triggering click for both `mousedown` and `click`,
+        // or `mousedown` and `mouseup`.
         if (pressed) { return; }
         pressed = true;
         setTimeout(() => {
@@ -134,6 +137,7 @@ export function dispatchMouseEvent(initMouseEventArgs:initMouseEventArgs, target
     log.callEnd();
 }
 
+export const initMouseEventArgs = 'type,canBubble,cancelable,view,detail,screenX,screenY,clientX,clientY,ctrlKey,altKey,shiftKey,metaKey,button,relatedTarget'.split(',');
 export interface initMouseEventArgs {
     0:string,       // type
     1:boolean,      // canBubble

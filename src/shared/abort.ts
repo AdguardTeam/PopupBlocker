@@ -10,7 +10,7 @@
  * to the current window or `href` attribute of a clicked anchor, and triggers aborting in such cases.
  */
 
-import bridge from './bridge';
+import bridge from '../bridge';
 import { closeAllGroup } from './log';
 
 let MAGIC:string;

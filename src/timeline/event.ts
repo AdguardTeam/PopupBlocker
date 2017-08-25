@@ -1,4 +1,4 @@
-import getTime from './time';
+import getTime from '../shared/time';
 
 export const enum TLEventType {
     CREATE,

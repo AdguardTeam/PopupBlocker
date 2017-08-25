@@ -1,4 +1,5 @@
-import * as log from '../log';
+import { isHTMLElement } from '../shared/instanceof';
+import * as log from '../shared/log';
 
 export const hasDefaultHandler = (el:Element):boolean => {
     const name = el.nodeName.toLowerCase();
@@ -28,7 +29,7 @@ export const maskContentTest = (el:Element):boolean => {
  * @return true if el is an overlay.
  */
 export function maybeOverlay(el:Element):boolean {
-    if (!('style' in el)) { return false; } // not an HTMLElement instance
+    if (!isHTMLElement(el)) { return false; } // not an HTMLElement instance
     let _el:HTMLElement = <HTMLElement>el;
     log.call('maybeOverlay test');
     let w = window.innerWidth, h = window.innerHeight;

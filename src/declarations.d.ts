@@ -37,3 +37,20 @@ interface Event {
     path?: EventTarget[],
     composedPath?():EventTarget[]
 }
+
+// These are type declarations for jQuery for the parts we needs to access.
+interface JQueryEvent {
+    originalEvent:Event
+}
+
+interface JQueryHandlerObj {
+    handler:(evt:JQueryEvent)=>any,
+    selector:string
+}
+
+interface JQueryStatic {
+    _data:(elem:EventTarget, name:string, value?:any)=>{[id:string]:JQueryHandlerObj[]}
+}
+
+declare const jQuery:JQueryStatic;
+declare const $:JQueryStatic;

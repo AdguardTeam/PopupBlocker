@@ -1,6 +1,6 @@
 import { ApplyHandler, wrapMethod } from '../proxy';
 import { retrieveEvent, verifyEvent } from '../events/verify';
-import * as log from '../log';
+import * as log from '../shared/log';
 
 const eventPType = Event.prototype;
 

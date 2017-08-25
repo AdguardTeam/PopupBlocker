@@ -1,11 +1,11 @@
 import { ApplyHandler, makeObjectProxy, wrapMethod } from '../proxy';
 import { verifyEvent, retrieveEvent, verifyCurrentEvent } from '../events/verify';
-import examineTarget from '../events/examine-target';
+import examineTarget from '../events/examine_target';
 import { _dispatchEvent } from './dispatchEvent/orig';
 import { timeline, position } from '../timeline/index';
 import { TLEventType, TimelineEvent } from '../timeline/event';
-import createUrl from '../url';
-import * as log from '../log';
+import createUrl from '../shared/url';
+import * as log from '../shared/log';
 import bridge from '../bridge';
 
 import { createAlertInTopFrame } from '../messaging';
@@ -16,7 +16,7 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
     log.call('Called window.open with url ' + url);
     // Checks if an url is in a whitelist
     const url2 = createUrl(url);
-    const destDomain = url2.canonical;
+    const destDomain = url2.canonicalUrl;
     if (bridge.whitelistedDestinations.indexOf(destDomain) !== -1) {
         log.print(`The domain ${destDomain} is in whitelist.`);
         return _open.apply(_this, _arguments);
@@ -36,7 +36,7 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
         log.print('canOpenPopup returned false');
         log.callEnd();
     }
-    createAlertInTopFrame(bridge.domain, url2.display, false);
+    createAlertInTopFrame(bridge.domain, url2.displayUrl, false);
     if (currentEvent) { examineTarget(currentEvent, _arguments[0]); }
     log.print('mock a window object');
     // Return a mock window object, in order to ensure that the page's own script does not accidentally throw TypeErrors.

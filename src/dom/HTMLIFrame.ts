@@ -11,7 +11,7 @@
  */
 
 import { expose, unexpose, ApplyHandler, makeObjectProxy, wrapAccessor } from '../proxy';
-import * as log from '../log';
+import * as log from '../shared/log';
 import WeakMap from '../weakmap';
 
 const processed = new WeakMap();

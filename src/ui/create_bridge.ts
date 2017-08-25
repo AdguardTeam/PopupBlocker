@@ -8,7 +8,7 @@
 import BRIDGE_KEY from './bridge';
 import { domainOption, whitelistedDestinations } from './storage';
 // import { createAlertInTopFrame, dispatchMouseEventToFrame } from './messaging';
-import alertController from './alert-controller';
+import alertController from './alert_controller';
 import { getMessage } from './localization';
 
 // Shim for AG Win

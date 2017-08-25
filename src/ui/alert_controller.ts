@@ -1,6 +1,6 @@
 import { requestDomainWhitelist, requestDestinationWhitelist } from './storage';
 import translate from './localization';
-import * as log from '../log';
+import * as log from '../shared/log';
 
 const innerHTML = "RESOURCE:ALERT_TEMPLATE";
 
