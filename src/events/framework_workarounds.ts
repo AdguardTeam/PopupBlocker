@@ -6,14 +6,13 @@
  * Such workarounds are not very robust, hence 'attempt', but it will still provide huge benefit to users.
  */
 
-// jQuery property names
 const _data = '_data', originalEvent = 'originalEvent', selector = 'selector';
 /**
  * A function to retrieve target selectors from jQuery event delegation mechanism.
  * When an event handler is bound with jQuery like this:
  * `$('html').on('click', '.open-newtab', function(evt) { ... })`
  * inside of the event handler function, `evt.currentTarget` will be `document.documentElement`.
- * When this function is called with `evt`, it will return `'.open-newta'`, and from this we know that
+ * When this function is called with `evt`, it will return `'.open-newtab'`, and from this we know that
  * the event handler is not supposed to be called when user clicks anywhere.
  * 
  * It makes use of an undocumented static method `_data` of `jQuery`. It has existed for a long time
@@ -29,7 +28,6 @@ export function getSelectorFromCurrentjQueryEventHandler(event:Event):string {
     if (!eventsData) { return; }
     let registeredHandlers = eventsData[type];
     if (!registeredHandlers) { return; }
-    let found = false;
     let handlerObj;
     for (let i = 0, l = registeredHandlers.length; i < l; i++) {
         handlerObj = registeredHandlers[i];
@@ -37,13 +35,9 @@ export function getSelectorFromCurrentjQueryEventHandler(event:Event):string {
         if (handler.arguments !== null) {
             let args = handler.arguments; // Using Function.arguments, so it may not work on handlers that are nested in call stack
             if (args[0] && args[0].originalEvent === event) {
-                found = true;
-                break;
+                return handlerObj[selector];
             }
         }
-    }
-    if (found) {
-        return handlerObj[selector]
     }
 }
 

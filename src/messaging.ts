@@ -16,9 +16,9 @@ import bridge from './bridge';
 
 const supported = typeof WeakMap === 'function';
 const parent = window.parent;
-const isTopOrEmpty = parent === window || location.href === 'about:blank';
+const isTop = parent === window;
 
-const enum MessageType {    
+const enum MessageType {
     SHOW_ALERT,
     DISPATCH_MOUSE_EVENT
 }
@@ -71,10 +71,10 @@ const handshake = (evt:MessageEvent) => {
     evt.preventDefault();
 };
 
-const channel = !isTopOrEmpty && supported ? new MessageChannel() : null;
+const channel = !isTop && supported ? new MessageChannel() : null;
 if (supported) {
     window.addEventListener('message', handshake);
-    if (!isTopOrEmpty) {
+    if (!isTop) {
         parent.postMessage(MAGIC, '*', [channel.port1]);
         channel.port2.onmessage = onMessage;
     }
@@ -83,7 +83,7 @@ if (supported) {
 /**********************************************************************/
 // SHOW_ALERT
 
-export const createAlertInTopFrame = supported && !isTopOrEmpty ? (orig_domain:string, popup_url:string, isGeneric:boolean):void => {
+export const createAlertInTopFrame = supported && !isTop ? (orig_domain:string, popup_url:string, isGeneric:boolean):void => {
     let data:ShowAlertDataIntf = {
         type: MessageType.SHOW_ALERT,
         orig_domain,
@@ -91,7 +91,7 @@ export const createAlertInTopFrame = supported && !isTopOrEmpty ? (orig_domain:s
         isGeneric
     };
     channel.port2.postMessage(data);
-} : isTopOrEmpty ? (orig_domain:string, popup_domain:string, isGeneric:boolean):void => {
+} : isTop ? (orig_domain:string, popup_domain:string, isGeneric:boolean):void => {
     bridge.showAlert(orig_domain, popup_domain, isGeneric);
 } : /* noop */(orig_domain:string, popup_domain:string, isGeneric:boolean):void => {};
 

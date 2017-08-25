@@ -93,7 +93,7 @@ export const verifyEvent = log.connect((event?:Event):boolean => {
                         log.print('VerifyEvent - the current event handler is suspicious, for the current target is either document, html, or body.');
                         return false;
                     } else {
-                        log.print('VerifyEvent - the current target is document/htmo/body, but the event is in a bubbling phase.');
+                        log.print('VerifyEvent - the current target is document/html/body, but the event is in a bubbling phase.');
                         let selector = getSelectorFromCurrentjQueryEventHandler(event);
                         if (selector) {
                             if (matches.call(document.documentElement, selector) || matches.call(document.body, selector)) {
