@@ -4,8 +4,6 @@
  * check for DOM element is not reliable.
  */
 
-import { ApplyOption } from '../proxy';
-
 export const isMouseEvent = (event:Event):boolean => {
     return 'clientX' in event;
 };

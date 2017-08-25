@@ -42,12 +42,6 @@ const onMessage = (evt:MessageEvent) => {
 const MAGIC = 'pb_handshake';
 const framePortMap = supported ? new WeakMap() : null;
 const handshake = (evt:MessageEvent) => {
-    if (evt.origin === "null" || evt.origin === "about://") {
-        // For such empty frames, PopupBlocker inject itself and shares the bridge object.
-        // So there is no need to use a messaging channel.
-        // IE and Edge recognize empty frames' origin as `about://`.
-        return;
-    }
     if (evt.data !== MAGIC) {
         // `MAGIC` indicates that this message is sent by the popupblocker from the child frame.
         return;
