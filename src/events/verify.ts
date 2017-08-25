@@ -2,6 +2,7 @@ import * as log from '../shared/log';
 import WeakMap from '../weakmap';
 import CurrentMouseEvent from './current_mouse_event';
 import { maybeOverlay } from './element_tests';
+import { getSelectorFromCurrentjQueryEventHandler, isReactInstancePresent } from './framework_workarounds';
 
 /**
  * On IE 10 and lower, window.event is a `MSEventObj` instance which does not implement `target` property.
@@ -115,39 +116,4 @@ export const verifyEvent = log.connect((event?:Event):boolean => {
 
 export function verifyCurrentEvent():boolean {
     return verifyEvent(retrieveEvent());
-}
-
-// jQuery property names
-const _data = '_data', originalEvent = 'originalEvent', selector = 'selector';
-
-function getSelectorFromCurrentjQueryEventHandler(event:Event):string {
-    let jQuery:JQueryStatic = window['jQuery'] || window['$'];
-    if (!jQuery || !jQuery[_data]) { return; }
-    let current = event.currentTarget;
-    let type = event.type;
-    let eventsData = jQuery[_data](current, 'events');
-    if (!eventsData) { return; }
-    let registeredHandlers = eventsData[type];
-    if (!registeredHandlers) { return; }
-    let found = false;
-    let handlerObj;
-    for (let i = 0, l = registeredHandlers.length; i < l; i++) {
-        handlerObj = registeredHandlers[i];
-        let handler = handlerObj.handler;
-        if (handler.arguments !== null) {
-            let args = handler.arguments; // Using Function.arguments, so it may not work on handlers that are nested in call stack
-            if (args[0] && args[0].originalEvent === event) {
-                found = true;
-                break;
-            }
-        }
-    }
-    if (found) {
-        return handlerObj[selector]
-    }
-}
-
-const reactRootSelector = '[data-reactroot]';
-function isReactInstancePresent():boolean {
-    return !!document.querySelector(reactRootSelector);
 }

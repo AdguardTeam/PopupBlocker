@@ -1,10 +1,12 @@
-interface url {
-    displayUrl:string, // to be used to show in alerts
-    canonicalUrl:string // to be used to test against blacklist/whitelist rules
-}
-
 const reCommonProtocol = /^http/;
-const createUrl = (href:string):url => {
+
+/**
+ * Parses a url and returns 3 strings.
+ * The first string is a `displayUrl`, which will be used to show as
+ * a shortened url. The second string is a `canonicalUrl`, which is used to match against whitelist data in storage.
+ * The third string is a full absolute url.
+ */
+const createUrl = (href:string):[string, string, string] => {
     const location = document.createElement('a');
     location.href = href;
     // https://gist.github.com/disnet/289f113e368f1bfb06f3
@@ -22,10 +24,7 @@ const createUrl = (href:string):url => {
         let i = href.indexOf(',');
         canonicalUrl = i === -1 ? href : href.slice(0, i);
     }
-    return {
-        displayUrl,
-        canonicalUrl
-    };
+    return [displayUrl, canonicalUrl, location.href];
 };
 
 export default createUrl;

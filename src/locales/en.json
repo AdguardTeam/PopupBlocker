@@ -3,7 +3,7 @@
         "message": "Blocked an attempt to open a <0/> pop-up window"
     },
     "popup_allow_dest": {
-        "message": "Allow always ${dest}"
+        "message": "Allow always ${domain}"
     },
     "popup_allow_origin": {
         "message": "Allow all pop-ups on this website"

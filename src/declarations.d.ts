@@ -11,19 +11,14 @@ interface Bridge {
     domain:string,
     domainOption:DomainOption,
     whitelistedDestinations:string[],
-    showAlert(orig_domain:string, popup_domain:string, isGeneric:boolean):void,
-    getMessage(messageId:string):string
+    showAlert(orig_domain:string, popup_url:string, isGeneric:boolean):void,
+    getMessage(messageId:string):string,
+    url(href:string):[string /* displayUrl */, string /* canonicalUrl */]
 }
 
 interface DomainOption {
     whitelisted:boolean,
     use_strict:boolean
-}
-
-interface PopupNotificationMsgIntf {
-    orig_domain:string,
-    popup_domain:string,
-    isGeneric:boolean
 }
 
 // Non-standard DOM apis that are not understood by either Typescript or Closure Compiler are included here.
@@ -37,20 +32,3 @@ interface Event {
     path?: EventTarget[],
     composedPath?():EventTarget[]
 }
-
-// These are type declarations for jQuery only for the parts we need to access.
-interface JQueryEvent {
-    originalEvent:Event
-}
-
-interface JQueryHandlerObj {
-    handler:(evt:JQueryEvent)=>any,
-    selector:string
-}
-
-interface JQueryStatic {
-    _data:(elem:EventTarget, name:string, value?:any)=>{[id:string]:JQueryHandlerObj[]}
-}
-
-declare const jQuery:JQueryStatic;
-declare const $:JQueryStatic;

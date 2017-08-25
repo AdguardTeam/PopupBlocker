@@ -1,3 +1,16 @@
+/**
+ * @fileoverview This establishes a private messaging channel between child frames and
+ * the parent frame using `postMessage` and `MessageChannel` api, to be used for various
+ * operations which needs to cross border of different browsing contexts. For security
+ * reasons, we do not use a simple `postMessage`, for if we did so all `message` event
+ * listeners in the top frame would be able to listen to such a message and frames would
+ * be able to simulate our postMessage requests, opening a gate for a
+ * potential abuse.
+ * Current usages:
+ *  - a request to show a blocked popup alert on the top frame.
+ *  - a request to dispatch a MouseEvent to a specified coordinate inside a frame.
+ */
+
 import * as log from './shared/log';
 import bridge from './bridge';
 
@@ -13,7 +26,7 @@ const enum MessageType {
 interface ShowAlertDataIntf {
     type:MessageType.SHOW_ALERT,
     orig_domain:string,
-    popup_domain:string,
+    popup_url:string,
     isGeneric:boolean
 }
 
@@ -29,7 +42,7 @@ const onMessage = (evt:MessageEvent) => {
     log.print('received a message of type: ' + data.type);
     switch (data.type) {
         case MessageType.SHOW_ALERT: {
-            createAlertInTopFrame(data.orig_domain, data.popup_domain, data.isGeneric);
+            createAlertInTopFrame(data.orig_domain, data.popup_url, data.isGeneric);
             break;
         }
         case MessageType.DISPATCH_MOUSE_EVENT: {
@@ -70,11 +83,11 @@ if (supported) {
 /**********************************************************************/
 // SHOW_ALERT
 
-export const createAlertInTopFrame = supported && !isTopOrEmpty ? (orig_domain:string, popup_domain:string, isGeneric:boolean):void => {
+export const createAlertInTopFrame = supported && !isTopOrEmpty ? (orig_domain:string, popup_url:string, isGeneric:boolean):void => {
     let data:ShowAlertDataIntf = {
         type: MessageType.SHOW_ALERT,
         orig_domain,
-        popup_domain,
+        popup_url,
         isGeneric
     };
     channel.port2.postMessage(data);

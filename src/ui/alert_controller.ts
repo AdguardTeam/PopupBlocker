@@ -1,5 +1,6 @@
 import { requestDomainWhitelist, requestDestinationWhitelist } from './storage';
 import translate from './localization';
+import createUrl from '../shared/url';
 import * as log from '../shared/log';
 
 const innerHTML = "RESOURCE:ALERT_TEMPLATE";
@@ -57,11 +58,12 @@ class Alert implements AlertIntf {
     public $collapsed:boolean;
     public $top:number;
     public $height:number;
-    constructor(orig_domain:string, popup_domain:string, showCollapsed:boolean) {
+    constructor(orig_domain:string, popup_url:string, showCollapsed:boolean) {
         let iframe = document.createElement('iframe');
         let loaded = false;
         // Prepare innerHTML
-        let _innerHTML = innerHTML.replace(/\${dest}/g, popup_domain);
+        let url = createUrl(popup_url);
+        let _innerHTML = innerHTML.replace(/\${href}/g, popup_url).replace(/\${domain}/g, url[0]);
         iframe.addEventListener('load', (evt) => {
             // Attach event handlers
             if (loaded) { return; }
@@ -69,11 +71,11 @@ class Alert implements AlertIntf {
             let document = iframe.contentDocument;
             document.documentElement.innerHTML = _innerHTML; // document.write('..') does not work on FF Greasemonkey
             translate(document.body, {
-                'dest': popup_domain
+                'domain': url[1]
             });
             if (showCollapsed) { document.getElementsByClassName('popup')[0].classList.add('popup--min'); }
             attachClickListenerForEach(document.getElementsByClassName('popup__link--allow'), () => {
-                requestDestinationWhitelist(popup_domain);
+                requestDestinationWhitelist(url[1]);
             });
             attachClickListenerForEach(document.getElementsByClassName('popup__link--all'), () => {
                 requestDomainWhitelist(orig_domain);
@@ -124,11 +126,12 @@ class Alert implements AlertIntf {
 
 class AlertController {
     private alerts:AlertIntf[];
+    private hovered:boolean;
     constructor() {
         this.alerts = [];
     }
-    createAlert(orig_domain:string, popup_domain:string, showCollapsed:boolean) {
-        let alert = new Alert(orig_domain, popup_domain, showCollapsed);
+    createAlert(orig_domain:string, popup_url:string, showCollapsed:boolean) {
+        let alert = new Alert(orig_domain, popup_url, showCollapsed);
         // Pushes previous alerts down
         let l = this.alerts.length;
         let offset = STYLE_CONST.middle_offset + alert.$height;
@@ -176,11 +179,13 @@ class AlertController {
         let index = this.alerts.indexOf(alert);
         this.moveBunch(index, offset);
         clearTimeout(alert.timerId);
-        alert.timerId = alert.$collapsed ? setTimeout(() => {
-            this.destroyAlert(alert);
-        }, COLLAPSED_ALERT_TIMEOUT) : setTimeout(() => {
-            this.toggleCollapseAlert(alert);
-        }, FULL_ALERT_TIMEOUT);
+        if (!this.hovered) {
+            alert.timerId = alert.$collapsed ? setTimeout(() => {
+                this.destroyAlert(alert);
+            }, COLLAPSED_ALERT_TIMEOUT) : setTimeout(() => {
+                this.toggleCollapseAlert(alert);
+            }, FULL_ALERT_TIMEOUT);
+        }
     }
     private destroyAlert(alert:Alert) {
         alert.destroy();
@@ -204,11 +209,13 @@ class AlertController {
 
     **/
     private onMouseOver() {
+        this.hovered = true;
         this.alerts.forEach((alert) => {
             clearTimeout(alert.timerId);
         });
     }
     private onMouseOut() {
+        this.hovered = false;
         const now = new Date().getTime();
         const time = this.getImminentDue();
         const pastDue = now > time ? now - time : 0;

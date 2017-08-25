@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Logging functions to be used in dev channel. Function bodies are enclosed with preprocess
+ * directives in order to ensure that these are stripped out by minifier in beta and release channels.
+ */
+
 // @ifdef DEBUG
 import getTime from './time';
 
@@ -51,6 +56,14 @@ export function print(str:string, obj?):void {
     // @endif
 }
 
+/**
+ * Accepts a function, and returns a wrapped function that calls `call` and `callEnd`
+ * automatically before and after invoking the function, respectively.
+ * @param fn A function to wrap
+ * @param message 
+ * @param cond optional argument, the function argument will be passed to `cond` function, and
+ * its return value will determine whether to call `call` and `callEnd`.
+ */
 export function connect<T extends (...args)=>any>(fn:T, message:string, cond?:(this:null)=>boolean):T {
     // @ifdef DEBUG
     return <T>function () {

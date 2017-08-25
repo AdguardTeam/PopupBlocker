@@ -10,6 +10,7 @@ import { domainOption, whitelistedDestinations } from './storage';
 // import { createAlertInTopFrame, dispatchMouseEventToFrame } from './messaging';
 import alertController from './alert_controller';
 import { getMessage } from './localization';
+import createUrl from '../shared/url';
 
 // Shim for AG Win
 let clone = typeof cloneInto === 'function' ? cloneInto : x=>x;
@@ -23,12 +24,11 @@ let exportFn = typeof exportFunction === 'function' ? exportFunction : function(
 };
 //
 
-
 const bridge:Bridge = createObject(unsafeWindow, {
     defineAs: BRIDGE_KEY
 });
 
-bridge.domain = location.host;
+bridge.domain = createUrl(location.href)[1];
 bridge.domainOption = clone(domainOption, bridge, { defineAs: 'domainOption' });
 bridge.whitelistedDestinations = clone(whitelistedDestinations, bridge, { defineAs: 'whitelistedDestinations' });
 exportFn(alertController.createAlert.bind(alertController), bridge, {
@@ -36,6 +36,9 @@ exportFn(alertController.createAlert.bind(alertController), bridge, {
 });
 exportFn(getMessage, bridge, {
     defineAs: 'getMessage'
+});
+exportFn(createUrl, bridge, {
+    defineAs: 'url'
 });
 
 export default bridge;
