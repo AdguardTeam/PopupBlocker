@@ -16,6 +16,10 @@ export const isUIEvent = (event:Event):boolean => {
     return 'view' in event;
 };
 
+export const isNode = (el:EventTarget):boolean => {
+    return 'nodeName' in el;
+};
+
 export const isElement = (el:EventTarget):boolean => {
     return 'id' in el;
 };

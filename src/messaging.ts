@@ -24,14 +24,14 @@ const enum MessageType {
 }
 
 interface ShowAlertDataIntf {
-    type:MessageType.SHOW_ALERT,
+    $type:MessageType.SHOW_ALERT,
     orig_domain:string,
     popup_url:string,
     isGeneric:boolean
 }
 
 interface DispatchMouseEventDataIntf {
-    type:MessageType.DISPATCH_MOUSE_EVENT,
+    $type:MessageType.DISPATCH_MOUSE_EVENT,
     args:initMouseEventArgs
 }
 
@@ -39,8 +39,8 @@ type MsgData = ShowAlertDataIntf | DispatchMouseEventDataIntf;
 
 const onMessage = (evt:MessageEvent) => {
     const data = <MsgData>evt.data;
-    log.print('received a message of type: ' + data.type);
-    switch (data.type) {
+    log.print('received a message of type: ' + data.$type);
+    switch (data.$type) {
         case MessageType.SHOW_ALERT: {
             createAlertInTopFrame(data.orig_domain, data.popup_url, data.isGeneric);
             break;
@@ -86,7 +86,7 @@ if (supported) {
 export const createAlertInTopFrame = supported && !isTop ? (orig_domain:string, popup_url:string, isGeneric:boolean):void => {
     // If a current window is not top and the browser supports WeakMap, postMessage to parent.
     let data:ShowAlertDataIntf = {
-        type: MessageType.SHOW_ALERT,
+        $type: MessageType.SHOW_ALERT,
         orig_domain,
         popup_url,
         isGeneric
@@ -113,7 +113,7 @@ function dispatchMouseEventToFrame(initMouseEventArgs:initMouseEventArgs, target
         return;
     }
     const data:DispatchMouseEventDataIntf = {
-        type:MessageType.DISPATCH_MOUSE_EVENT,
+        $type:MessageType.DISPATCH_MOUSE_EVENT,
         args:initMouseEventArgs
     };
     log.print('posting a message...', port);

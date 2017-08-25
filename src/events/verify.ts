@@ -3,6 +3,7 @@ import WeakMap from '../weakmap';
 import CurrentMouseEvent from './current_mouse_event';
 import { maybeOverlay } from './element_tests';
 import { getSelectorFromCurrentjQueryEventHandler, isReactInstancePresent } from './framework_workarounds';
+import { isNode } from '../shared/instanceof';
 
 /**
  * On IE 10 and lower, window.event is a `MSEventObj` instance which does not implement `target` property.
@@ -73,6 +74,7 @@ export function retrieveEvent():Event {
     return currentEvent;
 };
 
+const windowToString = window.toString();
 const matches = Element.prototype.matches || Element.prototype.msMatchesSelector;
 /**
  * @param event Optional argument, an event to test with. Default value is currentEvent.
@@ -84,30 +86,28 @@ export const verifyEvent = log.connect((event?:Event):boolean => {
         if (currentTarget) {
             log.print('Event is:', event);
             log.print('currentTarget is: ', currentTarget);
-            if ('nodeName' in currentTarget) {
-                let tagName = (<Element>currentTarget).nodeName.toLowerCase();
-                if (tagName == '#document' || tagName == 'html' || tagName == 'body') {
-                    let eventPhase = event.eventPhase;
-                    log.print('Phase is: ' + eventPhase);
-                    if (eventPhase === Event.CAPTURING_PHASE || eventPhase === Event.AT_TARGET) {
-                        log.print('VerifyEvent - the current event handler is suspicious, for the current target is either document, html, or body.');
-                        return false;
-                    } else {
-                        log.print('VerifyEvent - the current target is document/html/body, but the event is in a bubbling phase.');
-                        let selector = getSelectorFromCurrentjQueryEventHandler(event);
-                        if (selector) {
-                            if (matches.call(document.documentElement, selector) || matches.call(document.body, selector)) {
-                                return false;
-                            }
-                        } else if (!isReactInstancePresent() || tagName !== '#document') {
+            let tagName = isNode(currentTarget) && (<Node>currentTarget).nodeName.toLowerCase();
+            if (Object.prototype.toString.call(currentTarget) === '[object Window]' || tagName == '#document' || tagName == 'html' || tagName == 'body') {
+                let eventPhase = event.eventPhase;
+                log.print('Phase is: ' + eventPhase);
+                if (eventPhase === Event.CAPTURING_PHASE || eventPhase === Event.AT_TARGET) {
+                    log.print('VerifyEvent - the current event handler is suspicious, for the current target is either window, document, html, or body.');
+                    return false;
+                } else {
+                    log.print('VerifyEvent - the current target is document/html/body, but the event is in a bubbling phase.');
+                    let selector = getSelectorFromCurrentjQueryEventHandler(event);
+                    if (selector) {
+                        if (matches.call(document.documentElement, selector) || matches.call(document.body, selector)) {
                             return false;
                         }
+                    } else if (!isReactInstancePresent() || tagName !== '#document') {
+                        return false;
                     }
-                // When an overlay is being used, useCapture is not necessary.
-                } else if (maybeOverlay(<Element>currentTarget)) {
-                    log.print('VerifyEvent - the current event handler is suspicious, for the current target looks like an artificial overlay.');
-                    return false;
                 }
+            // When an overlay is being used, useCapture is not necessary.
+            } else if (maybeOverlay(<Element>currentTarget)) {
+                log.print('VerifyEvent - the current event handler is suspicious, for the current target looks like an artificial overlay.');
+                return false;
             }
         }
     }
