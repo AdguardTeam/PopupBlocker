@@ -64,28 +64,22 @@ const mockObject = (orig:Object, mocked?:Object):Object => {
     return mocked;
 };
 
-let win:any, doc:any;
-let initialized = false;
-
 const mockWindow = (href, name) => {
-    if (!initialized) {
-        win = mockObject(window);
-        mockObject(Window.prototype, win);
-        doc = mockObject(document);
-        mockObject(Document.prototype, doc);
-        win.opener = window;
-        win.closed = false;
-        win.name = name;
-        win.document = doc;
-        initialized = true;
-    }
-    const loc = document.createElement('a');
+    let win:any, doc:any, loc:any;
+    win = mockObject(window);
+    mockObject(Window.prototype, win);
+    doc = mockObject(document);
+    mockObject(Document.prototype, doc);
+    win.opener = window;
+    win.closed = false;
+    win.name = name;
+    win.document = doc;
+    loc = document.createElement('a');
     loc.href = href;
     doc[_location] = loc;
     // doc.open = function(){return this;}
     // doc.write = function(){};
     // doc.close = function(){};
-
     Object.defineProperty(win, _location, {
         get: function() {
             timeline.registerEvent(new TimelineEvent(TLEventType.GET, _location, {
@@ -100,7 +94,6 @@ const mockWindow = (href, name) => {
             }), position);
         }
     });
-
     return win;
 };
 
