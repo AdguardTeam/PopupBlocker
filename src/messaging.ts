@@ -53,7 +53,7 @@ const onMessage = (evt:MessageEvent) => {
 };
 
 const MAGIC = 'pb_handshake';
-const framePortMap = supported ? new WeakMap() : null;
+const framePortMap = supported ? new WeakMap() : null; // Maps a frame's contentWindow --> a port to communicate with the frame
 const handshake = (evt:MessageEvent) => {
     if (evt.data !== MAGIC) {
         // `MAGIC` indicates that this message is sent by the popupblocker from the child frame.
@@ -84,6 +84,7 @@ if (supported) {
 // SHOW_ALERT
 
 export const createAlertInTopFrame = supported && !isTop ? (orig_domain:string, popup_url:string, isGeneric:boolean):void => {
+    // If a current window is not top and the browser supports WeakMap, postMessage to parent.
     let data:ShowAlertDataIntf = {
         type: MessageType.SHOW_ALERT,
         orig_domain,
@@ -92,13 +93,19 @@ export const createAlertInTopFrame = supported && !isTop ? (orig_domain:string, 
     };
     channel.port2.postMessage(data);
 } : isTop ? (orig_domain:string, popup_domain:string, isGeneric:boolean):void => {
+    // If a current window is the top frame, display an alert.
     bridge.showAlert(orig_domain, popup_domain, isGeneric);
-} : /* noop */(orig_domain:string, popup_domain:string, isGeneric:boolean):void => {};
+} : /* noop */(orig_domain:string, popup_domain:string, isGeneric:boolean):void => {
+    // If a current window is not top and the browser does not support WeakMap, do nothing.
+};
 
 /**********************************************************************/
 // DISPATCH_MOUSE_EVENT
 
-// It expects to receive a initMouseEventArgs that is already modified according to the targetFrame's position.
+/**
+ * Formats and posts a message to a target frame. It expects to receive a initMouseEventArgs
+ * that is already modified according to the targetFrame's position.
+ */
 function dispatchMouseEventToFrame(initMouseEventArgs:initMouseEventArgs, targetWin:Window):void {
     const port = framePortMap.get(targetWin);
     if (!port) {
@@ -138,7 +145,9 @@ export function dispatchMouseEvent(initMouseEventArgs:initMouseEventArgs, target
         setTimeout(() => {
             pressed = false;
         }, 100);
-        // using click()
+        // Using click(). Manually dispatching a cloned event may not trigger an intended behavior.
+        // For example, when a cloned mousedown event is dispatched to a target and a real mouseup
+        // event is dispatched to the target, it won't cause a `click` event.
         (<HTMLElement>target).click();
     }
     log.callEnd();
