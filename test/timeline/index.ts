@@ -1,6 +1,3 @@
-/// <reference path="../../node_modules/@types/mocha/index.d.ts" />
-/// <reference path="../../node_modules/@types/chai/index.d.ts" />
-
 import { timeline } from '../../src/timeline';
 import { TLEventType } from '../../src/timeline/event';
 

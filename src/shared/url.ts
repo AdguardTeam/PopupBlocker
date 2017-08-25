@@ -19,7 +19,8 @@ const createUrl = (href:string):url => {
         canonicalUrl = location.hostname;
     } else {
         displayUrl = href;
-        canonicalUrl = href.slice(0, href.indexOf(','));
+        let i = href.indexOf(',');
+        canonicalUrl = i === -1 ? href : href.slice(0, i);
     }
     return {
         displayUrl,

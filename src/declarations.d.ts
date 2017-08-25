@@ -38,7 +38,7 @@ interface Event {
     composedPath?():EventTarget[]
 }
 
-// These are type declarations for jQuery for the parts we needs to access.
+// These are type declarations for jQuery only for the parts we need to access.
 interface JQueryEvent {
     originalEvent:Event
 }

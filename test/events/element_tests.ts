@@ -1,4 +1,4 @@
-import { maybeOverlay } from '../../src/events/element-tests';
+import { maybeOverlay } from '../../src/events/element_tests';
 
 const expect = chai.expect;
 
