@@ -13,7 +13,7 @@ interface Bridge {
     whitelistedDestinations:string[],
     showAlert(orig_domain:string, popup_url:string, isGeneric:boolean):void,
     getMessage(messageId:string):string,
-    url(href:string):[string /* displayUrl */, string /* canonicalUrl */]
+    url(href:string):[string /* displayUrl */, string /* canonicalUrl */, string /* fullUrl */]
 }
 
 interface DomainOption {
