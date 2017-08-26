@@ -90,7 +90,7 @@ export const verifyEvent = log.connect((event?:Event):boolean => {
             if (Object.prototype.toString.call(currentTarget) === '[object Window]' || tagName == '#document' || tagName == 'html' || tagName == 'body') {
                 let eventPhase = event.eventPhase;
                 log.print('Phase is: ' + eventPhase);
-                if (eventPhase === Event.CAPTURING_PHASE || eventPhase === Event.AT_TARGET) {
+                if (eventPhase === 1 /* Event.CAPTURING_PHASE */|| eventPhase === 2 /* Event.AT_TARGET */) {
                     log.print('VerifyEvent - the current event handler is suspicious, for the current target is either window, document, html, or body.');
                     return false;
                 } else {

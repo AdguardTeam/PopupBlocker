@@ -54,13 +54,14 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
     log.print('ElementsFromPoint:', candidates);
     // Use Event#deepPath API
     let path:EventTarget[];
-    if ('path' in Event.prototype) {
+    if ('path' in currentEvent) {
         path = currentEvent.path;
-    } else if ('composedPath' in Event.prototype) {
+    } else if ('composedPath' in currentEvent) {
         path = currentEvent.composedPath();
     }
     /**
      * This is a heuristic. I won't try to make it robust by following specs for now.
+     * ToDo: make the logic more modular and clear.
      * https://drafts.csswg.org/cssom-view/#dom-document-elementsfrompoint
      * https://philipwalton.com/articles/what-no-one-told-you-about-z-index/
      */
