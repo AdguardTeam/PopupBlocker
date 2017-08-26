@@ -14,12 +14,16 @@ import createUrl from '../shared/url';
 
 // Shim for AG Win
 let clone = typeof cloneInto === 'function' ? cloneInto : x=>x;
-let createObject = typeof createObjectIn === 'function' ? createObjectIn : function(target:Object, option:DefineAs) {
+let createObject = typeof createObjectIn === 'function' ? createObjectIn : (target:Object, option:DefineAs) => {
     let obj = {};
     target[option.defineAs] = obj;
     return obj;
 };
-let exportFn = typeof exportFunction === 'function' ? exportFunction : function(fn, target, option:DefineAs) {
+let exportFn = typeof exportFunction === 'function' ? (fn, target, option?:exportFunctionOption) => {
+    exportFunction(function() {
+        return clone(fn.apply(this, arguments), unsafeWindow);
+    }, target, option);
+} : function(fn, target, option?:exportFunctionOption) {
     target[option.defineAs] = fn;
 };
 //
@@ -29,8 +33,8 @@ const bridge:Bridge = createObject(unsafeWindow, {
 });
 
 bridge.domain = createUrl(location.href)[1];
-bridge.domainOption = clone(domainOption, bridge, { defineAs: 'domainOption' });
-bridge.whitelistedDestinations = clone(whitelistedDestinations, bridge, { defineAs: 'whitelistedDestinations' });
+bridge.domainOption = clone(domainOption, bridge);
+bridge.whitelistedDestinations = clone(whitelistedDestinations, bridge);
 exportFn(alertController.createAlert.bind(alertController), bridge, {
     defineAs: 'showAlert'
 });

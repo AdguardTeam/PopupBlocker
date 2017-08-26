@@ -86,7 +86,7 @@ export const verifyEvent = log.connect((event?:Event):boolean => {
         if (currentTarget) {
             log.print('Event is:', event);
             log.print('currentTarget is: ', currentTarget);
-            let tagName = isNode(currentTarget) && (<Node>currentTarget).nodeName.toLowerCase();
+            let tagName = isNode(currentTarget) && currentTarget.nodeName.toLowerCase();
             if (Object.prototype.toString.call(currentTarget) === '[object Window]' || tagName == '#document' || tagName == 'html' || tagName == 'body') {
                 let eventPhase = event.eventPhase;
                 log.print('Phase is: ' + eventPhase);

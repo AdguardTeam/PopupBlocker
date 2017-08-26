@@ -8,7 +8,7 @@ const allowVerifiedCall:ApplyHandler = (_orig, _this) => {
     const currentEvent = retrieveEvent();
     if (isMouseEvent(_this)) {
         if (_this === currentEvent) {
-            if (!verifyEvent(currentEvent)) {
+            if (currentEvent.eventPhase === 1 && !verifyEvent(currentEvent)) {
                 log.print('Not allowing');
                 return;
             }

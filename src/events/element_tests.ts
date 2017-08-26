@@ -20,7 +20,9 @@ export const maskStyleTest = (el:Element):boolean => {
 };
 
 export const maskContentTest = (el:Element):boolean => {
-    return el.textContent.trim().length === 0 && el.getElementsByTagName('img').length === 0;
+    let textContent = el.textContent;
+    if (textContent && textContent.trim().length) { return false; }
+    return el.getElementsByTagName('img').length === 0;
 };
 
 /**
@@ -30,11 +32,10 @@ export const maskContentTest = (el:Element):boolean => {
  */
 export function maybeOverlay(el:Element):boolean {
     if (!isHTMLElement(el)) { return false; } // not an HTMLElement instance
-    let _el:HTMLElement = <HTMLElement>el;
     log.call('maybeOverlay test');
     let w = window.innerWidth, h = window.innerHeight;
-    if (_el.offsetLeft << 4 < w && (w - _el.offsetWidth) << 3 < w
-        && _el.offsetTop << 4 < h && (h - _el.offsetHeight) << 3 < w) {
+    if (el.offsetLeft << 4 < w && (w - el.offsetWidth) << 3 < w
+        && el.offsetTop << 4 < h && (h - el.offsetHeight) << 3 < w) {
         return maskStyleTest(el);
     }
     // ToDo: the element may have been modified in the event handler.

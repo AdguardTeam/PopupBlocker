@@ -192,7 +192,7 @@ function copyProperty(orig, wrapped, prop) {
  * of params as ApplyHandler and returns booleans which indicates whether to log it or not.
  */
 function makeLoggedFunctionWrapper(orig:Function, type:TLEventType, name:PropertyKey, applyHandler?:ApplyHandler, option?:boolean|ApplyOption) {
-    applyHandler = applyHandler || defaultApplyHandler;
+    applyHandler = applyHandler || defaultApplyHandler!;
     if (option === false) {
         return makeFunctionWrapper(orig, applyHandler);
     }
