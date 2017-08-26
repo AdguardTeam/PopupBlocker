@@ -30,11 +30,10 @@ export function getSelectorFromCurrentjQueryEventHandler(event:Event):string {
     if (!registeredHandlers) { return; }
     let handlerObj;
     for (let i = 0, l = registeredHandlers.length; i < l; i++) {
-        handlerObj = registeredHandlers[i];
-        let handler = handlerObj.handler;
-        if (handler.arguments !== null) {
+        if (handlerObj = registeredHandlers[i]) {
+            let handler = handlerObj.handler;
             let args = handler.arguments; // Using Function.arguments, so it may not work on handlers that are nested in call stack
-            if (args[0] && args[0].originalEvent === event) {
+            if (args !== null && args[0] && args[0].originalEvent === event) {
                 return handlerObj[selector];
             }
         }
@@ -42,16 +41,16 @@ export function getSelectorFromCurrentjQueryEventHandler(event:Event):string {
 }
 
 // These are type declarations for jQuery only for the parts we need to access.
-interface JQueryEvent {
+declare interface JQueryEvent {
     originalEvent:Event
 }
 
-interface JQueryHandlerObj {
+declare interface JQueryHandlerObj {
     handler:(evt:JQueryEvent)=>any,
     selector:string
 }
 
-interface JQueryStatic {
+declare interface JQueryStatic {
     _data:(elem:EventTarget, name:string, value?:any)=>{[id:string]:JQueryHandlerObj[]}
 }
 
