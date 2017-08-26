@@ -19,31 +19,28 @@ import bridge from '../bridge';
 const examineTarget = (currentEvent:Event, targetHref:string):void => {
     log.print('Event is:', currentEvent);
     if (!currentEvent.isTrusted) { return; }
-    let _target:EventTarget;
-    let target:Element;
+    let target:EventTarget;
     let x:number, y:number;
+    let a:number;
     // Normalize mouseevent and touchevent
     if (isMouseEvent(currentEvent)) {
         // mouse event
         log.print("It is a mouse event");
-        let mouseEvent = <MouseEvent>currentEvent;
-        _target = mouseEvent.target;
-        x = mouseEvent.clientX;
-        y = mouseEvent.clientY;      
+        target = currentEvent.target;
+        x = currentEvent.clientX;
+        y = currentEvent.clientY;
     } else if (isTouchEvent(currentEvent)) {
         // This is just a stuff. It needs more research.
-        let touchEvent = <TouchEvent>currentEvent;
-        _target = touchEvent.target;
-        let touch = touchEvent.touches[0];
+        target = currentEvent.target;
+        let touch = currentEvent.touches[0];
         x = touch.clientX;
         y = touch.clientY;
     }
-    if (!isElement(_target)) { return; }
-    target = <Element>_target;
+    if (!target || !isElement(target)) { return; }
     // Use elementsFromPoint API
     let candidates:Element[]|NodeListOf<Element>;
     if (document.elementsFromPoint) {
-        candidates = document.elementsFromPoint(x,y)
+        candidates = document.elementsFromPoint(x, y)
     } else if (document.msElementsFromPoint) {
         candidates = document.msElementsFromPoint(x, y);
     } else {
@@ -53,11 +50,11 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
     }
     log.print('ElementsFromPoint:', candidates);
     // Use Event#deepPath API
-    let path:EventTarget[];
+    let path:EventTarget[]|undefined;
     if ('path' in currentEvent) {
         path = currentEvent.path;
     } else if ('composedPath' in currentEvent) {
-        path = currentEvent.composedPath();
+        path = currentEvent.composedPath!();
     }
     /**
      * This is a heuristic. I won't try to make it robust by following specs for now.
@@ -69,7 +66,7 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
     let i = 0;
     let j = 0;
     let l = candidates.length;
-    let parent:Element;
+    let parent:Element|null;
     let check:boolean = false;
     if (candidates[0] !== target) {
         log.print('A target has changed in an event listener');
@@ -143,9 +140,8 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
 
 const preventPointerEvent = (el:Element):void => {
     if (!isHTMLElement(el)) { return; }
-    let _el:HTMLElement = <HTMLElement>el;
-    _el.style.setProperty('display', "none", important);
-    _el.style.setProperty('pointer-events', "none", important);
+    el.style.setProperty('display', "none", important);
+    el.style.setProperty('pointer-events', "none", important);
 };
 
 var important = 'important';

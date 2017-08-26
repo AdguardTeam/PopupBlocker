@@ -4,26 +4,26 @@
  * check for DOM element is not reliable.
  */
 
-export const isMouseEvent = (event:Event):boolean => {
+export const isMouseEvent = (event:Event):event is MouseEvent => {
     return 'clientX' in event;
 };
 
-export const isTouchEvent = (event:Event):boolean => {
+export const isTouchEvent = (event:Event):event is TouchEvent => {
     return 'touches' in event;
 };
 
-export const isUIEvent = (event:Event):boolean => {
+export const isUIEvent = (event:Event):event is UIEvent => {
     return 'view' in event;
 };
 
-export const isNode = (el:EventTarget):boolean => {
+export const isNode = (el:EventTarget):el is Node => {
     return 'nodeName' in el;
 };
 
-export const isElement = (el:EventTarget):boolean => {
+export const isElement = (el:EventTarget):el is Element => {
     return 'id' in el;
 };
 
-export const isHTMLElement = (el:Element):boolean => {
+export const isHTMLElement = (el:Element):el is HTMLElement => {
     return 'style' in el;
 };

@@ -19,7 +19,7 @@ const _data = '_data', originalEvent = 'originalEvent', selector = 'selector';
  * and not likely to be removed in a near future according to https://github.com/jquery/jquery/issues/2583.
  * @param event 
  */
-export function getSelectorFromCurrentjQueryEventHandler(event:Event):string {
+export function getSelectorFromCurrentjQueryEventHandler(event:Event):string|undefined {
     let jQuery:JQueryStatic = window['jQuery'] || window['$'];
     if (!jQuery || !jQuery[_data]) { return; }
     let current = event.currentTarget;

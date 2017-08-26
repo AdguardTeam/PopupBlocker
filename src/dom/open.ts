@@ -45,7 +45,7 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
 };
 
 const mockObject = (orig:Object, mocked?:Object):Object => {
-    mocked = mocked || <any>{};
+    mocked = mocked || <Object>{};
     for (let prop in orig) {
         let desc = Object.getOwnPropertyDescriptor(orig, prop);
         if (desc) {

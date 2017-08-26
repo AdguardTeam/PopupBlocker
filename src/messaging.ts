@@ -13,6 +13,7 @@
 
 import * as log from './shared/log';
 import bridge from './bridge';
+import { _preventDefault } from './dom/preventDefault/orig';
 
 const supported = typeof WeakMap === 'function';
 const parent = window.parent;
@@ -59,6 +60,10 @@ const handshake = (evt:MessageEvent) => {
         // `MAGIC` indicates that this message is sent by the popupblocker from the child frame.
         return;
     }
+    if (typeof evt.source === 'undefined') {
+        // evt.source can be undefiend when an iframe has been removed from the document before the message is received.
+        return;
+    }
     if (framePortMap.has(evt.source)) {
         // Such frames have already sent its message port, we do not accept additional ports.
         return;
@@ -68,7 +73,7 @@ const handshake = (evt:MessageEvent) => {
     port.onmessage = onMessage;
     framePortMap.set(evt.source, port);
     evt.stopImmediatePropagation();
-    evt.preventDefault();
+    _preventDefault.call(evt);
 };
 
 const channel = !isTop && supported ? new MessageChannel() : null;
