@@ -27,7 +27,7 @@
 // @description:it	Blocca gli annunci di popup nelle pagine internet
 // @description:vi	Chặn quảng cáo popup trên các trang web
 // @description:es	Bloquea popups de anuncios en sitios web
-// @version 2.1.2
+// @version 2.1.3
 // @downloadURL [DOWNLOAD_URL]
 // @updateURL [UPDATE_URL]
 // @supportURL https://github.com/AdguardTeam/PopupBlocker/issues
