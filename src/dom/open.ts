@@ -1,18 +1,19 @@
 import { ApplyHandler, makeObjectProxy, wrapMethod } from '../proxy';
 import { verifyEvent, retrieveEvent, verifyCurrentEvent } from '../events/verify';
-import examineTarget from '../events/examine-target';
+import examineTarget from '../events/examine_target';
 import { _dispatchEvent } from './dispatchEvent/orig';
 import { timeline, position } from '../timeline/index';
 import { TLEventType, TimelineEvent } from '../timeline/event';
-import createUrl from '../url';
-import * as log from '../log';
+import * as log from '../shared/log';
 import bridge from '../bridge';
+import { createAlertInTopFrame } from '../messaging';
 
 const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, context) {
-    let url = _arguments[0];
-    log.call('Called window.open with url ' + url);
+    let targetHref = _arguments[0];
+    log.call('Called window.open with url ' + targetHref);
     // Checks if an url is in a whitelist
-    const destDomain = createUrl(url).hostname;
+    const url = bridge.url(targetHref);
+    const destDomain = url[1];
     if (bridge.whitelistedDestinations.indexOf(destDomain) !== -1) {
         log.print(`The domain ${destDomain} is in whitelist.`);
         return _open.apply(_this, _arguments);
@@ -32,7 +33,7 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
         log.print('canOpenPopup returned false');
         log.callEnd();
     }
-    bridge.showAlert(bridge.domain, url , false);
+    createAlertInTopFrame(bridge.domain, url[2], false);
     if (currentEvent) { examineTarget(currentEvent, _arguments[0]); }
     log.print('mock a window object');
     // Return a mock window object, in order to ensure that the page's own script does not accidentally throw TypeErrors.
@@ -44,46 +45,41 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
 };
 
 const mockObject = (orig:Object, mocked?:Object):Object => {
-    mocked = mocked || <any>{};
-    const mockPropValue = (prop:PropertyKey) => {
-        switch(typeof orig[prop]) {
-            case 'object':
-            mocked[prop] = {}; break;
-            case 'function':
-            mocked[prop] = function() {return true;}; break;
-            default:
-            mocked[prop] = orig[prop];
+    mocked = mocked || <Object>{};
+    for (let prop in orig) {
+        let desc = Object.getOwnPropertyDescriptor(orig, prop);
+        if (desc) {
+            switch(typeof desc.value) {
+                case 'undefined':
+                break;
+                case 'object':
+                mocked[prop] = {}; break;
+                case 'function':
+                mocked[prop] = function() { return true; }; break;
+                default:
+                mocked[prop] = orig[prop];
+            }
         }
     }
-    Object.getOwnPropertyNames(orig).forEach(mockPropValue);
-    if (Object.getOwnPropertySymbols) Object.getOwnPropertySymbols(orig).forEach(mockPropValue);
     return mocked;
-}
-
-// used by mockWindow
-let windowPType:Object, win:any, docPType:Object, doc:any;
-let initialized = false;
+};
 
 const mockWindow = (href, name) => {
-    if (!initialized) {
-        const windowPType = mockObject(Window.prototype);
-        const win = Object.create(windowPType);
-        mockObject(window, win);
-        const docPType = mockObject(Document.prototype);
-        const doc = Object.create(docPType);
-        win.opener = window;
-        win.closed = false;
-        win.name = name;
-        win.document = doc;
-        initialized = true;
-    }
-    const loc = document.createElement('a');
+    let win:any, doc:any, loc:any;
+    win = mockObject(window);
+    mockObject(Window.prototype, win);
+    doc = mockObject(document);
+    mockObject(Document.prototype, doc);
+    win.opener = window;
+    win.closed = false;
+    win.name = name;
+    win.document = doc;
+    loc = document.createElement('a');
     loc.href = href;
     doc[_location] = loc;
     // doc.open = function(){return this;}
     // doc.write = function(){};
     // doc.close = function(){};
-
     Object.defineProperty(win, _location, {
         get: function() {
             timeline.registerEvent(new TimelineEvent(TLEventType.GET, _location, {
@@ -98,7 +94,6 @@ const mockWindow = (href, name) => {
             }), position);
         }
     });
-
     return win;
 };
 

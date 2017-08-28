@@ -3,7 +3,7 @@
         "message": "Blocked an attempt to open a <0/> pop-up window"
     },
     "popup_allow_dest": {
-        "message": "Allow always ${dest}"
+        "message": "Allow always ${domain}"
     },
     "popup_allow_origin": {
         "message": "Allow all pop-ups on this website"
@@ -11,7 +11,7 @@
     "popup_text_min":{
         "message": "Blocked"
     },
-    "popup_allow_dest_min": {
+    "popup_expand_min": {
         "message": "pop-up"
     },
     "on_navigation_by_popunder": {

@@ -1,7 +1,7 @@
 import { condition } from '../index';
 import { TimelineEvent, TLEventType } from '../event';
-import getTime from '../time';
-import * as log from '../../log';
+import getTime from '../../shared/time';
+import * as log from '../../shared/log';
 
 const createOpen:condition = (index, events) => {
     log.print('index:', index);

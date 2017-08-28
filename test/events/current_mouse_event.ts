@@ -1,4 +1,4 @@
-import CurrentMouseEvent from '../../src/events/current-mouse-event';
+import CurrentMouseEvent from '../../src/events/current_mouse_event';
 
 const currentEvent = (new CurrentMouseEvent()).getCurrentMouseEvent;
 

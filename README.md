@@ -7,7 +7,7 @@ Curent beta version: https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopu
 
 ## How does it work?
 
-It adds a layer of check on top of browser's native apis, that are used to create popups, so that it can be called _only_ when it is caused by a human input, not by popup/popunder scripts. Instead of checking popup url with _filter rules_, it does a generic behavioral detection of popups. In virtue of this, it can block popups on websites which tries (They are still blockable with _site-specific_ adblock filter rules) to bypass adblocker by using revolving adservers or using WebRTC, without any specific treatment. However, of course, this userscript strives to block all unwanted popups without the help of adblockers. 
+It adds a layer of check on top of browser's native apis, that are used to create popups, so that it can be called _only_ when it is caused by a human input, not by popup/popunder scripts. Instead of checking popup url with _filter rules_, it does a _generic_ behavioral detection of popups. In virtue of this, it can block popups on websites which tries (They are still blockable with _site-specific_ adblock filter rules) to bypass adblocker by using revolving adservers or using WebRTC, without any specific treatment. However, of course, this userscript should and strives to block all unwanted popups without the help of adblockers. 
 
 ## Development build
 

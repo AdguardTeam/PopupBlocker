@@ -1,6 +1,6 @@
 import { condition } from '../index';
 import { TimelineEvent, TLEventType } from '../event';
-import * as log from '../../log';
+import * as log from '../../shared/log';
 
 const blurOnPopup:condition = (index, events, incoming) => {
     if (incoming.$type == TLEventType.GET && incoming.$name === 'blur') {

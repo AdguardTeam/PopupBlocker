@@ -3,12 +3,22 @@
  */
 
 interface DefineAs {
-    defineAs:PropertyKey
+    defineAs:PropertyKey,
+}
+
+interface exportFunctionOption {
+    defineAs:PropertyKey,
+    allowCrossOriginArguments?:boolean
+}
+
+interface cloneIntoOption {
+    cloneFunctions?:boolean,
+    wrapReflectors?:boolean
 }
 
 declare function createObjectIn(target:object, option:DefineAs):any;
-declare function cloneInto<T extends Object>(obj:T, target:object, option:DefineAs):T;
-declare function exportFunction<T extends (...args)=>any>(fn:T, obj:object, option:DefineAs):T
+declare function cloneInto<T extends Object>(obj:T, target:object, option?:cloneIntoOption):T;
+declare function exportFunction<T extends (...args)=>any>(fn:T, obj:object, option:exportFunctionOption):T
 
 declare const AdguardSettings:{
     feedbackUrl:string,

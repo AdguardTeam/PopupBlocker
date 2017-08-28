@@ -1,7 +1,7 @@
 import { condition } from '../index';
 import { TimelineEvent, TLEventType } from '../event';
-import abort from '../../abort';
-import * as log from '../../log';
+import abort from '../../shared/abort';
+import * as log from '../../shared/log';
 
 const navigatePopupToItself:condition = (index, events, incoming) => {
     if (incoming.$type == TLEventType.SET && incoming.$name === 'location') {

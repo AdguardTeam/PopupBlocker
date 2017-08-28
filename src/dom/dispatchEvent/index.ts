@@ -1,18 +1,21 @@
 import eventTargetPType from './orig';
 import { ApplyHandler, ApplyOption, wrapMethod } from '../../proxy';
 import { retrieveEvent, verifyEvent, verifyCurrentEvent } from '../../events/verify';
-import examineTarget from '../../events/examine-target';
+import examineTarget from '../../events/examine_target';
 import { setBeforeunloadHandler } from '../unload';
-import abort from '../../abort';
-import * as log from '../../log';
+import { isUIEvent } from '../../shared/instanceof';
+import * as log from '../../shared/log';
 import bridge from '../../bridge';
+import { createAlertInTopFrame } from '../../messaging';
+
 
 const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _arguments) {
     let evt = _arguments[0];
     if ('clientX' in evt && _this.nodeName.toLowerCase() == 'a' && !evt.isTrusted) {
         log.call('It is a MouseEvent on an anchor tag.');
         // Checks if an url is in a whitelist
-        let destDomain = _this.hostname
+        let url = bridge.url(_this.href);
+        let destDomain = url[1];
         if (bridge.whitelistedDestinations.indexOf(destDomain) !== -1) {
             log.print(`The domain ${destDomain} is in whitelist.`);
             return _dispatchEvent.call(_this, evt);
@@ -20,7 +23,7 @@ const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _argu
         let currentEvent = retrieveEvent();
         if (!verifyEvent(currentEvent)) {
             log.print('It did not pass the test, not dispatching event');
-            bridge.showAlert(bridge.domain, _this.host, false);
+            createAlertInTopFrame(bridge.domain, url[2], false);
             examineTarget(currentEvent, _this.href);
             log.callEnd();
             return false;
@@ -32,8 +35,8 @@ const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _argu
     return _dispatchEvent.call(_this, evt);
 };
 
-const isUIEvent:ApplyOption = (target, _this, _arguments) => {
-    return 'view' in _this;
+const logUIEventOnly:ApplyOption = (target, _this, _arguments) => {
+    return isUIEvent(_this);
 };
 
-wrapMethod(eventTargetPType, 'dispatchEvent', dispatchVerifiedEvent, isUIEvent);
+wrapMethod(eventTargetPType, 'dispatchEvent', dispatchVerifiedEvent, logUIEventOnly);

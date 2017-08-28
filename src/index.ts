@@ -1,3 +1,4 @@
+import './messaging';
 import './dom/open';
 import './dom/click';
 import './dom/dispatchEvent/index';

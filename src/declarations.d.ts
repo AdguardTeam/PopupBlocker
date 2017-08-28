@@ -6,23 +6,19 @@ declare function InstallTrigger();
 
 declare function exporter();
 
+
 interface Bridge {
     domain:string,
     domainOption:DomainOption,
     whitelistedDestinations:string[],
-    showAlert(orig_domain:string, popup_domain:string, isGeneric:boolean):void,
-    getMessage(messageId:string):string
+    showAlert(orig_domain:string, popup_url:string, isGeneric:boolean):void,
+    getMessage(messageId:string):string,
+    url(href:string):[string /* displayUrl */, string /* canonicalUrl */, string /* fullUrl */]
 }
 
 interface DomainOption {
     whitelisted:boolean,
     use_strict:boolean
-}
-
-interface PopupNotificationMsgIntf {
-    orig_domain:string,
-    popup_domain:string,
-    isGeneric:boolean
 }
 
 // Non-standard DOM apis that are not understood by either Typescript or Closure Compiler are included here.

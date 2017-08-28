@@ -117,12 +117,12 @@
         <div class="popup__text">
             <div class="popup__text-full">
                 <!--i18n:popup_text_full-->
-                <a href="#" class="popup__link popup__link--url">${dest}</a>
+                <a href=${href} target="_blank" class="popup__link popup__link--url">${domain}</a>
                 <div class="popup__actions">
-                    <a href="" class="popup__link popup__link--allow">
+                    <a href="javascript:void(0)" class="popup__link popup__link--allow">
                         <!--i18n:popup_allow_dest-->
                     </a>
-                    <a href="" class="popup__link popup__link--all">
+                    <a href="javascript:void(0)" class="popup__link popup__link--all">
                         <!--i18n:popup_allow_origin-->
                     </a>
                 </div>
@@ -132,8 +132,8 @@
                     <!--i18n:popup_text_min-->
                 </div>
                 <div class="popup__actions">
-                    <a href="" class="popup__link popup__link--allow">
-                        <!--i18n:popup_allow_dest_min-->
+                    <a href="javascript:void(0)" class="popup__link popup__link--expand">
+                        <!--i18n:popup_expand_min-->
                     </a>
                 </div>
             </div>

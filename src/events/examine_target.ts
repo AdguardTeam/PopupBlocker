@@ -1,11 +1,12 @@
 import { _dispatchEvent } from '../dom/dispatchEvent/orig';
 import { _preventDefault } from '../dom/preventDefault/orig';
 import { setBeforeunloadHandler } from '../dom/unload';
-import { hasDefaultHandler, maskStyleTest, maskContentTest, maybeOverlay } from './element-tests';
-import abort from '../abort';
-import * as log from '../log';
-
-const initMouseEventArgs = 'type,canBubble,cancelable,view,detail,screenX,screenY,clientX,clientY,ctrlKey,altKey,shiftKey,metaKey,button,relatedTarget'.split(',');
+import { hasDefaultHandler, maskStyleTest, maskContentTest, maybeOverlay } from './element_tests';
+import { isMouseEvent, isTouchEvent, isElement, isHTMLElement } from '../shared/instanceof';
+import { dispatchMouseEvent, initMouseEventArgs } from '../messaging';
+import abort from '../shared/abort';
+import * as log from '../shared/log';
+import bridge from '../bridge';
 
 /**
  * Some popup scripts adds transparent overlays on each of page's links
@@ -18,31 +19,28 @@ const initMouseEventArgs = 'type,canBubble,cancelable,view,detail,screenX,screen
 const examineTarget = (currentEvent:Event, targetHref:string):void => {
     log.print('Event is:', currentEvent);
     if (!currentEvent.isTrusted) { return; }
-    let _target:EventTarget;
-    let target:Element;
+    let target:EventTarget;
     let x:number, y:number;
+    let a:number;
     // Normalize mouseevent and touchevent
-    if ('clientX' in currentEvent) {
+    if (isMouseEvent(currentEvent)) {
         // mouse event
         log.print("It is a mouse event");
-        let mouseEvent = <MouseEvent>currentEvent;
-        _target = mouseEvent.target;
-        x = mouseEvent.clientX;
-        y = mouseEvent.clientY;      
-    } else if ('touches' in currentEvent) {
+        target = currentEvent.target;
+        x = currentEvent.clientX;
+        y = currentEvent.clientY;
+    } else if (isTouchEvent(currentEvent)) {
         // This is just a stuff. It needs more research.
-        let touchEvent = <TouchEvent>currentEvent;
-        _target = touchEvent.target;
-        let touch = touchEvent.touches[0];
+        target = currentEvent.target;
+        let touch = currentEvent.touches[0];
         x = touch.clientX;
         y = touch.clientY;
     }
-    if (!('id' in _target)) { return; }
-    target = <Element>_target;
+    if (!target || !isElement(target)) { return; }
     // Use elementsFromPoint API
     let candidates:Element[]|NodeListOf<Element>;
     if (document.elementsFromPoint) {
-        candidates = document.elementsFromPoint(x,y)
+        candidates = document.elementsFromPoint(x, y)
     } else if (document.msElementsFromPoint) {
         candidates = document.msElementsFromPoint(x, y);
     } else {
@@ -52,14 +50,15 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
     }
     log.print('ElementsFromPoint:', candidates);
     // Use Event#deepPath API
-    let path:EventTarget[];
-    if ('path' in Event.prototype) {
+    let path:EventTarget[]|undefined;
+    if ('path' in currentEvent) {
         path = currentEvent.path;
-    } else if ('composedPath' in Event.prototype) {
-        path = currentEvent.composedPath();
+    } else if ('composedPath' in currentEvent) {
+        path = currentEvent.composedPath!();
     }
     /**
      * This is a heuristic. I won't try to make it robust by following specs for now.
+     * ToDo: make the logic more modular and clear.
      * https://drafts.csswg.org/cssom-view/#dom-document-elementsfrompoint
      * https://philipwalton.com/articles/what-no-one-told-you-about-z-index/
      */
@@ -67,7 +66,7 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
     let i = 0;
     let j = 0;
     let l = candidates.length;
-    let parent:Element;
+    let parent:Element|null;
     let check:boolean = false;
     if (candidates[0] !== target) {
         log.print('A target has changed in an event listener');
@@ -82,7 +81,7 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
         }
         if (maskStyleTest(parent)) { break; }
         if (path) {
-            if (!('id' in path[++j])) { parent = null; }
+            if (!isElement(path[++j])) { parent = null; }
             else { parent = <Element>path[j]; }
         } else { parent = parent.parentElement; }
     }
@@ -94,13 +93,14 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
                 abort();
             }
             if (maybeOverlay(parent)) {
-                log.print("Preventing default, because the current target looks like an overlay");
-                _preventDefault.call(currentEvent);
+                // We should check elements behind this if there is a real target.
+                log.print("current target looks like an overlay");
+                check = false;
                 preventPointerEvent(parent);
             }
-            // Perform overlay test;
+        } else {
+            return;
         }
-        return;
     }
     if (location.href === targetHref) {
         log.print("Throwing, because the target url is the same as the current url");
@@ -131,21 +131,17 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
     // Performs mask neutralization and event delivery
     if (check) {
         log.print("Detected a mask");
+        preventPointerEvent(target);
         while (i-- > 0) { preventPointerEvent(candidates[i]); }
-        const clonedEvent = document.createEvent('MouseEvents');
-        clonedEvent.initMouseEvent.apply(clonedEvent, initMouseEventArgs.map((prop) => currentEvent[prop]));
-        currentEvent.stopPropagation();
-        currentEvent.stopImmediatePropagation();
-        _dispatchEvent.call(candidate, clonedEvent);
-        log.print("An event is re-dispatched");
+        let args = initMouseEventArgs.map((prop) => currentEvent[prop]);
+        dispatchMouseEvent(<initMouseEventArgs><any>args, candidate);
     }
 };
 
 const preventPointerEvent = (el:Element):void => {
-    if (!('style' in el)) { return; }
-    let _el:HTMLElement = <HTMLElement>el;
-    _el.style.setProperty('display', "none", important);
-    _el.style.setProperty('pointer-events', "none", important);
+    if (!isHTMLElement(el)) { return; }
+    el.style.setProperty('display', "none", important);
+    el.style.setProperty('pointer-events', "none", important);
 };
 
 var important = 'important';

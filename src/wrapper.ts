@@ -1,4 +1,4 @@
-import bridge from './ui/create-bridge';
+import bridge from './ui/create_bridge';
 import BRIDGE_KEY from './ui/bridge';
 import popupBlocker from './wrapper-nocompile';
 
@@ -16,7 +16,7 @@ if (!bridge.domainOption.whitelisted) {
         el.appendChild(script);
         el.removeChild(script);
     } else {
-        var win = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
+        var win = typeof unsafeWindow !== 'undefined' ? unsafeWindow.window : window;
         popupBlocker(win,false,BRIDGE_KEY);
     }
 }

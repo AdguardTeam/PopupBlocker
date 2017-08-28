@@ -1,4 +1,4 @@
-import * as log from '../log';
+import * as log from '../shared/log';
 
 export default class CurrentMouseEvent {
     public getCurrentMouseEvent:()=>MouseEvent;
