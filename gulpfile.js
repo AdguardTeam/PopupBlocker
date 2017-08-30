@@ -2,7 +2,7 @@ const gulp = require('gulp');
 const runSequence = require('run-sequence');
 const path = require('path');
 
-const options = global.options = {
+const options = global.options = Object.seal({
     scriptName: 'popupblocker',
     channel: 'Dev',
     get name() { return this.scriptName + '.user.js'; },
@@ -24,10 +24,13 @@ const options = global.options = {
             'NAME_SUFFIX': this.channel
         };
     },
+    locales: ["en", "ru", "de", "tr", "uk", "pl", "pt_BR", "ko", "zh_CN", "sr-Latn", "fr", "sk", "hy", "es_419", "it", "id", "nl", "bg", "vi", "hr", "hu", "ca", "zh_TW"],
+    localesDir: 'src/locales',
+    sourceFile: 'en.json',
     rollup_options: {},
     cc_options: {},
     preprocessContext: {}
-};
+});
 
 const cc_opt = require('./tasks/options/cc');
 const rollup_opt = require('./tasks/options/rollup');
@@ -122,3 +125,7 @@ gulp.task('release', (done) => {
     };
     runSequence('clean', 'prep-tscc', 'tsickle', 'meta', 'tscc', 'tscc-clean', done);
 });
+
+
+gulp.task('i18n-up', require('./tasks/i18n/upload'));
+gulp.task('i18n-down', require('./tasks/i18n/download'));
