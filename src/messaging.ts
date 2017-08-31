@@ -12,6 +12,7 @@
  */
 
 import * as log from './shared/log';
+import { getTagName } from './shared/dom';
 import bridge from './bridge';
 import { _preventDefault } from './dom/preventDefault/orig';
 
@@ -132,7 +133,7 @@ export function dispatchMouseEvent(initMouseEventArgs:initMouseEventArgs, target
     const clientX = initMouseEventArgs[7];
     const clientY = initMouseEventArgs[8];
     target = target || document.elementFromPoint(clientX, clientY);
-    if (target.nodeName.toLowerCase() === 'iframe') {
+    if (getTagName(target) === 'IFRAME') {
         log.print('target is an iframe');
         let _target = <HTMLIFrameElement>target
         // adjust initMouseEventArgs array values here

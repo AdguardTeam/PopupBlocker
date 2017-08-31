@@ -23,6 +23,8 @@ const writeMany = (contents) => {
 };
 
 const getFile = (done) => {
+    let obj = {};
+
     Promise.all(
         locales
             .map(makeOption)
@@ -30,7 +32,15 @@ const getFile = (done) => {
                 return onesky.getFile(option);
             })
     )
-        .then(writeMany)
+        .then((contents) => {
+            contents.forEach((content, index) => {
+                try {
+                    let parsed = JSON.parse(content);
+                    obj[locales[index]] = parsed;
+                } catch (e) { }
+            });
+            return writeFile(options.localesDir + '/translations.json', JSON.stringify(obj));
+        })
         .then(() => {
             done();
         })

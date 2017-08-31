@@ -3,6 +3,7 @@ import { _preventDefault } from '../dom/preventDefault/orig';
 import { setBeforeunloadHandler } from '../dom/unload';
 import { hasDefaultHandler, maskStyleTest, maskContentTest, maybeOverlay } from './element_tests';
 import { isMouseEvent, isTouchEvent, isElement, isHTMLElement } from '../shared/instanceof';
+import { getTagName } from '../shared/dom';
 import { dispatchMouseEvent, initMouseEventArgs } from '../messaging';
 import abort from '../shared/abort';
 import * as log from '../shared/log';
@@ -86,7 +87,7 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
         } else { parent = parent.parentElement; }
     }
     if (check) {
-        if (parent && parent.nodeName.toLowerCase() === 'a') {
+        if (parent && getTagName(parent) === 'A') {
             // Can't set beforeunload handler here; it may prevent legal navigations.
             if ((<HTMLAnchorElement>parent).href === targetHref) {
                 log.print("Throwing, because the target url is an href of an eventTarget or its ancestor");
@@ -138,7 +139,7 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
     }
 };
 
-const preventPointerEvent = (el:Element):void => {
+export const preventPointerEvent = (el:Element):void => {
     if (!isHTMLElement(el)) { return; }
     el.style.setProperty('display', "none", important);
     el.style.setProperty('pointer-events', "none", important);

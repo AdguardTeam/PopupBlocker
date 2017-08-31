@@ -2,3 +2,4 @@ node_modules
 build
 .rpt2_cache
 config
+yarn-error

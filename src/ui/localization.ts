@@ -1,7 +1,5 @@
 // Below is exposed for testing. It shouldn't be used for other purposes.
-export const SupportedLocales = {
-    "en": "RESOURCE:EN_TRANSLATIONS"
-};
+export const SupportedLocales = "RESOURCE:TRANSLATIONS";
 
 let currentLocale = null;
 if (typeof AdguardSettings !== 'undefined') {
@@ -26,8 +24,16 @@ type stringmap = {
     [id:string]:string
 };
 
+
+/**
+ * ${variableName} is a string reference.
+ * {{0_help_link}} is a html node reference.
+ */
+
+
+
 // Marks start of placeholders, ${...} or <.../>.
-const rePhStart = /(?:\${|<)/;
+const rePhStart = /(?:\${|{{)/;
 // Below is exposed for testing. It shouldn't be used for other purposes.
 export function parseMessage(message:string, context:stringmap):(string|number)[] {
     const res:(string|number)[] = [];
@@ -43,16 +49,15 @@ export function parseMessage(message:string, context:stringmap):(string|number)[
         } else {
             ind = match.index;
             text += message.substr(0, ind);
+            ind += 2;
             if (match[0].charCodeAt(0) === 36 /* $ */) {
-                ind += 2;
                 i = message.indexOf('}', ind);
                 let messageId = message.slice(ind, i);
                 let rep = context[messageId];
                 if (rep) { text += rep; }
                 message = message.slice(i + 1);
             } else {
-                ind++;
-                i = message.indexOf('/>', ind);
+                i = message.indexOf('}}', ind);
                 if (text) { res.push(text); }
                 text = '';
                 let num = message.charCodeAt(ind) - 48; // parseInt(*, 10)

@@ -1,10 +1,24 @@
-import { isHTMLElement } from '../shared/instanceof';
+import { isNode, isHTMLElement } from '../shared/instanceof';
+import { getTagName } from '../shared/dom';
 import * as log from '../shared/log';
 
 export const hasDefaultHandler = (el:Element):boolean => {
-    const name = el.nodeName.toLowerCase();
-    if (name == 'iframe' || name == 'input' || name == 'a' || name == 'button' || el.hasAttribute('onclick') || el.hasAttribute('onmousedown') || el.hasAttribute('onmouseup')) {
+    const name = getTagName(el);
+    if (name == 'IFRAME' || name == 'INPUT' || name == 'A' || name == 'BUTTON' || el.hasAttribute('onclick') || el.hasAttribute('onmousedown') || el.hasAttribute('onmouseup')) {
         return true;
+    }
+    return false;
+};
+
+const toString = Object.prototype.toString;
+
+export const eventTargetIsRootNode = (el:EventTarget):boolean => {
+    if (toString.call(el) === '[object Window]') { return true; }
+    if (isNode(el)) {
+        const name = getTagName(el);
+        if (name === '#DOCUMENT' || name === 'HTML' || name === 'BODY') {
+            return true;
+        }
     }
     return false;
 };

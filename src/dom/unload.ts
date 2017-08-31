@@ -1,6 +1,7 @@
 import eventTargetPType from './dispatchEvent/orig';
 import * as log from '../shared/log';``
 import bridge from '../bridge';
+
 const MSG = bridge.getMessage('on_navigation_by_popunder');
 
 const onbeforeunloadHandler = (evt:BeforeUnloadEvent) => {

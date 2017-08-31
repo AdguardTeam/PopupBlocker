@@ -4,6 +4,8 @@
  * check for DOM element is not reliable.
  */
 
+import { getTagName } from './dom';
+
 export const isMouseEvent = (event:Event):event is MouseEvent => {
     return 'clientX' in event;
 };
@@ -26,4 +28,12 @@ export const isElement = (el:EventTarget):el is Element => {
 
 export const isHTMLElement = (el:Element):el is HTMLElement => {
     return 'style' in el;
+};
+
+export const isAnchor = (el:Node):el is HTMLAnchorElement => {
+    return getTagName(el) == 'A';
+};
+
+export const isUndef = (obj:any):obj is undefined => {
+    return typeof obj === 'undefined';
 };

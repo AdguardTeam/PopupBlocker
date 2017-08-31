@@ -6,6 +6,9 @@
  * Such workarounds are not very robust, hence 'attempt', but it will still provide huge benefit to users.
  */
 
+import { closest } from '../shared/dom';
+import { isElement } from '../shared/instanceof';
+
 const _data = '_data', originalEvent = 'originalEvent', selector = 'selector';
 /**
  * A function to retrieve target selectors from jQuery event delegation mechanism.
@@ -68,4 +71,27 @@ declare const $:JQueryStatic;
 const reactRootSelector = '[data-reactroot]';
 export function isReactInstancePresent():boolean {
     return !!document.querySelector(reactRootSelector);
+}
+
+/**
+ * https://github.com/google/jsaction
+ */
+export function jsActionTarget(event:Event):EventTarget {
+    let target = event.target;
+    if (isElement(target)) {
+        let type = event.type;
+        let possibleTarget = closest(target, `[jsaction*="${type}:"]`);
+        if (possibleTarget && possibleTarget.hasOwnProperty('__jsaction')) {
+            let action = (<JsActionNode><any>possibleTarget)['__jsaction'];
+            if (action.hasOwnProperty(type)) {
+                return possibleTarget;
+            }
+        }
+    }
+}
+
+declare interface JsActionNode extends Node {
+    __jsaction?:{
+        [id:string]:string
+    }
 }
