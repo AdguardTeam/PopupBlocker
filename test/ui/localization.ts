@@ -23,14 +23,14 @@ describe('Localization', function() {
             expect(parsed).to.eql(['value1']);
         });
 
-        it('parses html node references <0/>, <1/>, ... to a single-digit number', function() {
-            const input = '<4/><0/><3/><1/><2/>';
+        it('parses html node references {{0}}, {{1}}, ... to a single-digit number', function() {
+            const input = '{{4}}{{0}}{{3}}{{1}}{{2}}';
             const parsed = parseMessage(input, context);
             expect(parsed).to.eql([4, 0, 3, 1, 2]);
         });
 
         it('parses the node index from the first character of node references', function() {
-            const input = '<0:a node/><1_another_node/><2{YetAnotherNode}/>';
+            const input = '{{0:a node}}{{1_another_node}}{{2%YetAnotherNode%}}';
             const parsed = parseMessage(input, context);
             expect(parsed).to.eql([0,1,2]);
         });
@@ -42,13 +42,13 @@ describe('Localization', function() {
         });
 
         it('parses a reference to an html node as a separate array element', function() {
-            const input = 'There are <1_some/> <0_links/> in the middle of a text';
+            const input = 'There are {{1_some}} {{0_links}} in the middle of a text';
             const parsed = parseMessage(input, context);
             expect(parsed).to.eql(['There are ', 1, ' ', 0, ' in the middle of a text']);
         });
 
         it('parses a combination of html node references and string references', function() {
-            const input = 'a${key2}b<2/>c${key1}<1/>d<0/>';
+            const input = 'a${key2}b{{2}}c${key1}{{1}}d{{0}}';
             const parsed = parseMessage(input, context);
             expect(parsed).to.eql(['avalue2b', 2, 'cvalue1', 1, 'd', 0]);
         });
@@ -62,13 +62,13 @@ describe('Localization', function() {
 
         SupportedLocales["en"] = <any>{
             'phrase1': {
-                'message': 'a<2/>b<1/>c<0/>'
+                'message': 'a{{2}}b{{1}}c{{0}}'
             },
             'phrase2': {
-                'message': 'd<1/>e<0/>f'
+                'message': 'd{{1}}e{{0}}f'
             },
             'phrase3': {
-                'message': 'g${key1}<2/>h<0/>${key2}i<1/>'
+                'message': 'g${key1}{{2}}h{{0}}${key2}i{{1}}'
             }
         };
         

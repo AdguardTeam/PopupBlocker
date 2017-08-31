@@ -1,6 +1,10 @@
 # PopupBlocker [![Build Status](https://travis-ci.org/AdguardTeam/PopupBlocker.svg?branch=master)](https://travis-ci.org/AdguardTeam/PopupBlocker)
 PopupBlocker is a userscript that blocks unwanted popups.
 
+ - Cross-browser support
+ - Advanced popup detection
+ - Restores expected click behavior
+
 Current release version: https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.0/popupblocker.user.js
 
 Curent beta version: https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.0/popupblocker.user.js

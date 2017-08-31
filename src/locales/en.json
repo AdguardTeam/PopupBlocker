@@ -1,6 +1,6 @@
 {
     "popup_text_full": {
-        "message": "Blocked an attempt to open a <0/> pop-up window"
+        "message": "Blocked an attempt to open a {{0_url}} pop-up window"
     },
     "popup_allow_dest": {
         "message": "Allow always ${domain}"
@@ -8,7 +8,7 @@
     "popup_allow_origin": {
         "message": "Allow all pop-ups on this website"
     },
-    "popup_text_min":{
+    "popup_text_min": {
         "message": "Blocked"
     },
     "popup_expand_min": {

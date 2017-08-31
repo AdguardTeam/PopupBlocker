@@ -4,14 +4,15 @@ import { retrieveEvent, verifyEvent, verifyCurrentEvent } from '../../events/ver
 import examineTarget from '../../events/examine_target';
 import { setBeforeunloadHandler } from '../unload';
 import { isUIEvent } from '../../shared/instanceof';
+import { getTagName } from '../../shared/dom';
 import * as log from '../../shared/log';
 import bridge from '../../bridge';
 import { createAlertInTopFrame } from '../../messaging';
-
+import pdfObjObserver from '../../observers/pdf_object_observer';
 
 const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _arguments) {
     let evt = _arguments[0];
-    if ('clientX' in evt && _this.nodeName.toLowerCase() == 'a' && !evt.isTrusted) {
+    if ('clientX' in evt && getTagName(_this) === 'A' && !evt.isTrusted) {
         log.call('It is a MouseEvent on an anchor tag.');
         // Checks if an url is in a whitelist
         let url = bridge.url(_this.href);
@@ -24,6 +25,7 @@ const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _argu
         if (!verifyEvent(currentEvent)) {
             log.print('It did not pass the test, not dispatching event');
             createAlertInTopFrame(bridge.domain, url[2], false);
+            pdfObjObserver.start();
             examineTarget(currentEvent, _this.href);
             log.callEnd();
             return false;
