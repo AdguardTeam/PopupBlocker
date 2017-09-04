@@ -1,3 +1,11 @@
+/**
+ * @fileoverview Keeps a reference of MutationObserver constructor.
+ * Other than this being more succinct, we need to retrieve a reference
+ * from a 'persistent' frame, because it seems that browser discards
+ * from the DOM the observer when the originating frame is detached
+ * from the document.
+ */
+
 import { getSafeNonEmptyParent } from '../shared/dom';
 
 const parent = <WindowWithMO>getSafeNonEmptyParent(window);

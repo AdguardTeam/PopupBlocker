@@ -14,7 +14,6 @@ export const getTagName = (el:Node):string => {
     return el.nodeName.toUpperCase();
 };
 
-
 const frameElementDesc = Object.getOwnPropertyDescriptor(window, 'frameElement') || Object.getOwnPropertyDescriptor(Window.prototype, 'frameElement');
 const getFrameElement = frameElementDesc.get;
 
