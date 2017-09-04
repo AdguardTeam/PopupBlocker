@@ -36,4 +36,4 @@ export const getSafeNonEmptyParent = (window:Window):Window => {
     while (frame && frame.location.href == 'about:blank') { frame = getSafeParent(frame); }
     if (!frame) { return null; }
     return frame;
-}
+};

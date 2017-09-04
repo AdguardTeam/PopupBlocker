@@ -9,10 +9,7 @@
 import MO from './mutation_observer';
 import getTime from '../shared/time';
 import { isElement } from '../shared/instanceof';
-<<<<<<< HEAD
 import { getSafeNonEmptyParent } from '../shared/dom';
-=======
->>>>>>> cbf439e00f41b8125eeb18cc568ce603479c5360
 import * as log from '../shared/log';
 
 class PdfObjectObserver {
