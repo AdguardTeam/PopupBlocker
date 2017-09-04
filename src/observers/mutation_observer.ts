@@ -1,4 +1,8 @@
-const MO = window.MutationObserver || window.WebKitMutationObserver;
+import { getSafeNonEmptyParent } from '../shared/dom';
+
+const parent = <WindowWithMO>getSafeNonEmptyParent(window);
+
+const MO = parent.MutationObserver || parent.WebKitMutationObserver;
 
 export default MO;
 
@@ -12,5 +16,3 @@ interface WindowWithMO extends Window {
     MutationObserver?:MO,
     WebKitMutationObserver?:MO
 }
-
-declare var window:WindowWithMO;
