@@ -1,7 +1,13 @@
 const onesky = require('onesky-utils');
 const fs = require('fs');
 
-const base = require('../../config/.key.js');
+let base;
+
+try {
+    base = require('../../config/.key.js');
+} catch(e) {
+
+}
 
 const postFile = (done) => {
     const file = fs.readFileSync('src/locales/en.json').toString();

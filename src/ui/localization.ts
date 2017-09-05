@@ -24,13 +24,10 @@ type stringmap = {
     [id:string]:string
 };
 
-
 /**
  * ${variableName} is a string reference.
  * {{0_help_link}} is a html node reference.
  */
-
-
 
 // Marks start of placeholders, ${...} or <.../>.
 const rePhStart = /(?:\${|{{)/;

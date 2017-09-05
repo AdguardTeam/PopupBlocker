@@ -12,13 +12,14 @@
  */
 
 import * as log from './shared/log';
-import { getTagName } from './shared/dom';
+import { getTagName, getSafeNonEmptyParent } from './shared/dom';
 import bridge from './bridge';
 import { _preventDefault } from './dom/preventDefault/orig';
 
 const supported = typeof WeakMap === 'function';
 const parent = window.parent;
 const isTop = parent === window;
+const isEmpty = location.href === 'about:blank';
 
 const enum MessageType {
     SHOW_ALERT,
@@ -89,8 +90,8 @@ if (supported) {
 /**********************************************************************/
 // SHOW_ALERT
 
-export const createAlertInTopFrame = supported && !isTop ? (orig_domain:string, popup_url:string, isGeneric:boolean):void => {
-    // If a current window is not top and the browser supports WeakMap, postMessage to parent.
+export const createAlertInTopFrame = supported && !isTop && !isEmpty ? (orig_domain:string, popup_url:string, isGeneric:boolean):void => {
+    // If a current window is not top nor empty and the browser supports WeakMap, postMessage to parent.
     let data:ShowAlertDataIntf = {
         $type: MessageType.SHOW_ALERT,
         orig_domain,
@@ -98,9 +99,14 @@ export const createAlertInTopFrame = supported && !isTop ? (orig_domain:string, 
         isGeneric
     };
     channel.port2.postMessage(data);
-} : isTop ? (orig_domain:string, popup_domain:string, isGeneric:boolean):void => {
-    // If a current window is the top frame, display an alert.
-    bridge.showAlert(orig_domain, popup_domain, isGeneric);
+} : (isTop || isEmpty) ? (orig_domain:string, popup_domain:string, isGeneric:boolean):void => {
+    // If a current window is the top frame or an empty frame, display an alert using bridge.
+    // Empty iframes can be detached from the document shortly after opening a popup.
+    // In such cases, `postMessage` may not work due to `evt.source` being `undefined`,
+    // so we use bridge directly which is readily available anyway.
+    // A `setTimeout` is used to prevent event handler from blocking UI.
+    const targetFrame = getSafeNonEmptyParent(window);
+    targetFrame.setTimeout(bridge.showAlert, 0, orig_domain, popup_domain, isGeneric);
 } : /* noop */(orig_domain:string, popup_domain:string, isGeneric:boolean):void => {
     // If a current window is not top and the browser does not support WeakMap, do nothing.
 };

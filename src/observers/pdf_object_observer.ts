@@ -9,6 +9,7 @@
 import MO from './mutation_observer';
 import getTime from '../shared/time';
 import { isElement } from '../shared/instanceof';
+import { getSafeNonEmptyParent } from '../shared/dom';
 import * as log from '../shared/log';
 
 class PdfObjectObserver {
@@ -51,11 +52,15 @@ class PdfObjectObserver {
         if (MO)
             this.observer = new MO(this.callback);
     }
-    start():void {
-        log.print('MO started at ' + getTime());
+    $start():void {
         if (this.observer && this.lastActivated === 0) {
-            this.observer.observe(document.documentElement, PdfObjectObserver.option);
-            this.lastActivated = getTime();
+            const frame = getSafeNonEmptyParent(window);
+            if (frame) {
+                const docEl = frame.document.documentElement;
+                this.observer.observe(docEl, PdfObjectObserver.option);
+                log.print('MO started at ' + getTime());
+                this.lastActivated = getTime();
+            }
         }
         setTimeout(() => {
             this.stop();

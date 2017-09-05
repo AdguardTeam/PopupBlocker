@@ -2,7 +2,14 @@ const onesky = require('onesky-utils');
 const { promisify } = require('util');
 const writeFile = promisify(require('fs').writeFile);
 
-const base = require('../../config/.key.js');
+
+let base;
+
+try {
+    base = require('../../config/.key.js');
+} catch(e) {
+
+}
 
 const locales = options.locales;
 

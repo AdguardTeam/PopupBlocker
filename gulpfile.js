@@ -92,7 +92,7 @@ gulp.task('build-ghpage', (done) => {
     runSequence('clean', ['dev-ghpages', 'build-test'], done);
 });
 
-gulp.task('testsToGhPages', ['build-ghpage'], (done) => {
+gulp.task('testsToGhPages', ['build-ghpage'], () => {
     return [
         require('fs').writeFile('build/.nojekyll', ''),
         gulp.src(['test/index.html', 'test/**/*.js']).pipe(gulp.dest(options.outputPath + '/test/')),

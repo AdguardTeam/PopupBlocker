@@ -22,7 +22,7 @@ const clickVerified:ApplyHandler = function(_click, _this) {
         if (!verifyEvent(currentEvent)) {
             log.print('It did not pass the test, not clicking element');
             createAlertInTopFrame(bridge.domain, url[2], false);
-            pdfObjObserver.start();
+            pdfObjObserver.$start();
             examineTarget(currentEvent, _this.href);
             return;
         }

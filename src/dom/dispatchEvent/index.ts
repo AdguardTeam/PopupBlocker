@@ -25,7 +25,7 @@ const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _argu
         if (!verifyEvent(currentEvent)) {
             log.print('It did not pass the test, not dispatching event');
             createAlertInTopFrame(bridge.domain, url[2], false);
-            pdfObjObserver.start();
+            pdfObjObserver.$start();
             examineTarget(currentEvent, _this.href);
             log.callEnd();
             return false;
