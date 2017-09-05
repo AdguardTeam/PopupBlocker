@@ -104,7 +104,8 @@ export const createAlertInTopFrame = supported && !isTop && !isEmpty ? (orig_dom
     // Empty iframes can be detached from the document shortly after opening a popup.
     // In such cases, `postMessage` may not work due to `evt.source` being `undefined`,
     // so we use bridge directly which is readily available anyway.
-    bridge.showAlert(orig_domain, popup_domain, isGeneric);
+    // A `setTimeout` is used to prevent event handler from blocking UI.
+    setTimeout(bridge.showAlert, 0, orig_domain, popup_domain, isGeneric);
 } : /* noop */(orig_domain:string, popup_domain:string, isGeneric:boolean):void => {
     // If a current window is not top and the browser does not support WeakMap, do nothing.
 };

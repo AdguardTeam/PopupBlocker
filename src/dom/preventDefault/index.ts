@@ -17,6 +17,8 @@ const allowVerifiedCall:ApplyHandler = (_orig, _this) => {
     return _orig.call(_this);
 };
 
+// @ifdef DEBUG
 wrapMethod(eventPType, 'preventDefault', log.connect(allowVerifiedCall, 'Performing verification on preventDefault..', function() {
     return isMouseEvent(arguments[1]);
 }));
+// @endif

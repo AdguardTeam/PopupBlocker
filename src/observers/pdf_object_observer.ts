@@ -52,7 +52,7 @@ class PdfObjectObserver {
         if (MO)
             this.observer = new MO(this.callback);
     }
-    start():void {
+    $start():void {
         if (this.observer && this.lastActivated === 0) {
             const frame = getSafeNonEmptyParent(window);
             if (frame) {
