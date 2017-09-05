@@ -4,7 +4,7 @@ PopupBlocker is a userscript that blocks unwanted popups.
  - Cross-browser support: Chrome, Firefox, Edge, IE>=10, you can use it on any browser with userscript managers.
  - Advanced popup detection
  - Restores expected click behavior
- - Invisible to others: THe page's JS cannot detect that PopupBlocker is being used, other than by actually trying to open a popup.
+ - Invisible to others: The page's script cannot detect that PopupBlocker is being used, other than by actually trying to open a popup.
 
 Current release version: https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.0/popupblocker.user.js
 
