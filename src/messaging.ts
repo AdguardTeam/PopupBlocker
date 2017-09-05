@@ -12,7 +12,7 @@
  */
 
 import * as log from './shared/log';
-import { getTagName } from './shared/dom';
+import { getTagName, getSafeNonEmptyParent } from './shared/dom';
 import bridge from './bridge';
 import { _preventDefault } from './dom/preventDefault/orig';
 
@@ -105,7 +105,8 @@ export const createAlertInTopFrame = supported && !isTop && !isEmpty ? (orig_dom
     // In such cases, `postMessage` may not work due to `evt.source` being `undefined`,
     // so we use bridge directly which is readily available anyway.
     // A `setTimeout` is used to prevent event handler from blocking UI.
-    setTimeout(bridge.showAlert, 0, orig_domain, popup_domain, isGeneric);
+    const targetFrame = getSafeNonEmptyParent(window);
+    targetFrame.setTimeout(bridge.showAlert, 0, orig_domain, popup_domain, isGeneric);
 } : /* noop */(orig_domain:string, popup_domain:string, isGeneric:boolean):void => {
     // If a current window is not top and the browser does not support WeakMap, do nothing.
 };
