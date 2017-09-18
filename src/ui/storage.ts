@@ -5,6 +5,9 @@
  * 'salt': key that is used to hash messages sent to the top frame.
  */
 
+ import bridge from './bridge';
+ import { clone } from './firefox_legacy_polyfill';
+
 function getValue(key:string, defaultValue:string) {
     let val = GM_getValue(key);
     if (typeof val === 'undefined') {
@@ -21,13 +24,17 @@ const INITIAL_DOMAIN_OPTION = JSON.stringify({
 export const domainOption = <DomainOption>JSON.parse(GM_getValue(location.host, INITIAL_DOMAIN_OPTION));
 export const whitelistedDestinations = getValue('whitelist', '').split(',').filter(host => host.length);
 
+bridge.domainOption = clone(domainOption, bridge);
+bridge.whitelistedDestinations = clone(whitelistedDestinations, bridge);
+
 export function requestDestinationWhitelist(dest) {
+    let whitelistedDestinations = bridge.whitelistedDestinations;
     whitelistedDestinations.push(dest);
     GM_setValue('whitelist', whitelistedDestinations.join(','));
-
 }
 
 export function requestDomainWhitelist(domain) {
+    let domainOption = bridge.domainOption;
     domainOption['whitelisted'] = true;
     GM_setValue(domain, JSON.stringify(domainOption));
 }

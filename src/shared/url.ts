@@ -27,8 +27,8 @@ const createUrl = (href:any):[string, string, string] => {
  * provided as arguments of `window.open`, and we can't rely on third-party scripts
  * playing nicely with it.
  * undefined --> 'about:blank'
- * null --> 'about:blank', except for Firefox, in which it is converted to 'about:blank'.
- * false --> 'about:blank', except for Edge, in which it is converted to 'about:blank'.
+ * null --> 'about:blank', except for Firefox, in which it is converted to 'null'.
+ * false --> 'about:blank', except for Edge, in which it is converted to 'false'.
  * These behaviors are different from how anchor tag's href attributes behaves with non-string values.
  */
 const convertToString = (href:any):string => {

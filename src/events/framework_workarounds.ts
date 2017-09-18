@@ -100,6 +100,7 @@ const reGtmWindowName = /^gtm\_autoEvent/
 const gtmScriptTagSelector = 'script[src*="googletagmanager.com/gtm.js"]';
 const defaultGtmVariableName = 'dataLayer';
 const reGTMVariableName = /[\?&]l=([^&]*)(?:&|$)/;
+const gtmLinkClickEventName = 'gtm.linkClick';
 
 /**
  * Google Tag Manager can be configured to fire tags upon link clicks, and in certian cases,
@@ -110,34 +111,34 @@ const reGTMVariableName = /[\?&]l=([^&]*)(?:&|$)/;
  * See: https://github.com/AdguardTeam/PopupBlocker/issues/36
  */
 export function isGtmSimulatedAnchorClick(event:Event, windowName:string):boolean {
-    if (reGtmWindowName.test(windowName)) {
-        if (event.eventPhase === 3 /* Event.BUBBLING_PHASE */) {
-            // Locate googletagManager script
-            let scriptTags = <NodeListOf<HTMLScriptElement>>document.querySelectorAll(gtmScriptTagSelector);
-            let check = false;
-            let l = scriptTags.length;
-            while (l--) {
-                let scriptTag = scriptTags[l];
-                let src = scriptTag.src;
-                let gtmVariableName = defaultGtmVariableName;
-                let match = reGTMVariableName.exec(src);
-                if (match) {
-                    gtmVariableName = match[1];
-                }
-                let dataLayer = window[gtmVariableName];
-                if (dataLayer) {
-                    let latestEvent = <GTMDataLayerEvent>dataLayer[dataLayer.length - 1];
-                    if (latestEvent &&
-                        latestEvent.event == 'gtm.linkClick') {
-                        return true;
-                    }
-                }
-            }
+    if (!reGtmWindowName.test(windowName)) { return false; }
+    if (event.eventPhase !== 3 /* Event.BUBBLING_PHASE */) { return false; }
+    // Locate googletagManager script
+    let scriptTags = <NodeListOf<HTMLScriptElement>>document.querySelectorAll(gtmScriptTagSelector);
+    let l = scriptTags.length;
+
+    if (l === 0) { return false; }
+
+    while (l--) {
+        let scriptTag = scriptTags[l];
+        let src = scriptTag.src;
+        let gtmVariableName = defaultGtmVariableName;
+        let match = reGTMVariableName.exec(src);
+        if (match) {
+            gtmVariableName = match[1];
+        }
+
+        let dataLayer = window[gtmVariableName];
+        if (!dataLayer) { continue; }
+
+        let latestEvent = <GtmDataLayerEvent>dataLayer[dataLayer.length - 1];
+        if (latestEvent && latestEvent.event == gtmLinkClickEventName) {
+            return true;
         }
     }
     return false;
 }
 
-declare interface GTMDataLayerEvent {
+declare interface GtmDataLayerEvent {
     event:string
 }

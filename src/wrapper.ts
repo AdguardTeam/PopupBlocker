@@ -1,5 +1,5 @@
 import bridge from './ui/create_bridge';
-import BRIDGE_KEY from './ui/bridge';
+import BRIDGE_KEY from './ui/bridge_key';
 import popupBlocker from './wrapper-nocompile';
 
 if (!bridge.domainOption.whitelisted) {

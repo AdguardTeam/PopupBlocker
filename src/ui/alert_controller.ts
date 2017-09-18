@@ -1,5 +1,7 @@
 import { requestDomainWhitelist, requestDestinationWhitelist } from './storage';
 import translate, { getMessage, formatText } from './localization';
+import bridge from './bridge';
+import { exportFn } from './firefox_legacy_polyfill';
 import createUrl from '../shared/url';
 import * as log from '../shared/log';
 
@@ -266,4 +268,12 @@ class AlertController {
     }
 }
 
-export default new AlertController();
+const alertController = new AlertController();
+
+exportFn(function(orig_domain:string, popup_url:string, showCollapsed:boolean) {
+    alertController.createAlert(orig_domain, popup_url, showCollapsed)
+}, bridge, {
+    defineAs: 'showAlert'
+});
+
+// export default new AlertController();
