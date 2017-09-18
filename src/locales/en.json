@@ -6,13 +6,13 @@
         "message": "Allow always ${domain}"
     },
     "popup_allow_dest_conf": {
-        "message": "Allow all popups to ${domain}?"
+        "message": "Allow all popups leading to ${domain}?"
     },
     "popup_allow_origin": {
         "message": "Allow all pop-ups on this website"
     },
     "popup_allow_origin_conf": {
-        "message": "Allow all popups from the current page ${parent}?"
+        "message": "Allow all pop-ups originating from the current domain — ${parent}?"
     },
     "popup_text_min": {
         "message": "Blocked"
