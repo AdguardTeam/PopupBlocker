@@ -179,7 +179,7 @@ function makeFunctionWrapper(orig:Function, applyHandler:ApplyHandler) {
     return wrapped;
 }
 
-function copyProperty(orig, wrapped, prop) {
+function copyProperty(orig, wrapped, prop:PropertyKey) {
     let desc = Object.getOwnPropertyDescriptor(orig, prop);
     if (desc && desc.configurable) {
         desc.value = orig[prop];

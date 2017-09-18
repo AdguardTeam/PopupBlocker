@@ -95,3 +95,49 @@ declare interface JsActionNode extends Node {
         [id:string]:string
     }
 }
+
+const reGtmWindowName = /^gtm\_autoEvent/
+const gtmScriptTagSelector = 'script[src*="googletagmanager.com/gtm.js"]';
+const defaultGtmVariableName = 'dataLayer';
+const reGTMVariableName = /[\?&]l=([^&]*)(?:&|$)/;
+
+/**
+ * Google Tag Manager can be configured to fire tags upon link clicks, and in certian cases,
+ * gtm script calls `window.open` to simulate a click on an anchor tag.
+ * such call occurs inside of an event handler attached to `document`, so it is considered
+ * suspicious by `verifyEvent`.
+ * This function performs a minimal check whether the `open` call is triggered by gtm.
+ * See: https://github.com/AdguardTeam/PopupBlocker/issues/36
+ */
+export function isGtmSimulatedAnchorClick(event:Event, windowName:string):boolean {
+    if (reGtmWindowName.test(windowName)) {
+        if (event.eventPhase === 3 /* Event.BUBBLING_PHASE */) {
+            // Locate googletagManager script
+            let scriptTags = <NodeListOf<HTMLScriptElement>>document.querySelectorAll(gtmScriptTagSelector);
+            let check = false;
+            let l = scriptTags.length;
+            while (l--) {
+                let scriptTag = scriptTags[l];
+                let src = scriptTag.src;
+                let gtmVariableName = defaultGtmVariableName;
+                let match = reGTMVariableName.exec(src);
+                if (match) {
+                    gtmVariableName = match[1];
+                }
+                let dataLayer = window[gtmVariableName];
+                if (dataLayer) {
+                    let latestEvent = <GTMDataLayerEvent>dataLayer[dataLayer.length - 1];
+                    if (latestEvent &&
+                        latestEvent.event == 'gtm.linkClick') {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+declare interface GTMDataLayerEvent {
+    event:string
+}
