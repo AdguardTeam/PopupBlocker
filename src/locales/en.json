@@ -12,7 +12,7 @@
         "message": "Allow all pop-ups on this website"
     },
     "popup_allow_origin_conf": {
-        "message": "Allow all pop-ups originating from the current domain — ${parent}?"
+        "message": "Allow all pop-ups originating from ${parent}?"
     },
     "popup_text_min": {
         "message": "Blocked"
