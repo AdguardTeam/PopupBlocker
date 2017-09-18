@@ -106,7 +106,7 @@ const reGTMVariableName = /[\?&]l=([^&]*)(?:&|$)/;
  * gtm script calls `window.open` to simulate a click on an anchor tag.
  * such call occurs inside of an event handler attached to `document`, so it is considered
  * suspicious by `verifyEvent`.
- * This function performs a minimal check whether the `open` call is triggered by gtm.
+ * This function performs a minimal check of whether the `open` call is triggered by gtm.
  * See: https://github.com/AdguardTeam/PopupBlocker/issues/36
  */
 export function isGtmSimulatedAnchorClick(event:Event, windowName:string):boolean {

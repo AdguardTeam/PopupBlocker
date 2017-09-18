@@ -41,7 +41,7 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
     }
     createAlertInTopFrame(bridge.domain, url[2], false);
     pdfObjObserver.$start();
-    if (currentEvent) { examineTarget(currentEvent, _arguments[0]); }
+    if (currentEvent) { examineTarget(currentEvent, url[2]); }
     log.print('mock a window object');
     // Return a mock window object, in order to ensure that the page's own script does not accidentally throw TypeErrors.
     win = mockWindow(_arguments[0], _arguments[1]);
