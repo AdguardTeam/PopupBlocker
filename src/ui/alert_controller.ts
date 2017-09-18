@@ -275,5 +275,3 @@ exportFn(function(orig_domain:string, popup_url:string, showCollapsed:boolean) {
 }, bridge, {
     defineAs: 'showAlert'
 });
-
-// export default new AlertController();
