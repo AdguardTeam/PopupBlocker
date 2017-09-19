@@ -2,7 +2,6 @@ const onesky = require('onesky-utils');
 const { promisify } = require('util');
 const writeFile = promisify(require('fs').writeFile);
 
-
 let base;
 
 try {
@@ -18,15 +17,6 @@ const makeOption = (locale) => {
         language: locale,
         fileName: options.sourceFile
     });
-};
-
-const writeOne = (content, index) => {
-    let locale = locales[index];
-    return writeFile(options.localesDir + '/' + locale + '.json', content);
-};
-
-const writeMany = (contents) => {
-    return Promise.all(contents.map(writeOne));
 };
 
 const getFile = (done) => {

@@ -21,6 +21,10 @@ interface DomainOption {
     use_strict:boolean
 }
 
+type stringmap = {
+    [id:string]:string
+};
+
 // Non-standard DOM apis that are not understood by either Typescript or Closure Compiler are included here.
 interface Document {
     documentMode?: number,
@@ -32,3 +36,4 @@ interface Event {
     path?: EventTarget[],
     composedPath?():EventTarget[]
 }
+

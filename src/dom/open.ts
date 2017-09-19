@@ -1,6 +1,7 @@
 import { ApplyHandler, makeObjectProxy, wrapMethod } from '../proxy';
 import { verifyEvent, retrieveEvent, verifyCurrentEvent } from '../events/verify';
 import examineTarget from '../events/examine_target';
+import { isGtmSimulatedAnchorClick } from '../events/framework_workarounds';
 import { _dispatchEvent } from './dispatchEvent/orig';
 import { timeline, position } from '../timeline/index';
 import { TLEventType, TimelineEvent } from '../timeline/event';
@@ -12,7 +13,6 @@ import pdfObjObserver from '../observers/pdf_object_observer';
 const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, context) {
     let targetHref = _arguments[0];
     log.call('Called window.open with url ' + targetHref);
-    // Checks if an url is in a whitelist
     const url = bridge.url(targetHref);
     const destDomain = url[1];
     if (bridge.whitelistedDestinations.indexOf(destDomain) !== -1) {
@@ -20,23 +20,28 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
         return _open.apply(_this, _arguments);
     }
     let currentEvent = retrieveEvent();
-    let passed = verifyEvent(currentEvent);
     let win;
-    if (passed) {
-        log.print('event verified, inquiring event timeline..');
-        if (timeline.canOpenPopup(position)) {
-            log.print('calling original window.open...');
-            win = _open.apply(_this, _arguments);
-            win = makeObjectProxy(win);
-            log.callEnd();
-            return win;
+    verification: {
+        let passed = verifyEvent(currentEvent);
+        if (!passed) {
+            if (!isGtmSimulatedAnchorClick(currentEvent, _arguments[1])) {
+                break verification;
+            }
         }
-        log.print('canOpenPopup returned false');
+        log.print('event verified, inquiring event timeline..');
+        if (!timeline.canOpenPopup(position)) {
+            log.print('canOpenPopup returned false');
+            break verification;
+        }
+        log.print('calling original window.open...');
+        win = _open.apply(_this, _arguments);
+        win = makeObjectProxy(win);
         log.callEnd();
+        return win;
     }
     createAlertInTopFrame(bridge.domain, url[2], false);
     pdfObjObserver.$start();
-    if (currentEvent) { examineTarget(currentEvent, _arguments[0]); }
+    if (currentEvent) { examineTarget(currentEvent, url[2]); }
     log.print('mock a window object');
     // Return a mock window object, in order to ensure that the page's own script does not accidentally throw TypeErrors.
     win = mockWindow(_arguments[0], _arguments[1]);

@@ -1,5 +1,5 @@
 import { requestDomainWhitelist, requestDestinationWhitelist } from './storage';
-import translate from './localization';
+import translate, { getMessage, formatText } from './localization';
 import createUrl from '../shared/url';
 import * as log from '../shared/log';
 
@@ -53,6 +53,12 @@ function attachClickListenerForEach (iterable:NodeList, listener:(this:Node,evt:
     }
 }
 
+// Until we come up with a proper UI, we reponse to user interaction with window.confirm.
+function showConfirmationDialog (messageId:string, context:stringmap):boolean {
+    const message = formatText(getMessage(messageId), context);
+    return window.confirm(message);
+}
+
 class Alert implements AlertIntf {
     public $element:HTMLIFrameElement;
     public $collapsed:boolean;
@@ -63,7 +69,14 @@ class Alert implements AlertIntf {
         let loaded = false;
         // Prepare innerHTML
         let url = createUrl(popup_url);
-        let _innerHTML = innerHTML.replace(/\${href}/g, popup_url).replace(/\${domain}/g, url[0]);
+
+        const localizationContext:stringmap = Object.create(null);
+        localizationContext['displayUrl'] = url[0];
+        localizationContext['domain'] = url[1];
+        localizationContext['href'] = popup_url;
+        localizationContext['parent'] = orig_domain
+
+        let _innerHTML = formatText(innerHTML, localizationContext);
         iframe.addEventListener('load', (evt) => {
             // Attach event handlers
             if (loaded) { return; }
@@ -75,10 +88,14 @@ class Alert implements AlertIntf {
             });
             if (showCollapsed) { document.getElementsByClassName('popup')[0].classList.add('popup--min'); }
             attachClickListenerForEach(document.getElementsByClassName('popup__link--allow'), () => {
-                requestDestinationWhitelist(url[1]);
+                if (showConfirmationDialog("popup_allow_dest_conf", localizationContext)) {
+                    requestDestinationWhitelist(url[1]);
+                }
             });
             attachClickListenerForEach(document.getElementsByClassName('popup__link--all'), () => {
-                requestDomainWhitelist(orig_domain);
+                if (showConfirmationDialog("popup_allow_origin_conf", localizationContext)) {
+                    requestDomainWhitelist(orig_domain);
+                }
             });
             requestAnimationFrame(() => {
                 iframe.style['opacity'] = '1';

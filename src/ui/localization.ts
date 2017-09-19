@@ -1,6 +1,7 @@
 // Below is exposed for testing. It shouldn't be used for other purposes.
 export const SupportedLocales = "RESOURCE:TRANSLATIONS";
 
+const defaultLocale = 'en';
 let currentLocale = null;
 if (typeof AdguardSettings !== 'undefined') {
     var locale = AdguardSettings.locale;
@@ -8,20 +9,19 @@ if (typeof AdguardSettings !== 'undefined') {
         currentLocale = locale;
     }
 }
-if (!currentLocale) {
-    currentLocale = 'en';
+if (!currentLocale || !SupportedLocales[currentLocale]) {
+    currentLocale = defaultLocale;
 }
 
 export const getMessage = (messageId:string):string => {
     let message = SupportedLocales[currentLocale][messageId];
-    // @ifdef DEBUG
-    if (!message) { throw messageId + ' not localized'; }
-    // @endif
+    if (!message) {
+        message = SupportedLocales[defaultLocale][messageId];
+        // @ifdef DEBUG
+        throw messageId + ' not localized';
+        // @endif
+    }   
     return message['message'];
-};
-
-type stringmap = {
-    [id:string]:string
 };
 
 /**
@@ -65,6 +65,13 @@ export function parseMessage(message:string, context:stringmap):(string|number)[
     }
     if (text) { res.push(text); }
     return res;
+}
+
+export function formatText(message:string, context:stringmap):string {
+    for (let contextId in context) {
+        message = message.replace(new RegExp(`\\$\\{${contextId}\\}`), context[contextId]);
+    }
+    return message;
 }
 
 const reCommentPh = /^i18n:/;
