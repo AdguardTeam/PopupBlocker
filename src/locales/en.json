@@ -6,7 +6,7 @@
         "message": "Always allow ${domain}"
     },
     "popup_allow_dest_conf": {
-        "message": "Allow all popups leading to ${domain}?"
+        "message": "Allow all pop-ups leading to ${domain}?"
     },
     "popup_allow_origin": {
         "message": "Allow all pop-ups on this website"
