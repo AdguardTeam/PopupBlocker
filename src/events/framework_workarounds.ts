@@ -128,10 +128,10 @@ export function isGtmSimulatedAnchorClick(event:Event, windowName:string):boolea
             gtmVariableName = match[1];
         }
 
-        let dataLayer = window[gtmVariableName];
+        let dataLayer = <GtmDataLayerEvent[]>window[gtmVariableName];
         if (!dataLayer) { continue; }
 
-        let latestEvent = <GtmDataLayerEvent>dataLayer[dataLayer.length - 1];
+        let latestEvent = dataLayer[dataLayer.length - 1];
         if (latestEvent && latestEvent.event == gtmLinkClickEventName) {
             return true;
         }

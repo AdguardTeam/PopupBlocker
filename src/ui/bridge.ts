@@ -7,7 +7,7 @@
 
 import BRIDGE_KEY from './bridge_key';
 import { domainOption, whitelistedDestinations } from './storage';
-import { createObject, exportFn } from './firefox_legacy_polyfill';
+import { createObject, exportFn } from './firefox_export_helper_polyfills';
 import { getMessage } from './localization';
 import createUrl from '../shared/url';
 

@@ -1,7 +1,5 @@
 import { requestDomainWhitelist, requestDestinationWhitelist } from './storage';
 import translate, { getMessage, formatText } from './localization';
-import bridge from './bridge';
-import { exportFn } from './firefox_legacy_polyfill';
 import createUrl from '../shared/url';
 import * as log from '../shared/log';
 
@@ -73,7 +71,8 @@ class Alert implements AlertIntf {
         let url = createUrl(popup_url);
 
         const localizationContext:stringmap = Object.create(null);
-        localizationContext['domain'] = url[0];
+        localizationContext['displayUrl'] = url[0];
+        localizationContext['domain'] = url[1];
         localizationContext['href'] = popup_url;
         localizationContext['parent'] = orig_domain
 
@@ -268,10 +267,4 @@ class AlertController {
     }
 }
 
-const alertController = new AlertController();
-
-exportFn(function(orig_domain:string, popup_url:string, showCollapsed:boolean) {
-    alertController.createAlert(orig_domain, popup_url, showCollapsed)
-}, bridge, {
-    defineAs: 'showAlert'
-});
+export default new AlertController();
