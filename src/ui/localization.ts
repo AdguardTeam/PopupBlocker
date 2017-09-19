@@ -67,9 +67,22 @@ export function parseMessage(message:string, context:stringmap):(string|number)[
     return res;
 }
 
-export function formatText(message:string, context:stringmap):string {
+function escapeHtmlSafeString(str:string):string {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/**
+ * @param htmlSafe indicates that strings that are to be replaced with should be escaped
+ * so that they can used as a value of `innerHTML` without allowing remote code execution
+ * or breaking html structure.
+ */
+export function formatText(message:string, context:stringmap, htmlSafe?:boolean):string {
     for (let contextId in context) {
-        message = message.replace(new RegExp(`\\$\\{${contextId}\\}`), context[contextId]);
+        let toBeReplacedWith = context[contextId];
+        if (htmlSafe) {
+            toBeReplacedWith = escapeHtmlSafeString(toBeReplacedWith);    
+        }
+        message = message.replace(new RegExp(`\\$\\{${contextId}\\}`), toBeReplacedWith);
     }
     return message;
 }

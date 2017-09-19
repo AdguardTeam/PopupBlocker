@@ -76,7 +76,7 @@ class Alert implements AlertIntf {
         localizationContext['href'] = popup_url;
         localizationContext['parent'] = orig_domain
 
-        let _innerHTML = formatText(innerHTML, localizationContext);
+        let _innerHTML = formatText(innerHTML, localizationContext, true);
         iframe.addEventListener('load', (evt) => {
             // Attach event handlers
             if (loaded) { return; }
