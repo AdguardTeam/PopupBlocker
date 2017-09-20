@@ -33,8 +33,15 @@ const getFile = (done) => {
             contents.forEach((content, index) => {
                 try {
                     let parsed = JSON.parse(content);
+                    // Transforms { phrase: { message: {message} } } to { phrase: {message} },
+                    // for a smaller representation of translation data
+                    for (let key in parsed) {
+                        parsed[key] = parsed[key]["message"];
+                    }
                     obj[locales[index]] = parsed;
-                } catch (e) { }
+                } catch (e) {
+                    console.warn('Error during parsing ' + content.toString());
+                }
             });
             return writeFile(options.localesDir + '/translations.json', JSON.stringify(obj));
         })

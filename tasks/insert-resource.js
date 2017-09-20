@@ -21,8 +21,9 @@ module.exports = (content, file) => {
                     resource = minifyHtml(resource, {
                         collapseWhitespace: true,
                         minifyCSS: true,
-                        removeAttributeQuotes: true,
-                        removeComments: false
+                        removeAttributeQuotes: false,
+                        removeComments: false,
+                        removeOptionalTags: true
                     });
                         resource = c1 + resource.replace(/[\\"]/g, (m) => {
                         return "\\" + m;

@@ -6,7 +6,7 @@
         "message": "Always allow ${domain}"
     },
     "popup_allow_dest_conf": {
-        "message": "Allow all popups leading to ${domain}?"
+        "message": "Allow all pop-ups leading to ${domain}?"
     },
     "popup_allow_origin": {
         "message": "Allow all pop-ups on this website"
@@ -21,7 +21,7 @@
         "message": "pop-up"
     },
     "on_navigation_by_popunder": {
-        "message": "This page navigation is likely to be caused by a pop-under. Do you wish to continue?"
+        "message": "This transition to the new page is likely to be caused by a pop-under. Do you wish to continue?"
     },
     "aborted_popunder_execution": {
         "message": "PopupBlocker aborted a script exectution to prevent background redirect"

@@ -10,7 +10,7 @@ const options = global.options = Object.seal({
     downloadUPDATE_URLRelease: 'https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.1/',
     downloadUPDATE_URLBeta: 'https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.1/',
     downloadUPDATE_URLDev: 'https://AdguardTeam.github.io/PopupBlocker/',
-    get downloadUpdateUrl() { return this['downloadUPDATE_URL' + this.channel]; },
+    get downloadUpdateUrl() { return this['downloadUPDATE_URL' + this.channel] || ''; },
     outputPath: 'build',
     tscc_prep_dir: 'prep',
     tscc_dir: 'tsickle',
@@ -19,9 +19,9 @@ const options = global.options = Object.seal({
     get metaConfig() {
         let url = this.downloadUpdateUrl;
         return {
-            'DOWNLOAD_URL': url + this.name,
-            'UPDATE_URL': url + this.metaName,
-            'NAME_SUFFIX': this.channel
+            'DOWNLOAD_URL': url ? url + this.name : '',
+            'UPDATE_URL': url ? url + this.metaName : '',
+            'NAME_SUFFIX': this.channel.startsWith('Release') ? '' : this.channel
         };
     },
     locales: ["en", "ru", "de", "tr", "uk", "pl", "pt_BR", "ko", "zh_CN", "sr-Latn", "fr", "sk", "hy", "es_419", "it", "id", "nl", "bg", "vi", "hr", "hu", "ca", "zh_TW"],
@@ -69,7 +69,7 @@ gulp.task('dev-ghpages', (done) => {
         DEBUG: true,
         RECORD: true
     };
-    options.cc_options = cc_opt.test;
+    options.cc_options = false;
     runSequence('meta', 'rollup', done);
 });
 
@@ -126,6 +126,15 @@ gulp.task('release', (done) => {
     runSequence('clean', 'prep-tscc', 'tsickle', 'meta', 'tscc', 'tscc-clean', done);
 });
 
+gulp.task('release-no-minification', (done) => {
+    options.channel = "Release-No-Min";
+    options.rollup_options = rollup_opt.dev;
+    options.preprocessContext = {
+        NO_PROXY: true
+    };
+    options.cc_options = 'uglifyjs';
+    runSequence('meta', 'rollup', done);
+});
 
 gulp.task('i18n-up', require('./tasks/i18n/upload'));
 gulp.task('i18n-down', require('./tasks/i18n/download'));

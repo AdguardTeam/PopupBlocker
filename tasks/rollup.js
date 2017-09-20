@@ -11,8 +11,8 @@ const closureCompiler = require('google-closure-compiler').gulp();
 const textHelper = require('./utill/transform-text');
 const fs = require('fs');
 const minifyHtml = require('html-minifier').minify;
+const uglify = require('gulp-uglify');
 const insertResource = require('./insert-resource');
-
 
 const rollup_options_wrapper = require('./options/rollup').wrapper;
 
@@ -32,9 +32,16 @@ module.exports = (done) => {
         .on('data', (file) => {
             let wrapper = file.contents.toString().split('"CONTENT"');
             content = content
+                .pipe(insert.transform(textHelper.removeCcExport))
                 .pipe(insert.transform(exportDefaultToReturn))
                 .pipe(insert.transform(wrapModule(wrapper)));
-            if (options.cc_options) { content = content.pipe(closureCompiler(options.cc_options)); }
+            if (options.cc_options) {
+                if (options.cc_options === 'uglifyjs') {
+                    content = content.pipe(uglify(require('./options/uglify.js').no_minification))
+                } else {
+                    content = content.pipe(closureCompiler(options.cc_options));
+                }
+            }
             content
                 .pipe(insert.transform((content) => {
                     return meta + content;

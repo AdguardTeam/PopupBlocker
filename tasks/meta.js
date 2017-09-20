@@ -9,7 +9,14 @@ const rename = require('gulp-rename');
 const replaceMeta = (config) => {
     return (text) => {
         return text.replace(/^\/\/\s@name(?:\:[\w-]*)?\s.*$/gm, (match) => (match + ' ' + config['NAME_SUFFIX']))
-            .replace(/^(\/\/\s@.*)\[([A-Za-g_]*?)\]/gm, (_, c1, c2) => (c1 + config[c2]));
+            .replace(/^(\/\/\s@.*)\[([A-Za-g_]*?)\][\s\S]*\n/gm, (_, c1, c2) => {
+            	let rep = config[c2];
+            	if (rep) {
+            		return c1 + config[c2];
+            	} else {
+            		return '';
+            	}
+            });
     };
 };
 

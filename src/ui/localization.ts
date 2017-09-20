@@ -21,7 +21,7 @@ export const getMessage = (messageId:string):string => {
         throw messageId + ' not localized';
         // @endif
     }   
-    return message['message'];
+    return message;
 };
 
 /**
@@ -67,9 +67,33 @@ export function parseMessage(message:string, context:stringmap):(string|number)[
     return res;
 }
 
-export function formatText(message:string, context:stringmap):string {
+const entityMap = {
+  '&': 'amp;',
+  '<': 'lt;',
+  '>': 'gt;',
+  '"': 'quot;',
+  "'": '#39;',
+  '/': '#x2F;',
+  '`': '#x60;',
+  '=': '#x3D;'
+};
+
+function toHtmlSafeString(str:string):string {
+    return str.replace(/[&<>"'`=\/]/g, (s) => ('&' + entityMap[s]));
+}
+
+/**
+ * @param htmlSafe indicates that strings that are to be replaced with should be escaped
+ * so that they can used as a value of `innerHTML` without allowing remote code execution
+ * or breaking html structure.
+ */
+export function formatText(message:string, context:stringmap, htmlSafe?:boolean):string {
     for (let contextId in context) {
-        message = message.replace(new RegExp(`\\$\\{${contextId}\\}`), context[contextId]);
+        let toBeReplacedWith = context[contextId];
+        if (htmlSafe) {
+            toBeReplacedWith = toHtmlSafeString(toBeReplacedWith);
+        }
+        message = message.replace(new RegExp(`\\$\\{${contextId}\\}`), toBeReplacedWith);
     }
     return message;
 }
