@@ -25,7 +25,7 @@ module.exports = {
             reduce_vars: false,
             keep_fargs: true,
             // UglifyJs by default does not remove functions with empty function body.
-            // We declare here that certain functions used for logging is side effect free,
+            // We declare here that certain functions used for logging are side-effect free,
             // so that UglifyJs can remove them.
             pure_funcs: ['print', 'call', 'callEnd', 'closeAllGroup']
         },
