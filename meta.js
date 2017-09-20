@@ -28,6 +28,8 @@
 // @description:vi	Chặn quảng cáo popup trên các trang web
 // @description:es	Bloquea popups de anuncios en sitios web
 // @version 2.1.6
+// @license LGPL
+// @license https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE
 // @downloadURL [DOWNLOAD_URL]
 // @updateURL [UPDATE_URL]
 // @supportURL https://github.com/AdguardTeam/PopupBlocker/issues

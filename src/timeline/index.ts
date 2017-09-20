@@ -105,7 +105,6 @@ export const position:number = typeof KEY === 'string' ? timeline.onNewFrame() :
 
 // These are called from the outside of the code, so we have to make sure that call structures of those are not modified.
 // It is removed in minified builds, see the gulpfile.
-// @ifndef RECORD
 /** @suppress {uselessCode} */
 function cc_export() {
     "REMOVE_START"
@@ -115,7 +114,6 @@ function cc_export() {
     "REMOVE_END"
 }
 cc_export();
-// @endif
 
 // @ifdef RECORD
 window['__t'] = timeline;
