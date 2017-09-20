@@ -11,7 +11,7 @@ const enum STYLE_CONST {
     height = 76,
     collapsed_height = 48,
     width = 574,
-    collapsed_width = 135,
+    collapsed_width = 180, //135,
     middle_offset = 10
 };
 

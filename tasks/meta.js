@@ -6,13 +6,17 @@ const gulp = require('gulp');
 const insert = require('gulp-insert');
 const rename = require('gulp-rename');
 
+const reScriptName = /^\/\/\s@name(?:\:[\w-]*)?\s.*$/gm;
+const reMetadata = /^(\/\/\s@[^\s]*\s*)\[([A-Za-g_]*?)\][\s\S]*?\n/gm;
+
+
 const replaceMeta = (config) => {
     return (text) => {
-        return text.replace(/^\/\/\s@name(?:\:[\w-]*)?\s.*$/gm, (match) => (match + ' ' + config['NAME_SUFFIX']))
-            .replace(/^(\/\/\s@.*)\[([A-Za-g_]*?)\][\s\S]*\n/gm, (_, c1, c2) => {
+        return text.replace(reScriptName, (match) => (match + ' ' + config['NAME_SUFFIX']))
+            .replace(reMetadata, (_, c1, c2) => {
             	let rep = config[c2];
             	if (rep) {
-            		return c1 + config[c2];
+            		return c1 + config[c2] + '\n';
             	} else {
             		return '';
             	}

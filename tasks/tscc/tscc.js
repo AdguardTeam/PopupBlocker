@@ -42,7 +42,7 @@ module.exports = (done) => {
                 .pipe(insert.transform(insertResource))
                 .pipe(closureCompiler(require('../options/cc').ts_wrapper))
                 .pipe(insert.transform((content) => {
-                    return meta + '\n' + content;
+                    return meta + content;
                 }))
                 .pipe(rename(options.name))
                 .pipe(gulp.dest(options.outputPath))
