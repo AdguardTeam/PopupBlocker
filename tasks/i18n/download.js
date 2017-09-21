@@ -39,9 +39,7 @@ const getFile = (done) => {
                         parsed[key] = parsed[key]["message"];
                     }
                     obj[locales[index]] = parsed;
-                } catch (e) {
-                    console.warn('Error during parsing ' + content.toString());
-                }
+                } catch (e) { }
             });
             return writeFile(options.localesDir + '/translations.json', JSON.stringify(obj));
         })
