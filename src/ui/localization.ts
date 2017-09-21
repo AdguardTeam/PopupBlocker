@@ -10,6 +10,16 @@ if (typeof AdguardSettings !== 'undefined') {
     }
 }
 if (!currentLocale || !SupportedLocales[currentLocale]) {
+    let lang = navigator.language;
+    if (!SupportedLocales[lang]) {
+        let i = lang.indexOf('-');
+        if (i !== -1) {
+            lang = lang.slice(0, i);
+        }
+    }
+    currentLocale = lang;
+}
+if (!currentLocale || !SupportedLocales[currentLocale]) {
     currentLocale = defaultLocale;
 }
 
