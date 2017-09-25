@@ -1,18 +1,45 @@
 # PopupBlocker [![Build Status](https://travis-ci.org/AdguardTeam/PopupBlocker.svg?branch=master)](https://travis-ci.org/AdguardTeam/PopupBlocker)
-PopupBlocker is a userscript that blocks unwanted popups.
+## Summary: 
 
- - Cross-browser support: Chrome, Firefox, Edge, IE10+, you can use it on any browser with userscript managers.
- - Advanced popup detection
- - Restores expected click behavior
- - Invisible to others: The page's script cannot detect that PopupBlocker is being used, other than by actually trying to open a popup.
+PopupBlocker is a userscript that blocks all unwanted pop-up windows in different browsers.
 
-Current release version: https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.0/popupblocker.user.js
+## Key features:
 
-Curent beta version: https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.0/popupblocker.user.js
+ * Cross-browser support
 
-## How does it work?
+Works in Chrome, Firefox, Edge, Safari, IE10+ etc, basically in any browser that supports userscript managers. Exceptions are some of the oldest browsers that do not support the API we use, the script may not be fully functional there.
+		
+ * Advanced pop-up detection
 
-It adds a layer of check on top of browser's native apis, that are used to create popups, so that it can be called _only_ when it is caused by a human input, not by popup/popunder scripts. Instead of checking popup url with _filter rules_, it does a _generic_ behavioral detection of popups. In virtue of this, it can block popups on websites which tries (They are still blockable with _site-specific_ adblock filter rules) to bypass adblocker by using revolving adservers or using WebRTC, without any specific treatment. However, of course, this userscript should and strives to block all unwanted popups without the help of adblockers.
+PopupBlocker doesn't apply the *filtering rules* approach to pop-up detection. Instead, it adds an additional layer on top of browser's native APIs that are used to create pop-ups. This way, these APIs can only be called when caused by a manual input, and not by pop-up/pop-under scripts. That allows to block pop-ups even on websites that try to bypass regular ad blockers by using WebRTC or varying the ad servers.
+ 
+ * Restores the expected click behavior
+
+Self-explanatory but important: if a click would cause a pop-up to show, not only the pop-up is blocked, but also the initial click is processed as it would be without the pop-up.
+ 
+ * Invisible to other scripts
+
+Other scripts on the page can not detect that PopupBlocker is being used, other than by actually trying to open a pop-up. This prevents any possible circumvention of PopupBlocker.
+		
+## Installation
+
+Current release version (2.1.7): https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.1/popupblocker.user.js
+
+Curent beta version (2.1.7): https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.1/popupblocker.user.js
+
+All versions: https://github.com/AdguardTeam/PopupBlocker/releases
+
+PopupBlocker is being developed by the same team that develops AdGuard, and AdGuard for Windows can serve as a userscript manager. If you are an AdGuard user, go to Settings – Extensions – Add Extension and enter the desired PopupBlocker .js file URL there. This way you can use it in literally any browser.
+
+On the other hand, PopupBlocker is an independent project, you can use it with any other userscript manager like Greasemonkey, Tampermonkey or Violentmonkey. Make sure one of them is installed in your browser to be able to use the PopupBlocker (just enter the script URL into the address bar, it will be automatically detected by the manager).
+
+## Reporting a bug
+
+To report a bug, go to [this page](https://github.com/AdguardTeam/PopupBlocker/issues) and create a new issue.
+		
+## Translation	
+
+You can help us with translating PopupBlocker into other languages! Our project on [OneSky](https://adguard.oneskyapp.com/collaboration/project?id=124184) is open for public contributions.
 
 ## Development build
 
