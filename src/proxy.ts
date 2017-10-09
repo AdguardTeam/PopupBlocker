@@ -146,7 +146,6 @@ const reportGetToTL = (target, prop:PropertyKey, receiver) => {
         // Such `value` objects won't be used as arguments of built-in functions, which may
         // depend on internal slots of its arguments.
         // For instance, `createNodeIterator` does not work if its first arguments is a proxied `Node` instance.
-        console.log('making deep proxy...');
         return makeObjectProxy(value);
     } else {
         return value;
