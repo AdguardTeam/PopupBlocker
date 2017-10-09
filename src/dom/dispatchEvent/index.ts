@@ -3,17 +3,17 @@ import { ApplyHandler, ApplyOption, wrapMethod } from '../../proxy';
 import { retrieveEvent, verifyEvent, verifyCurrentEvent } from '../../events/verify';
 import examineTarget from '../../events/examine_target';
 import { setBeforeunloadHandler } from '../unload';
-import { isUIEvent } from '../../shared/instanceof';
+import { isMouseEvent, isUIEvent, isClickEvent } from '../../shared/instanceof';
 import { getTagName } from '../../shared/dom';
 import * as log from '../../shared/log';
 import bridge from '../../bridge';
-import { createAlertInTopFrame } from '../../messaging';
-import pdfObjObserver from '../../observers/pdf_object_observer';
+import onBlocked from '../../on_blocked';
 
-const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _arguments) {
-    let evt = _arguments[0];
-    if ('clientX' in evt && getTagName(_this) === 'A' && !evt.isTrusted) {
+const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _arguments, context) {
+    let evt:Event = _arguments[0];
+    if (isMouseEvent(evt) && isClickEvent(evt) && getTagName(_this) === 'A' && !evt.isTrusted) {
         log.call('It is a MouseEvent on an anchor tag.');
+        log.print('dispatched event is:', evt);
         // Checks if an url is in a whitelist
         let url = bridge.url(_this.href);
         let destDomain = url[1];
@@ -24,9 +24,7 @@ const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _argu
         let currentEvent = retrieveEvent();
         if (!verifyEvent(currentEvent)) {
             log.print('It did not pass the test, not dispatching event');
-            createAlertInTopFrame(bridge.domain, url[2], false);
-            pdfObjObserver.$start();
-            examineTarget(currentEvent, _this.href);
+            onBlocked(url[2], false, currentEvent);
             log.callEnd();
             return false;
             // Or, we may open a new widnow with window.open to save a reference and do additional checks.

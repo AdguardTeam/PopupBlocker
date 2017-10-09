@@ -1,5 +1,5 @@
 import { ApplyHandler, makeObjectProxy, wrapMethod } from '../proxy';
-import { verifyEvent, retrieveEvent, verifyCurrentEvent } from '../events/verify';
+import { verifyEvent, retrieveEvent } from '../events/verify';
 import examineTarget from '../events/examine_target';
 import { isGtmSimulatedAnchorClick } from '../events/framework_workarounds';
 import { _dispatchEvent } from './dispatchEvent/orig';
@@ -7,8 +7,8 @@ import { timeline, position } from '../timeline/index';
 import { TLEventType, TimelineEvent } from '../timeline/event';
 import * as log from '../shared/log';
 import bridge from '../bridge';
-import { createAlertInTopFrame } from '../messaging';
-import pdfObjObserver from '../observers/pdf_object_observer';
+import mockWindow from '../mock_window';
+import onBlocked from '../on_blocked';
 
 const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, context) {
     let targetHref = _arguments[0];
@@ -39,9 +39,9 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
         log.callEnd();
         return win;
     }
-    createAlertInTopFrame(bridge.domain, url[2], false);
-    pdfObjObserver.$start();
-    if (currentEvent) { examineTarget(currentEvent, url[2]); }
+
+    onBlocked(url[2], false, currentEvent);
+    
     log.print('mock a window object');
     // Return a mock window object, in order to ensure that the page's own script does not accidentally throw TypeErrors.
     win = mockWindow(_arguments[0], _arguments[1]);
@@ -50,61 +50,6 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
     log.callEnd();
     return win;
 };
-
-const mockObject = (orig:Object, mocked?:Object):Object => {
-    mocked = mocked || <Object>{};
-    for (let prop in orig) {
-        let desc = Object.getOwnPropertyDescriptor(orig, prop);
-        if (desc) {
-            switch(typeof desc.value) {
-                case 'undefined':
-                break;
-                case 'object':
-                mocked[prop] = {}; break;
-                case 'function':
-                mocked[prop] = function() { return true; }; break;
-                default:
-                mocked[prop] = orig[prop];
-            }
-        }
-    }
-    return mocked;
-};
-
-const mockWindow = (href, name) => {
-    let win:any, doc:any, loc:any;
-    win = mockObject(window);
-    mockObject(Window.prototype, win);
-    doc = mockObject(document);
-    mockObject(Document.prototype, doc);
-    win.opener = window;
-    win.closed = false;
-    win.name = name;
-    win.document = doc;
-    loc = document.createElement('a');
-    loc.href = href;
-    doc[_location] = loc;
-    // doc.open = function(){return this;}
-    // doc.write = function(){};
-    // doc.close = function(){};
-    Object.defineProperty(win, _location, {
-        get: function() {
-            timeline.registerEvent(new TimelineEvent(TLEventType.GET, _location, {
-                this: this
-            }), position);
-            return loc;
-        },
-        set: function(incoming) {
-            timeline.registerEvent(new TimelineEvent(TLEventType.SET, _location, {
-                this: this,
-                arguments: [incoming]
-            }), position);
-        }
-    });
-    return win;
-};
-
-var _location = 'location';
 
 wrapMethod(window, 'open', openVerifiedWindow);
 wrapMethod(Window.prototype, 'open', openVerifiedWindow); // for IE

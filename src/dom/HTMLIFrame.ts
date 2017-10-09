@@ -22,7 +22,6 @@ const beingProcessed = new WeakMap();
 const getContentWindow = Object.getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow').get;
 
 const applyPopupBlockerOnGet:ApplyHandler = function(_get, _this) {
-    let ret;
     if (!processed.has(_this)) {
         // @ifdef DEBUG
         if (!beingProcessed.has(_this)) {
@@ -44,7 +43,6 @@ const applyPopupBlockerOnGet:ApplyHandler = function(_get, _this) {
                         '(' + popupBlocker.toString() + ')(window,"' + key + '");';
                     contentWindow.eval(code);
                     unexpose(key);
-                    ret = makeObjectProxy(_get.call(_this));
                 }
             } catch(e) {
                 log.print('Applying popupBlocker to an iframe failed, due to an error:', e);
@@ -59,7 +57,7 @@ const applyPopupBlockerOnGet:ApplyHandler = function(_get, _this) {
         }
         // @endif
     }
-    return ret || _get.call(_this);
+    return makeObjectProxy(_get.call(_this));
 };
 
 wrapAccessor(HTMLIFrameElement.prototype, 'contentWindow', applyPopupBlockerOnGet);

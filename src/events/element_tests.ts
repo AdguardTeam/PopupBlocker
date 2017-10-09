@@ -1,4 +1,4 @@
-import { isNode, isHTMLElement } from '../shared/instanceof';
+import { isNode, isHTMLElement, isWindow } from '../shared/instanceof';
 import { getTagName } from '../shared/dom';
 import * as log from '../shared/log';
 
@@ -10,10 +10,10 @@ export const hasDefaultHandler = (el:Element):boolean => {
     return false;
 };
 
-const toString = Object.prototype.toString;
+
 
 export const eventTargetIsRootNode = (el:EventTarget):boolean => {
-    if (toString.call(el) === '[object Window]') { return true; }
+    if (isWindow(el)) { return true; }
     if (isNode(el)) {
         const name = getTagName(el);
         if (name === '#DOCUMENT' || name === 'HTML' || name === 'BODY') {

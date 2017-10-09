@@ -37,3 +37,5 @@ interface Event {
     composedPath?():EventTarget[]
 }
 
+// Misc
+type func = (...args)=>any

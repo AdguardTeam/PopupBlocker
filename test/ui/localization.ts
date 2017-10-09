@@ -61,15 +61,9 @@ describe('Localization', function() {
         };
 
         SupportedLocales["en"] = <any>{
-            'phrase1': {
-                'message': 'a{{2}}b{{1}}c{{0}}'
-            },
-            'phrase2': {
-                'message': 'd{{1}}e{{0}}f'
-            },
-            'phrase3': {
-                'message': 'g${key1}{{2}}h{{0}}${key2}i{{1}}'
-            }
+            'phrase1': 'a{{2}}b{{1}}c{{0}}',
+            'phrase2': 'd{{1}}e{{0}}f',
+            'phrase3': 'g${key1}{{2}}h{{0}}${key2}i{{1}}'
         };
         
         it('transforms html as expected', function() {
@@ -124,6 +118,7 @@ describe('Localization', function() {
                     res.push(current['id']);
                 }
             }
+            console.log(res);
             expect(res).to.eql('translateTestRoot,a,2,b,1,c,0,0-0,d,0-2,e,0-1,f,gvalue1,5,h,3,value2i,4'.split(','));
         })
     })
