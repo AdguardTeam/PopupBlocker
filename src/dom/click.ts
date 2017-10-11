@@ -4,10 +4,9 @@ import examineTarget from '../events/examine_target';
 import { getTagName } from '../shared/dom';
 import * as log from '../shared/log';
 import bridge from '../bridge';
-import { createAlertInTopFrame } from '../messaging';
-import pdfObjObserver from '../observers/pdf_object_observer';
+import onBlocked from '../on_blocked';
 
-const clickVerified:ApplyHandler = function(_click, _this) {
+const clickVerified:ApplyHandler = function(_click, _this, _arguments, context) {
     if (getTagName(_this) === 'A') {
         log.print('click() was called on an anchor tag');
         // Checks if an url is in a whitelist
@@ -21,9 +20,7 @@ const clickVerified:ApplyHandler = function(_click, _this) {
         let currentEvent = retrieveEvent();
         if (!verifyEvent(currentEvent)) {
             log.print('It did not pass the test, not clicking element');
-            createAlertInTopFrame(bridge.domain, url[2], false);
-            pdfObjObserver.$start();
-            examineTarget(currentEvent, _this.href);
+            onBlocked(url[2], false, currentEvent);
             return;
         }
     }

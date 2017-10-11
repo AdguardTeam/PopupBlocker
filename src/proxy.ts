@@ -1,7 +1,11 @@
 import { timeline, position } from './timeline/index';
 import { TimelineEvent, TLEventType } from './timeline/event';
+import { isWindow, isLocation } from './shared/instanceof';
 import WeakMap from './weakmap';
 import bridge from './bridge';
+// @ifndef NO_PROXY
+import { mockedWindowCollection } from './mock_window';
+// @endif
 
 let supported = false;
 // @ifndef NO_PROXY
@@ -132,6 +136,17 @@ const reportGetToTL = (target, prop:PropertyKey, receiver) => {
     var value = Reflect.get(target, prop, _receiver);
     if (isNativeFn(value)) {
         return makeFunctionWrapper(value, invokeWithUnproxiedThis);
+    } else if (
+        // @ifndef NO_PROXY
+        (prop === 'location' && mockedWindowCollection.get(target)) ||
+        // @endif
+        (isLocation(value) || isWindow(value))
+    ) {
+        // We deep-proxy such objects.
+        // Such `value` objects won't be used as arguments of built-in functions, which may
+        // depend on internal slots of its arguments.
+        // For instance, `createNodeIterator` does not work if its first arguments is a proxied `Node` instance.
+        return makeObjectProxy(value);
     } else {
         return value;
     }
@@ -216,8 +231,8 @@ export function wrapMethod(obj, prop:string, applyHandler?:ApplyHandler, option?
     }
 }
 
-export function wrapAccessor(obj, prop:string, getterApplyHandler?:ApplyHandler, setterApplyHandler?:ApplyHandler, option?:boolean|ApplyOption) {
-    var desc = Object.getOwnPropertyDescriptor(obj, prop);
+export function wrapAccessor(obj, prop:string, getterApplyHandler?:ApplyHandler, setterApplyHandler?:ApplyHandler, option?:boolean|ApplyOption):void {
+    const desc = Object.getOwnPropertyDescriptor(obj, prop);
     if (desc && desc.get && desc.configurable) {
         var getter = makeLoggedFunctionWrapper(desc.get, TLEventType.GET, prop, getterApplyHandler, option);
         var setter;

@@ -57,6 +57,7 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
     } else if ('composedPath' in currentEvent) {
         path = currentEvent.composedPath!();
     }
+
     /**
      * This is a heuristic. I won't try to make it robust by following specs for now.
      * ToDo: make the logic more modular and clear.
@@ -73,6 +74,7 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
         log.print('A target has changed in an event listener');
         i = -1;
     }
+
     // Unrolling first iteration
     candidate = parent = target;
     while (parent) {
@@ -86,7 +88,9 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
             else { parent = <Element>path[j]; }
         } else { parent = parent.parentElement; }
     }
+
     if (check) {
+        // Parent has a default event handler.
         if (parent && getTagName(parent) === 'A') {
             // Can't set beforeunload handler here; it may prevent legal navigations.
             if ((<HTMLAnchorElement>parent).href === targetHref) {
@@ -103,14 +107,18 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
             return;
         }
     }
+
     if (location.href === targetHref) {
         log.print("Throwing, because the target url is the same as the current url");
         abort();
     }
+
     if (!parent || !maskContentTest(candidate)) {
         setBeforeunloadHandler();
         return;
-    }    
+    }
+
+
     if (!check) {
         iterate_candidates: while (i < l - 1) {
             if (candidate.parentElement === (candidate = candidates[++i])) { continue; }
@@ -129,6 +137,7 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
             } else { break; }
         }
     }
+
     // Performs mask neutralization and event delivery
     if (check) {
         log.print("Detected a mask");
