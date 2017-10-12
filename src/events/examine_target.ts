@@ -33,7 +33,8 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
     } else if (isTouchEvent(currentEvent)) {
         // This is just a stuff. It needs more research.
         target = currentEvent.target;
-        let touch = currentEvent.touches[0];
+        let touch = currentEvent.changedTouches[0];
+        if (!touch) { return; }
         x = touch.clientX;
         y = touch.clientY;
     }

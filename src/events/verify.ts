@@ -3,7 +3,7 @@ import WeakMap from '../weakmap';
 import CurrentMouseEvent from './current_mouse_event';
 import { eventTargetIsRootNode, maybeOverlay } from './element_tests';
 import { getSelectorFromCurrentjQueryEventHandler, isReactInstancePresent, jsActionTarget } from './framework_workarounds';
-import { isNode, isElement, isMouseEvent, isClickEvent } from '../shared/instanceof';
+import { isNode, isElement, isMouseEvent, isTouchEvent, isClickEvent } from '../shared/instanceof';
 import { matches, getTagName } from '../shared/dom';
 
 /**
@@ -81,7 +81,7 @@ export function retrieveEvent():Event {
  */
 export const verifyEvent = log.connect((event?:Event):boolean => {
     if (event) {
-        if (!isMouseEvent(event) || !isClickEvent(event)) { return true; }
+        if ((!isMouseEvent(event) || !isClickEvent(event)) && !isTouchEvent(event)) { return true; }
         let currentTarget = event.currentTarget;
         if (currentTarget) {
             log.print('Event is:', event);
