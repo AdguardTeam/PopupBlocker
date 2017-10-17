@@ -56,7 +56,10 @@ function attachClickListenerForEach (iterable:NodeList, listener:(this:Node,evt:
 // Until we come up with a proper UI, we reponse to user interaction with window.confirm.
 function showConfirmationDialog (messageId:string, context:stringmap):boolean {
     const message = formatText(getMessage(messageId), context);
-    return window.confirm(message);
+    let now = Date.now();
+    let response = window.confirm(message);
+    if (Date.now() - now < 100) { return true; }
+    return response;
 }
 
 class Alert implements AlertIntf {
