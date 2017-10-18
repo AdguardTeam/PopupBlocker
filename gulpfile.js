@@ -24,7 +24,8 @@ const options = global.options = Object.seal({
             'NAME_SUFFIX': this.channel.startsWith('Release') ? '' : this.channel,
             'EXCLUSIONS': this.channel.startsWith('Release') ? [
                 'https://www.linkedin.com/*',
-                'https://www.facebook.com/*'
+                'https://www.facebook.com/*',
+                'https://*.google.tld/*'
             ] : ''
         };
     },
