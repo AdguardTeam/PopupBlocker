@@ -21,7 +21,12 @@ const options = global.options = Object.seal({
         return {
             'DOWNLOAD_URL': url ? url + this.name : '',
             'UPDATE_URL': url ? url + this.metaName : '',
-            'NAME_SUFFIX': this.channel.startsWith('Release') ? '' : this.channel
+            'NAME_SUFFIX': this.channel.startsWith('Release') ? '' : this.channel,
+            'EXCLUSIONS': this.channel.startsWith('Release') ? [
+                'https://www.linkedin.com/*',
+                'https://www.facebook.com/*',
+                'https://*.google.tld/*'
+            ] : ''
         };
     },
     locales: ["en", "ru", "de", "tr", "uk", "pl", "pt_BR", "ko", "zh_CN", "sr-Latn", "fr", "sk", "hy", "es_419", "it", "id", "nl", "bg", "vi", "hr", "hu", "ca", "zh_TW"],
