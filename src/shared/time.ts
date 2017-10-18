@@ -1,7 +1,5 @@
 const getTime = 'now' in performance ? () => {
     return performance.timing.navigationStart + performance.now()
-} : () => {
-    return (new Date()).getTime()
-};
+} : Date.now;
 
 export default getTime;
