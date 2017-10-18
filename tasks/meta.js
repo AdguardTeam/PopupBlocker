@@ -14,8 +14,12 @@ const replaceMeta = (config) => {
     return (text) => {
         return text.replace(reScriptName, (match) => (match + ' ' + config['NAME_SUFFIX']))
             .replace(reMetadata, (_, c1, c2) => {
-            	let rep = config[c2];
-            	if (rep) {
+                let rep = config[c2];
+                if (Array.isArray(rep)) {
+                    return rep.map((val) => {
+                        return c1 + val + '\n';
+                    }).join('');
+                } else if (rep) {
             		return c1 + config[c2] + '\n';
             	} else {
             		return '';

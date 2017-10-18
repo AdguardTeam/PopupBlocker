@@ -36,6 +36,7 @@
 // @homepageURL https://github.com/AdguardTeam/PopupBlocker
 // @match http://*/*
 // @match https://*/*
+// @exclude [EXCLUSIONS]
 // @grant GM_getValue
 // @grant GM_setValue
 // @grant unsafeWindow
