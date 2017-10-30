@@ -31,7 +31,7 @@ const createUrl = (href:any):[string, string, string] => {
  * false --> 'about:blank', except for Edge, in which it is converted to 'false'.
  * These behaviors are different from how anchor tag's href attributes behaves with non-string values.
  */
-const convertToString = (href:any):string => {
+export const convertToString = (href:any):string => {
     if (typeof href !== 'string') {
         if (href instanceof Object) {
             href = String(href);
