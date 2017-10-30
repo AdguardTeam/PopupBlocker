@@ -14,6 +14,14 @@ export const getTagName = (el:Node):string => {
     return el.nodeName.toUpperCase();
 };
 
+/**
+ * Detects about:blank, about:srcdoc urls.
+ */
+const reEmptyUrl = /^about\:/;
+export const isEmptyUrl = (url:string):boolean => {
+    return reEmptyUrl.test(url);
+};
+
 const frameElementDesc = Object.getOwnPropertyDescriptor(window, 'frameElement') || Object.getOwnPropertyDescriptor(Window.prototype, 'frameElement');
 const getFrameElement = frameElementDesc.get;
 
@@ -32,7 +40,7 @@ const getSafeParent = (window:Window):Window => {
 
 export const getSafeNonEmptyParent = (window:Window):Window => {
     let frame = window;
-    while (frame && frame.location.href == 'about:blank') { frame = getSafeParent(frame); }
+    while (frame && isEmptyUrl(frame.location.href)) { frame = getSafeParent(frame); }
     if (!frame) { return null; }
     return frame;
 };

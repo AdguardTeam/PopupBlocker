@@ -1,14 +1,16 @@
 import { condition } from '../index';
 import { TimelineEvent, TLEventType } from '../event';
 import getTime from '../../shared/time';
+import { isEmptyUrl } from '../../shared/dom';
 import * as log from '../../shared/log';
+import { convertToString } from '../../shared/url';
 
 const aboutBlank:condition = (index, events) => {
     // if there is a blocked popup within 100 ms, do not allow opening popup with url about:blank.
     // It is a common technique used by popunder scripts on FF to regain focus of the current window.
     let latestOpenEvent = events[index][events[index].length - 1];
     let now = latestOpenEvent.$timeStamp;
-    if (latestOpenEvent.$type === TLEventType.APPLY && latestOpenEvent.$name === 'open' && latestOpenEvent.$data.arguments[0] == 'about:blank') {
+    if (latestOpenEvent.$type === TLEventType.APPLY && latestOpenEvent.$name === 'open' && isEmptyUrl(convertToString(latestOpenEvent.$data.arguments[0]))) {
         log.print('The latest event is open(\'about:blank\')');
         let l = events.length;
         while (l-- > 0) {

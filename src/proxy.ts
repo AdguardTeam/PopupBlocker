@@ -146,6 +146,15 @@ const reportGetToTL = (target, prop:PropertyKey, receiver) => {
         // Such `value` objects won't be used as arguments of built-in functions, which may
         // depend on internal slots of its arguments.
         // For instance, `createNodeIterator` does not work if its first arguments is a proxied `Node` instance.
+
+        // Fix https://github.com/AdguardTeam/PopupBlocker/issues/52
+        // We should not deep-proxy when it is impossible to return proxy
+        // due to invariants imposed to `Proxy`.
+        // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/get
+        let desc = Reflect.getOwnPropertyDescriptor(target, prop);
+        if (desc && desc.writable === false && desc.configurable === false) {
+            return value;
+        }
         return makeObjectProxy(value);
     } else {
         return value;

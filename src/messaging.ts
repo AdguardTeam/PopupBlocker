@@ -12,14 +12,14 @@
  */
 
 import * as log from './shared/log';
-import { getTagName, getSafeNonEmptyParent } from './shared/dom';
+import { getTagName, isEmptyUrl, getSafeNonEmptyParent } from './shared/dom';
 import bridge from './bridge';
 import { _preventDefault } from './dom/preventDefault/orig';
 
 const supported = typeof WeakMap === 'function';
 const parent = window.parent;
 const isTop = parent === window;
-const isEmpty = location.href === 'about:blank';
+const isEmpty = isEmptyUrl(location.href);
 
 const enum MessageType {
     SHOW_ALERT,

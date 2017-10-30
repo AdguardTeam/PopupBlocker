@@ -12,6 +12,7 @@
 
 import { expose, unexpose, ApplyHandler, makeObjectProxy, wrapAccessor } from '../proxy';
 import * as log from '../shared/log';
+import { isEmptyUrl } from '../shared/dom';
 import WeakMap from '../weakmap';
 
 const processed = new WeakMap();
@@ -33,7 +34,7 @@ const applyPopupBlockerOnGet:ApplyHandler = function(_get, _this) {
             let key = Math.random().toString(36).substr(7);
             let contentWindow = getContentWindow.call(_this);
             try {
-                if (contentWindow.location.href === 'about:blank') {
+                if (isEmptyUrl(contentWindow.location.href)) {
                     log.print('An empty iframe called the contentWindow/Document getter for the first time, applying popupBlocker..', _this);
                     expose(key);
                     let code =
