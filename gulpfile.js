@@ -25,7 +25,8 @@ const options = global.options = Object.seal({
             'EXCLUSIONS': this.channel.startsWith('Release') ? [
                 'https://www.linkedin.com/*',
                 'https://www.facebook.com/*',
-                'https://*.google.tld/*'
+                'https://*.google.tld/*',
+                '*://disqus.com/embed/*'
             ] : ''
         };
     },
