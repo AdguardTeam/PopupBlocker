@@ -35,10 +35,15 @@ export function getSelectorFromCurrentjQueryEventHandler(event:Event):string|und
     for (let i = 0, l = registeredHandlers.length; i < l; i++) {
         if (handlerObj = registeredHandlers[i]) {
             let handler = handlerObj.handler;
-            let args = handler.arguments; // Using Function.arguments, so it may not work on handlers that are nested in call stack
-            if (args !== null && args[0] && args[0].originalEvent === event) {
-                return handlerObj[selector];
-            }
+            try {
+                // Using Function.arguments, so it may not work on handlers that are nested in call stack
+                let args = handler.arguments;
+                if (args !== null && args[0] && args[0].originalEvent === event) {
+                    return handlerObj[selector];
+                }
+            } catch(e) {
+                continue;
+            }            
         }
     }
 }
