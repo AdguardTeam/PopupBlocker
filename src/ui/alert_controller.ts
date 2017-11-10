@@ -104,7 +104,7 @@ class Alert implements AlertIntf {
                 }
             });
             requestAnimationFrame(() => {
-                iframe.style['opacity'] = '1';
+                iframe.style.opacity = '1';
             });
             // Without this, the background of the iframe will be white in IE11
             document.body.setAttribute('style', 'background-color:transparent;');
@@ -114,8 +114,8 @@ class Alert implements AlertIntf {
         for (let prop in initialAlertFrameStyle) { iframe.style[prop] = initialAlertFrameStyle[prop]; }
         let height = this.$height = showCollapsed ? STYLE_CONST.collapsed_height : STYLE_CONST.height;
         let width = showCollapsed ? STYLE_CONST.collapsed_width : STYLE_CONST.width;
-        iframe.style['height'] = height + px;
-        iframe.style['width'] = width + px;
+        iframe.style.height = height + px;
+        iframe.style.width = width + px;
         // Commenting out the below due to https://bugs.chromium.org/p/chromium/issues/detail?id=489431,
         // iframe.setAttribute('sandbox', 'allow-same-origin');
 
@@ -131,8 +131,8 @@ class Alert implements AlertIntf {
     }
     toggleCollapse() {
         const collapsed = this.$collapsed = !this.$collapsed;
-        this.$element.style['height'] = (this.$height = (collapsed ? STYLE_CONST.collapsed_height : STYLE_CONST.height)) + px;
-        this.$element.style['width'] = (collapsed ? STYLE_CONST.collapsed_width : STYLE_CONST.width) + px;
+        this.$element.style.height = (this.$height = (collapsed ? STYLE_CONST.collapsed_height : STYLE_CONST.height)) + px;
+        this.$element.style.width = (collapsed ? STYLE_CONST.collapsed_width : STYLE_CONST.width) + px;
         let root = this.$element.contentDocument.getElementsByClassName('popup')[0];
         root.classList.toggle('popup--min');
         // Since its state was changed, update its lastUpdate property.
