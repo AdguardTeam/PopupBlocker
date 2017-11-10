@@ -6,21 +6,21 @@ const rollup_options = {
     entry: 'src/index.ts',
     plugins: [typescript2()],
     format: 'es',
-    useStrict: false
+    strict: false
 };
 
 const rollup_options_wrapper = {
     entry: 'src/wrapper.ts',
     plugins: [typescript2()],
     format: 'iife',
-    useStrict: false
+    strict: false
 };
 
 const rollup_options_test = {
     entry: 'test/index.ts',
     plugins: [typescript()],
     format: 'iife',
-    useStrict: false
+    strict: false
 };
 
 module.exports = {
