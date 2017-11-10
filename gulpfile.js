@@ -24,10 +24,17 @@ const options = global.options = Object.seal({
             'NAME_SUFFIX': this.channel.startsWith('Release') ? '' : this.channel,
             'EXCLUSIONS': this.channel.startsWith('Release') ? [
                 'https://www.linkedin.com/*',
-                'https://www.facebook.com/*',
+                'https://*.facebook.com/*',
                 'https://*.google.tld/*',
+                'https://*.youtube.com/*',
                 '*://disqus.com/embed/*',
-                'https://vk.com/*'
+                'https://vk.com/*',
+                'https://*.vk.com/*',
+                'https://vimeo.com/*',
+                'https://*.vimeo.com/*',
+                '*://*.coub.com/*',
+                '*://coub.com/*',
+                '*://*.googlesyndication.com/*'
             ] : ''
         };
     },
