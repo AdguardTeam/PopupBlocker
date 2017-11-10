@@ -74,8 +74,9 @@ declare const $:JQueryStatic;
  * which use react and popups at the same time, or it is challenged by popup scripts.
  */
 const reactRootSelector = '[data-reactroot]';
+const reactIdSelector = '[data-reactid]';
 export function isReactInstancePresent():boolean {
-    return !!document.querySelector(reactRootSelector);
+    return !!document.querySelector(reactRootSelector) || !!document.querySelector(reactIdSelector);
 }
 
 /**

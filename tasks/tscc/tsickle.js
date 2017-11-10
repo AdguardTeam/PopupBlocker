@@ -1,9 +1,6 @@
-const exec = require('child_process').exec;
+const tsickleMain = require('./third-party/tsickle/main').main;
 
 module.exports = (done) => {
-    exec(`tsickle --externs=${options.tscc_path}/generated-externs.js -- -p tasks/tscc`, (err, stdout, stderr) => {
-        console.log(stdout);
-        console.error(stderr);
-        done(err);
-    });
+    console.log(tsickleMain(`--externs=${options.tscc_path}/generated-externs.js --typed -- -p tasks/tscc`.split(' ')));
+    done();
 };
