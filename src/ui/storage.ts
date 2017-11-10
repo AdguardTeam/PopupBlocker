@@ -31,6 +31,6 @@ export function requestDestinationWhitelist(dest) {
 
 export function requestDomainWhitelist(domain) {
     let domainOption = bridge.domainOption;
-    domainOption['whitelisted'] = true;
+    domainOption.whitelisted = true;
     GM_setValue(domain, JSON.stringify(domainOption));
 }

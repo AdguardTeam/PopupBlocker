@@ -26,7 +26,8 @@ const options = global.options = Object.seal({
                 'https://www.linkedin.com/*',
                 'https://www.facebook.com/*',
                 'https://*.google.tld/*',
-                '*://disqus.com/embed/*'
+                '*://disqus.com/embed/*',
+                'https://vk.com/*'
             ] : ''
         };
     },

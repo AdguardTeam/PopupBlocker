@@ -20,7 +20,7 @@ interface MO {
     prototype:MutationObserver
 }
 
-interface WindowWithMO extends Window {
+declare interface WindowWithMO extends Window {
     MutationObserver?:MO,
     WebKitMutationObserver?:MO
 }
