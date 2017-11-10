@@ -20,7 +20,7 @@ const removeCcExport = textHelper.removeCcExport;
  * We fix it by applying regexes to replace `goog.forwardDeclare(C_.absolute.path.to.module.PopupBlocker.build.tsickle.index)`
  * into `goog.forwardDeclare('build.tsc.index').
  */
-const reWorkaroundTsickleBug = new RegExp('(goog.[A-Za-z]*\\(").*?\\.build\\.' + options.tscc_prep_dir + '\\.', 'g');
+const reWorkaroundTsickleBug = new RegExp('(goog.[A-Za-z]*\\(")(?:.*?\\.)?build\\.' + options.tscc_prep_dir + '\\.', 'g');
 const tsickleWorkaround = (content) => (content.replace(reWorkaroundTsickleBug, (_, c1, c2) => (c1 + `${options.outputPath}.${options.tscc_dir}.`)));
 
 module.exports = (done) => {
