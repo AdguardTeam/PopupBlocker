@@ -6,7 +6,6 @@
     "dev": "gulp dev && gulp watch"
   },
   "repository": "https://github.com/AdguardTeam/PopupBlocker",
-  "author": "seanl-adg",
   "license": "LGPL-3.0",
   "devDependencies": {
     "@alexlur/rollup-plugin-typescript": "^1.0.4",
