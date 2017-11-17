@@ -17,7 +17,8 @@ export const getTagName = (el:Node):string => {
 /**
  * Detects about:blank, about:srcdoc urls.
  */
-const reEmptyUrl = /^about\:/;
+export const ABOUT_PROTOCOL = 'about:';
+const reEmptyUrl = new RegExp('^' + ABOUT_PROTOCOL);
 export const isEmptyUrl = (url:string):boolean => {
     return reEmptyUrl.test(url);
 };
