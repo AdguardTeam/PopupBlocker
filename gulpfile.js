@@ -140,6 +140,20 @@ gulp.task('release', (done) => {
     runSequence('clean', 'prep-tscc', 'tsickle', 'meta', 'tscc', 'tscc-clean', done);
 });
 
+
+
+gulp.task('dev-minified', (done) => {
+    options.channel = "Dev";
+    options.cc_options = cc_opt.ts;
+    options.preprocessContext = {
+        NO_PROXY: true,
+        DEBUG: true,
+        RECORD: true
+    };
+    runSequence('clean', 'prep-tscc', 'tsickle', 'meta', 'tscc', 'tscc-clean', done);
+})
+
+
 gulp.task('release-no-minification', (done) => {
     options.channel = "Release-No-Min";
     options.rollup_options = rollup_opt.dev;
