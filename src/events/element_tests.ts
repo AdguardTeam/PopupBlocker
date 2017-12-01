@@ -10,12 +10,14 @@ export const hasDefaultHandler = (el:Element):boolean => {
     return false;
 };
 
-
-
 export const eventTargetIsRootNode = (el:EventTarget):boolean => {
     if (isWindow(el)) { return true; }
     if (isNode(el)) {
         const name = getTagName(el);
+        // Technically, document.body can be a frameset node,
+        // but ui events originating from its child frames won't propagate
+        // past the frame border, so such cases are irrelevant.
+        // https://www.w3.org/TR/html401/present/frames.html
         if (name === '#DOCUMENT' || name === 'HTML' || name === 'BODY') {
             return true;
         }
