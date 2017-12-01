@@ -34,7 +34,8 @@ const options = global.options = Object.seal({
                 'https://*.vimeo.com/*',
                 '*://*.coub.com/*',
                 '*://coub.com/*',
-                '*://*.googlesyndication.com/*'
+                '*://*.googlesyndication.com/*',
+                '*://*.naver.com/*'
             ] : ''
         };
     },

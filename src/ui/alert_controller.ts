@@ -172,7 +172,7 @@ class AlertController {
         alert.$element.addEventListener('mouseover', () => { this.onMouseOver(); });
         alert.$element.addEventListener('mouseout', () => { this.onMouseOut(); });
         // Appends an alert to DOM
-        document.body.appendChild(alert.$element);
+        document.documentElement.appendChild(alert.$element);
         // Schedules collapsing & destroying
         if (showCollapsed) {
             alert.timerId = setTimeout(() => {
