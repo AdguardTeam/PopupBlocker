@@ -1,7 +1,7 @@
-import * as log from '../shared/log';``
-import bridge from '../bridge';
+import adguard from '../adguard';
+import * as log from '../shared/log';
 
-const MSG = bridge.getMessage('on_navigation_by_popunder');
+const MSG = adguard.storageProvider.getMessage('on_navigation_by_popunder');
 
 const onbeforeunloadHandler = (evt:BeforeUnloadEvent) => {
     evt.returnValue = MSG;

@@ -1,5 +1,3 @@
-import { _dispatchEvent } from '../dom/dispatchEvent/orig';
-import { _preventDefault } from '../dom/preventDefault/orig';
 import { setBeforeunloadHandler } from '../dom/unload';
 import { hasDefaultHandler, maskStyleTest, maskContentTest, maybeOverlay } from './element_tests';
 import { isMouseEvent, isTouchEvent, isElement, isHTMLElement } from '../shared/instanceof';
@@ -7,7 +5,6 @@ import { getTagName } from '../shared/dom';
 import { dispatchMouseEvent, initMouseEventArgs } from '../messaging';
 import abort from '../shared/abort';
 import * as log from '../shared/log';
-import bridge from '../bridge';
 
 /**
  * Some popup scripts adds transparent overlays on each of page's links

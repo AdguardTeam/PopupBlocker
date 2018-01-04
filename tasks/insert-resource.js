@@ -1,10 +1,7 @@
 const minifyHtml = require('html-minifier').minify;
 const fs = require('fs');
 
-const RESOURCE_PATH_MAP = {
-    "ALERT_TEMPLATE": 'src/ui/template.html',
-    "TRANSLATIONS": 'src/locales/translations.json'
-};
+const RESOURCE_PATH_MAP = require('./resource_map.js');
 const RESOURCE_MAP = Object.create(null);
 const reResourceMarker = /(['"])RESOURCE:([A-Za-z_\-]*?)\1/gm;
 

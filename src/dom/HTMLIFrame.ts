@@ -15,6 +15,11 @@ import * as log from '../shared/log';
 import { isEmptyUrl } from '../shared/dom';
 import WeakMap from '../weakmap';
 
+let callback:func;
+export function setCallback(cb:func) {
+    callback = cb;
+}
+
 const processed = new WeakMap();
 // @ifdef DEBUG
 const beingProcessed = new WeakMap();
@@ -36,14 +41,7 @@ const applyPopupBlockerOnGet:ApplyHandler = function(_get, _this) {
             try {
                 if (isEmptyUrl(contentWindow.location.href)) {
                     log.print('An empty iframe called the contentWindow/Document getter for the first time, applying popupBlocker..', _this);
-                    expose(key);
-                    let code =
-                        // @ifdef RECORD
-                        'window.__t = '  +
-                        // @endif
-                        '(' + popupBlocker.toString() + ')(window,"' + key + '");';
-                    contentWindow.eval(code);
-                    unexpose(key);
+                    callback(contentWindow);
                 }
             } catch(e) {
                 log.print('Applying popupBlocker to an iframe failed, due to an error:', e);
@@ -61,10 +59,11 @@ const applyPopupBlockerOnGet:ApplyHandler = function(_get, _this) {
     return makeObjectProxy(_get.call(_this));
 };
 
-wrapAccessor(HTMLIFrameElement.prototype, 'contentWindow', applyPopupBlockerOnGet);
-wrapAccessor(HTMLIFrameElement.prototype, 'contentDocument', applyPopupBlockerOnGet);
+const iframePType = window.HTMLIFrameElement.prototype;
+wrapAccessor(iframePType, 'contentWindow', applyPopupBlockerOnGet);
+wrapAccessor(iframePType, 'contentDocument', applyPopupBlockerOnGet);
 
 // @ifdef DEBUG
-wrapAccessor(HTMLIFrameElement.prototype, 'src'); // logging only
-wrapAccessor(HTMLIFrameElement.prototype, 'srcdoc');
+wrapAccessor(iframePType, 'src'); // logging only
+wrapAccessor(iframePType, 'srcdoc');
 // @endif

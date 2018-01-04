@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "AdGuard Popup Blocker",
+  "version": "0.0.0",
+  "content_scripts":[
+      {
+          "matches": [
+              "http://*/*",
+              "https://*/*"
+          ],
+          "match_about_blank": false,
+          "js": [
+              "content_script.js"
+          ]
+      }
+  ],
+  "permissions": [
+    "<all_urls>"
+  ]
+}

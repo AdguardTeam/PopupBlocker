@@ -42,7 +42,7 @@ export const getMessage = (messageId:string):string => {
 // Marks start of placeholders, ${...} or <.../>.
 const rePhStart = /(?:\${|{{)/;
 // Below is exposed for testing. It shouldn't be used for other purposes.
-export function parseMessage(message:string, context:stringmap):(string|number)[] {
+export function parseMessage(message:string, context:StringMap):(string|number)[] {
     const res:(string|number)[] = [];
     let text:string = '';
     let match:RegExpMatchArray;
@@ -97,7 +97,7 @@ function toHtmlSafeString(str:string):string {
  * so that they can used as a value of `innerHTML` without allowing remote code execution
  * or breaking html structure.
  */
-export function formatText(message:string, context:stringmap, htmlSafe?:boolean):string {
+export function formatText(message:string, context:StringMap, htmlSafe?:boolean):string {
     for (let contextId in context) {
         let toBeReplacedWith = context[contextId];
         if (htmlSafe) {
@@ -110,7 +110,7 @@ export function formatText(message:string, context:stringmap, htmlSafe?:boolean)
 
 const reCommentPh = /^i18n:/;
 const option = 128 /* NodeFilter.SHOW_COMMENT */
-export default function translate(root:Element, context:stringmap) {
+export default function translate(root:Element, context:StringMap) {
     const nodeIterator = document.createNodeIterator(root, option, null, false);
     let current:Node;
     let val:string;

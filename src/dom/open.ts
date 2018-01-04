@@ -1,21 +1,24 @@
+import adguard from '../adguard';
 import { ApplyHandler, makeObjectProxy, wrapMethod } from '../proxy';
 import { verifyEvent, retrieveEvent } from '../events/verify';
 import examineTarget from '../events/examine_target';
 import { isGtmSimulatedAnchorClick } from '../events/framework_workarounds';
-import { _dispatchEvent } from './dispatchEvent/orig';
 import { timeline, position } from '../timeline/index';
 import { TLEventType, TimelineEvent } from '../timeline/event';
 import * as log from '../shared/log';
-import bridge from '../bridge';
+import createUrl from '../shared/url';
 import mockWindow from '../mock_window';
 import onBlocked from '../on_blocked';
 
 const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, context) {
+    if (adguard.storageProvider.originIsWhitelisted()) {
+        return _open.apply(_this, _arguments);
+    }
     let targetHref = _arguments[0];
     log.call('Called window.open with url ' + targetHref);
-    const url = bridge.url(targetHref);
+    const url = createUrl(targetHref);
     const destDomain = url[1];
-    if (bridge.whitelistedDestinations.indexOf(destDomain) !== -1) {
+    if (adguard.storageProvider.destinationIsWhitelisted(destDomain)) {
         log.print(`The domain ${destDomain} is in whitelist.`);
         return _open.apply(_this, _arguments);
     }
@@ -52,4 +55,4 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
 };
 
 wrapMethod(window, 'open', openVerifiedWindow);
-wrapMethod(Window.prototype, 'open', openVerifiedWindow); // for IE
+wrapMethod(window.Window.prototype, 'open', openVerifiedWindow); // for IE
