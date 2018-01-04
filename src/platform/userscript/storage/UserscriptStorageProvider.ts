@@ -16,7 +16,9 @@ export default class UserscriptStorageProvider implements IStorageProvider {
         return this.userscriptSettings.whitelistedDestinations.indexOf(dest) !== -1;
     }
     showAlert(orig_domain:string, popup_url:string):void {
-        this.alertController.createAlert(orig_domain, popup_url);
+        setTimeout(() => {
+            this.alertController.createAlert(orig_domain, popup_url);
+        });
     }
     expose():string {
         const BRIDGE_KEY = '__PB' + (Math.random() * 1e9 >>> 0) + '__';

@@ -109,8 +109,10 @@ export const createAlertInTopFrame = supported && !isTop && !isEmpty ? (orig_dom
     // In such cases, `postMessage` may not work due to `evt.source` being `undefined`,
     // so we use bridge directly which is readily available anyway.
     // A `setTimeout` is used to prevent event handler from blocking UI.
-    const targetFrame = getSafeNonEmptyParent(window);
-    targetFrame.setTimeout(adguard.storageProvider.showAlert, 0, orig_domain, popup_domain);
+    //
+    // const targetFrame = getSafeNonEmptyParent(window);
+    // targetFrame.setTimeout(adguard.storageProvider.showAlert, 0, orig_domain, popup_domain);
+    adguard.storageProvider.showAlert(orig_domain, popup_domain);
 } : /* noop */(orig_domain:string, popup_domain:string, isGeneric:boolean):void => {
     // If a current window is not top and the browser does not support WeakMap, do nothing.
 };
