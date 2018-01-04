@@ -255,14 +255,12 @@ export function wrapAccessor(obj, prop:string, getterApplyHandler?:ApplyHandler,
     }
 }
 
-export function $apply(window:Window) {
-    if (supported) {
-        wrapMethod(window.Function.prototype, 'bind', applyWithUnproxiedThis, false);
-        wrapMethod(window.Function.prototype, 'apply', applyWithUnproxiedThis, false);
-        wrapMethod(window.Function.prototype, 'call', applyWithUnproxiedThis, false);
-        wrapMethod(window.Reflect, 'apply', reflectWithUnproxiedThis, false);
-        wrapAccessor(window.MessageEvent.prototype, 'source', proxifyReturn, undefined, false);
-    }
-    wrapMethod(window.Function.prototype, 'toString', invokeWithUnproxiedThis, false);
-    wrapMethod(window.Function.prototype, 'toSource', invokeWithUnproxiedThis, false);
+if (supported) {
+    wrapMethod(Function.prototype, 'bind', applyWithUnproxiedThis, false);
+    wrapMethod(Function.prototype, 'apply', applyWithUnproxiedThis, false);
+    wrapMethod(Function.prototype, 'call', applyWithUnproxiedThis, false);
+    wrapMethod(Reflect, 'apply', reflectWithUnproxiedThis, false);
+    wrapAccessor(MessageEvent.prototype, 'source', proxifyReturn, undefined, false);
 }
+wrapMethod(Function.prototype, 'toString', invokeWithUnproxiedThis, false);
+wrapMethod(Function.prototype, 'toSource', invokeWithUnproxiedThis, false);
