@@ -9,12 +9,15 @@
   "license": "LGPL-3.0",
   "devDependencies": {
     "@alexlur/rollup-plugin-typescript": "^1.0.4",
+    "@types/gulp": "^4.0.5",
+    "async-file": "^2.0.2",
     "chai": "^4.1.2",
     "google-closure-compiler": "^20171023.0.1",
     "gulp": "^3.9.1",
     "gulp-better-rollup": "^2.0.0",
     "gulp-clean": "^0.3.2",
     "gulp-concat": "^2.6.1",
+    "gulp-filter": "^5.1.0",
     "gulp-insert": "^0.5.0",
     "gulp-preprocess": "^2.0.0",
     "gulp-rename": "^1.2.2",
@@ -26,6 +29,7 @@
     "onesky-utils": "^1.2.0",
     "rollup-plugin-typescript2": "^0.8.0",
     "run-sequence": "^2.2.0",
+    "stream-to-promise": "^2.2.0",
     "tsickle": "^0.25.0",
     "typescript": "2.5.3"
   },

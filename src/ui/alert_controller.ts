@@ -4,7 +4,7 @@ import createUrl from '../shared/url';
 import * as log from '../shared/log';
 import IStorageProvider from '../storage/IStorageProvider';
 
-declare const RESOURCE_VAR_ALERT_TEMPLATE:string;
+declare const RESOURCE_ALERT_TEMPLATE:string;
 
 const enum STYLE_CONST {
     top_offset = 10,
@@ -76,7 +76,7 @@ class Alert implements AlertIntf {
         localizationContext['href'] = popup_url;
         localizationContext['parent'] = orig_domain
 
-        let _innerHTML = i18nService.formatText(RESOURCE_VAR_ALERT_TEMPLATE, localizationContext, true);
+        let _innerHTML = i18nService.formatText(RESOURCE_ALERT_TEMPLATE, localizationContext, true);
         iframe.addEventListener('load', (evt) => {
             // Attach event handlers
             if (loaded) { return; }

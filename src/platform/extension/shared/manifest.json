@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2,
+  "name": "__MSG_extension_name__",
+  "description": "__MSG_extension_description__",
+  "author": "Performix LLC",
+  "icons": {
+      "16": "icons/16.png",
+      "128": "icons/128.png"
+  },
+  "default_locale": "en",
+  "version": "0.0.0",
+  "content_scripts":[
+      {
+          "all_frames": true,
+          "matches": [
+              "http://*/*",
+              "https://*/*"
+          ],
+          "match_about_blank": true,
+          "js": [
+              "content_script.js"
+          ],
+          "run_at": "document_start"
+      }
+  ],
+  "permissions": [
+    "<all_urls>"
+  ]
+}

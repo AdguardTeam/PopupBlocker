@@ -21,7 +21,7 @@ function runScript(code) {
     parent.removeChild(el);
 }
 
-const PAGE_SCRIPT = RESOURCE_ARGS("EXT_SHARED_PAGE_SCRIPT",
+const PAGE_SCRIPT = RESOURCE_ARGS("PAGE_SCRIPT",
     "VAR_ABORT",        i18nService.getMessage('aborted_popunder_execution'),
     "VAR_BEFOREUNLOAD", i18nService.getMessage('on_navigation_by_popunder')
 );

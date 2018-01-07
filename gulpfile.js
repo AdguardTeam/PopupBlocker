@@ -66,7 +66,7 @@ const rollup_opt = require('./tasks/options/rollup');
 gulp.task('meta', require('./tasks/meta'));
 gulp.task('rollup', require('./tasks/rollup'));
 
-gulp.task('dev', (done) => {
+gulp.task('dev-userscript', (done) => {
     options.channel = "Dev";
     options.rollup_options = rollup_opt.dev;
     options.preprocessContext = {
@@ -77,7 +77,7 @@ gulp.task('dev', (done) => {
     runSequence('meta', 'rollup', done);
 });
 
-gulp.task('dev-ghpages', (done) => {
+gulp.task('dev-userscript-ghpages', (done) => {
     options.channel = "Dev";
     options.rollup_options = rollup_opt.dev;
     options.preprocessContext = {
@@ -167,3 +167,13 @@ gulp.task('release-no-minification', (done) => {
 
 gulp.task('i18n-up', require('./tasks/i18n/upload'));
 gulp.task('i18n-down', require('./tasks/i18n/download'));
+
+
+gulp.task('')
+
+gulp.task('dev-userscript', () => {
+    let options = {
+        
+    }
+})
+

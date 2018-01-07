@@ -10,7 +10,7 @@ import UserscriptStorageProvider from './storage/UserscriptStorageProvider';
 /**************************************************************************/
 // Custom getMessage implementation
 
-const SupportedLocales = RESOURCE_TRANSLATIONS;
+const SupportedLocales = RESOURCE_USERSCRIPT_TRANSLATIONS;
 
 const defaultLocale = 'en';
 let currentLocale = null;
@@ -58,7 +58,7 @@ const BRIDGE_KEY = storageProvider.expose();
 /**************************************************************************/
 
 function popupBlocker(window, KEY, _BRIDGE_KEY) {
-    RESOURCE_USERSCRIPT_PAGE_SCRIPT;
+    RESOURCE_PAGE_SCRIPT;
 }
 
 /**************************************************************************/
@@ -81,8 +81,8 @@ if (settings.isFirefox) {
 
 /**************************************************************************/
 
-declare var RESOURCE_TRANSLATIONS:stringmap<stringmap<string>>;
-declare var RESOURCE_USERSCRIPT_PAGE_SCRIPT;
+declare var RESOURCE_USERSCRIPT_TRANSLATIONS:stringmap<stringmap<string>>;
+declare var RESOURCE_PAGE_SCRIPT;
 
 /**************************************************************************/
 /**************************************************************************/
