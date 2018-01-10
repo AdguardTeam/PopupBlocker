@@ -16,9 +16,9 @@ var minimist = require("minimist");
 var mkdirp = require("mkdirp");
 var path = require("path");
 var ts = require("typescript");
-var cliSupport = require("../../../../node_modules/tsickle/built/src/cli_support");
-var tsickle = require("../../../../node_modules/tsickle/built/src/tsickle");
-var tsickle_1 = require("../../../../node_modules/tsickle/built/src/tsickle");
+var cliSupport = require("../../../../node_modules/tsickle/src/cli_support");
+var tsickle = require("../../../../node_modules/tsickle/src/tsickle");
+var tsickle_1 = require("../../../../node_modules/tsickle/src/tsickle");
 function usage() {
     console.error("usage: tsickle [tsickle options] -- [tsc options]\n\nexample:\n  tsickle --externs=foo/externs.js -- -p src --noImplicitAny\n\ntsickle flags are:\n  --externs=PATH     save generated Closure externs.js to PATH\n  --typed            [experimental] attempt to provide Closure types instead of {?}\n");
 }

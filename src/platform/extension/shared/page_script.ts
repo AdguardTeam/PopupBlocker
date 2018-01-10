@@ -7,14 +7,14 @@ if (typeof PARENT_FRAME_KEY === 'undefined') {
     adguard.storageProvider = window[PARENT_FRAME_KEY];
 }
 
-import './messaging';
-import './dom/open';
-import './dom/click';
-import './dom/dispatchEvent/index';
-import './dom/HTMLIFrame';
-import './dom/HTMLObject';
-import './dom/removeChild';
-import './dom/unload';
-import './dom/write';
-import './dom/preventDefault/index';
-import './observers/overlay_link_observer';
+import '../../../messaging';
+import '../../../dom/open';
+import '../../../dom/click';
+import '../../../dom/dispatchEvent';
+import '../../../dom/HTMLIFrame';
+import '../../../dom/HTMLObject';
+import '../../../dom/removeChild';
+import '../../../dom/unload';
+import '../../../dom/write';
+import '../../../dom/preventDefault';
+import '../../../observers/overlay_link_observer';

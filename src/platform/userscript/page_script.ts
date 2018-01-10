@@ -10,13 +10,13 @@ if (typeof CONTENT_SCRIPT_KEY !== 'undefined') {
 import '../../messaging';
 import '../../dom/open';
 import '../../dom/click';
-import '../../dom/dispatchEvent/index';
+import '../../dom/dispatchEvent';
 import '../../dom/HTMLIFrame';
 import '../../dom/HTMLObject';
 import '../../dom/removeChild';
 import '../../dom/unload';
 import '../../dom/write';
-import '../../dom/preventDefault/index';
+import '../../dom/preventDefault';
 import '../../observers/overlay_link_observer';
 import { timeline } from '../../timeline/index';
 

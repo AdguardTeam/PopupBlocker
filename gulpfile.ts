@@ -1,29 +1,59 @@
-import path from 'path';
+import path = require('path');
 import * as fs from 'async-file';
-import { promisify } from 'util';
+import * as fsExtra from 'fs-extra';
+import through = require('through2');
+import toPromise from './tasks/to_promise';
 
-import gulp from 'gulp';
-import insert from 'gulp-insert';
-import preprocess from 'gulp-preprocess';
-import rename from 'gulp-rename';
-import rollup from 'gulp-rollup';
-import filter from 'gulp-filter';
+import Vinyl = require('vinyl');
+import gulp = require('gulp');
+import insert = require('gulp-insert');
 
-import merge from 'merge-stream';
-import streamToPromise from 'stream-to-promise';
-import InlineResource from 'inline-resource-literal';
+import preprocess = require('gulp-preprocess');
+import rename = require('gulp-rename');
+import rollup = require('gulp-rollup');
+import filter = require('gulp-filter');
 
-import typescript from '@alexlur/rollup-plugin-typescript';
-import typescript2 from 'rollup-plugin-typescript2';
+import InlineResource = require('inline-resource-literal');
 
-import closureCompiler from 'google-closure-compiler';
-import { main as tsickleMain } from './tscc/third-party/tsickle/main';
+import typescript = require('@alexlur/rollup-plugin-typescript');
+import typescript2 = require('rollup-plugin-typescript2');
 
-/**
- * {@link https://github.com/google/closure-compiler-npm#running-the-compiler-using-nailgun}
- */
-closureCompiler.compiler.JAR_PATH = undefined;
-closureCompiler.compiler.prototype.javaPath = './node_modules/.bin/closure-gun'
+import * as closureCompiler from 'google-closure-compiler';
+import { main as tsickleMain } from './tasks/tscc/third-party/tsickle/main';
+
+class Reservoir {
+    constructor(readableStream:NodeJS.ReadableStream) {
+        let self = this;
+        function transform(chunk, enc, callback) {
+            this.push(chunk);
+            if (self.released) {
+                callback();
+            } else {
+                self.pendingCallbacks.push(callback.bind(this));
+            }
+        }
+        function flush(callback) {
+            callback();
+        }
+        this.stream = readableStream
+            .pipe(through({ objectMode: true }, transform, flush));
+    }
+
+    private pendingCallbacks:(()=>void)[] = [];
+
+    private stream:NodeJS.ReadWriteStream;
+    private released = false;
+
+    release():NodeJS.ReadableStream {
+        if (this.released) { throw Error('Already released'); }
+        this.released = true;
+        for (let callback of this.pendingCallbacks) {
+            callback();
+        }
+        return this.stream;
+    }
+}
+
 const ccPlugin = closureCompiler.gulp({});
 
 enum BuildTarget {
@@ -39,17 +69,17 @@ enum Channel {
 }
 
 interface IPreprocessContext {
-    DEBUG:boolean,
-    RECORD:boolean,
-    NO_PROXY:boolean,
-    NO_EVENT:boolean
+    DEBUG?:boolean,
+    RECORD?:boolean,
+    NO_PROXY?:boolean,
+    NO_EVENT?:boolean
 }
 
 interface BuildOption {
     target:BuildTarget,
     channel:Channel,
     preprocessContext:IPreprocessContext,
-    whitelists:string[]
+    overrideShouldMinify?:boolean
 }
 
 abstract class TextUtils {
@@ -169,12 +199,12 @@ class LocaleUtils {
     }
 
     public async moveLocalesToTargetDir() {
-        const json = await this.getTranslationJSON();
+        const localePath = path.join(this.paths.outputPath, '_locales');
+        const [json] = await Promise.all([this.getTranslationJSON(), fsExtra.mkdirp(localePath)]);
         return Promise.all(Object.keys(json).map(async (locale) => {
-            return fs.writeFile(
-                path.join(this.paths.outputPath, '_locales', locale),                
-                JSON.stringify(json[locale])
-            );
+            let localeNextPath = path.join(localePath, locale);
+            await fsExtra.mkdirp(localeNextPath);
+            await fs.writeFile(path.join(localeNextPath, 'message.json'), JSON.stringify(json[locale]));
         }));
     }
 
@@ -195,7 +225,7 @@ class ResourceUtils {
         if (this.options.target === BuildTarget.USERSCRIPT) {
             resources = Object.assign({}, resources, {
                 "USERSCRIPT_TRANSLATIONS": {
-                    data: await this.locales.getUserscriptInlinableJSON(),
+                    data: JSON.stringify(await this.locales.getUserscriptInlinableJSON()),
                     path: 'userscript_translations.json'
                 } 
             });
@@ -210,7 +240,7 @@ class ResourceUtils {
 
 }
 
-class Builder {
+export default class Builder {
     
     private static version = '2.2';
 
@@ -241,24 +271,6 @@ class Builder {
         }
     }
 
-    private get pageScriptRollupOptions() {
-        if (this.options.channel !== Channel.DEV) { Builder.invalidConfError(); }
-        return {
-            entry: this.paths.pageScriptEntry,
-            plugins: [typescript2()],
-            format: 'es',
-            strict: false
-        };
-    }
-    private get contentScriptRollupOptions() {
-        if (this.options.channel !== Channel.DEV) { Builder.invalidConfError(); }
-        return {
-            entry: this.paths.contentScriptEntry,
-            plugins: [typescript2()],
-            format: 'es',
-            strict: false
-        };
-    }
 
     private async loadResources() {
         if (!this.inlineResource) {
@@ -276,9 +288,29 @@ class Builder {
         this.paths = new PathUtils(options);
         this.locales = new LocaleUtils(options, this.paths);
         this.resources = new ResourceUtils(options, this.locales);
+        this.build = this.build.bind(this);
     }
 
-    private async rollup() {
+    private get pageScriptRollupOptions() {
+        if (this.options.channel !== Channel.DEV) { Builder.invalidConfError(); }
+        return {
+            entry: this.paths.pageScriptEntry,
+            plugins: [(<any>typescript2)()],
+            format: 'es',
+            strict: false
+        };
+    }
+    private get contentScriptRollupOptions() {
+        if (this.options.channel !== Channel.DEV) { Builder.invalidConfError(); }
+        return {
+            entry: this.paths.contentScriptEntry,
+            plugins: [(<any>typescript2)()],
+            format: 'es',
+            strict: false
+        };
+    }
+
+    private async rollup():Promise<Reservoir> {
         const options = this.options;
         const bundlePageScript = gulp.src('src/**/*.ts')
             .pipe(<any>preprocess({ context: this.options.preprocessContext }))
@@ -288,20 +320,25 @@ class Builder {
         const bundleContentScript = gulp.src('src/**/*.ts')
             .pipe(<any>preprocess({ context: this.options.preprocessContext }))
             .pipe(rollup(this.contentScriptRollupOptions))
-            .pipe(insert.transform(this.inlineResource));
+            .pipe(insert.transform(this.inlineResource))
 
-        const [pageScriptBuffer] =
-            await Promise.all([streamToPromise(bundlePageScript), streamToPromise(bundleContentScript)]);
+        const contentScriptResv = new Reservoir(bundleContentScript);
+
+        const [pageScriptRaw] =
+            await Promise.all([toPromise(bundlePageScript, true), toPromise(bundleContentScript)]);
 
         const inlinePageScript = (new InlineResource({
             PAGE_SCRIPT: {
                 path: `${this.paths.outputPath}page_script.js`,
-                data: pageScriptBuffer
+                data: pageScriptRaw
             }
         })).inline;
 
-        return bundleContentScript
-            .pipe(insert.transform(inlinePageScript));
+        return new Reservoir(
+            contentScriptResv
+                .release()
+                .pipe(insert.transform(inlinePageScript))
+        );
     }
 
     private get closureCompilerOptions() {
@@ -316,7 +353,7 @@ class Builder {
             '--rewrite_polyfills', String(false),
             '--dependency_mode', 'STRICT',
 
-            '--js', `${PathUtils.tsccPath}/**/*.js`,
+            '--js', `${PathUtils.outputDir}/${PathUtils.tsccPath}/**/*.js`,
             '--entry_point', `goog:${this.paths.contentScriptEntryCc}`,
             '--module', 'content_script:auto',
             '--entry_point', `goog:${this.paths.pageScriptEntryCc}`,
@@ -342,9 +379,9 @@ class Builder {
         return content.replace(Builder.reWorkaroundTsickleBug, Builder.workaroundCallback);
     }
 
-    private async tscc() {
+    private async tscc():Promise<Reservoir> {
         const options = this.options;
-        await streamToPromise(
+        await toPromise(
             gulp.src('src/**/*.ts')
                 .pipe(<any>preprocess({ context: options.preprocessContext }))
                 .pipe(gulp.dest(PathUtils.tsicklePath))
@@ -357,7 +394,7 @@ class Builder {
     
         if (exitCode === 1) { throw 'tsickle error'; }
     
-        await streamToPromise(
+        await toPromise(
             gulp.src(`${PathUtils.tsccPath}/**/*.js`)
                 .pipe(insert.transform(Builder.tsickleWorkaround))
                 .pipe(insert.transform(this.inlineResource))
@@ -366,22 +403,33 @@ class Builder {
     
         const pageScriptFilter = filter(['*page_script.js'], { passthrough: false, restore: true });
     
-        const pageScriptBuffer = await streamToPromise(
+        const pageScriptRaw = await toPromise(
             ccPlugin(this.closureCompilerOptions)
                 .src()
                 .pipe(insert.transform(TextUtils.removeCcExport))
-                .pipe(pageScriptFilter)
+                .pipe(pageScriptFilter),
+            true
         );
-    
+        
         const inlinePageScript = (new InlineResource({
             PAGE_SCRIPT: {
                 path: `${this.paths.outputPath}page_script.min.js`,
-                data: pageScriptBuffer 
+                data: pageScriptRaw 
             }
         })).inline;
-    
-        return pageScriptFilter.restore
-            .pipe(insert.transform(inlinePageScript))
+
+        return new Reservoir(
+            pageScriptFilter.restore
+                .pipe(insert.transform(inlinePageScript))
+        );
+    }
+
+    private get shouldMinify() {
+        if (typeof this.options.overrideShouldMinify !== 'undefined') {
+            return this.options.overrideShouldMinify;
+        }
+        // Apply minification for beta and release channel.
+        return this.options.channel !== Channel.DEV;
     }
 
     private async meta() {
@@ -389,10 +437,11 @@ class Builder {
         const lines:string[] = [];
         function insertTranslatableKeys (metaKey:string, messageId:string):void {
             for (let locale in translation) {
+                let key = metaKey;
                 if (locale !== 'en') {
-                    metaKey += `:${locale}`;
+                    key += `:${locale}`;
                 }
-                lines.push(`// @${metaKey} ${translation[locale][messageId].message}`);
+                lines.push(`// @${key} ${translation[locale][messageId].message}`);
             }
         }
 
@@ -408,9 +457,12 @@ class Builder {
         lines.push(`// @match http://*/*`);
         lines.push(`// @match https://*/*`);
 
-        for (let exclusion of Builder.exclusions) {
-            lines.push(`// @exclude ${exclusion}`);
-        }
+        if (this.options.channel === Channel.RELEASE) {
+            // Apply default whitelists to the release channel only.
+            for (let exclusion of Builder.exclusions) {
+                lines.push(`// @exclude ${exclusion}`);
+            }
+        }        
 
         lines.push(`// @grant GM_getValue`);
         lines.push(`// @grant GM_setValue`);
@@ -437,35 +489,193 @@ class Builder {
         throw Error('Invalid Configuration.');
     }
 
+    async clean() {
+        await fsExtra.remove(PathUtils.outputDir);
+        await fsExtra.mkdirp(this.paths.outputPath);
+    }
+
     async build() {
-        await this.loadResources();
+        await Promise.all([this.loadResources(), this.clean()]);
 
         const channel = this.options.channel;
         const target  = this.options.target;
 
-        const contentScript = channel === Channel.DEV ? await this.rollup() : await this.tscc();
+        const contentScript = this.shouldMinify ? await this.tscc() : await this.rollup();
         const manifest = target === BuildTarget.USERSCRIPT ? await this.meta() : await this.manifest();
 
         const tasks = [];
         if (target === BuildTarget.USERSCRIPT) {
-            tasks.push(streamToPromise(
+            tasks.push(toPromise(
                 contentScript
+                    .release()
                     .pipe(rename('popupblocker.user.js'))
                     .pipe(insert.prepend(manifest))
                     .pipe(gulp.dest(this.paths.outputPath))
             ));
-            tasks.push(fs.writeFile(path.join(this.paths.outputPath, 'popupblocker.meta.js'), manifest))
+            tasks.push(fs.writeFile(path.join(this.paths.outputPath, 'popupblocker.meta.js'), manifest));
         } else {
             // extension env
-            tasks.push(streamToPromise(
+            tasks.push(toPromise(
                 contentScript
+                    .release()
                     .pipe(rename('content_script.js'))
                     .pipe(gulp.dest(this.paths.outputPath))
             ));
             tasks.push(fs.writeFile(path.join(this.paths.outputPath, 'manifest.json'), manifest));
             tasks.push(this.locales.moveLocalesToTargetDir());
         }
-        return Promise.all(tasks);
+
+        await Promise.all(tasks);
     }
 
 }
+
+/******************************************************************************/
+
+gulp.task('dev-userscript', (new Builder({
+    target: BuildTarget.USERSCRIPT,
+    channel: Channel.DEV,
+    preprocessContext: {
+        DEBUG: true,
+        RECORD: true
+    }
+})).build);
+
+gulp.task('dev-webext', (new Builder({
+    target: BuildTarget.WEBEXT,
+    channel: Channel.DEV,
+    preprocessContext: {
+        DEBUG:      true,
+        RECORD:     true
+    }
+})).build);
+
+gulp.task('beta-userscript', (new Builder({
+    target: BuildTarget.USERSCRIPT,
+    channel: Channel.BETA,
+    preprocessContext: {
+        NO_PROXY: true
+    }
+})).build);
+
+gulp.task('beta-webext', (new Builder({
+    target: BuildTarget.WEBEXT,
+    channel: Channel.BETA,
+    preprocessContext: {
+        NO_PROXY: true
+    }
+})).build);
+
+gulp.task('release-userscript', (new Builder({
+    target: BuildTarget.USERSCRIPT,
+    channel: Channel.RELEASE,
+    preprocessContext: {
+        NO_PROXY: true
+    }
+})).build)
+
+gulp.task('release-webext', (new Builder({
+    target: BuildTarget.USERSCRIPT,
+    channel: Channel.RELEASE,
+    preprocessContext: {
+        NO_PROXY: true
+    }
+})).build);
+
+gulp.task('dev-userscript-no-minificaiton', (new Builder({
+    target: BuildTarget.USERSCRIPT,
+    channel: Channel.DEV,
+    preprocessContext: {
+        DEBUG:      true,
+        RECORD:     true
+    },
+    overrideShouldMinify: false
+})).build);
+
+gulp.task('release-userscript-no-minification', (new Builder({
+    target: BuildTarget.USERSCRIPT,
+    channel: Channel.RELEASE,
+    preprocessContext: {
+        NO_PROXY: true
+    },
+    overrideShouldMinify: true
+})).build);
+
+/******************************************************************************/
+
+gulp.task('build-test', () => {
+    return gulp.src(['test/**/*.ts', 'src/**/*.ts'])
+        .pipe(<any>preprocess({
+            context: {
+                RECORD: true
+            }
+        }))
+        .pipe(rollup({
+            entry: 'test/index.ts',
+            plugins: [(<any>typescript)()],
+            format: 'iife',
+            strict: false
+        }))
+        .pipe(rename('index.js'))
+        .pipe(gulp.dest('./test/build'));
+});
+
+gulp.task('testsToGhPages', ['dev-minified'], () => {
+    return [
+        require('fs').writeFile('build/.nojekyll', ''),
+        gulp.src(['test/index.html', 'test/**/*.js']).pipe(gulp.dest(PathUtils.outputDir + '/test/')),
+        gulp.src('node_modules/mocha/mocha.*').pipe(gulp.dest(PathUtils.outputDir + '/node_modules/mocha/')),
+        gulp.src('node_modules/chai/chai.js').pipe(gulp.dest(PathUtils.outputDir + '/node_modules/chai/'))
+    ];
+});
+
+gulp.task('watch', () => {
+    const onerror = (error) => { console.log(error.toString()); };
+    const onchange = (event) => { console.log('File ' + event.path + ' was ' + event.type + ', building...'); };
+    gulp.watch('src/**/*', <any>['dev-userscript'])
+        .on('change', onchange)
+        .on('error', onerror);
+    gulp.watch('test/**/*.ts', <any>['build-test'])
+        .on('change', onchange)
+        .on('error', onerror);
+});
+
+/******************************************************************************/
+
+import onesky = require('onesky-utils');
+
+gulp.task('i18n-up', async () => {
+    const base = require('./config/.key.js');
+    const file = (await fs.readFile('src/locales/en.json')).toString();
+
+    const _options = {
+        language: 'en',
+        fileName: 'en.json',
+        format: 'HIERARCHICAL_JSON',
+        content: file,
+        keepStrings: false
+    };
+
+    Object.assign(_options, base);
+
+    await onesky.postFile(_options);
+});
+
+gulp.task('i18n-down',  async () => {
+    const base = require('./config/.key.js');
+    const languages = JSON.parse(await onesky.getLanguages(base)).data;
+    const map = {};
+    await Promise.all(languages.map(async (lang) => {
+        let languageCode = lang.code;   
+        let option = Object.assign({
+            language: languageCode,
+            fileName: 'en.json'
+        }, base);
+        let response = await onesky.getFile(option);
+        if (response) {
+            map[languageCode]= JSON.parse(response);
+        }
+    }));
+
+    await fs.writeFile('src/locales/translations.json', JSON.stringify(map));
+});

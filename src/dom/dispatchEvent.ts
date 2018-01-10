@@ -1,4 +1,3 @@
-import eventTargetPType from './dispatchEvent/orig';
 import { ApplyHandler, ApplyOption, wrapMethod } from '../proxy';
 import { retrieveEvent, verifyEvent, verifyCurrentEvent } from '../events/verify';
 import examineTarget from '../events/examine_target';

@@ -9,9 +9,10 @@
   "license": "LGPL-3.0",
   "devDependencies": {
     "@alexlur/rollup-plugin-typescript": "^1.0.4",
-    "@types/gulp": "^4.0.5",
+    "@types/filesystem": "^0.0.28",
     "async-file": "^2.0.2",
     "chai": "^4.1.2",
+    "fs-extra": "^5.0.0",
     "google-closure-compiler": "^20171023.0.1",
     "gulp": "^3.9.1",
     "gulp-better-rollup": "^2.0.0",
@@ -30,12 +31,17 @@
     "rollup-plugin-typescript2": "^0.8.0",
     "run-sequence": "^2.2.0",
     "stream-to-promise": "^2.2.0",
+    "stream-to-string": "^1.1.0",
+    "through2": "^2.0.3",
+    "ts-node": "^4.1.0",
     "tsickle": "^0.25.0",
-    "typescript": "2.5.3"
+    "typescript": "2.5.3",
+    "vinyl": "^2.1.0"
   },
   "dependencies": {
     "@types/chai": "^4.0.4",
-    "@types/greasemonkey": "^0.0.28",
-    "@types/mocha": "^2.2.44"
+    "@types/gulp": "^4.0.5",
+    "@types/mocha": "^2.2.44",
+    "@types/node": "^9.3.0"
   }
 }
