@@ -52,9 +52,13 @@ Unit test for dev build is [here](https://AdguardTeam.github.io/PopupBlocker/tes
 
 ## How to build
 
-Install `gulp` and `ts-node`:
+Install `gulp` and `ts-node` globally by running:
 ```
 npm install -g gulp ts-node
+```
+Install local dependencies by runnning:
+```
+yarn install
 ```
 
 To build, run:
@@ -67,4 +71,4 @@ Available targets are: `userscript`, `chrome`, `webext`
 Developement builds are not minified, and will print logs into the browser console.
 
 Beta and release builds will be minified and have all logging codes stripped out.
-To build minified builds, ensure that you have Java installed and have necessary environment variables.
+For minified builds, ensure that you have Java installed and have necessary environment variables.

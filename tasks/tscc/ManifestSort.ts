@@ -5,6 +5,16 @@ interface Deps {
     num_js:number[]
 }
 
+/**
+ * A helper class for creating command-line arguments for closure compiler.
+ * It wires up module dependency information provided by tsickle.
+ *
+ * Closure compiler module system requres a rather ancient module system,
+ * which requires input files to be provided in certain order and a number
+ * of dependencies for each module.
+ * For example, webpack plugin for closure compiler does it manually:
+ * {@link https://github.com/webpack-contrib/closure-webpack-plugin/blob/cdd1c0f3a43e13dfec0114bbf9f336bef7c7e554/src/index.js#L573}
+ */
 export default class ManifestSort {
 
     constructor(

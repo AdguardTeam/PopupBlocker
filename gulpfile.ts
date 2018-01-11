@@ -1,7 +1,7 @@
 import path = require('path');
 import * as fs from 'async-file';
 import * as fsExtra from 'fs-extra';
-import through = require('through2');
+import Reservoir from './tasks/Reservoir';
 import toPromise from './tasks/to_promise';
 
 import gulp = require('gulp');
@@ -24,41 +24,6 @@ import * as closureCompiler from 'google-closure-compiler';
 import { main as tsickleMain } from './tasks/tscc/third-party/tsickle/main';
 import ManifestSort from './tasks/tscc/ManifestSort';
 import * as tsickle from 'tsickle/src/tsickle';
-
-class Reservoir {
-
-    constructor(readableStream:NodeJS.ReadableStream) {
-        let self = this;
-        function transform(chunk, enc, callback) {
-            this.push(chunk);
-            if (self.released) {
-                callback();
-            } else {
-                self.pendingCallbacks.push(callback.bind(this));
-            }
-        }
-        function flush(callback) {
-            callback();
-        }
-        this.stream = readableStream
-            .pipe(through({ objectMode: true }, transform, flush));
-    }
-
-    private pendingCallbacks:(()=>void)[] = [];
-
-    private stream:NodeJS.ReadWriteStream;
-    private released = false;
-
-    release():NodeJS.ReadableStream {
-        if (this.released) { throw Error('Already released'); }
-        this.released = true;
-        for (let callback of this.pendingCallbacks) {
-            callback();
-        }
-        return this.stream;
-    }
-
-}
 
 const ccPlugin = closureCompiler.gulp({});
 
@@ -118,7 +83,7 @@ class PathUtils {
     private static normalizeModuleExtension(path:string) {
         return path.replace(PathUtils.reModuleExtension, '.js');
     }
-    public static pathToGoogModule(path:string):string {
+    private static pathToGoogModule(path:string):string {
         const regex = PathUtils.reModuleExtension;
         // Strip file extension
         if (regex.test(path)) {

@@ -1,7 +1,7 @@
 {
   "name": "PopupBlocker",
-  "version": "2.1.11",
-  "description": "Block popups preemptively by wrapping browser APIs for additional checsk",
+  "version": "2.2.0",
+  "description": "Block popups preemptively by wrapping browser APIs for additional check",
   "scripts": {
     "dev": "gulp dev && gulp watch"
   },
@@ -9,14 +9,16 @@
   "license": "LGPL-3.0",
   "devDependencies": {
     "@alexlur/rollup-plugin-typescript": "^1.0.4",
+    "@types/chai": "^4.1.0",
     "@types/filesystem": "^0.0.28",
+    "@types/gulp": "^4.0.5",
+    "@types/mocha": "^2.2.46",
     "add-stream": "^1.0.0",
     "async-file": "^2.0.2",
     "chai": "^4.1.2",
     "fs-extra": "^5.0.0",
     "google-closure-compiler": "^20171023.0.1",
     "gulp": "^3.9.1",
-    "gulp-better-rollup": "^2.0.0",
     "gulp-clean": "^0.3.2",
     "gulp-concat": "^2.6.1",
     "gulp-debug": "^3.2.0",
@@ -38,13 +40,7 @@
     "through2": "^2.0.3",
     "ts-node": "^4.1.0",
     "tsickle": "^0.25.0",
-    "typescript": "2.5.3",
-    "vinyl": "^2.1.0"
+    "typescript": "2.5.3"
   },
-  "dependencies": {
-    "@types/chai": "^4.0.4",
-    "@types/gulp": "^4.0.5",
-    "@types/mocha": "^2.2.44",
-    "@types/node": "^9.3.0"
-  }
+  "dependencies": {}
 }
