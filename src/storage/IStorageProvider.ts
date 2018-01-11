@@ -3,6 +3,6 @@ export default interface IStorageProvider {
     destinationIsWhitelisted(dest:string):boolean
 
     showAlert(orig_domain:string, popup_url:string):void
-    getMessage(messageId:string):string
+    $getMessage(messageId:string):string
     domain:string
 }

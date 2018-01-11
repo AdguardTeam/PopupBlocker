@@ -1,8 +1,8 @@
 import { CONTENT_PAGE_MAGIC, DownwardMsgTypesEnum, UpwardMsgTypesEnum, UpwardMsgTypes, SettingsDeltaMsg, Settings } from '../shared/MessageTypes';
-
 import AlertController from '../../../ui/alert_controller';
 import ChromeStorageManager from './storage/ChromeStorageManager';
 import I18nService from '../../../localization/I18nService';
+import * as log from '../../../shared/log';
 
 /**************************************************************************/
 /**************************************************************************/
@@ -13,27 +13,11 @@ const alertController   = new AlertController(i18nService, storageManager);
 
 /**************************************************************************/
 
-function runScript(code) {
-    const parent = document.head || document.documentElement;
-    let el = document.createElement('script');
-    el.textContent = code;
-    parent.appendChild(el);
-    parent.removeChild(el);
-}
-
-const PAGE_SCRIPT = RESOURCE_ARGS("PAGE_SCRIPT",
-    "VAR_ABORT",        i18nService.getMessage('aborted_popunder_execution'),
-    "VAR_BEFOREUNLOAD", i18nService.getMessage('on_navigation_by_popunder')
-);
-
-runScript(`(function popupBlocker(window,PARENT_FRAME_KEY){${PAGE_SCRIPT}})(window,void 0);`);
-
-/**************************************************************************/
-
 const receivePort = new Promise<MessagePort>(function(resolve, reject) {
     window.addEventListener("message", function(event) {
         if (event.source !== window) { return; }
-        if (event.type !== CONTENT_PAGE_MAGIC) { return; }
+        if (event.data !== CONTENT_PAGE_MAGIC) { return; }
+        log.print(`contentscript: received a port...`);
         const port:MessagePort = event.ports[0];
         event.stopImmediatePropagation();
         resolve(port);
@@ -97,6 +81,23 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
         });
     });
 });
+
+/**************************************************************************/
+
+function runScript(code) {
+    const parent = document.head || document.documentElement;
+    let el = document.createElement('script');
+    el.textContent = code;
+    parent.appendChild(el);
+    parent.removeChild(el);
+}
+
+const PAGE_SCRIPT = RESOURCE_ARGS("PAGE_SCRIPT",
+    "VAR_ABORT",        i18nService.getMessage('aborted_popunder_execution'),
+    "VAR_BEFOREUNLOAD", i18nService.getMessage('on_navigation_by_popunder')
+);
+
+runScript(`(function popupBlocker(window,PARENT_FRAME_KEY){${PAGE_SCRIPT}})(window,void 0);`);
 
 /**************************************************************************/
 /**************************************************************************/

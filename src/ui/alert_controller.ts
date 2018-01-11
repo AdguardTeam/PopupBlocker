@@ -16,7 +16,7 @@ const enum STYLE_CONST {
     middle_offset = 10
 };
 
-const FULL_ALERT_TIMEOUT = 2000;
+const FULL_ALERT_TIMEOUT = 102000;
 const COLLAPSED_ALERT_TIMEOUT = 5000;
 
 const MAX_ALERT_NUM = 4;

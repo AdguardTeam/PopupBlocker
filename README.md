@@ -57,15 +57,14 @@ Install `gulp` and `ts-node`:
 npm install -g gulp ts-node
 ```
 
-For development build run:
+To build, run:
+```
+$ gulp <channel>-<target>
+```
+Available channels are: `dev`, `beta`, `release`
+Available targets are: `userscript`, `chrome`, `webext`
 
-    $ gulp dev
+Developement builds are not minified, and will print logs into the browser console.
 
-This will compile `popupblocker.user.js` file without minification.
-
-For production build run:
-
-    $ gulp release
-
-This will compile `popupblocker.user.js` file with minification and without logging.
-Ensure that you have Java installed and have necessary environment variables.
+Beta and release builds will be minified and have all logging codes stripped out.
+To build minified builds, ensure that you have Java installed and have necessary environment variables.

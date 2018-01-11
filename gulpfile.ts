@@ -228,6 +228,10 @@ class LocaleUtils {
         "extension_description": true
     }
 
+    /**
+     * We collapse 'message' property in the json object containing translations,
+     * in order to have a shorter representation in the userscript source.
+     */
     public async getUserscriptInlinableJSON() {
         const out = {};
         const json = await this.getTranslationJSON();
@@ -241,13 +245,33 @@ class LocaleUtils {
         return <{[locale:string]:{[messageId:string]:string}}>out;
     }
 
+    /**
+     * Extensions treats dollar signs as a special character used for substituting
+     * placeholders, and treats `$$` as a literal dollar sign. We have not relied
+     * on this feature and used our different placeholders, so we escape all the 
+     * dollar signs.
+     */
+    private async getExtensionJSON() {
+        const out = {};
+        const json = await this.getTranslationJSON();
+        for (let locale in json) {
+            out[locale] = {};
+            for (let messageId in json[locale]) {
+                out[locale][messageId] = {
+                    message: json[locale][messageId].message.replace(/\$/g, '$$$')
+                };
+            }
+        }
+        return <{[locale:string]:{[messageId:string]:{message:string}}}>out;
+    }
+
     public async moveLocalesToTargetDir() {
         const localePath = path.posix.join(this.paths.outputPath, '_locales');
-        const [json] = await Promise.all([this.getTranslationJSON(), fsExtra.mkdirp(localePath)]);
+        const [json] = await Promise.all([this.getExtensionJSON(), fsExtra.mkdirp(localePath)]);
         return Promise.all(Object.keys(json).map(async (locale) => {
             let localeNextPath = path.posix.join(localePath, locale);
             await fsExtra.mkdirp(localeNextPath);
-            await fs.writeFile(path.posix.join(localeNextPath, 'message.json'), JSON.stringify(json[locale]));
+            await fs.writeFile(path.posix.join(localeNextPath, 'messages.json'), JSON.stringify(json[locale]));
         }));
     }
 
@@ -285,7 +309,7 @@ class ResourceUtils {
 
 export default class Builder {
 
-    private static version = '2.2';
+    private static version = '2.2.0';
 
     private static exclusions = [
         'https://www.linkedin.com/*',
@@ -337,7 +361,7 @@ export default class Builder {
         if (this.options.channel !== Channel.DEV) { Builder.invalidConfError(); }
         return {
             entry: this.paths.pageScriptEntry,
-            plugins: [(<any>typescript2)()],
+            plugins: [(<any>typescript2)({ compilerOptions: { target: "es5" } })],
             format: 'es',
             strict: false
         };
@@ -346,7 +370,7 @@ export default class Builder {
         if (this.options.channel !== Channel.DEV) { Builder.invalidConfError(); }
         return {
             entry: this.paths.contentScriptEntry,
-            plugins: [(<any>typescript2)()],
+            plugins: [(<any>typescript2)({ compilerOptions: { target: "es5" } })],
             format: 'es',
             strict: false
         };
@@ -387,22 +411,22 @@ export default class Builder {
         const sorter = new ManifestSort(manifest);
         const deps = sorter.getDeps([this.paths.commonEntryCc, this.paths.pageScriptEntryCc, this.paths.contentScriptEntryCc]);
         const flags = [
-            '--compilation_level', 'ADVANCED',
-            '--language_in', 'ECMASCRIPT6',
-            '--language_out', 'ECMASCRIPT5',
-            '--assume_function_wrapper', String(true),
-            '--warning_level', 'VERBOSE',
-            '--strict_mode_input', String(false),
-            '--externs', 'externs.js',
-            '--externs', this.paths.tsickleExternsPath,
-            '--rewrite_polyfills', String(false),
-
-            '--entry_point', this.paths.commonEntryGoogModule,
-            '--module', `common:${deps.num_js[0]}`,
-            '--entry_point', this.paths.pageScriptEntryGoogModule,
-            '--module', `page_script:${deps.num_js[1]}:common`,
-            '--entry_point', this.paths.contentScriptEntryGoogModule,
-            '--module', `content_script:${deps.num_js[2]}:common`,
+            '--compilation_level',        'ADVANCED',
+            '--language_in',              'ECMASCRIPT6',
+            '--language_out',             'ECMASCRIPT5',
+            '--assume_function_wrapper',   String(true),
+            '--warning_level',            'VERBOSE',
+            '--strict_mode_input',         String(false),
+            '--externs',                  'externs.js',
+            '--externs',                   this.paths.tsickleExternsPath,
+            '--rewrite_polyfills',         String(false),
+ 
+            '--entry_point',               this.paths.commonEntryGoogModule,
+            '--module',                   `common:${deps.num_js[0]}`,
+            '--entry_point',               this.paths.pageScriptEntryGoogModule,
+            '--module',                   `page_script:${deps.num_js[1]}:common`,
+            '--entry_point',               this.paths.contentScriptEntryGoogModule,
+            '--module',                   `content_script:${deps.num_js[2]}:common`,
 
             '--module_output_path_prefix', this.paths.outputPath + '/'
         ];
@@ -410,7 +434,6 @@ export default class Builder {
         for (let fileName of deps.sorted) {
             flags.push('--js', fileName);
         }
-        console.log(flags.join('\n'));
         return flags;
     }
 
@@ -547,9 +570,11 @@ export default class Builder {
         switch (this.options.channel) {
             case Channel.DEV:
                 manifest["name"] += " Dev";
+                break;
             case Channel.BETA:
                 manifest["name"] += " Beta";
         }
+        manifest["version"] = Builder.version
         return JSON.stringify(manifest);
     }
 
@@ -613,8 +638,17 @@ gulp.task('dev-webext', (new Builder({
     target: BuildTarget.WEBEXT,
     channel: Channel.DEV,
     preprocessContext: {
-        DEBUG:      true,
-        RECORD:     true
+        DEBUG: true,
+        RECORD: true
+    }
+})).build);
+
+gulp.task('dev-chrome', (new Builder({
+    target: BuildTarget.CHROME_EXT,
+    channel: Channel.DEV,
+    preprocessContext: {
+        DEBUG: true,
+        RECORD: true
     }
 })).build);
 
@@ -628,6 +662,14 @@ gulp.task('beta-userscript', (new Builder({
 
 gulp.task('beta-webext', (new Builder({
     target: BuildTarget.WEBEXT,
+    channel: Channel.BETA,
+    preprocessContext: {
+        NO_PROXY: true
+    }
+})).build);
+
+gulp.task('beta-chrome', (new Builder({
+    target: BuildTarget.CHROME_EXT,
     channel: Channel.BETA,
     preprocessContext: {
         NO_PROXY: true
@@ -650,12 +692,20 @@ gulp.task('release-webext', (new Builder({
     }
 })).build);
 
+gulp.task('release-webext', (new Builder({
+    target: BuildTarget.CHROME_EXT,
+    channel: Channel.RELEASE,
+    preprocessContext: {
+        NO_PROXY: true
+    }
+})).build);
+
 gulp.task('dev-userscript-minified', (new Builder({
     target: BuildTarget.USERSCRIPT,
     channel: Channel.DEV,
     preprocessContext: {
-        DEBUG:      true,
-        RECORD:     true
+        DEBUG: true,
+        RECORD: true
     },
     overrideShouldMinify: true
 })).build);
@@ -745,5 +795,5 @@ gulp.task('i18n-down',  async () => {
         }
     }));
 
-    await fs.writeFile('src/locales/translations.json', JSON.stringify(map));
+    await fs.writeFile(PathUtils.translationJSONPath, JSON.stringify(map));
 });

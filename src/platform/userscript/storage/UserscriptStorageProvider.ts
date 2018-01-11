@@ -1,13 +1,14 @@
 import IStorageProvider from "../../../storage/IStorageProvider";
 import IUserscriptSettings from "./IUserscriptSettings";
 import AlertController from "../../../ui/alert_controller";
+import * as log from '../../../shared/log';
 
 export default class UserscriptStorageProvider implements IStorageProvider {
     public domain = location.hostname;
     constructor(
         private userscriptSettings:IUserscriptSettings,
         private alertController:AlertController,
-        public getMessage:(id:string)=>string
+        public $getMessage:(id:string)=>string
     ) { }
     originIsWhitelisted():boolean {
         return this.userscriptSettings.domainOption.whitelisted;
@@ -16,6 +17,7 @@ export default class UserscriptStorageProvider implements IStorageProvider {
         return this.userscriptSettings.whitelistedDestinations.indexOf(dest) !== -1;
     }
     showAlert(orig_domain:string, popup_url:string):void {
+        log.print(`UserscriptStorageProvider: showAlert`);
         setTimeout(() => {
             this.alertController.createAlert(orig_domain, popup_url);
         });
