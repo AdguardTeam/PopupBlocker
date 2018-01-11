@@ -4,7 +4,7 @@ import ExtensionStorageProvider from './storage/ExtensionStorageProvider';
 if (typeof PARENT_FRAME_KEY === 'undefined') {
     adguard.storageProvider = new ExtensionStorageProvider();
 } else {
-    adguard.storageProvider = window[PARENT_FRAME_KEY];
+    adguard.storageProvider = window.parent[PARENT_FRAME_KEY][3];
 }
 
 import '../../../messaging';

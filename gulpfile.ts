@@ -134,20 +134,17 @@ class PathUtils {
     public get contentScriptEntryGoogModule() {
         return 'goog:' + PathUtils.pathToGoogModule(this.contentScriptEntryCc);
     }
-
     private static targetCommonScriptMap = {
         [BuildTarget.USERSCRIPT]:   'platform/userscript/common.ts',
         [BuildTarget.CHROME_EXT]:   'platform/extension/shared/common.ts',
         [BuildTarget.WEBEXT]:       'platform/extension/shared/common.ts'
     }
-
     public get commonEntryCc() {
         return PathUtils.normalizeModuleExtension(path.posix.join(
             PathUtils.tsccPath,
             PathUtils.targetCommonScriptMap[this.options.target]
         ));
     }
-
     public get commonEntryGoogModule() {
         return 'goog:' + PathUtils.pathToGoogModule(this.commonEntryCc);
     }
@@ -213,7 +210,7 @@ class LocaleUtils {
     /**
      * Extensions treats dollar signs as a special character used for substituting
      * placeholders, and treats `$$` as a literal dollar sign. We have not relied
-     * on this feature and used our different placeholders, so we escape all the 
+     * on this feature and used our different placeholders, so we escape all the
      * dollar signs.
      */
     private async getExtensionJSON() {
@@ -461,7 +458,7 @@ export default class Builder {
                     .src()
                     .pipe(insert.transform(TextUtils.removeCcExport))
                     .pipe(pageScriptFilter))
-                .pipe(concat('page_script.js', {newLine: ';'})),                
+                .pipe(concat('page_script.js', {newLine: ';'})).pipe(gulp.dest('build/temp')),                
             true
         );
 
