@@ -42,7 +42,7 @@ export default class ManifestSort {
         let counter = 0;
         for (let l = totalFiles.length - 1; l >= 0; l--) {
             let fileName = totalFiles[l];
-            if (!sorted["includes"](fileName)) {
+            if (!this.visited.has(fileName)) {
                 sorted.unshift(fileName);
                 counter++;
             }

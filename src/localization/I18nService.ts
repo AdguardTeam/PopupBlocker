@@ -25,7 +25,7 @@ export default class I18nService implements II18nService {
      * {{0_help_link}} is a html node reference.
      */
     private static rePhStart = /(?:\${|{{)/;
-    private parseMessage(message:string, context:StringMap):(string|number)[] {
+    public parseMessage(message:string, context:StringMap):(string|number)[] {
         const res:(string|number)[] = [];
         let text:string = '';
         let match:RegExpMatchArray;

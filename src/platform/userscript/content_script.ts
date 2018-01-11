@@ -3,46 +3,9 @@ import AlertController from '../../ui/alert_controller';
 import UserscriptSettings from './storage/UserscriptSettings';
 import UserscriptStorageManager from './storage/UserscriptStorageManager';
 import UserscriptStorageProvider from './storage/UserscriptStorageProvider';
+import getMessage from './get_message';
 
 /**************************************************************************/
-/**************************************************************************/
-// Custom getMessage implementation
-
-const SupportedLocales = RESOURCE_USERSCRIPT_TRANSLATIONS;
-
-const defaultLocale = 'en';
-let currentLocale = null;
-if (typeof AdguardSettings !== 'undefined') {
-    var locale = AdguardSettings.locale;
-    if (SupportedLocales[locale]) {
-        currentLocale = locale;
-    }
-}
-if (!currentLocale || !SupportedLocales[currentLocale]) {
-    let lang = navigator.language;
-    if (!SupportedLocales[lang]) {
-        let i = lang.indexOf('-');
-        if (i !== -1) {
-            lang = lang.slice(0, i);
-        }
-    }
-    currentLocale = lang;
-}
-if (!currentLocale || !SupportedLocales[currentLocale]) {
-    currentLocale = defaultLocale;
-}
-
-const getMessage = (messageId:string):string => {
-    let message = SupportedLocales[currentLocale][messageId];
-    if (!message) {
-        message = SupportedLocales[defaultLocale][messageId];
-        // @ifdef DEBUG
-        throw messageId + ' not localized';
-        // @endif
-    }   
-    return message;
-};
-
 /**************************************************************************/
 
 const i18nService       = new I18nService(getMessage);
