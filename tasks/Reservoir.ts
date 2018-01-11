@@ -3,7 +3,7 @@ import through = require('through2');
 /**
  * Creates an object from a readable stream which holds emitted data
  * until `release()` is called. Once it is called, the stream pipes emitted
- * data to a stream returned from a stream returned from the method.
+ * data to a stream returned from the method.
  */
 export default class Reservoir {
     constructor(readableStream:NodeJS.ReadableStream) {
