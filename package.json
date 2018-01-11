@@ -10,6 +10,7 @@
   "devDependencies": {
     "@alexlur/rollup-plugin-typescript": "^1.0.4",
     "@types/filesystem": "^0.0.28",
+    "add-stream": "^1.0.0",
     "async-file": "^2.0.2",
     "chai": "^4.1.2",
     "fs-extra": "^5.0.0",
@@ -18,8 +19,10 @@
     "gulp-better-rollup": "^2.0.0",
     "gulp-clean": "^0.3.2",
     "gulp-concat": "^2.6.1",
+    "gulp-debug": "^3.2.0",
     "gulp-filter": "^5.1.0",
     "gulp-insert": "^0.5.0",
+    "gulp-merge": "^0.1.1",
     "gulp-preprocess": "^2.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-rollup": "^2.15.0",

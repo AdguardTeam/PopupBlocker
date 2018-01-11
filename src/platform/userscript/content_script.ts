@@ -1,7 +1,5 @@
-import adguard from '../../adguard';
 import I18nService from '../../localization/I18nService';
 import AlertController from '../../ui/alert_controller';
-import UserscriptStorage from "./storage/UserscriptStorage";
 import UserscriptSettings from './storage/UserscriptSettings';
 import UserscriptStorageManager from './storage/UserscriptStorageManager';
 import UserscriptStorageProvider from './storage/UserscriptStorageProvider';

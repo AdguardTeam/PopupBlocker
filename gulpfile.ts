@@ -4,14 +4,15 @@ import * as fsExtra from 'fs-extra';
 import through = require('through2');
 import toPromise from './tasks/to_promise';
 
-import Vinyl = require('vinyl');
 import gulp = require('gulp');
 import insert = require('gulp-insert');
-
+import merge = require('merge-stream');
+import concat = require('gulp-concat');
 import preprocess = require('gulp-preprocess');
 import rename = require('gulp-rename');
 import rollup = require('gulp-rollup');
 import filter = require('gulp-filter');
+import debug = require('gulp-debug');
 
 import InlineResource = require('inline-resource-literal');
 
@@ -19,9 +20,13 @@ import typescript = require('@alexlur/rollup-plugin-typescript');
 import typescript2 = require('rollup-plugin-typescript2');
 
 import * as closureCompiler from 'google-closure-compiler';
+
 import { main as tsickleMain } from './tasks/tscc/third-party/tsickle/main';
+import ManifestSort from './tasks/tscc/ManifestSort';
+import * as tsickle from 'tsickle/src/tsickle';
 
 class Reservoir {
+
     constructor(readableStream:NodeJS.ReadableStream) {
         let self = this;
         function transform(chunk, enc, callback) {
@@ -52,6 +57,7 @@ class Reservoir {
         }
         return this.stream;
     }
+
 }
 
 const ccPlugin = closureCompiler.gulp({});
@@ -96,8 +102,8 @@ class PathUtils {
     public static tsickleDir    = 'tsickle';
     public static tsccDir       = 'tscc';
 
-    public static tsicklePath = path.join(PathUtils.outputDir, PathUtils.tsickleDir);
-    public static tsccPath = path.join(PathUtils.outputDir, PathUtils.tsickleDir);
+    public static tsicklePath = path.posix.join(PathUtils.outputDir, PathUtils.tsickleDir);
+    public static tsccPath = path.posix.join(PathUtils.outputDir, PathUtils.tsccDir);
 
     private static platformDirMap = {
         [BuildTarget.USERSCRIPT]:   'userscript',
@@ -105,17 +111,20 @@ class PathUtils {
         [BuildTarget.WEBEXT]:       'webext'
     }
     public get outputPath() {
-        return path.join(PathUtils.outputDir, PathUtils.platformDirMap[this.options.target], '');
+        return path.posix.join(PathUtils.outputDir, PathUtils.platformDirMap[this.options.target], '');
     }
 
-    private static reModuleExtension = /\.[jt]sx?$/g;
+    private static reModuleExtension = /\.[jt]sx?$/;
+    private static normalizeModuleExtension(path:string) {
+        return path.replace(PathUtils.reModuleExtension, '.js');
+    }
     public static pathToGoogModule(path:string):string {
         const regex = PathUtils.reModuleExtension;
         // Strip file extension
         if (regex.test(path)) {
-            path = path.slice(0, regex.lastIndex);
+            path = RegExp['leftContext'];
         }
-        return path.replace('\\', '.');
+        return path.replace(/[\/\\]/g, '.');
     }
 
     private static targetPageScriptEntryMap = {
@@ -124,15 +133,20 @@ class PathUtils {
         [BuildTarget.WEBEXT]:       'platform/extension/shared/page_script.ts'
     }
     public get pageScriptEntry() {
-        return path.join(
+        return path.posix.join(
             PathUtils.sourceDir,
             PathUtils.targetPageScriptEntryMap[this.options.target]
         );
     }
     public get pageScriptEntryCc() {
-        return PathUtils.tsccDir
-            + '.'
-            + PathUtils.pathToGoogModule(PathUtils.targetPageScriptEntryMap[this.options.target]);
+        return PathUtils.normalizeModuleExtension(path.posix.join(
+            PathUtils.outputDir,
+            PathUtils.tsccDir,
+            PathUtils.targetPageScriptEntryMap[this.options.target]
+        ));
+    }
+    public get pageScriptEntryGoogModule() {
+        return 'goog:' + PathUtils.pathToGoogModule(this.pageScriptEntryCc);
     }
     private static targetContentScriptEntryMap = {
         [BuildTarget.USERSCRIPT]:   'platform/userscript/content_script.ts',
@@ -140,15 +154,44 @@ class PathUtils {
         [BuildTarget.WEBEXT]:       'platform/extension/webext/content_script.ts'
     }
     public get contentScriptEntry() {
-        return path.join(
+        return path.posix.join(
             PathUtils.sourceDir,
             PathUtils.targetContentScriptEntryMap[this.options.target]
         );
     }
     public get contentScriptEntryCc() {
-        return PathUtils.tsccDir
-            + '.'
-            + PathUtils.pathToGoogModule(PathUtils.targetContentScriptEntryMap[this.options.target]);
+        return PathUtils.normalizeModuleExtension(path.posix.join(
+            PathUtils.outputDir,
+            PathUtils.tsccDir,
+            PathUtils.targetContentScriptEntryMap[this.options.target]
+        ));
+    }
+    public get contentScriptEntryGoogModule() {
+        return 'goog:' + PathUtils.pathToGoogModule(this.contentScriptEntryCc);
+    }
+
+    private static targetCommonScriptMap = {
+        [BuildTarget.USERSCRIPT]:   'platform/userscript/common.ts',
+        [BuildTarget.CHROME_EXT]:   'platform/extension/shared/common.ts',
+        [BuildTarget.WEBEXT]:       'platform/extension/shared/common.ts'
+    }
+
+    public get commonEntryCc() {
+        return PathUtils.normalizeModuleExtension(path.posix.join(
+            PathUtils.tsccPath,
+            PathUtils.targetCommonScriptMap[this.options.target]
+        ));
+    }
+
+    public get commonEntryGoogModule() {
+        return 'goog:' + PathUtils.pathToGoogModule(this.commonEntryCc);
+    }
+
+    public get tsickleExternsPath() {
+        return path.posix.join(
+            PathUtils.tsccPath,
+            'generated-externs.js'
+        );
     }
 
     public static alertTemplatePath = 'src/ui/template.html'
@@ -199,12 +242,12 @@ class LocaleUtils {
     }
 
     public async moveLocalesToTargetDir() {
-        const localePath = path.join(this.paths.outputPath, '_locales');
+        const localePath = path.posix.join(this.paths.outputPath, '_locales');
         const [json] = await Promise.all([this.getTranslationJSON(), fsExtra.mkdirp(localePath)]);
         return Promise.all(Object.keys(json).map(async (locale) => {
-            let localeNextPath = path.join(localePath, locale);
+            let localeNextPath = path.posix.join(localePath, locale);
             await fsExtra.mkdirp(localeNextPath);
-            await fs.writeFile(path.join(localeNextPath, 'message.json'), JSON.stringify(json[locale]));
+            await fs.writeFile(path.posix.join(localeNextPath, 'message.json'), JSON.stringify(json[locale]));
         }));
     }
 
@@ -227,7 +270,7 @@ class ResourceUtils {
                 "USERSCRIPT_TRANSLATIONS": {
                     data: JSON.stringify(await this.locales.getUserscriptInlinableJSON()),
                     path: 'userscript_translations.json'
-                } 
+                }
             });
         }
         return resources;
@@ -241,7 +284,7 @@ class ResourceUtils {
 }
 
 export default class Builder {
-    
+
     private static version = '2.2';
 
     private static exclusions = [
@@ -262,15 +305,14 @@ export default class Builder {
 
     private get downloadUpdateURL() {
         switch (this.options.channel) {
-            case Channel.DEV: 
+            case Channel.DEV:
                 return 'https://AdguardTeam.github.io/PopupBlocker/';
-            case Channel.BETA: 
+            case Channel.BETA:
                 return 'https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.1/';
             case Channel.RELEASE:
                 return 'https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.1/';
         }
     }
-
 
     private async loadResources() {
         if (!this.inlineResource) {
@@ -341,8 +383,10 @@ export default class Builder {
         );
     }
 
-    private get closureCompilerOptions() {
-        return [
+    private ccOptionsFromManifest(manifest:tsickle.ModulesManifest):string[] {
+        const sorter = new ManifestSort(manifest);
+        const deps = sorter.getDeps([this.paths.commonEntryCc, this.paths.pageScriptEntryCc, this.paths.contentScriptEntryCc]);
+        const flags = [
             '--compilation_level', 'ADVANCED',
             '--language_in', 'ECMASCRIPT6',
             '--language_out', 'ECMASCRIPT5',
@@ -350,28 +394,35 @@ export default class Builder {
             '--warning_level', 'VERBOSE',
             '--strict_mode_input', String(false),
             '--externs', 'externs.js',
+            '--externs', this.paths.tsickleExternsPath,
             '--rewrite_polyfills', String(false),
-            '--dependency_mode', 'STRICT',
 
-            '--js', `${PathUtils.outputDir}/${PathUtils.tsccPath}/**/*.js`,
-            '--entry_point', `goog:${this.paths.contentScriptEntryCc}`,
-            '--module', 'content_script:auto',
-            '--entry_point', `goog:${this.paths.pageScriptEntryCc}`,
-            '--module', `page_script:1:content_script`,
+            '--entry_point', this.paths.commonEntryGoogModule,
+            '--module', `common:${deps.num_js[0]}`,
+            '--entry_point', this.paths.pageScriptEntryGoogModule,
+            '--module', `page_script:${deps.num_js[1]}:common`,
+            '--entry_point', this.paths.contentScriptEntryGoogModule,
+            '--module', `content_script:${deps.num_js[2]}:common`,
 
-            '--module_output_path_prefix', this.paths.outputPath
+            '--module_output_path_prefix', this.paths.outputPath + '/'
         ];
+
+        for (let fileName of deps.sorted) {
+            flags.push('--js', fileName);
+        }
+        console.log(flags.join('\n'));
+        return flags;
     }
 
     /**
      * {@link https://github.com/angular/tsickle/issues/481}
-     * tsickle uses module's relative path as a module name, 
+     * tsickle uses module's relative path as a module name,
      * and it occasionally breaks source code on Windows by using an absolute path
      * instead of a relative path, especially when using --typed option.
      * We fix it by applying regexes to replace `goog.forwardDeclare(C_.absolute.path.to.module.PopupBlocker.build.tsickle.index)`
      * into `goog.forwardDeclare('build.tsc.index').
      */
-    private static reWorkaroundTsickleBug = new RegExp(`(goog.[A-Za-z]*\\(")(?:.*?\\.)?${PathUtils.sourceDir}\\.`, 'g');
+    private static reWorkaroundTsickleBug = new RegExp(`(goog.[A-Za-z]*\\(")(?:.*?\\.)?${PathUtils.tsickleDir}\\.`, 'g');
     private static workaroundCallback(_, c1, c2) {
         return `${c1}${PathUtils.outputDir}.${PathUtils.tsccDir}.`;
     }
@@ -386,40 +437,56 @@ export default class Builder {
                 .pipe(<any>preprocess({ context: options.preprocessContext }))
                 .pipe(gulp.dest(PathUtils.tsicklePath))
         );
-    
-        const exitCode = tsickleMain(
-            `--externs=${PathUtils.tsicklePath}/generated-externs.js --typed -- -p tasks/tscc`
+
+        const result:tsickle.EmitResult|1 = tsickleMain(
+            `--externs=${PathUtils.tsccPath}/generated-externs.js --typed -- -p tasks/tscc`
                 .split(' ')
         );
-    
-        if (exitCode === 1) { throw 'tsickle error'; }
-    
+        if (result === 1) { throw new Error("Tsickle Error"); }
+
+        const contentScriptFilter = filter(file => /content_script\.js$/.test(file.path), { passthrough: false, restore: true })
+        const pageScriptFilter = filter(file => /page_script\.js$/.test(file.path), { passthrough: false, restore: true });
+
         await toPromise(
             gulp.src(`${PathUtils.tsccPath}/**/*.js`)
                 .pipe(insert.transform(Builder.tsickleWorkaround))
-                .pipe(insert.transform(this.inlineResource))
+                .pipe(insert.transform((content, file) => {
+                    if (file.path.endsWith('externs.js')) {
+                        // Do not inline resources to externs file.
+                        return content;
+                    }
+                    return this.inlineResource(content)
+                }))
                 .pipe(gulp.dest(PathUtils.tsccPath))
         );
-    
-        const pageScriptFilter = filter(['*page_script.js'], { passthrough: false, restore: true });
-    
+
+        const commonScript = contentScriptFilter.restore;
+
+        const contentScriptResv = new Reservoir(
+            merge(commonScript, pageScriptFilter.restore.pipe(contentScriptFilter))
+                .pipe(concat('page_script.js', {newLine: ';'}))
+        );
+
         const pageScriptRaw = await toPromise(
-            ccPlugin(this.closureCompilerOptions)
-                .src()
-                .pipe(insert.transform(TextUtils.removeCcExport))
-                .pipe(pageScriptFilter),
+            merge(commonScript,
+                 ccPlugin(this.ccOptionsFromManifest(result.modulesManifest))
+                    .src()
+                    .pipe(insert.transform(TextUtils.removeCcExport))
+                    .pipe(pageScriptFilter))
+                .pipe(concat('page_script.js', {newLine: ';'})),                
             true
         );
-        
+
         const inlinePageScript = (new InlineResource({
             PAGE_SCRIPT: {
                 path: `${this.paths.outputPath}page_script.min.js`,
-                data: pageScriptRaw 
+                data: pageScriptRaw
             }
         })).inline;
 
         return new Reservoir(
-            pageScriptFilter.restore
+            contentScriptResv
+                .release()
                 .pipe(insert.transform(inlinePageScript))
         );
     }
@@ -462,7 +529,7 @@ export default class Builder {
             for (let exclusion of Builder.exclusions) {
                 lines.push(`// @exclude ${exclusion}`);
             }
-        }        
+        }
 
         lines.push(`// @grant GM_getValue`);
         lines.push(`// @grant GM_setValue`);
@@ -470,6 +537,7 @@ export default class Builder {
         lines.push(`// @run-at document-start`);
 
         lines.push(`// ==/UserScript==`);
+        lines.push(``);
 
         return lines.join('\n');
     }
@@ -512,7 +580,7 @@ export default class Builder {
                     .pipe(insert.prepend(manifest))
                     .pipe(gulp.dest(this.paths.outputPath))
             ));
-            tasks.push(fs.writeFile(path.join(this.paths.outputPath, 'popupblocker.meta.js'), manifest));
+            tasks.push(fs.writeFile(path.posix.join(this.paths.outputPath, 'popupblocker.meta.js'), manifest));
         } else {
             // extension env
             tasks.push(toPromise(
@@ -521,7 +589,7 @@ export default class Builder {
                     .pipe(rename('content_script.js'))
                     .pipe(gulp.dest(this.paths.outputPath))
             ));
-            tasks.push(fs.writeFile(path.join(this.paths.outputPath, 'manifest.json'), manifest));
+            tasks.push(fs.writeFile(path.posix.join(this.paths.outputPath, 'manifest.json'), manifest));
             tasks.push(this.locales.moveLocalesToTargetDir());
         }
 
@@ -582,14 +650,14 @@ gulp.task('release-webext', (new Builder({
     }
 })).build);
 
-gulp.task('dev-userscript-no-minificaiton', (new Builder({
+gulp.task('dev-userscript-minified', (new Builder({
     target: BuildTarget.USERSCRIPT,
     channel: Channel.DEV,
     preprocessContext: {
         DEBUG:      true,
         RECORD:     true
     },
-    overrideShouldMinify: false
+    overrideShouldMinify: true
 })).build);
 
 gulp.task('release-userscript-no-minification', (new Builder({
@@ -598,7 +666,7 @@ gulp.task('release-userscript-no-minification', (new Builder({
     preprocessContext: {
         NO_PROXY: true
     },
-    overrideShouldMinify: true
+    overrideShouldMinify: false
 })).build);
 
 /******************************************************************************/
@@ -620,7 +688,7 @@ gulp.task('build-test', () => {
         .pipe(gulp.dest('./test/build'));
 });
 
-gulp.task('testsToGhPages', ['dev-minified'], () => {
+gulp.task('testsToGhPages', ['dev-userscript-minified'], () => {
     return [
         require('fs').writeFile('build/.nojekyll', ''),
         gulp.src(['test/index.html', 'test/**/*.js']).pipe(gulp.dest(PathUtils.outputDir + '/test/')),
@@ -666,7 +734,7 @@ gulp.task('i18n-down',  async () => {
     const languages = JSON.parse(await onesky.getLanguages(base)).data;
     const map = {};
     await Promise.all(languages.map(async (lang) => {
-        let languageCode = lang.code;   
+        let languageCode = lang.code;
         let option = Object.assign({
             language: languageCode,
             fileName: 'en.json'
