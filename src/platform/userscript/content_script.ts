@@ -18,7 +18,7 @@ const BRIDGE_KEY = storageProvider.expose();
 
 /**************************************************************************/
 
-function popupBlocker(window, KEY, _BRIDGE_KEY) {
+function popupBlocker(window, PARENT_FRAME_KEY, CONTENT_SCRIPT_KEY) {
     RESOURCE_PAGE_SCRIPT;
 }
 

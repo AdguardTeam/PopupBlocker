@@ -42,6 +42,7 @@ const reIsNative = new RegExp('^' + _toStringFn.call(Object.prototype.hasOwnProp
  */
 const isNativeFn = function (fn:Function):boolean {
     if (typeof fn !== 'function') { return false; }
+    
     let tostr;
     try {
         tostr = _reflect(_toStringFn, fn, []);

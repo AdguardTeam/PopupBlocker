@@ -292,7 +292,7 @@ export default class Builder {
     private get downloadUpdateURL() {
         switch (this.options.channel) {
             case Channel.DEV:
-                return 'https://AdguardTeam.github.io/PopupBlocker/';
+                return 'https://AdguardTeam.github.io/PopupBlocker/popupblocker.user.js';
             case Channel.BETA:
                 return 'https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.1/';
             case Channel.RELEASE:
@@ -319,12 +319,13 @@ export default class Builder {
         this.build = this.build.bind(this);
     }
 
+    private static rollupTsconfigOverride = { compilerOptions: { target: "es5" } };
     private get pageScriptRollupOptions() {
         if (this.options.channel !== Channel.DEV) { Builder.invalidConfError(); }
         return {
             entry: this.paths.pageScriptEntry,
-            plugins: [(<any>typescript2)({ compilerOptions: { target: "es5" } })],
-            format: 'es',
+            plugins: [(<any>typescript2)({ tsconfigOverride: Builder.rollupTsconfigOverride })],
+            format: 'es', // In order not to produce unnecessary closure.
             strict: false
         };
     }
@@ -332,8 +333,8 @@ export default class Builder {
         if (this.options.channel !== Channel.DEV) { Builder.invalidConfError(); }
         return {
             entry: this.paths.contentScriptEntry,
-            plugins: [(<any>typescript2)({ compilerOptions: { target: "es5" } })],
-            format: 'es',
+            plugins: [(<any>typescript2)({ tsconfigOverride: Builder.rollupTsconfigOverride })],
+            format: 'iife',
             strict: false
         };
     }
@@ -382,7 +383,7 @@ export default class Builder {
             '--externs',                  'externs.js',
             '--externs',                   this.paths.tsickleExternsPath,
             '--rewrite_polyfills',         String(false),
- 
+
             '--entry_point',               this.paths.commonEntryGoogModule,
             '--module',                   `common:${deps.num_js[0]}`,
             '--entry_point',               this.paths.pageScriptEntryGoogModule,
@@ -458,7 +459,7 @@ export default class Builder {
                     .src()
                     .pipe(insert.transform(TextUtils.removeCcExport))
                     .pipe(pageScriptFilter))
-                .pipe(concat('page_script.js', {newLine: ';'})).pipe(gulp.dest('build/temp')),                
+                .pipe(concat('page_script.js', {newLine: ';'})),
             true
         );
 
@@ -484,21 +485,33 @@ export default class Builder {
         return this.options.channel !== Channel.DEV;
     }
 
+    private get channelSuffix() {
+        switch (this.options.channel) {
+            case Channel.DEV:
+                return " Dev";
+            case Channel.BETA:
+                return " Beta";
+        }
+        return "";
+    }
+
     private async meta() {
         const translation = await this.locales.getTranslationJSON();
         const lines:string[] = [];
-        function insertTranslatableKeys (metaKey:string, messageId:string):void {
+        function insertKey(key:string, value:string) {
+            lines.push(`// @${key} ${value}`);
+        }
+        function insertTranslatableKeys (metaKey:string, messageId:string, additional:string = ''):void {
+            insertKey(metaKey, translation['en'][messageId].message + additional);
             for (let locale in translation) {
-                let key = metaKey;
-                if (locale !== 'en') {
-                    key += `:${locale}`;
-                }
-                lines.push(`// @${key} ${translation[locale][messageId].message}`);
+                if (locale === 'en') continue;
+                insertKey(metaKey + ':' + locale, translation[locale][messageId].message + additional);
             }
         }
 
         lines.push('// ==Userscript==');
-        insertTranslatableKeys('name', 'extension_name');
+        insertTranslatableKeys('name', 'extension_name', this.channelSuffix);
+        lines.push('// @namespace AdGuard');
         insertTranslatableKeys('description', 'extension_description');
         lines.push(`// @version ${Builder.version}`);
         lines.push(`// @license LGPL-3.0; https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE`);
@@ -529,14 +542,13 @@ export default class Builder {
 
     private async manifest():Promise<string> {
         const manifest = JSON.parse(await fs.readFile(this.paths.manifestPath));
-        switch (this.options.channel) {
-            case Channel.DEV:
-                manifest["name"] += " Dev";
-                break;
-            case Channel.BETA:
-                manifest["name"] += " Beta";
+        manifest["name"] += this.channelSuffix;
+        manifest["version"] = Builder.version;
+
+        if (this.options.channel === Channel.RELEASE) {
+            manifest["content_scripts"][0]["exclude_matches"] = Builder.exclusions;
         }
-        manifest["version"] = Builder.version
+
         return JSON.stringify(manifest);
     }
 
@@ -544,9 +556,13 @@ export default class Builder {
         throw Error('Invalid Configuration.');
     }
 
-    async clean() {
+    private async clean() {
         await fsExtra.remove(PathUtils.outputDir);
         await fsExtra.mkdirp(this.paths.outputPath);
+    }
+    private async cleanBuildArtifacts() {
+        await Promise.all([PathUtils.tsicklePath, PathUtils.tsccPath]
+            .map(dir => fsExtra.remove(dir)));
     }
 
     async build() {
@@ -581,6 +597,7 @@ export default class Builder {
         }
 
         await Promise.all(tasks);
+        await this.cleanBuildArtifacts();
     }
 
 }

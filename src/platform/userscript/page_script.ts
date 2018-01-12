@@ -18,6 +18,3 @@ import '../../dom/unload';
 import '../../dom/write';
 import '../../dom/preventDefault';
 import '../../observers/overlay_link_observer';
-import { timeline } from '../../timeline/index';
-
-export default timeline;
