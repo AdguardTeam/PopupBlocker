@@ -72,7 +72,7 @@ export default class I18nService implements II18nService {
     }
 
     private static reCommentPh = /^i18n:/;
-    translate(root:Element, context:StringMap):void {
+    applyTranslation(root:Element, context:StringMap):void {
         const nodeIterator = document.createNodeIterator(root, 128 /* NodeFilter.SHOW_COMMENT */, null, false);
         let current:Node;
         let val:string;

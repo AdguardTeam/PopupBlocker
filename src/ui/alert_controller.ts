@@ -41,7 +41,7 @@ interface AlertIntf {
     readonly $top:number,
     readonly $height:number,
     readonly toggleCollapse:()=>void,
-    readonly destroy:()=>void,
+    readonly $destroy:()=>void,
     readonly pushdown:(amount:number)=>void,
     readonly lastUpdate:number,
     timerId:number // timer Id that schedules an alert's next state change (collapse, destroy) is assigned here.
@@ -83,7 +83,7 @@ class Alert implements AlertIntf {
             loaded = true;
             let document = iframe.contentDocument;
             document.documentElement.innerHTML = _innerHTML; // document.write('..') does not work on FF Greasemonkey
-            i18nService.translate(document.body, {
+            i18nService.applyTranslation(document.body, {
                 'domain': url[1]
             });
             attachClickListenerForEach(document.getElementsByClassName('popup__link--allow'), () => {
@@ -142,7 +142,7 @@ class Alert implements AlertIntf {
         // Since its state was changed, update its lastUpdate property.
         this.lastUpdate = new Date().getTime();
     }
-    destroy() {
+    $destroy() {
         clearTimeout(this.timerId);
         let parentNode = this.$element.parentNode;
         if (parentNode) { parentNode.removeChild(this.$element); }
@@ -212,7 +212,7 @@ export default class AlertController {
         }
     }
     private destroyAlert(alert:AlertIntf) {
-        alert.destroy();
+        alert.$destroy();
         let i = this.alerts.indexOf(alert);
         let offset = alert.$height + STYLE_CONST.middle_offset;
         this.moveBunch(i, -offset);

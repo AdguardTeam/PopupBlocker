@@ -4,8 +4,10 @@
 
 import IStorageProvider from "./storage/IStorageProvider";
 
-namespace adguard {
-    export let storageProvider:IStorageProvider
+interface IAdguard {
+    storageProvider?:IStorageProvider
 }
+
+let adguard:IAdguard = {};
 
 export default adguard;

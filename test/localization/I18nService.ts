@@ -72,7 +72,7 @@ describe('Localization', function() {
         it('transforms html as expected', function() {
             const logPerf = 'now' in performance;
             const before = logPerf ? performance.now() : 0;
-            i18nService.translate(translateTestRoot, context);
+            i18nService.applyTranslation(translateTestRoot, context);
             const after = logPerf ? performance.now() : 0;
             console.log(`translate call ended in ${after-before} milliseconds.`);
             

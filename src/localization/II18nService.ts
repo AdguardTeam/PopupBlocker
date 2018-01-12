@@ -16,5 +16,5 @@ export default interface II18nService {
      * Apply translation on a DOM node, based on a scheme described in
      * {@link https://github.com/AdguardTeam/PopupBlocker/pull/22}.
      */
-    translate(root:Element, context:StringMap):void
+    applyTranslation(root:Element, context:StringMap):void
 }
