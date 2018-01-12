@@ -289,15 +289,14 @@ export default class Builder {
         '*://*.naver.com/*'
     ];
 
+    private static channelDownloadUpdateURLMap = {
+        [Channel.DEV]:      'https://AdguardTeam.github.io/PopupBlocker/popupblocker.user.js',
+        [Channel.BETA]:     'https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.1/',
+        [Channel.RELEASE]:  'https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.1/'
+    }
+
     private get downloadUpdateURL() {
-        switch (this.options.channel) {
-            case Channel.DEV:
-                return 'https://AdguardTeam.github.io/PopupBlocker/popupblocker.user.js';
-            case Channel.BETA:
-                return 'https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.1/';
-            case Channel.RELEASE:
-                return 'https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.1/';
-        }
+        return Builder.channelDownloadUpdateURLMap[this.options.channel];
     }
 
     private async loadResources() {
