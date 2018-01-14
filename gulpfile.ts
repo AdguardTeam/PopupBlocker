@@ -115,8 +115,8 @@ class PathUtils {
     }
     private static targetContentScriptEntryMap = {
         [BuildTarget.USERSCRIPT]:   'platform/userscript/content_script.ts',
-        [BuildTarget.CHROME_EXT]:   'platform/extension/chrome/content_script.ts',
-        [BuildTarget.WEBEXT]:       'platform/extension/webext/content_script.ts'
+        [BuildTarget.CHROME_EXT]:   'platform/extension/shared/content_script.ts',
+        [BuildTarget.WEBEXT]:       'platform/extension/shared/content_script.ts'
     }
     public get contentScriptEntry() {
         return path.posix.join(
@@ -501,7 +501,7 @@ export default class Builder {
             lines.push(`// @${key} ${value}`);
         }
         function insertTranslatableKeys (metaKey:string, messageId:string, additional:string = ''):void {
-            insertKey(metaKey, translation['en'][messageId].message + additional);
+            insertKey(metaKey, translation['en'][messageId].message + additional); // insert 'en' language at the first line.
             for (let locale in translation) {
                 if (locale === 'en') continue;
                 insertKey(metaKey + ':' + locale, translation[locale][messageId].message + additional);
@@ -509,29 +509,29 @@ export default class Builder {
         }
 
         lines.push('// ==Userscript==');
+
         insertTranslatableKeys('name', 'extension_name', this.channelSuffix);
-        lines.push('// @namespace AdGuard');
+        insertKey('namespace',   'AdGuard');
         insertTranslatableKeys('description', 'extension_description');
-        lines.push(`// @version ${Builder.version}`);
-        lines.push(`// @license LGPL-3.0; https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE`);
-        lines.push(`// @downloadURL ${this.downloadUpdateURL}`);
-        lines.push(`// @updateURL ${this.downloadUpdateURL}`);
-        lines.push(`// @supportURL https://github.com/AdguardTeam/PopupBlocker/issues`);
-        lines.push(`// @homepageURL https://github.com/AdguardTeam/PopupBlocker`);
-        lines.push(`// @match http://*/*`);
-        lines.push(`// @match https://*/*`);
+        insertKey('version',      Builder.version);
+        insertKey('license',     `LGPL-3.0; https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE`);
+        insertKey('downloadURL',  this.downloadUpdateURL);
+        insertKey('updateURL',    this.downloadUpdateURL);
+        insertKey('supportURL',  `https://github.com/AdguardTeam/PopupBlocker/issues`);
+        insertKey('homepageURL', `https://github.com/AdguardTeam/PopupBlocker`);
+        insertKey('match',       'http://*/*');
+        insertKey('match',       'https://*/*');
+        insertKey('grant',       'GM_getValue');
+        insertKey('grant',       'GM_setValue');
+        insertKey('grant',       'unsafeWindow');
+        insertKey('run-at',      'document-start');
 
         if (this.options.channel === Channel.RELEASE) {
             // Apply default whitelists to the release channel only.
             for (let exclusion of Builder.exclusions) {
-                lines.push(`// @exclude ${exclusion}`);
+                insertKey('exclude', exclusion);
             }
         }
-
-        lines.push(`// @grant GM_getValue`);
-        lines.push(`// @grant GM_setValue`);
-        lines.push(`// @grant unsafeWindow`);
-        lines.push(`// @run-at document-start`);
 
         lines.push(`// ==/UserScript==`);
         lines.push(``);
