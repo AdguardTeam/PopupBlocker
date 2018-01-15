@@ -1,1 +1,1 @@
-export default <typeof chrome>window.chrome || window["browser"];
+export default <typeof chrome>(typeof chrome !== 'undefined' ? chrome : browser);

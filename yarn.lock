@@ -541,6 +541,10 @@ commander@2.12.x, commander@~2.12.1:
   version "2.12.2"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.12.2.tgz#0f5946c427ed9ec0d91a46bb9def53e54650e555"
 
+commander@~2.13.0:
+  version "2.13.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.13.0.tgz#6964bca67685df7c1f1430c584f07d7597885b9c"
+
 component-emitter@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/component-emitter/-/component-emitter-1.2.1.tgz#137918d6d78283f7df7a6b7c5a63e140e69425e6"
@@ -1366,7 +1370,7 @@ ini@^1.3.4:
 
 "inline-resource-literal@https://github.com/seanl-adg/InlineResourceLiteral.git":
   version "0.0.0"
-  resolved "https://github.com/seanl-adg/InlineResourceLiteral.git#c716bf2fd04fd158226e2f2a2dd028fd93d85bbd"
+  resolved "https://github.com/seanl-adg/InlineResourceLiteral.git#f1a510c3a815326607d51329fc5cf623d63fd80e"
   dependencies:
     clean-css "^4.1.9"
     esprima "^4.0.0"
@@ -3199,7 +3203,14 @@ typescript@2.5.3:
   version "2.5.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.5.3.tgz#df3dcdc38f3beb800d4bc322646b04a3f6ca7f0d"
 
-uglify-js@3.3.x, uglify-js@^3.0.5:
+uglify-js@3.3.x:
+  version "3.3.7"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.3.7.tgz#28463e7c7451f89061d2b235e30925bf5625e14d"
+  dependencies:
+    commander "~2.13.0"
+    source-map "~0.6.1"
+
+uglify-js@^3.0.5:
   version "3.3.4"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.3.4.tgz#d8ebb76f201a3798ac2f0b6519642fcca4a99834"
   dependencies:
