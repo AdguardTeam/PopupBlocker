@@ -60,6 +60,9 @@ abstract class TextUtils {
     static removeCcExport(content) {
         return content.replace(/"REMOVE_START"[\s\S]*?"REMOVE_END"/, '');
     }
+    static removeGlobalAssignment(content) {
+        return content.replace('window.popupBlocker=', '');
+    }
 }
 
 class PathUtils {
@@ -292,7 +295,7 @@ export default class Builder {
     ];
 
     private static channelDownloadUpdateURLMap = {
-        [Channel.DEV]:      'https://AdguardTeam.github.io/PopupBlocker/popupblocker.user.js',
+        [Channel.DEV]:      'https://AdguardTeam.github.io/PopupBlocker/popupblocker.meta.js',
         [Channel.BETA]:     'https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.1/',
         [Channel.RELEASE]:  'https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.1/'
     }
@@ -469,16 +472,22 @@ export default class Builder {
         );
         log.info("Closure compiler end");
 
+        const wrappedPageScript = this.options.target === BuildTarget.USERSCRIPT ?
+            `function popupBlocker(window,PARENT_FRAME_KEY,CONTENT_SCRIPT_KEY){${pageScriptRaw}}` :
+            `function popupBlocker(window,PARENT_FRAME_KEY){${pageScriptRaw}}`;
+
+
         const inlinePageScript = (new InlineResource({
             PAGE_SCRIPT: {
                 path: `${this.paths.outputPath}page_script.min.js`,
-                data: pageScriptRaw
+                data: wrappedPageScript
             }
         })).inline;
 
         return new Reservoir(
             contentScriptResv
                 .release()
+                .pipe(insert.transform(TextUtils.removeGlobalAssignment))
                 .pipe(insert.transform(inlinePageScript))
         );
     }
@@ -515,15 +524,15 @@ export default class Builder {
             }
         }
 
-        lines.push('// ==Userscript==');
+        lines.push('// ==UserScript==');
 
         insertTranslatableKeys('name', 'extension_name', this.channelSuffix);
         insertKey('namespace',   'AdGuard');
         insertTranslatableKeys('description', 'extension_description');
         insertKey('version',      Builder.version);
         insertKey('license',     `LGPL-3.0; https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE`);
-        insertKey('downloadURL',  this.downloadUpdateURL);
-        insertKey('updateURL',    this.downloadUpdateURL);
+        insertKey('downloadURL', `${this.downloadUpdateURL}popupblocker.user.js`);
+        insertKey('updateURL',   `${this.downloadUpdateURL}popupblocker.meta.js`);
         insertKey('supportURL',  `https://github.com/AdguardTeam/PopupBlocker/issues`);
         insertKey('homepageURL', `https://github.com/AdguardTeam/PopupBlocker`);
         insertKey('match',       'http://*/*');
@@ -612,7 +621,7 @@ export default class Builder {
         }
 
         await Promise.all(tasks);
-        await this.cleanBuildArtifacts();
+        //await this.cleanBuildArtifacts();
     }
 
 }

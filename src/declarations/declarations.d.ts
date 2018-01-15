@@ -14,6 +14,9 @@ declare function popupBlocker(window, PARENT_FRAME_KEY?:string, CONTENT_SCRIPT_K
 declare const PARENT_FRAME_KEY:string;
 declare const CONTENT_SCRIPT_KEY:string;
 
+interface Window {
+    popupBlocker:typeof popupBlocker
+}
 declare function InstallTrigger();
 
 // Non-standard DOM apis that are not understood by either Typescript or

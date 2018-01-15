@@ -18,9 +18,7 @@ const BRIDGE_KEY = storageProvider.expose();
 
 /**************************************************************************/
 
-function popupBlocker(window, PARENT_FRAME_KEY, CONTENT_SCRIPT_KEY) {
-    RESOURCE_PAGE_SCRIPT;
-}
+window.popupBlocker = RESOURCE_PAGE_SCRIPT;
 
 /**************************************************************************/
 
@@ -37,13 +35,13 @@ if (settings.isFirefox) {
     el.removeChild(script);
 } else {
     let win = typeof unsafeWindow !== 'undefined' ? unsafeWindow.window : window;
-    popupBlocker(win,false,BRIDGE_KEY);
+    popupBlocker(win,undefined,BRIDGE_KEY);
 }
 
 /**************************************************************************/
 
-declare var RESOURCE_USERSCRIPT_TRANSLATIONS:stringmap<stringmap<string>>;
 declare var RESOURCE_PAGE_SCRIPT;
+
 
 /**************************************************************************/
 /**************************************************************************/

@@ -98,7 +98,7 @@ const PAGE_SCRIPT = RESOURCE_ARGS("PAGE_SCRIPT",
     "VAR_BEFOREUNLOAD", i18nService.getMessage('on_navigation_by_popunder')
 );
 
-runScript(`(function popupBlocker(window,PARENT_FRAME_KEY){${PAGE_SCRIPT}})(window,void 0);`);
+runScript(`(${PAGE_SCRIPT})(window,void 0);`);
 
 /**************************************************************************/
 /**************************************************************************/
