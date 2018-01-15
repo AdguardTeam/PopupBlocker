@@ -3,6 +3,8 @@ import * as fs from 'async-file';
 import * as fsExtra from 'fs-extra';
 import Reservoir from './tasks/Reservoir';
 import toPromise from './tasks/to_promise';
+import mergeOpts = require('merge-options');
+import log = require('fancy-log');
 
 import gulp = require('gulp');
 import insert = require('gulp-insert');
@@ -28,15 +30,16 @@ import * as tsickle from 'tsickle/src/tsickle';
 const ccPlugin = closureCompiler.gulp({});
 
 enum BuildTarget {
-    USERSCRIPT,
-    CHROME_EXT,
-    WEBEXT
+    USERSCRIPT  = 'userscript',
+    CHROME      = 'chrome',
+    FIREFOX     = 'firefox',
+    EDGE        = 'edge'
 }
 
 enum Channel {
-    DEV,
-    BETA,
-    RELEASE
+    DEV         = 'dev',
+    BETA        = 'beta',
+    RELEASE     = 'release'
 }
 
 interface IPreprocessContext {
@@ -70,13 +73,8 @@ class PathUtils {
     public static tsicklePath = path.posix.join(PathUtils.outputDir, PathUtils.tsickleDir);
     public static tsccPath = path.posix.join(PathUtils.outputDir, PathUtils.tsccDir);
 
-    private static platformDirMap = {
-        [BuildTarget.USERSCRIPT]:   'userscript',
-        [BuildTarget.CHROME_EXT]:   'chrome',
-        [BuildTarget.WEBEXT]:       'webext'
-    }
     public get outputPath() {
-        return path.posix.join(PathUtils.outputDir, PathUtils.platformDirMap[this.options.target], '');
+        return path.posix.join(PathUtils.outputDir, this.options.target, '');
     }
 
     private static reModuleExtension = /\.[jt]sx?$/;
@@ -94,8 +92,9 @@ class PathUtils {
 
     private static targetPageScriptEntryMap = {
         [BuildTarget.USERSCRIPT]:   'platform/userscript/page_script.ts',
-        [BuildTarget.CHROME_EXT]:   'platform/extension/shared/page_script.ts',
-        [BuildTarget.WEBEXT]:       'platform/extension/shared/page_script.ts'
+        [BuildTarget.CHROME]:       'platform/extension/shared/page_script.ts',
+        [BuildTarget.FIREFOX]:      'platform/extension/shared/page_script.ts',
+        [BuildTarget.EDGE]:         'platform/extension/shared/page_script.ts'
     }
     public get pageScriptEntry() {
         return path.posix.join(
@@ -115,8 +114,9 @@ class PathUtils {
     }
     private static targetContentScriptEntryMap = {
         [BuildTarget.USERSCRIPT]:   'platform/userscript/content_script.ts',
-        [BuildTarget.CHROME_EXT]:   'platform/extension/shared/content_script.ts',
-        [BuildTarget.WEBEXT]:       'platform/extension/shared/content_script.ts'
+        [BuildTarget.CHROME]:       'platform/extension/shared/content_script.ts',
+        [BuildTarget.FIREFOX]:      'platform/extension/shared/content_script.ts',
+        [BuildTarget.EDGE]:         'platform/extension/shared/content_script.ts'
     }
     public get contentScriptEntry() {
         return path.posix.join(
@@ -136,8 +136,9 @@ class PathUtils {
     }
     private static targetCommonScriptMap = {
         [BuildTarget.USERSCRIPT]:   'platform/userscript/common.ts',
-        [BuildTarget.CHROME_EXT]:   'platform/extension/shared/common.ts',
-        [BuildTarget.WEBEXT]:       'platform/extension/shared/common.ts'
+        [BuildTarget.CHROME]:       'platform/extension/shared/common.ts',
+        [BuildTarget.FIREFOX]:      'platform/extension/shared/common.ts',
+        [BuildTarget.EDGE]:         'platform/extension/shared/common.ts'
     }
     public get commonEntryCc() {
         return PathUtils.normalizeModuleExtension(path.posix.join(
@@ -160,10 +161,11 @@ class PathUtils {
 
     public static translationJSONPath = 'src/locales/translations.json'
 
+    public static commonExtensionManifestPath = 'src/platform/extension/shared/manifest.json';
+
     private static targetManifestPathMap = {
         [BuildTarget.USERSCRIPT]:   'src/platform/userscript/meta.js',
-        [BuildTarget.CHROME_EXT]:   'src/platform/extension/shared/manifest.json',
-        [BuildTarget.WEBEXT]:       'src/platform/extension/shared/manifest.json'
+        [BuildTarget.EDGE]:         'src/platform/extension/edge/manifest_override.json'
     }
     public get manifestPath() {
         return PathUtils.targetManifestPathMap[this.options.target];
@@ -422,11 +424,14 @@ export default class Builder {
                 .pipe(<any>preprocess({ context: options.preprocessContext }))
                 .pipe(gulp.dest(PathUtils.tsicklePath))
         );
-
+        
+        log.info("Tsickle start");
         const result:tsickle.EmitResult|1 = tsickleMain(
             `--externs=${PathUtils.tsccPath}/generated-externs.js --typed -- -p tasks/tscc`
                 .split(' ')
         );
+        log.info("Tsickle end");
+
         if (result === 1) { throw new Error("Tsickle Error"); }
 
         const contentScriptFilter = filter(file => /content_script\.js$/.test(file.path), { passthrough: false, restore: true })
@@ -452,6 +457,7 @@ export default class Builder {
                 .pipe(concat('page_script.js', {newLine: ';'}))
         );
 
+        log.info("Closure compiler start");
         const pageScriptRaw = await toPromise(
             merge(commonScript,
                  ccPlugin(this.ccOptionsFromManifest(result.modulesManifest))
@@ -461,6 +467,7 @@ export default class Builder {
                 .pipe(concat('page_script.js', {newLine: ';'})),
             true
         );
+        log.info("Closure compiler end");
 
         const inlinePageScript = (new InlineResource({
             PAGE_SCRIPT: {
@@ -540,7 +547,16 @@ export default class Builder {
     }
 
     private async manifest():Promise<string> {
-        const manifest = JSON.parse(await fs.readFile(this.paths.manifestPath));
+        const [baseManifest, manifestOverride] = await Promise.all([
+            fs.readFile(PathUtils.commonExtensionManifestPath),
+            this.paths.manifestPath ?
+                fs.readFile(this.paths.manifestPath) :
+                Promise.resolve('{}')
+        ].map(pr => pr.then(JSON.parse)));
+
+        const manifest = mergeOpts(baseManifest, manifestOverride);
+
+        // Manual tweaks
         manifest["name"] += this.channelSuffix;
         manifest["version"] = Builder.version;
 
@@ -603,97 +619,36 @@ export default class Builder {
 
 /******************************************************************************/
 
-gulp.task('dev-userscript', (new Builder({
-    target: BuildTarget.USERSCRIPT,
-    channel: Channel.DEV,
-    preprocessContext: {
-        DEBUG: true,
-        RECORD: true
-    }
-})).build);
+const preprocessCtxt = {
+    NO_PROXY: true
+};
 
-gulp.task('dev-webext', (new Builder({
-    target: BuildTarget.WEBEXT,
-    channel: Channel.DEV,
-    preprocessContext: {
-        DEBUG: true,
-        RECORD: true
-    }
-})).build);
+const devPreprocessCtxt = {
+    DEBUG: true,
+    RECORD: true
+};
 
-gulp.task('dev-chrome', (new Builder({
-    target: BuildTarget.CHROME_EXT,
-    channel: Channel.DEV,
-    preprocessContext: {
-        DEBUG: true,
-        RECORD: true
+for (let target in BuildTarget) {
+    for (let channel in Channel) {
+        gulp.task(`${Channel[channel]}-${BuildTarget[target]}`, new Builder({
+            target: <BuildTarget>BuildTarget[target],
+            channel: <Channel>Channel[channel],
+            preprocessContext: channel === 'DEV' ? devPreprocessCtxt : preprocessCtxt
+        }).build);
     }
-})).build);
-
-gulp.task('beta-userscript', (new Builder({
-    target: BuildTarget.USERSCRIPT,
-    channel: Channel.BETA,
-    preprocessContext: {
-        NO_PROXY: true
-    }
-})).build);
-
-gulp.task('beta-webext', (new Builder({
-    target: BuildTarget.WEBEXT,
-    channel: Channel.BETA,
-    preprocessContext: {
-        NO_PROXY: true
-    }
-})).build);
-
-gulp.task('beta-chrome', (new Builder({
-    target: BuildTarget.CHROME_EXT,
-    channel: Channel.BETA,
-    preprocessContext: {
-        NO_PROXY: true
-    }
-})).build);
-
-gulp.task('release-userscript', (new Builder({
-    target: BuildTarget.USERSCRIPT,
-    channel: Channel.RELEASE,
-    preprocessContext: {
-        NO_PROXY: true
-    }
-})).build)
-
-gulp.task('release-webext', (new Builder({
-    target: BuildTarget.USERSCRIPT,
-    channel: Channel.RELEASE,
-    preprocessContext: {
-        NO_PROXY: true
-    }
-})).build);
-
-gulp.task('release-webext', (new Builder({
-    target: BuildTarget.CHROME_EXT,
-    channel: Channel.RELEASE,
-    preprocessContext: {
-        NO_PROXY: true
-    }
-})).build);
+}
 
 gulp.task('dev-userscript-minified', (new Builder({
     target: BuildTarget.USERSCRIPT,
     channel: Channel.DEV,
-    preprocessContext: {
-        DEBUG: true,
-        RECORD: true
-    },
+    preprocessContext: devPreprocessCtxt,
     overrideShouldMinify: true
 })).build);
 
 gulp.task('release-userscript-no-minification', (new Builder({
     target: BuildTarget.USERSCRIPT,
     channel: Channel.RELEASE,
-    preprocessContext: {
-        NO_PROXY: true
-    },
+    preprocessContext: preprocessCtxt,
     overrideShouldMinify: false
 })).build);
 

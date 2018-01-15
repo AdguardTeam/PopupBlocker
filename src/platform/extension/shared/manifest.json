@@ -11,7 +11,7 @@
               "http://*/*",
               "https://*/*"
           ],
-          "match_about_blank": true,
+          "match_about_blank": false,
           "js": [
               "content_script.js"
           ],
