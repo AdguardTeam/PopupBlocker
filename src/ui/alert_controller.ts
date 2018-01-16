@@ -1,9 +1,10 @@
-import { requestDomainWhitelist, requestDestinationWhitelist } from './storage';
-import translate, { getMessage, formatText } from './localization';
+import IStorageManager from '../storage/IStorageManager';
+import II18nService from '../localization/II18nService';
 import createUrl from '../shared/url';
 import * as log from '../shared/log';
+import IStorageProvider from '../storage/IStorageProvider';
 
-const innerHTML = "RESOURCE:ALERT_TEMPLATE";
+declare const RESOURCE_ALERT_TEMPLATE:string;
 
 const enum STYLE_CONST {
     top_offset = 10,
@@ -40,7 +41,7 @@ interface AlertIntf {
     readonly $top:number,
     readonly $height:number,
     readonly toggleCollapse:()=>void,
-    readonly destroy:()=>void,
+    readonly $destroy:()=>void,
     readonly pushdown:(amount:number)=>void,
     readonly lastUpdate:number,
     timerId:number // timer Id that schedules an alert's next state change (collapse, destroy) is assigned here.
@@ -53,54 +54,46 @@ function attachClickListenerForEach (iterable:NodeList, listener:(this:Node,evt:
     }
 }
 
-// Until we come up with a proper UI, we reponse to user interaction with window.confirm.
-function showConfirmationDialog (messageId:string, context:stringmap):boolean {
-    const message = formatText(getMessage(messageId), context);
-    // Certain browsers always return `false` from window.confirm;
-    // In such cases, we skip confirmation step.
-    // https://github.com/AdguardTeam/PopupBlocker/issues/50
-    let now = Date.now();
-    let response = window.confirm(message);
-    if (Date.now() - now < 100) { return true; }
-    return response;
-}
-
 class Alert implements AlertIntf {
     public $element:HTMLIFrameElement;
     public $collapsed:boolean;
     public $top:number;
     public $height:number;
-    constructor(orig_domain:string, popup_url:string, showCollapsed:boolean) {
+    constructor(
+        orig_domain:string,
+        popup_url:string,
+        private i18nService:II18nService,
+        storageManager:IStorageManager
+    ) {
         let iframe = document.createElement('iframe');
         let loaded = false;
         // Prepare innerHTML
         let url = createUrl(popup_url);
 
-        const localizationContext:stringmap = Object.create(null);
+        const localizationContext:StringMap = Object.create(null);
         localizationContext['displayUrl'] = url[0];
         localizationContext['domain'] = url[1];
         localizationContext['href'] = popup_url;
         localizationContext['parent'] = orig_domain
 
-        let _innerHTML = formatText(innerHTML, localizationContext, true);
+        let _innerHTML = i18nService.formatText(RESOURCE_ALERT_TEMPLATE, localizationContext, true);
         iframe.addEventListener('load', (evt) => {
             // Attach event handlers
             if (loaded) { return; }
             loaded = true;
             let document = iframe.contentDocument;
             document.documentElement.innerHTML = _innerHTML; // document.write('..') does not work on FF Greasemonkey
-            translate(document.body, {
+            i18nService.applyTranslation(document.body, {
                 'domain': url[1]
             });
-            if (showCollapsed) { document.getElementsByClassName('popup')[0].classList.add('popup--min'); }
             attachClickListenerForEach(document.getElementsByClassName('popup__link--allow'), () => {
-                if (showConfirmationDialog("popup_allow_dest_conf", localizationContext)) {
-                    requestDestinationWhitelist(url[1]);
+                if (this.showConfirmationDialog("popup_allow_dest_conf", localizationContext)) {
+                    storageManager.requestDestinationWhitelist(url[1]);
                 }
             });
             attachClickListenerForEach(document.getElementsByClassName('popup__link--all'), () => {
-                if (showConfirmationDialog("popup_allow_origin_conf", localizationContext)) {
-                    requestDomainWhitelist(orig_domain);
+                if (this.showConfirmationDialog("popup_allow_origin_conf", localizationContext)) {
+                    storageManager.requestDomainWhitelist(orig_domain);
                 }
             });
             requestAnimationFrame(() => {
@@ -112,17 +105,28 @@ class Alert implements AlertIntf {
         // Adjust css of an iframe
         iframe.setAttribute('allowTransparency', 'true');
         for (let prop in initialAlertFrameStyle) { iframe.style[prop] = initialAlertFrameStyle[prop]; }
-        let height = this.$height = showCollapsed ? STYLE_CONST.collapsed_height : STYLE_CONST.height;
-        let width = showCollapsed ? STYLE_CONST.collapsed_width : STYLE_CONST.width;
+        let height = this.$height = STYLE_CONST.height;
+        let width = STYLE_CONST.width;
         iframe.style.height = height + px;
         iframe.style.width = width + px;
         // Commenting out the below due to https://bugs.chromium.org/p/chromium/issues/detail?id=489431,
         // iframe.setAttribute('sandbox', 'allow-same-origin');
 
         this.$element = iframe;
-        this.$collapsed = showCollapsed;
+        this.$collapsed = false;
         this.$top = STYLE_CONST.top_offset;
         this.lastUpdate = new Date().getTime();
+    }
+    // Until we come up with a proper UI, we reponse to user interaction with window.confirm.
+    private showConfirmationDialog (messageId:string, context:StringMap):boolean {
+        const message = this.i18nService.formatText(this.i18nService.getMessage(messageId), context);
+        // Certain browsers always return `false` from window.confirm;
+        // In such cases, we skip confirmation step.
+        // https://github.com/AdguardTeam/PopupBlocker/issues/50
+        let now = Date.now();
+        let response = window.confirm(message);
+        if (Date.now() - now < 100) { return true; }
+        return response;
     }
     pushdown(amount:number) {
         let newTop = this.$top + amount;
@@ -138,7 +142,7 @@ class Alert implements AlertIntf {
         // Since its state was changed, update its lastUpdate property.
         this.lastUpdate = new Date().getTime();
     }
-    destroy() {
+    $destroy() {
         clearTimeout(this.timerId);
         let parentNode = this.$element.parentNode;
         if (parentNode) { parentNode.removeChild(this.$element); }
@@ -147,14 +151,17 @@ class Alert implements AlertIntf {
     public timerId:number // This will be initialized when an alert is created by AlertController#createAlert.
 }
 
-class AlertController {
+export default class AlertController {
     private alerts:AlertIntf[];
     private hovered:boolean;
-    constructor() {
+    constructor(
+        private i18nService:II18nService,
+        private storageManager:IStorageManager
+    ) {
         this.alerts = [];
     }
-    createAlert(orig_domain:string, popup_url:string, showCollapsed:boolean) {
-        let alert = new Alert(orig_domain, popup_url, showCollapsed);
+    createAlert(orig_domain:string, popup_url:string) {
+        let alert = new Alert(orig_domain, popup_url, this.i18nService, this.storageManager);
         // Pushes previous alerts down
         let l = this.alerts.length;
         let offset = STYLE_CONST.middle_offset + alert.$height;
@@ -174,15 +181,9 @@ class AlertController {
         // Appends an alert to DOM
         document.documentElement.appendChild(alert.$element);
         // Schedules collapsing & destroying
-        if (showCollapsed) {
-            alert.timerId = setTimeout(() => {
-                this.destroyAlert(alert);
-            }, COLLAPSED_ALERT_TIMEOUT);
-        } else {
-            alert.timerId = setTimeout(() => {
-                this.toggleCollapseAlert(alert);
-            }, FULL_ALERT_TIMEOUT);
-        }
+        alert.timerId = setTimeout(() => {
+            this.toggleCollapseAlert(alert);
+        }, FULL_ALERT_TIMEOUT);
         // Pushes the new alert to an array, destroy from the oldest alert when needed
         if ((l = this.alerts.push(alert)) > MAX_ALERT_NUM) {
             l -= MAX_ALERT_NUM;
@@ -195,7 +196,7 @@ class AlertController {
     /**
      * Collapses an alert and schedules its destruction
      */
-    private toggleCollapseAlert(alert:Alert) {
+    private toggleCollapseAlert(alert:AlertIntf) {
         let prevHeight = alert.$height;
         alert.toggleCollapse();
         let offset = alert.$height - prevHeight;
@@ -210,8 +211,8 @@ class AlertController {
             }, FULL_ALERT_TIMEOUT);
         }
     }
-    private destroyAlert(alert:Alert) {
-        alert.destroy();
+    private destroyAlert(alert:AlertIntf) {
+        alert.$destroy();
         let i = this.alerts.indexOf(alert);
         let offset = alert.$height + STYLE_CONST.middle_offset;
         this.moveBunch(i, -offset);
@@ -272,5 +273,3 @@ class AlertController {
         return amongCollapsed > amongUncollapsed ? amongUncollapsed : amongCollapsed;
     }
 }
-
-export default new AlertController();

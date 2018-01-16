@@ -16,9 +16,9 @@ var minimist = require("minimist");
 var mkdirp = require("mkdirp");
 var path = require("path");
 var ts = require("typescript");
-var cliSupport = require("../../../../node_modules/tsickle/built/src/cli_support");
-var tsickle = require("../../../../node_modules/tsickle/built/src/tsickle");
-var tsickle_1 = require("../../../../node_modules/tsickle/built/src/tsickle");
+var cliSupport = require("../../../../node_modules/tsickle/src/cli_support");
+var tsickle = require("../../../../node_modules/tsickle/src/tsickle");
+var tsickle_1 = require("../../../../node_modules/tsickle/src/tsickle");
 function usage() {
     console.error("usage: tsickle [tsickle options] -- [tsc options]\n\nexample:\n  tsickle --externs=foo/externs.js -- -p src --noImplicitAny\n\ntsickle flags are:\n  --externs=PATH     save generated Closure externs.js to PATH\n  --typed            [experimental] attempt to provide Closure types instead of {?}\n");
 }
@@ -108,11 +108,11 @@ function toClosureJS(options, fileNames, settings, writeFile) {
     var program = ts.createProgram(fileNames, options, compilerHost);
     var transformerHost = {
         shouldSkipTsickleProcessing: function (fileName) {
-            // <<<<<<<<<<<<< Patched
+// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Patched
             return fileNames.findIndex(function (a) {
                 return fileName.indexOf(a) !== -1;
             }) === -1;
-            // Patched >>>>>>>>>>>>>
+// Patched >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         },
         shouldIgnoreWarningsForPath: function (fileName) { return false; },
         pathToModuleName: cliSupport.pathToModuleName,
@@ -166,7 +166,10 @@ function main(args) {
         mkdirp.sync(path.dirname(settings.externsPath));
         fs.writeFileSync(settings.externsPath, tsickle.getGeneratedExterns(result.externs));
     }
-    return 0;
+// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Patched
+    return result;
+// Patched >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    // return 0;
 }
 // CLI entry point
 if (require.main === module) {

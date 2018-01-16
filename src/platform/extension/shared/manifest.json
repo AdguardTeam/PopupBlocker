@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+  "name": "__MSG_extension_name__",
+  "description": "__MSG_extension_description__",
+  "author": "Adguard Software Ltd",
+  "default_locale": "en",
+  "content_scripts":[
+      {
+          "all_frames": true,
+          "matches": [
+              "http://*/*",
+              "https://*/*"
+          ],
+          "match_about_blank": false,
+          "js": [
+              "content_script.js"
+          ],
+          "run_at": "document_start"
+      }
+  ],
+  "permissions": [
+    "<all_urls>",
+    "storage"
+  ]
+}

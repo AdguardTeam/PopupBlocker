@@ -11,15 +11,16 @@
  *  - a request to dispatch a MouseEvent to a specified coordinate inside a frame.
  */
 
+import adguard from './adguard';
 import * as log from './shared/log';
 import { getTagName, isEmptyUrl, getSafeNonEmptyParent } from './shared/dom';
-import bridge from './bridge';
-import { _preventDefault } from './dom/preventDefault/orig';
 
 const supported = typeof WeakMap === 'function';
 const parent = window.parent;
 const isTop = parent === window;
 const isEmpty = isEmptyUrl(location.href);
+
+const _preventDefault = Event.prototype.preventDefault;
 
 const enum MessageType {
     SHOW_ALERT,
@@ -102,14 +103,16 @@ export const createAlertInTopFrame = supported && !isTop && !isEmpty ? (orig_dom
         isGeneric
     };
     channel.port2.postMessage(data);
-} : (isTop || isEmpty) ? (orig_domain:string, popup_domain:string, isGeneric:boolean):void => {
+} : (isTop || isEmpty) ? (orig_domain:string, popup_domain:string):void => {
     // If a current window is the top frame or an empty frame, display an alert using bridge.
     // Empty iframes can be detached from the document shortly after opening a popup.
     // In such cases, `postMessage` may not work due to `evt.source` being `undefined`,
     // so we use bridge directly which is readily available anyway.
     // A `setTimeout` is used to prevent event handler from blocking UI.
-    const targetFrame = getSafeNonEmptyParent(window);
-    targetFrame.setTimeout(bridge.showAlert, 0, orig_domain, popup_domain, isGeneric);
+    //
+    // const targetFrame = getSafeNonEmptyParent(window);
+    // targetFrame.setTimeout(adguard.storageProvider.showAlert, 0, orig_domain, popup_domain);
+    adguard.storageProvider.showAlert(orig_domain, popup_domain);
 } : /* noop */(orig_domain:string, popup_domain:string, isGeneric:boolean):void => {
     // If a current window is not top and the browser does not support WeakMap, do nothing.
 };

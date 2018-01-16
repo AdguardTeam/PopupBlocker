@@ -2,11 +2,11 @@
     "compilerOptions": {
         "target": "es6",
         "lib": ["DOM", "ES6"],
-        "outDir": "../../build/tsickle",
+        "outDir": "../../build/tscc",
         "module": "commonjs",
-        "types": ["greasemonkey"]
+        "types": ["filesystem"]
     },
     "include": [
-        "../../build/prep/**/*.ts"
+        "../../build/tsickle/**/*.ts"
     ]
 }

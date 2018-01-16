@@ -1,5 +1,5 @@
 import { wrapAccessor } from '../proxy';
 
 // @ifdef DEBUG
-wrapAccessor(HTMLObjectElement.prototype, 'data');
+wrapAccessor(window.HTMLObjectElement.prototype, 'data');
 // @endif

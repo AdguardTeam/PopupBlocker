@@ -13,7 +13,7 @@ const afterTest = [navigatePopupToItself];
 
 const EVENT_RETENTION_LENGTH = 5000;
 
-class Timeline {
+export default class Timeline {
     private events:TimelineEvent[][];
     private isRecording:boolean;
     constructor() {
@@ -100,8 +100,8 @@ class Timeline {
     // @endif
 }
 
-export const timeline:Timeline = typeof KEY === 'string' ? window.parent[KEY][2] : new Timeline();
-export const position:number = typeof KEY === 'string' ? timeline.onNewFrame() : 0;
+export const timeline:Timeline = typeof PARENT_FRAME_KEY === 'string' ? window.parent[PARENT_FRAME_KEY][2] : new Timeline();
+export const position:number = typeof PARENT_FRAME_KEY === 'string' ? timeline.onNewFrame() : 0;
 
 // These are called from the outside of the code, so we have to make sure that call structures of those are not modified.
 // It is removed in minified builds, see the gulpfile.

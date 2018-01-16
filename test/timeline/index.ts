@@ -1,4 +1,4 @@
-import { timeline } from '../../src/timeline';
+import { timeline } from '../../src/timeline/index';
 import { TLEventType } from '../../src/timeline/event';
 
 const expect = chai.expect;

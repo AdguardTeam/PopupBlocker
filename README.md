@@ -52,14 +52,23 @@ Unit test for dev build is [here](https://AdguardTeam.github.io/PopupBlocker/tes
 
 ## How to build
 
-For development build run:
+Install `gulp` and `ts-node` globally by running:
+```
+npm install -g gulp ts-node
+```
+Install local dependencies by runnning:
+```
+yarn install
+```
 
-    $ gulp dev
+To build, run:
+```
+$ gulp <channel>-<target>
+```
+Available channels are: `dev`, `beta`, `release`
+Available targets are: `userscript`, `chrome`, `webext`
 
-This will compile `popupblocker.user.js` file without minification.
+Developement builds are not minified, and will print logs into the browser console.
 
-For production build run:
-
-    $ gulp release
-
-This will compile `popupblocker.user.js` file with minification and without logging.
+Beta and release builds will be minified and have all logging codes stripped out.
+For minified builds, ensure that you have Java installed and have necessary environment variables.

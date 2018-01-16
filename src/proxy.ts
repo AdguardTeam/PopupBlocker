@@ -2,7 +2,7 @@ import { timeline, position } from './timeline/index';
 import { TimelineEvent, TLEventType } from './timeline/event';
 import { isWindow, isLocation } from './shared/instanceof';
 import WeakMap from './weakmap';
-import bridge from './bridge';
+import adguard from './adguard';
 // @ifndef NO_PROXY
 import { mockedWindowCollection } from './mock_window';
 // @endif
@@ -42,6 +42,7 @@ const reIsNative = new RegExp('^' + _toStringFn.call(Object.prototype.hasOwnProp
  */
 const isNativeFn = function (fn:Function):boolean {
     if (typeof fn !== 'function') { return false; }
+    
     let tostr;
     try {
         tostr = _reflect(_toStringFn, fn, []);
@@ -60,10 +61,10 @@ const isNativeFn = function (fn:Function):boolean {
 }
 
 // See HTMLIFrame.ts
-const proxyToReal = typeof KEY === 'string' ? window.parent[KEY][0] : new WeakMap();
-const realToProxy = typeof KEY === 'string' ? window.parent[KEY][1] : new WeakMap();
+const proxyToReal = typeof PARENT_FRAME_KEY === 'string' ? window.parent[PARENT_FRAME_KEY][0] : new WeakMap();
+const realToProxy = typeof PARENT_FRAME_KEY === 'string' ? window.parent[PARENT_FRAME_KEY][1] : new WeakMap();
 
-export const expose = (key:PropertyKey) => { window[key] = [proxyToReal, realToProxy, timeline, bridge]; };
+export const expose = (key:PropertyKey) => { window[key] = [proxyToReal, realToProxy, timeline, adguard.storageProvider]; };
 export const unexpose = (key:PropertyKey) => { delete window[key]; };
 
 export type ApplyHandler = (target:Function, _this:any, _arguments:IArguments|any[], context?:any) => any;
@@ -262,6 +263,5 @@ if (supported) {
     wrapMethod(Reflect, 'apply', reflectWithUnproxiedThis, false);
     wrapAccessor(MessageEvent.prototype, 'source', proxifyReturn, undefined, false);
 }
-
 wrapMethod(Function.prototype, 'toString', invokeWithUnproxiedThis, false);
 wrapMethod(Function.prototype, 'toSource', invokeWithUnproxiedThis, false);

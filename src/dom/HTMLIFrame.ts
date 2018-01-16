@@ -37,12 +37,8 @@ const applyPopupBlockerOnGet:ApplyHandler = function(_get, _this) {
                 if (isEmptyUrl(contentWindow.location.href)) {
                     log.print('An empty iframe called the contentWindow/Document getter for the first time, applying popupBlocker..', _this);
                     expose(key);
-                    let code =
-                        // @ifdef RECORD
-                        'window.__t = '  +
-                        // @endif
-                        '(' + popupBlocker.toString() + ')(window,"' + key + '");';
-                    contentWindow.eval(code);
+                    let code = '(' + popupBlocker.toString() + ')(window,"' + key + '");';
+                    contentWindow.eval(code); // Injects the code wrapping browser apis to the child context.
                     unexpose(key);
                 }
             } catch(e) {
