@@ -61,7 +61,7 @@ abstract class TextUtils {
         return content.replace(/"REMOVE_START"[\s\S]*?"REMOVE_END"/, '');
     }
     static removeGlobalAssignment(content) {
-        return content.replace('window.popupBlocker=', '');
+        return content.replace(/window.popupBlocker\s*=\s*/, '');
     }
 }
 
@@ -291,7 +291,8 @@ export default class Builder {
         '*://*.coub.com/*',
         '*://coub.com/*',
         '*://*.googlesyndication.com/*',
-        '*://*.naver.com/*'
+        '*://*.naver.com/*',
+        '*://*.yandex.tld/*'
     ];
 
     private static channelDownloadUpdateURLMap = {
@@ -360,16 +361,21 @@ export default class Builder {
         const [pageScriptRaw] =
             await Promise.all([toPromise(bundlePageScript, true), toPromise(bundleContentScript)]);
 
+        const wrappedPageScript = this.options.target === BuildTarget.USERSCRIPT ?
+            `function popupBlocker(window,PARENT_FRAME_KEY,CONTENT_SCRIPT_KEY){${pageScriptRaw}}` :
+            `function popupBlocker(window,PARENT_FRAME_KEY){${pageScriptRaw}}`;
+
         const inlinePageScript = (new InlineResource({
             PAGE_SCRIPT: {
                 path: `${this.paths.outputPath}page_script.js`,
-                data: pageScriptRaw
+                data: wrappedPageScript
             }
         })).inline;
 
         return new Reservoir(
             contentScriptResv
                 .release()
+                .pipe(insert.transform(TextUtils.removeGlobalAssignment))
                 .pipe(insert.transform(inlinePageScript))
         );
     }
@@ -621,7 +627,7 @@ export default class Builder {
         }
 
         await Promise.all(tasks);
-        //await this.cleanBuildArtifacts();
+        await this.cleanBuildArtifacts();
     }
 
 }
