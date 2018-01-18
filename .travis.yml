@@ -4,7 +4,7 @@ node_js:
 install:
   - yarn install
 script:
-  - gulp testsToGhPages
+  - gulp travis
 deploy:
   - provider: pages
     skip_cleanup: true

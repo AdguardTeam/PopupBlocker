@@ -680,12 +680,17 @@ gulp.task('build-test', () => {
         .pipe(gulp.dest('./test/build'));
 });
 
-gulp.task('testsToGhPages', ['dev-userscript-minified'], () => {
+gulp.task('travis', ['dev-userscript'], () => {
     return [
-        require('fs').writeFile('build/.nojekyll', ''),
-        gulp.src(['test/index.html', 'test/**/*.js']).pipe(gulp.dest(PathUtils.outputDir + '/test/')),
-        gulp.src('node_modules/mocha/mocha.*').pipe(gulp.dest(PathUtils.outputDir + '/node_modules/mocha/')),
-        gulp.src('node_modules/chai/chai.js').pipe(gulp.dest(PathUtils.outputDir + '/node_modules/chai/'))
+        fs.writeFile('build/.nojekyll', ''),
+        gulp.src(PathUtils.outputDir + '/userscript/**.js')
+            .pipe(gulp.dest(PathUtils.outputDir)),
+        gulp.src(['test/index.html', 'test/**/*.js'])
+            .pipe(gulp.dest(PathUtils.outputDir + '/test/')),
+        gulp.src('node_modules/mocha/mocha.*')
+            .pipe(gulp.dest(PathUtils.outputDir + '/node_modules/mocha/')),
+        gulp.src('node_modules/chai/chai.js')
+            .pipe(gulp.dest(PathUtils.outputDir + '/node_modules/chai/'))
     ];
 });
 
