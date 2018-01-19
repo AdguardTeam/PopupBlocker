@@ -119,7 +119,7 @@ class Alert implements AlertIntf {
     }
     // Until we come up with a proper UI, we reponse to user interaction with window.confirm.
     private showConfirmationDialog (messageId:string, context:StringMap):boolean {
-        const message = this.i18nService.formatText(this.i18nService.getMessage(messageId), context);
+        const message = this.i18nService.formatText(this.i18nService.$getMessage(messageId), context);
         // Certain browsers always return `false` from window.confirm;
         // In such cases, we skip confirmation step.
         // https://github.com/AdguardTeam/PopupBlocker/issues/50

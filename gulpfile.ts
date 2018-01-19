@@ -119,7 +119,7 @@ class PathUtils {
         [BuildTarget.USERSCRIPT]:   'platform/userscript/content_script.ts',
         [BuildTarget.CHROME]:       'platform/extension/shared/content_script.ts',
         [BuildTarget.FIREFOX]:      'platform/extension/shared/content_script.ts',
-        [BuildTarget.EDGE]:         'platform/extension/shared/content_script.ts'
+        [BuildTarget.EDGE]:         'platform/extension/edge/content_script.ts'
     }
     public get contentScriptEntry() {
         return path.posix.join(
@@ -384,6 +384,7 @@ export default class Builder {
         const sorter = new ManifestSort(manifest);
         const deps = sorter.getDeps([this.paths.commonEntryCc, this.paths.pageScriptEntryCc, this.paths.contentScriptEntryCc]);
         const flags = [
+            '--charset',                  'UTF-8',
             '--compilation_level',        'ADVANCED',
             '--language_in',              'ECMASCRIPT6',
             '--language_out',             'ECMASCRIPT5',
