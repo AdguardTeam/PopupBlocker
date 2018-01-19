@@ -1,3 +1,4 @@
+import chrome from '../shared/platform_namespace';
 import AlertController from '../../../ui/alert_controller';
 import ExtensionStorageManager from '../shared/storage/ExtensionStorageManager';
 import EdgeI18nService from './localization/EdgeI18nService'

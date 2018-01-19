@@ -61,10 +61,11 @@ export default class Timeline {
         log.callEnd();
         return true;
     }
-    onNewFrame():number {
+    onNewFrame(window:Window):number {
         let pos = this.events.push([]) - 1;
         // Registers a unique event when a frame is first created.
-        this.registerEvent(new TimelineEvent(TLEventType.CREATE, undefined, undefined), pos);
+        // It passes the `window` object of the frame as a value of `$data` property.
+        this.registerEvent(new TimelineEvent(TLEventType.CREATE, undefined, window), pos);
         return pos;
     }
     /**
@@ -101,7 +102,7 @@ export default class Timeline {
 }
 
 export const timeline:Timeline = typeof PARENT_FRAME_KEY === 'string' ? window.parent[PARENT_FRAME_KEY][2] : new Timeline();
-export const position:number = typeof PARENT_FRAME_KEY === 'string' ? timeline.onNewFrame() : 0;
+export const position:number = typeof PARENT_FRAME_KEY === 'string' ? timeline.onNewFrame(window) : 0;
 
 // These are called from the outside of the code, so we have to make sure that call structures of those are not modified.
 // It is removed in minified builds, see the gulpfile.
