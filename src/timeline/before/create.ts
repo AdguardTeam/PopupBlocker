@@ -18,7 +18,7 @@ const createOpen:condition = (index, events) => {
          * calls window.open with empty url in order to obtain reference to certain browsing
          * context.
          */
-        if (window.location.protocol === ABOUT_PROTOCOL) {
+        if ((<Window>evt.$data).location.protocol === ABOUT_PROTOCOL) {
             return false;
         }
     }

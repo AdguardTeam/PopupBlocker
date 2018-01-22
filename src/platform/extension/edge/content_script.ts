@@ -1,13 +1,14 @@
+import chrome from '../shared/platform_namespace';
 import AlertController from '../../../ui/alert_controller';
-import ExtensionStorageManager from './storage/ExtensionStorageManager';
-import I18nService from '../../../localization/I18nService';
+import ExtensionStorageManager from '../shared/storage/ExtensionStorageManager';
+import EdgeI18nService from './localization/EdgeI18nService'
 import * as log from '../../../shared/log';
-import linkPageScript from './storage/link_page_script';
+import linkPageScript from '../shared/storage/link_page_script';
 
 /**************************************************************************/
 /**************************************************************************/
 
-const i18nService       = new I18nService(chrome.i18n.getMessage);
+const i18nService       = new EdgeI18nService(chrome.i18n.getMessage);
 const storageManager    = new ExtensionStorageManager();
 const alertController   = new AlertController(i18nService, storageManager);
 

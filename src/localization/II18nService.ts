@@ -2,7 +2,7 @@ export default interface II18nService {
     /**
      * Analogous to chrome.i18n.getMessage.
      */
-    getMessage(nessageId:string):string
+    $getMessage(nessageId:string):string
     /**
      * Replace placeholders contained in a string `message` (usually obtained via getMessage
      * call) with respect to a `context` dictionary.

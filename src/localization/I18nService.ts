@@ -17,7 +17,7 @@ function toHtmlSafeString(str:string):string {
 
 export default class I18nService implements II18nService {
     constructor(
-        public getMessage:(messageId:string)=>string
+        public $getMessage:(messageId:string)=>string
     ) { }
 
     /**
@@ -84,7 +84,7 @@ export default class I18nService implements II18nService {
             val = current.nodeValue;
             if (I18nService.reCommentPh.test(val)) {
                 val = val.slice(5);
-                let message = this.getMessage(val);
+                let message = this.$getMessage(val);
                 let parsed = this.parseMessage(message, context);
                 let pr:Element = <Element><any>current.parentNode;
                 tasks.push(new InsertTask(pr, current,
