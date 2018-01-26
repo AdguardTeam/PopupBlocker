@@ -292,11 +292,13 @@ export default class Builder {
         '*://coub.com/*',
         '*://*.googlesyndication.com/*',
         '*://*.naver.com/*',
-        '*://*.yandex.tld/*'
+        '*://*.yandex.tld/*',
+        'https://*.twitch.tv/*',
+        'https://tinder.com/*'
     ];
 
     private static channelDownloadUpdateURLMap = {
-        [Channel.DEV]:      'https://AdguardTeam.github.io/PopupBlocker/popupblocker.meta.js',
+        [Channel.DEV]:      'https://AdguardTeam.github.io/PopupBlocker/',
         [Channel.BETA]:     'https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.1/',
         [Channel.RELEASE]:  'https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.1/'
     }
@@ -482,7 +484,6 @@ export default class Builder {
         const wrappedPageScript = this.options.target === BuildTarget.USERSCRIPT ?
             `function popupBlocker(window,PARENT_FRAME_KEY,CONTENT_SCRIPT_KEY){${pageScriptRaw}}` :
             `function popupBlocker(window,PARENT_FRAME_KEY){${pageScriptRaw}}`;
-
 
         const inlinePageScript = (new InlineResource({
             PAGE_SCRIPT: {
