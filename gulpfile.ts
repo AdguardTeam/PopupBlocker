@@ -160,9 +160,13 @@ class PathUtils {
         );
     }
 
-    public static alertTemplatePath = 'src/ui/template.html'
+    public static alertTemplatePath     = 'src/ui/template.html'
+    public static translationJSONPath   = 'src/locales/translations.json'
+    public static assetsPath            = 'src/platform/extension/shared/assets'
 
-    public static translationJSONPath = 'src/locales/translations.json'
+    public get assetOutputPath() {
+        return path.posix.join(this.outputPath, 'assets');
+    }
 
     public static commonExtensionManifestPath = 'src/platform/extension/shared/manifest.json';
 
@@ -436,7 +440,7 @@ export default class Builder {
                 .pipe(<any>preprocess({ context: options.preprocessContext }))
                 .pipe(gulp.dest(PathUtils.tsicklePath))
         );
-        
+
         log.info("Tsickle start");
         const result:tsickle.EmitResult|1 = tsickleMain(
             `--externs=${PathUtils.tsccPath}/generated-externs.js --typed -- -p tasks/tscc`
@@ -626,6 +630,7 @@ export default class Builder {
             ));
             tasks.push(fs.writeFile(path.posix.join(this.paths.outputPath, 'manifest.json'), manifest));
             tasks.push(this.locales.moveLocalesToTargetDir());
+            tasks.push(fsExtra.copy(PathUtils.assetsPath, this.paths.assetOutputPath));
         }
 
         await Promise.all(tasks);

@@ -4,6 +4,11 @@
   "description": "__MSG_extension_description__",
   "author": "Adguard Software Ltd",
   "default_locale": "en",
+  "icons": {
+    "16": "assets/blocked_16.png",
+    "48": "assets/blocked_48.png",
+    "128": "assets/blocked_128.png"
+  },
   "content_scripts":[
       {
           "all_frames": true,
