@@ -280,7 +280,7 @@ class ResourceUtils {
 
 export default class Builder {
 
-    private static version = '2.2.0';
+    private static version = '2.2.1';
 
     private static exclusions = [
         'https://www.linkedin.com/*',
