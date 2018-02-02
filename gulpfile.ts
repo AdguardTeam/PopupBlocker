@@ -194,9 +194,21 @@ class LocaleUtils {
         return this.translationJSONCached;
     }
 
+    private static EXTENSION_NAME = "extension_name";
+
     private static extensionOnlyMessages = {
-        "extension_name": true,
+        [LocaleUtils.EXTENSION_NAME]: true,
         "extension_description": true
+    }
+
+    public get channelSuffix() {
+        switch (this.options.channel) {
+            case Channel.DEV:
+                return " (Dev)";
+            case Channel.BETA:
+                return " (Beta)";
+        }
+        return "";
     }
 
     /**
@@ -228,8 +240,13 @@ class LocaleUtils {
         for (let locale in json) {
             out[locale] = {};
             for (let messageId in json[locale]) {
+                let message = json[locale][messageId].message;
+                if (messageId === LocaleUtils.EXTENSION_NAME) {
+                    message += this.channelSuffix;
+                }
+                message = message.replace(/\$/g, '$$$');
                 out[locale][messageId] = {
-                    message: json[locale][messageId].message.replace(/\$/g, '$$$')
+                    message: message
                 };
             }
         }
@@ -332,7 +349,6 @@ export default class Builder {
 
     private static rollupTsconfigOverride = { compilerOptions: { target: "es5" } };
     private get pageScriptRollupOptions() {
-        if (this.options.channel !== Channel.DEV) { Builder.invalidConfError(); }
         return {
             entry: this.paths.pageScriptEntry,
             plugins: [(<any>typescript2)({ tsconfigOverride: Builder.rollupTsconfigOverride })],
@@ -341,7 +357,6 @@ export default class Builder {
         };
     }
     private get contentScriptRollupOptions() {
-        if (this.options.channel !== Channel.DEV) { Builder.invalidConfError(); }
         return {
             entry: this.paths.contentScriptEntry,
             plugins: [(<any>typescript2)({ tsconfigOverride: Builder.rollupTsconfigOverride })],
@@ -512,16 +527,6 @@ export default class Builder {
         return this.options.channel !== Channel.DEV;
     }
 
-    private get channelSuffix() {
-        switch (this.options.channel) {
-            case Channel.DEV:
-                return " Dev";
-            case Channel.BETA:
-                return " Beta";
-        }
-        return "";
-    }
-
     private async meta() {
         const translation = await this.locales.getTranslationJSON();
         const lines:string[] = [];
@@ -538,7 +543,7 @@ export default class Builder {
 
         lines.push('// ==UserScript==');
 
-        insertTranslatableKeys('name', 'extension_name', this.channelSuffix);
+        insertTranslatableKeys('name', 'extension_name', this.locales.channelSuffix);
         insertKey('namespace',   'AdGuard');
         insertTranslatableKeys('description', 'extension_description');
         insertKey('version',      Builder.version);
@@ -578,7 +583,6 @@ export default class Builder {
         const manifest = mergeOpts(baseManifest, manifestOverride);
 
         // Manual tweaks
-        manifest["name"] += this.channelSuffix;
         manifest["version"] = Builder.version;
 
         if (this.options.channel === Channel.RELEASE) {
@@ -650,29 +654,24 @@ const devPreprocessCtxt = {
     RECORD: true
 };
 
+// Define gulp tasks: <target>-<channel>[-[un]minified]
 for (let target in BuildTarget) {
     for (let channel in Channel) {
-        gulp.task(`${Channel[channel]}-${BuildTarget[target]}`, new Builder({
+        let taskName = `${Channel[channel]}-${BuildTarget[target]}`;
+        let buildOption:BuildOption = {
             target: <BuildTarget>BuildTarget[target],
             channel: <Channel>Channel[channel],
             preprocessContext: channel === 'DEV' ? devPreprocessCtxt : preprocessCtxt
-        }).build);
+        };
+        gulp.task(taskName, new Builder(buildOption).build);
+        gulp.task(taskName + '-minified', new Builder(Object.assign({}, buildOption, {
+            overrideShouldMinify: true
+        })).build);
+        gulp.task(taskName + '-unminified', new Builder(Object.assign({}, buildOption, {
+            overrideShouldMinify: false
+        })).build);
     }
 }
-
-gulp.task('dev-userscript-minified', (new Builder({
-    target: BuildTarget.USERSCRIPT,
-    channel: Channel.DEV,
-    preprocessContext: devPreprocessCtxt,
-    overrideShouldMinify: true
-})).build);
-
-gulp.task('release-userscript-no-minification', (new Builder({
-    target: BuildTarget.USERSCRIPT,
-    channel: Channel.RELEASE,
-    preprocessContext: preprocessCtxt,
-    overrideShouldMinify: false
-})).build);
 
 /******************************************************************************/
 

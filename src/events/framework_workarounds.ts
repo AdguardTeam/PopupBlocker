@@ -17,10 +17,10 @@ const _data = '_data', originalEvent = 'originalEvent', selector = 'selector';
  * inside of the event handler function, `evt.currentTarget` will be `document.documentElement`.
  * When this function is called with `evt`, it will return `'.open-newtab'`, and from this we know that
  * the event handler is not supposed to be called when user clicks anywhere.
- * 
+ *
  * It makes use of an undocumented static method `_data` of `jQuery`. It has existed for a long time
  * and not likely to be removed in a near future according to https://github.com/jquery/jquery/issues/2583.
- * @param event 
+ * @param event
  */
 export function getSelectorFromCurrentjQueryEventHandler(event:Event):string|undefined {
     let jQuery:JQueryStatic = window['jQuery'] || window['$'];
@@ -43,7 +43,7 @@ export function getSelectorFromCurrentjQueryEventHandler(event:Event):string|und
                 }
             } catch(e) {
                 continue;
-            }            
+            }
         }
     }
 }
