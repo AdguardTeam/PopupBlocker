@@ -1,5 +1,8 @@
 {
     "extension_name": {
+        "message": "Popup Blocker by AdGuard"
+    },
+    "userscript_name": {
         "message": "AdGuard Popup Blocker"
     },
     "extension_description": {
@@ -30,6 +33,6 @@
         "message": "This transition to the new page is likely to be caused by a pop-under. Do you wish to continue?"
     },
     "aborted_popunder_execution": {
-        "message": "PopupBlocker aborted a script exectution to prevent background redirect"
+        "message": "PopupBlocker aborted a script execution to prevent background redirect"
     }
 }

@@ -1,0 +1,24 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 10px;
+}
+
+body {
+    margin: 0;
+    font-size: 1.3rem;
+    line-height: 1.428571429;
+    color: var(--gray-base);
+    background-color: #e6e6e6;
+    @mixin weight-regular;
+
+    &.body--overflow {
+        overflow: hidden;
+    }
+}
+
+input {
+    outline: none;
+}

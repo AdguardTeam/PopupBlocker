@@ -4,7 +4,7 @@ import examineTarget from '../events/examine_target';
 import { setBeforeunloadHandler } from './unload';
 import { isNode, isMouseEvent, isUIEvent, isClickEvent } from '../shared/instanceof';
 import { getTagName } from '../shared/dom';
-import adguard from '../adguard';
+import adguard from '../page_script_namespace';
 import * as log from '../shared/log';
 import createUrl from '../shared/url';
 import onBlocked from '../on_blocked';

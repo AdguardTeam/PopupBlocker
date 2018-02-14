@@ -7,6 +7,7 @@ import mergeOpts = require('merge-options');
 import log = require('fancy-log');
 
 import gulp = require('gulp');
+import append = require('gulp-append');
 import insert = require('gulp-insert');
 import merge = require('merge-stream');
 import concat = require('gulp-concat');
@@ -15,6 +16,13 @@ import rename = require('gulp-rename');
 import rollup = require('gulp-rollup');
 import filter = require('gulp-filter');
 import debug = require('gulp-debug');
+
+import postcss = require('gulp-postcss');
+import imp = require('postcss-partial-import');
+import svg = require('postcss-svg');
+import mixins = require('postcss-mixins');
+import cssnext = require('postcss-cssnext');
+import nesting = require('postcss-nested');
 
 import InlineResource = require('inline-resource-literal');
 
@@ -26,6 +34,8 @@ import * as closureCompiler from 'google-closure-compiler';
 import { main as tsickleMain } from './tasks/tscc/third-party/tsickle/main';
 import ManifestSort from './tasks/tscc/ManifestSort';
 import * as tsickle from 'tsickle/src/tsickle';
+
+import JarUtils from './tasks/JarUtils';
 
 const ccPlugin = closureCompiler.gulp({});
 
@@ -49,12 +59,25 @@ interface IPreprocessContext {
     NO_EVENT?:boolean
 }
 
-interface BuildOption {
-    target:BuildTarget,
-    channel:Channel,
-    preprocessContext:IPreprocessContext,
-    overrideShouldMinify?:boolean
+class BuildOption {
+    constructor(
+        public target:BuildTarget,
+        public channel:Channel,
+        public preprocessContext:IPreprocessContext,
+        public overrideShouldMinify?:boolean
+    ) { }
+    get shouldMinify() {
+        if (typeof this.overrideShouldMinify !== 'undefined') {
+            return this.overrideShouldMinify;
+        }
+        // Apply minification for beta and release channel.
+        return this.channel !== Channel.DEV;
+    }
+    clone():BuildOption {
+        return new BuildOption(this.target, this.channel, this.preprocessContext, this.overrideShouldMinify);
+    }
 }
+
 
 abstract class TextUtils {
     static removeCcExport(content) {
@@ -184,6 +207,141 @@ class PathUtils {
 
 }
 
+
+class CssUtils {
+
+    private static postCssDir = 'src/ui/pcss';
+    private static postCssGlob = 'src/ui/pcss/**.pcss';
+    private static baseSrc = [
+        'vars.pcss',
+        'mixins.pcss',
+        'global.pcss',
+        'fonts.pcss'
+    ];
+
+    /**
+     * For userscripts, we inline css for alerts to the userscript source, and host the
+     * options css in a dedicated page.
+     */
+    private static alertSrc = CssUtils.baseSrc.concat('alerts.pcss', 'pin.pcss');
+    private static optionsSrc = CssUtils.baseSrc.concat('settings.pcss');
+    private static allSrc = CssUtils.baseSrc.concat('alerts.pcss', 'pin.pcss', 'settings.pcss');
+
+    private static bundledCssName = 'styles.css';
+    private static cssTempDir = 'css_temp';
+
+    private static cssTempPath = path.posix.join(PathUtils.outputDir, CssUtils.cssTempDir, CssUtils.bundledCssName);
+
+    private static renamingOutPath = path.posix.join(PathUtils.tsccPath, 'renaming_map.js');
+
+    private static compilePostCss(srcs:string[]):NodeJS.ReadableStream {
+        return gulp.src(srcs)
+            .pipe(postcss([
+                imp(),
+                nesting(),
+                svg(),
+                mixins(),
+                cssnext({ browsers: ["IE 10", "> 1%"] }),
+            ]))
+            .pipe(rename(CssUtils.bundledCssName));
+    }
+
+    private static async getUnminifiedCss(srcs:string[]):Promise<string> {
+        return await toPromise(CssUtils.compilePostCss(srcs), true);
+    }
+
+    private static async getMinifiedCss(srcs:string[]):Promise<string> {
+        await toPromise(CssUtils.compilePostCss(srcs));
+
+        return await toPromise(new JarUtils(JarUtils.STYLESHEETS_PATH, [
+            `--output-renaming-map-format`, `CLOSURE_COMPILED`,
+            `--rename`,                     `CLOSURE`,
+            `--output-renaming-map`,         CssUtils.renamingOutPath,
+             CssUtils.cssTempPath
+        ]), true);
+    }
+
+    private async getCss(srcs:string[]):Promise<string> {
+        return this.options.shouldMinify ? CssUtils.getMinifiedCss(srcs) : CssUtils.getUnminifiedCss(srcs);
+    } 
+
+    public async getAlertCss():Promise<string> {
+        return this.getCss(CssUtils.alertSrc);
+    }
+    public async getOptionsCss():Promise<string> {
+        return this.getCss(CssUtils.optionsSrc);
+    }
+    public async getAllCss():Promise<string> {
+        return this.getCss(CssUtils.allSrc);
+    }
+
+    constructor(
+        private options:BuildOption
+    ) { }
+
+}
+
+class SoyUtils {
+    
+    private static soyGlob = 'src/ui/soy/**.soy';
+
+    private static soyPath = 'src/ui/soy/';
+
+    private static alertTemplateName = 'alert.soy';
+    private static optionsTemplateName = 'options.soy';
+
+    public static alertTemplatePath = path.posix.join(SoyUtils.soyPath, SoyUtils.alertTemplateName);
+    public static optionsTemplatePath = path.posix.join(SoyUtils.soyPath, SoyUtils.optionsTemplateName);
+
+    private static soyUtilsPath = path.posix.join(SoyUtils.soyPath, 'third_party/soyutils.js');
+
+    public async compileRollup(srcs:string):Promise<string> {
+        return toPromise(
+            new JarUtils(JarUtils.TEMPLATES_PATH, [
+                `--cssHandlingScheme`,  `LITERAL`,
+                `--srcs`,                srcs,
+                `--outputPathFormat`,   `{INPUT_FILE_NAME_NO_EXT}.literal.soy.js`,
+                `--bidiGlobalDir`,      `1`,
+                `--shouldGenerateJsdoc`,
+            ])
+                .pipe(insert.transform(SoyUtils.transformGetMsgRollup))
+                .pipe(append(SoyUtils.soyUtilsPath)),
+            true
+        );
+    }
+
+    /**
+     * Transforms `goog.getMsg` calls to runtime i18nService call.
+     */
+    private static transformGetMsgCc(content:string):string {
+        const importNamespace = `var __soyUtils__adguard = goog.require('build.tscc.content_script_namespace');`;
+
+        return content.replace(SoyUtils.reGetMsg, '__soyUtils__adguard.i18nService.getMsg\(') + '\n' + importNamespace;
+    }
+
+    private static transformGetMsgRollup(content:string):string {
+        return content.replace(SoyUtils.reGetMsg, 'adugard.i18nservice.getMsg\(');
+    }
+
+    private static reGetMsg = /goog\.getMsg\(/g;
+
+    public async compileCc(srcs:string):Promise<string> {
+        return toPromise(
+            new JarUtils(JarUtils.TEMPLATES_PATH, [
+                `--cssHandlingScheme`,  `GOOG`,
+                `--srcs`,                srcs,
+                `--outputPathFormat`,   `{INPUT_FILE_NAME_NO_EXT}.goog.soy.js`,
+                `--bidiGlobalDir`,      `1`,
+                `--shouldGenerateJsdoc`,
+                `--shouldProvideRequireSoyNamespaces`,
+                `--shouldGenerateGoogMsgDefs`
+            ]).pipe(insert.transform(SoyUtils.transformGetMsgCc)),
+            true
+        );
+    }
+
+}
+
 class LocaleUtils {
 
     private translationJSONCached:{[locale:string]:{[messageId:string]:{message:string}}}
@@ -275,22 +433,62 @@ class ResourceUtils {
     private static commonResourceMap = {
         "ALERT_TEMPLATE": PathUtils.alertTemplatePath
     };
-    public async getRequiredResourceMap() {
-        let resources = ResourceUtils.commonResourceMap;
+
+    public async getInlinedResourceMap() {
+        let resources = {
+            "ALERT_TEMPLATE": PathUtils.alertTemplatePath
+        };
+
         if (this.options.target === BuildTarget.USERSCRIPT) {
-            resources = Object.assign({}, resources, {
-                "USERSCRIPT_TRANSLATIONS": {
-                    data: JSON.stringify(await this.locales.getUserscriptInlinableJSON()),
-                    path: 'userscript_translations.json'
-                }
-            });
+            resources["USERSCRIPT_TRANSLATIONS"] = {
+                data: JSON.stringify(await this.locales.getUserscriptInlinableJSON()),
+                path: 'userscript_translations.json'
+            };
         }
+
+        if (!this.options.shouldMinify) {
+            resources["TEMPLATE_ROLLUP"] = {
+                data: await this.soy.compileRollup(SoyUtils.alertTemplatePath),
+                path: 'alert.soy.js' // Why the fuck do we need this?
+            };
+        }
+
+        if (this.options.target !== BuildTarget.USERSCRIPT) {
+            resources["ALERT_STYLE"] = {
+                data: await this.css.getAlertCss(),
+                path: 'alert.css'
+            };
+        }
+
         return resources;
+    }
+
+    public async prepareNotInlinedResources():Promise<void> {
+        
+    }
+
+    public async getSettingsPageInlinedResourceMap() {
+        let resources = {};
+
+        // We inline css for userscript 
+        if ()
+    }
+
+
+
+    public async prepareSettingsPageResources():Promise<void> {
+
+
+
+
+        // options page templates
     }
 
     constructor(
         private options:BuildOption,
-        private locales:LocaleUtils
+        private locales:LocaleUtils,
+        private css:CssUtils,
+        private soy:SoyUtils
     ) { }
 
 }
@@ -330,7 +528,7 @@ export default class Builder {
 
     private async loadResources() {
         if (!this.inlineResource) {
-            this.inlineResource = (new InlineResource(await this.resources.getRequiredResourceMap())).inline;
+            this.inlineResource = (new InlineResource(await this.resources.getInlinedResourceMap())).inline;
         }
     }
 
@@ -417,7 +615,7 @@ export default class Builder {
             '--rewrite_polyfills',         String(false),
 
             '--entry_point',               this.paths.commonEntryGoogModule,
-            '--module',                   `common:${deps.num_js[0]}`,
+            '--module',                   `common:auto`,
             '--entry_point',               this.paths.pageScriptEntryGoogModule,
             '--module',                   `page_script:${deps.num_js[1]}:common`,
             '--entry_point',               this.paths.contentScriptEntryGoogModule,
@@ -450,11 +648,17 @@ export default class Builder {
 
     private async tscc():Promise<Reservoir> {
         const options = this.options;
-        await toPromise(
+
+        const preprocessTask = toPromise(
             gulp.src('src/**/*.ts')
                 .pipe(<any>preprocess({ context: options.preprocessContext }))
                 .pipe(gulp.dest(PathUtils.tsicklePath))
         );
+        const compileCss = toPromise(
+            this.css.prepare()
+        );
+
+        await Promise.all([preprocessTask, compileCss]);
 
         log.info("Tsickle start");
         const result:tsickle.EmitResult|1 = tsickleMain(
@@ -517,14 +721,6 @@ export default class Builder {
                 .pipe(insert.transform(TextUtils.removeGlobalAssignment))
                 .pipe(insert.transform(inlinePageScript))
         );
-    }
-
-    private get shouldMinify() {
-        if (typeof this.options.overrideShouldMinify !== 'undefined') {
-            return this.options.overrideShouldMinify;
-        }
-        // Apply minification for beta and release channel.
-        return this.options.channel !== Channel.DEV;
     }
 
     private async meta() {
@@ -611,7 +807,7 @@ export default class Builder {
         const channel = this.options.channel;
         const target  = this.options.target;
 
-        const contentScript = this.shouldMinify ? await this.tscc() : await this.rollup();
+        const contentScript = this.options.shouldMinify ? await this.tscc() : await this.rollup();
         const manifest = target === BuildTarget.USERSCRIPT ? await this.meta() : await this.manifest();
 
         const tasks = [];
@@ -658,18 +854,22 @@ const devPreprocessCtxt = {
 for (let target in BuildTarget) {
     for (let channel in Channel) {
         let taskName = `${Channel[channel]}-${BuildTarget[target]}`;
-        let buildOption:BuildOption = {
-            target: <BuildTarget>BuildTarget[target],
-            channel: <Channel>Channel[channel],
-            preprocessContext: channel === 'DEV' ? devPreprocessCtxt : preprocessCtxt
-        };
-        gulp.task(taskName, new Builder(buildOption).build);
-        gulp.task(taskName + '-minified', new Builder(Object.assign({}, buildOption, {
-            overrideShouldMinify: true
-        })).build);
-        gulp.task(taskName + '-unminified', new Builder(Object.assign({}, buildOption, {
-            overrideShouldMinify: false
-        })).build);
+        
+        let option = new BuildOption(
+            <BuildTarget>BuildTarget[target],
+            <Channel>Channel[channel],
+            channel === 'DEV' ? devPreprocessCtxt : preprocessCtxt
+        );
+
+        let option_minified = option.clone();
+        option_minified.overrideShouldMinify = true;
+
+        let option_unminified = option.clone();
+        option_unminified.overrideShouldMinify = false;
+
+        gulp.task(taskName, new Builder(option).build);
+        gulp.task(taskName + '-minified', new Builder(option_minified).build);
+        gulp.task(taskName + '-unminified', new Builder(option_unminified).build);
     }
 }
 
@@ -722,20 +922,24 @@ gulp.task('watch', () => {
 import onesky = require('onesky-utils');
 
 gulp.task('i18n-up', async () => {
-    const base = require('./config/.key.js');
-    const file = (await fs.readFile('src/locales/en.json')).toString();
+    try {
+        const base = require('./config/.key.js');
+        const file = (await fs.readFile('src/locales/en.json')).toString();
 
-    const _options = {
-        language: 'en',
-        fileName: 'en.json',
-        format: 'HIERARCHICAL_JSON',
-        content: file,
-        keepStrings: false
-    };
+        const _options = {
+            language: 'en',
+            fileName: 'en.json',
+            format: 'HIERARCHICAL_JSON',
+            content: file,
+            keepStrings: false
+        };
 
-    Object.assign(_options, base);
+        Object.assign(_options, base);
 
-    await onesky.postFile(_options);
+        await onesky.postFile(_options);
+    } catch (e) {
+        log.error(e);
+    }
 });
 
 gulp.task('i18n-down',  async () => {

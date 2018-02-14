@@ -1,23 +1,26 @@
 import I18nService from '../../localization/I18nService';
-import AlertController from '../../ui/alert_controller';
+import UserscriptAlertController from './ui/UserscriptAlertController';
 import UserscriptSettings from './storage/UserscriptSettings';
 import UserscriptStorageManager from './storage/UserscriptStorageManager';
 import UserscriptStorageProvider from './storage/UserscriptStorageProvider';
+import adguard from '../../content_script_namespace';
 import getMessage from './get_message';
 
 /**************************************************************************/
 /**************************************************************************/
 
 const i18nService       = new I18nService(getMessage);
-const settings          = new UserscriptSettings();
-const storageManager    = new UserscriptStorageManager(settings);
-const alertController   = new AlertController(i18nService, storageManager);
-const storageProvider   = new UserscriptStorageProvider(settings, alertController, getMessage);
+const storageManager    = new UserscriptStorageManager();
+const alertController   = new UserscriptAlertController(storageManager);
+const storageProvider   = new UserscriptStorageProvider(alertController, getMessage);
 
 const BRIDGE_KEY = storageProvider.expose();
 
 /**************************************************************************/
 
+adguard.i18nService = i18nService;
+
+/**************************************************************************/
 window.popupBlocker = RESOURCE_PAGE_SCRIPT;
 
 /**************************************************************************/
@@ -26,7 +29,7 @@ window.popupBlocker = RESOURCE_PAGE_SCRIPT;
  * In Firefox, userscripts can't write properties of unsafeWindow, so we
  * create a <script> tag to run the script in the page's context.
  */
-if (settings.isFirefox) {
+if (storageProvider.envIsFirefoxGreasemonkey) {
     let script = document.createElement('script');
     let text = `(${popupBlocker.toString()})(this,!1,'${BRIDGE_KEY}')`;
     script.textContent = text;

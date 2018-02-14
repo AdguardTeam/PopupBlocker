@@ -1,4 +1,4 @@
-import adguard from '../adguard';
+import adguard from '../page_script_namespace';
 import * as log from '../shared/log';
 
 const onbeforeunloadHandler = (evt:BeforeUnloadEvent) => {

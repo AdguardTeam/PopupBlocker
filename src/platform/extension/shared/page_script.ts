@@ -1,4 +1,4 @@
-import adguard from '../../../adguard';
+import adguard from '../../../page_script_namespace';
 import ExtensionStorageProvider from './storage/ExtensionStorageProvider';
 
 if (typeof PARENT_FRAME_KEY === 'undefined') {

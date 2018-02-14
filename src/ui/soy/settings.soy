@@ -1,0 +1,121 @@
+{namespace popupblockerUI}
+
+/**
+ *
+ */
+{template .settingsOuter}
+    {@param cssText:string}
+
+    <head>
+        {call .head data="all"/}
+    </head>
+    <body>
+        <div class="{css settings} {css settings--show}">
+        </div>
+        <div class="{css settings}">
+            <div class="{css settings__in} {css settings__in--popup}">
+                <div class="{css settings__close}"></div>
+                <div class="{css settings__title}">
+                    {msg}add_site{/msg}
+                </div>
+                <form action="#">
+                    <input class="{css settings__input}" type="text" placeholder="{msg}site_input_ph{/msg}">
+                    <input class="{css settings__submit}" type="submit" value="{msg}add_site{/msg}">
+                </form>
+            </div>
+        </div>
+    </body>
+{/template}
+
+/**
+ * Settings page template.
+ */
+{template .settingsContent}
+    {@param allowedOrigins: Array<string>}
+    {@param allowedDestinations: Array<string>}
+    {@param silencedOrigins: Array<string>}
+
+    <div class="{css settings__in}">
+        <div class="{css settings__close}"></div>
+        <div class="{css settings__title}">
+            {msg}userscript_name{/msg}
+        </div>
+
+        <div class="{css settings__block}" data-for="{css allowed}">
+            <div class="{css settings__row}">
+                <div class="{css settings__subtitle}">
+                    {msg}allowed{/msg}
+                </div>
+                <div class="{css settings__control}">
+                    <button class="{css settings__control-item}">
+                        {msg}add{/msg}
+                    </button>
+                </div>
+                <div class="{css settings__row-empty}">
+                    {msg}allowed_empty{/msg}
+                </div>
+            </div>
+
+            {foreach $allowedOrigin in $allowedOrigins}
+                <div class="{css settings__row}">
+                    <div class="{css settings__name}">
+                        {$allowedOrigin}
+                    </div>
+                    <button class="{css settings__del}"></button>
+                </div>
+            {/foreach}
+        </div>
+
+        
+        <div class="{css settings__block}" data-for="{css silenced}">
+            <div class="{css settings__row}">
+                <div class="{css settings__subtitle}">
+                    {msg}silenced{/msg}
+                </div>
+                <div class="{css settings__control}">
+                    <div class="{css settings__control-item}">
+                        {msg}add{/msg}
+                    </div>
+                </div>
+                <div class="{css settings__row-empty}">
+                    {msg}silenced_empty{/msg}
+                </div>
+            </div>
+
+            {foreach $silencedOrigin in $silencedOrigins}
+                <div class="{css settings__row}">
+                    <div class="{css settings__name}">
+                        {$silencedOrigin}
+                    </div>
+                    <button class="{css settings__del}"></button>
+                </div>
+            {/foreach}
+        </div>
+
+        <div class="{css settings__block}" data-for="{css allowed_dest}">
+            <div class="{css settings__row}">
+                <div class="{css settings__subtitle}">
+                    {msg}allowed_dest{/msg}
+                </div>
+                <div class="{css settings__control}">
+                    <div class="{css settings__control-item}">
+                        {msg}add{/msg}
+                    </div>
+                </div>
+                <div class="{css settings__row-empty}">
+                    {msg}allowed_dest_empty{/msg}
+                </div>
+            </div>
+
+            {foreach $allowedDest in $allowedDestinations}
+                <div class="{css settings__row}">
+                    <div class="{css settings__name}">
+                        {$allowedDest}
+                    </div>
+                    <button class="{css settings__del}"></button>
+                </div>
+            {/foreach}
+        </div>
+
+    </div>
+{/template}

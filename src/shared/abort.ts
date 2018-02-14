@@ -10,7 +10,7 @@
  * to the current window or `href` attribute of a clicked anchor, and triggers aborting in such cases.
  */
 
-import adguard from '../adguard';
+import adguard from '../page_script_namespace';
 import { closeAllGroup } from './log';
 
 let MAGIC:string;

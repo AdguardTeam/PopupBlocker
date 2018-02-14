@@ -2,7 +2,7 @@ import IStorageManager from '../storage/IStorageManager';
 import II18nService from '../localization/II18nService';
 import createUrl from '../shared/url';
 import * as log from '../shared/log';
-import IStorageProvider from '../storage/IStorageProvider';
+import IContentScriptApi from '../storage/IContentScriptApi';
 
 declare const RESOURCE_ALERT_TEMPLATE:string;
 

@@ -1,4 +1,4 @@
-import adguard from '../../adguard';
+import adguard from '../../page_script_namespace';
 
 if (typeof CONTENT_SCRIPT_KEY !== 'undefined') {
     adguard.storageProvider = window[CONTENT_SCRIPT_KEY];

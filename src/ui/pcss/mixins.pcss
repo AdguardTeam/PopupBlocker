@@ -1,0 +1,53 @@
+@define-mixin weight-regular {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 400;
+}
+
+@define-mixin weight-medium {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 600;
+}
+
+@define-mixin weight-bold {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700;
+}
+
+@define-mixin bnt-white {
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 0 0 1px var(--grayc5);
+    padding: 0 20px;
+    height: 40px;
+    line-height: 40px;
+    background-color: var(--white-color);
+    transition: var(--t3) background-color;
+    @mixin weight-bold;
+
+    &:hover {
+        background-color: var(--green02);
+    }
+}
+
+@define-mixin ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@define-mixin btn-reset {
+    font-size: inherit;
+    color: inherit;
+    padding: 0;
+    border: 0;
+    outline: none;
+}
+
+@define-mixin select-reset {
+    border-radius: 0;
+    appearance:none;
+    outline: none;
+    font-size: inherit;
+    background-color: transparent;
+    border: 0;
+}

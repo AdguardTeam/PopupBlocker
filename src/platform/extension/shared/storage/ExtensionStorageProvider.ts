@@ -1,8 +1,9 @@
-import IStorageProvider from "../../../../storage/IStorageProvider";
+import IContentScriptApi from "../../../../storage/IContentScriptApi";
 import { CONTENT_PAGE_MAGIC, DownwardMsgTypesEnum, DownwardMsgTypes, Settings, UpwardMsgTypesEnum, CreateAlertMsg } from '../MessageTypes'
 import * as log from '../../../../shared/log';
 
-export default class ExtensionStorageProvider implements IStorageProvider {
+
+export default class ExtensionStorageProvider implements IContentScriptApi {
     public domain = location.hostname;
     private port:MessagePort
     constructor() {
@@ -21,7 +22,8 @@ export default class ExtensionStorageProvider implements IStorageProvider {
         }
     }
     private whitelistedDestinations:string[]
-    private isWhitelistedOrigin:boolean
+    private currentDomainOption:DomainOptionEnum
+
     private receiveSettings(settings:Partial<Settings>) {
         if (typeof settings.whitelistedDestinations !== 'undefined') {
             this.whitelistedDestinations = settings.whitelistedDestinations;
@@ -32,11 +34,7 @@ export default class ExtensionStorageProvider implements IStorageProvider {
     }
 
     originIsWhitelisted():boolean {
-        if (typeof this.isWhitelistedOrigin === 'undefined') {
-            // Settings are not received.
-            return false;
-        }
-        return this.isWhitelistedOrigin;
+        return this.currentDomainOption === DomainOptionEnum.WHITELISTED;
     }
     destinationIsWhitelisted(destination:string):boolean {
         if (typeof this.whitelistedDestinations === 'undefined') {
@@ -44,6 +42,9 @@ export default class ExtensionStorageProvider implements IStorageProvider {
             return false;
         }
         return this.whitelistedDestinations.indexOf(destination) !== -1;
+    }
+    originIsSilenced():boolean {
+
     }
     showAlert(orig_domain:string, popup_url:string):void {
         log.print('StorageProvider: showAlert');

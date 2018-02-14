@@ -11,7 +11,7 @@
  *  - a request to dispatch a MouseEvent to a specified coordinate inside a frame.
  */
 
-import adguard from './adguard';
+import adguard from './page_script_namespace';
 import * as log from './shared/log';
 import { getTagName, isEmptyUrl, getSafeNonEmptyParent } from './shared/dom';
 

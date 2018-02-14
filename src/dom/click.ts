@@ -1,4 +1,4 @@
-import adguard from '../adguard';
+import adguard from '../page_script_namespace';
 import { ApplyHandler, wrapMethod } from '../proxy';
 import { retrieveEvent, verifyEvent, verifyCurrentEvent } from '../events/verify';
 import examineTarget from '../events/examine_target';

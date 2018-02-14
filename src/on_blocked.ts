@@ -1,4 +1,4 @@
-import adguard from './adguard';
+import adguard from './page_script_namespace';
 import { createAlertInTopFrame } from './messaging';
 import pdfObjObserver from './observers/pdf_object_observer';
 import examineTarget from './events/examine_target';

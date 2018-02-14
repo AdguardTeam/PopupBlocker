@@ -7,3 +7,10 @@
 interface DomainOption {
     whitelisted:boolean
 }
+
+
+declare const enum DomainOptionEnum {
+    NONE,
+    SILENCED,
+    WHITELISTED
+}

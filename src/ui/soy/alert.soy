@@ -1,0 +1,58 @@
+{namespace popupblockerUI}
+
+/**
+ * Common template for <head> node of alert and settings page.
+ */
+{template .head}
+    {@param cssText: string}
+    <!doctype html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <style>{$cssText}</style>
+    </head>
+    </html>
+{/template}
+
+/**
+ * Template for alert <body>.
+ */
+{template .alert}
+    {@param numPopup: number}
+    {@param origDomain: string}
+    {@param destUrl: string}
+    <div class="{css alert}">
+            <button class="{css alert__close}"></button>
+            <div class="{css alert__in}">
+                <div class="{css alert__ico} {css alert__ico--windows}"></div>
+                <div class="{css alert__text}">
+                    {msg}popup_text{$numPopup}{/msg}
+                </div>
+            </div>
+            <div class="{css alert__btns}">
+                <select class="{css alert__select}" name="options">
+                    <option class="{css alert__options}" disabled selected>
+                        {msg}options{/msg}
+                    </option>
+                    <option class="{css alert__options}" value="{css allowFrom}">
+                        {msg}allow_from{$origDomain}{/msg}
+                    </option>
+                    <option class="{css alert__options}" value="{css silence}">
+                        {msg}silence_noti{$origDomain}{/msg}
+                    </option>
+                    <option class="{css alert__options}" value="{css goPref}">
+                        {msg}manage_pref{/msg}
+                    </option>
+                    <option class="{css alert__options}" value="{css showPopup}">
+                        {msg}show_popup{$destUrl}{/msg}
+                    </option>
+                </select>
+                <button class="{css alert__btn}">
+                    {msg}continue_blocking{/msg}
+                </button>
+            </div>
+        </div>
+        <button class="{css pin} {css pin--win--hidden} {css pin--show}"></button>
+{/template}
