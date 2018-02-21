@@ -1,4 +1,4 @@
-export default interface IStorageManager {
+export default interface ISettingsDao {
     /**
      * Modifies settings, and if callback is provided, call it with updated options.
      */

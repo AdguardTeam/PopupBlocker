@@ -28,29 +28,29 @@
             <div class="{css alert__in}">
                 <div class="{css alert__ico} {css alert__ico--windows}"></div>
                 <div class="{css alert__text}">
-                    {msg}popup_text{$numPopup}{/msg}
+                    {msg desc=""}popup_text{$numPopup}{/msg}
                 </div>
             </div>
             <div class="{css alert__btns}">
                 <select class="{css alert__select}" name="options">
                     <option class="{css alert__options}" disabled selected>
-                        {msg}options{/msg}
+                        {msg desc=""}options{/msg}
                     </option>
                     <option class="{css alert__options}" value="{css allowFrom}">
-                        {msg}allow_from{$origDomain}{/msg}
+                        {msg desc=""}allow_from{$origDomain}{/msg}
                     </option>
                     <option class="{css alert__options}" value="{css silence}">
-                        {msg}silence_noti{$origDomain}{/msg}
+                        {msg desc=""}silence_noti{$origDomain}{/msg}
                     </option>
                     <option class="{css alert__options}" value="{css goPref}">
-                        {msg}manage_pref{/msg}
+                        {msg desc=""}manage_pref{/msg}
                     </option>
                     <option class="{css alert__options}" value="{css showPopup}">
-                        {msg}show_popup{$destUrl}{/msg}
+                        {msg desc=""}show_popup{$destUrl}{/msg}
                     </option>
                 </select>
                 <button class="{css alert__btn}">
-                    {msg}continue_blocking{/msg}
+                    {msg desc=""}continue_blocking{/msg}
                 </button>
             </div>
         </div>

@@ -1,8 +1,12 @@
+/**
+ * @fileoverview Entry point for the page script.
+ */
+
 import adguard from '../../../page_script_namespace';
-import ExtensionStorageProvider from './storage/ExtensionStorageProvider';
+import ExtensionContentScriptApiFacade from './storage/ExtensionContentScriptApiFacade';
 
 if (typeof PARENT_FRAME_KEY === 'undefined') {
-    adguard.storageProvider = new ExtensionStorageProvider();
+    adguard.storageProvider = new ExtensionContentScriptApiFacade();
 } else {
     adguard.storageProvider = window.parent[PARENT_FRAME_KEY][3];
 }

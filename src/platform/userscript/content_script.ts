@@ -1,8 +1,7 @@
 import I18nService from '../../localization/I18nService';
 import UserscriptAlertController from './ui/UserscriptAlertController';
-import UserscriptSettings from './storage/UserscriptSettings';
-import UserscriptStorageManager from './storage/UserscriptStorageManager';
-import UserscriptStorageProvider from './storage/UserscriptStorageProvider';
+import UserscriptSettingsDao from './storage/UserscriptSettingsDao';
+import UserscriptContentScriptApiFacade from './storage/UserscriptContentScriptApiFacade';
 import adguard from '../../content_script_namespace';
 import getMessage from './get_message';
 
@@ -10,9 +9,9 @@ import getMessage from './get_message';
 /**************************************************************************/
 
 const i18nService       = new I18nService(getMessage);
-const storageManager    = new UserscriptStorageManager();
+const storageManager    = new UserscriptSettingsDao();
 const alertController   = new UserscriptAlertController(storageManager);
-const storageProvider   = new UserscriptStorageProvider(alertController, getMessage);
+const storageProvider   = new UserscriptContentScriptApiFacade(alertController, getMessage);
 
 const BRIDGE_KEY = storageProvider.expose();
 

@@ -1,8 +1,7 @@
-import IUserscriptSettings from "./IUserscriptSettings";
-import IStorageManager, { AllOptions, OptionsCallback } from "../../../storage/IStorageManager";
+import ISettingsDao, { AllOptions, OptionsCallback } from "../../../storage/ISettingsDao";
 import { isUndef } from "../../../shared/instanceof";
 
-export default class UserscriptStorageManager implements IStorageManager {
+export default class UserscriptSettingsDao implements ISettingsDao {
     setSourceOption(domain:string, option:DomainOptionEnum, cb?:OptionsCallback):void {
         GM_setValue(domain, option);
         if (!isUndef(cb)) {

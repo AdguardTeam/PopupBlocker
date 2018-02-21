@@ -1,6 +1,6 @@
 /// <reference path="../../../node_modules/closure-library.ts/closure-library.d.ts/all.d.ts"/>
 
-import IStorageManager from "../../storage/IStorageManager";
+import ISettingsDao from "../../storage/ISettingsDao";
 import IAlertController from "./IAlertController";
 import { trustedEventListener } from "../event_listener_decorators";
 
@@ -27,10 +27,11 @@ export default abstract class BaseAlertController implements IAlertController {
     private collapsed:boolean
 
     private iframe:HTMLIFrameElement
+    private shadowHostEl:HTMLElement
     private frameDoc:HTMLDocument
 
     constructor(
-        private storageManager:IStorageManager
+        private storageManager:ISettingsDao
     ) {
         this.updateIframe               = trustedEventListener(this.updateIframe, this);
         this.updateIframeContent        = trustedEventListener(this.updateIframeContent, this);
@@ -39,17 +40,30 @@ export default abstract class BaseAlertController implements IAlertController {
         this.onOptionChange             = trustedEventListener(this.onOptionChange, this);
     }
 
+    private static shadowDomV1Support = 'attachShadow' in Element.prototype;
+
+    private appendIframe() {
+        let iframe = this.iframe = document.createElement('iframe');
+        if (BaseAlertController.shadowDomV1Support) {
+            let host = this.shadowHostEl = document.createElement('div');
+            let root = host.attachShadow({ mode: 'closed' });
+            document.documentElement.appendChild(host);
+            root.appendChild(iframe);
+        } else {
+            document.documentElement.appendChild(iframe);
+        }
+    }
+
     createAlert(origDomain:string, destUrl:string) {
         this.numPopup++;
         this.origDomain = origDomain;
         this.destUrl = destUrl;
 
         if (!this.iframe) {
-            this.iframe = document.createElement('iframe');
-            document.documentElement.appendChild(this.iframe);
+            this.appendIframe();
+            this.collapsed = true;
             this.iframe.addEventListener('load', this.updateIframe);
         } else {
-            this.collapsed = true;
             this.updateIframeContent();
         }
     }
@@ -59,6 +73,9 @@ export default abstract class BaseAlertController implements IAlertController {
         const root = document.getElementsByClassName(goog.getCssName('alert'))[0];
         root.classList.toggle(goog.getCssName('alert--show'));
         this.collapsed = !this.collapsed;
+
+        // Adjust iframe size.
+
     }
 
     private updateIframe(evt?:Event) {

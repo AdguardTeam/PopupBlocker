@@ -2,10 +2,10 @@
  * @fileoverview Global namespace to be used throughout the page script.
  */
 
-import IContentScriptApi from "./storage/IContentScriptApi";
+import IContentScriptApiFacade from "./storage/IContentScriptApiFacade";
 
 interface IAdguard {
-    storageProvider?:IContentScriptApi
+    storageProvider?:IContentScriptApiFacade
 }
 
 let adguard:IAdguard = {};

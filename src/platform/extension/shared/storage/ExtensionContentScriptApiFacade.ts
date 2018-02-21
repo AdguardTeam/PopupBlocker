@@ -1,9 +1,9 @@
-import IContentScriptApi from "../../../../storage/IContentScriptApi";
-import { CONTENT_PAGE_MAGIC, DownwardMsgTypesEnum, DownwardMsgTypes, Settings, UpwardMsgTypesEnum, CreateAlertMsg } from '../MessageTypes'
+import IContentScriptApiFacade from "../../../../storage/IContentScriptApiFacade";
+import { CONTENT_PAGE_MAGIC, DownwardMsgTypesEnum, DownwardMsgTypes, Settings, UpwardMsgTypesEnum, CreateAlertMsg } from '../message_types'
 import * as log from '../../../../shared/log';
 
 
-export default class ExtensionStorageProvider implements IContentScriptApi {
+export default class ExtensionContentScriptApiFacade implements IContentScriptApiFacade {
     public domain = location.hostname;
     private port:MessagePort
     constructor() {
@@ -28,8 +28,8 @@ export default class ExtensionStorageProvider implements IContentScriptApi {
         if (typeof settings.whitelistedDestinations !== 'undefined') {
             this.whitelistedDestinations = settings.whitelistedDestinations;
         }
-        if (typeof settings.originIsWhitelisted !== 'undefined') {
-            this.isWhitelistedOrigin = settings.originIsWhitelisted;
+        if (typeof settings.domainOption !== 'undefined') {
+            this.currentDomainOption = settings.domainOption;
         }
     }
 
@@ -44,7 +44,7 @@ export default class ExtensionStorageProvider implements IContentScriptApi {
         return this.whitelistedDestinations.indexOf(destination) !== -1;
     }
     originIsSilenced():boolean {
-
+        return this.currentDomainOption === DomainOptionEnum.SILENCED;
     }
     showAlert(orig_domain:string, popup_url:string):void {
         log.print('StorageProvider: showAlert');

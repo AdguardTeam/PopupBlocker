@@ -73,6 +73,9 @@ class BuildOption {
         // Apply minification for beta and release channel.
         return this.channel !== Channel.DEV;
     }
+    get isExtension() {
+        return this.target !== BuildTarget.USERSCRIPT;
+    }
     clone():BuildOption {
         return new BuildOption(this.target, this.channel, this.preprocessContext, this.overrideShouldMinify);
     }
@@ -87,6 +90,8 @@ abstract class TextUtils {
         return content.replace(/window.popupBlocker\s*=\s*/, '');
     }
 }
+
+
 
 class PathUtils {
 
@@ -103,17 +108,39 @@ class PathUtils {
         return path.posix.join(PathUtils.outputDir, this.options.target, '');
     }
 
-    private static reModuleExtension = /\.[jt]sx?$/;
-    private static normalizeModuleExtension(path:string) {
-        return path.replace(PathUtils.reModuleExtension, '.js');
-    }
-    private static pathToGoogModule(path:string):string {
-        const regex = PathUtils.reModuleExtension;
-        // Strip file extension
-        if (regex.test(path)) {
-            path = RegExp['leftContext'];
+    private static BundleEntry = class BundleEntry {
+        constructor(
+            private targetToPathMap: { [key in BuildTarget]?: string },
+            private options:BuildOption
+        ) { }
+        public get rollup() {
+            return path.posix.join(
+                PathUtils.sourceDir,
+                this.targetToPathMap[this.options.target]
+            );
         }
-        return path.replace(/[\/\\]/g, '.');
+        private static reModuleExtension = /\.[jt]sx?$/;
+        private static normalizeModuleExtension(path:string) {
+            return path.replace(BundleEntry.reModuleExtension, '.js');
+        }
+        public get cc() {
+            return BundleEntry.normalizeModuleExtension(path.posix.join(
+                PathUtils.outputDir,
+                PathUtils.tsccDir,
+                this.targetToPathMap[this.options.target]
+            ));
+        }
+        private static pathToGoogModule(path:string):string {
+            const regex = BundleEntry.reModuleExtension;
+            // Strip file extension
+            if (regex.test(path)) {
+                path = RegExp['leftContext'];
+            }
+            return path.replace(/[\/\\]/g, '.');
+        }
+        public get googModule() {
+            return 'goog:' + BundleEntry.pathToGoogModule(this.cc);
+        }
     }
 
     private static targetPageScriptEntryMap = {
@@ -122,59 +149,34 @@ class PathUtils {
         [BuildTarget.FIREFOX]:      'platform/extension/shared/page_script.ts',
         [BuildTarget.EDGE]:         'platform/extension/shared/page_script.ts'
     }
-    public get pageScriptEntry() {
-        return path.posix.join(
-            PathUtils.sourceDir,
-            PathUtils.targetPageScriptEntryMap[this.options.target]
-        );
-    }
-    public get pageScriptEntryCc() {
-        return PathUtils.normalizeModuleExtension(path.posix.join(
-            PathUtils.outputDir,
-            PathUtils.tsccDir,
-            PathUtils.targetPageScriptEntryMap[this.options.target]
-        ));
-    }
-    public get pageScriptEntryGoogModule() {
-        return 'goog:' + PathUtils.pathToGoogModule(this.pageScriptEntryCc);
-    }
+
+    public pageScriptEntry = new PathUtils.BundleEntry(PathUtils.targetPageScriptEntryMap, this.options);
+
     private static targetContentScriptEntryMap = {
         [BuildTarget.USERSCRIPT]:   'platform/userscript/content_script.ts',
         [BuildTarget.CHROME]:       'platform/extension/shared/content_script.ts',
         [BuildTarget.FIREFOX]:      'platform/extension/shared/content_script.ts',
         [BuildTarget.EDGE]:         'platform/extension/edge/content_script.ts'
     }
-    public get contentScriptEntry() {
-        return path.posix.join(
-            PathUtils.sourceDir,
-            PathUtils.targetContentScriptEntryMap[this.options.target]
-        );
+
+    public contentScriptEntry = new PathUtils.BundleEntry(PathUtils.targetContentScriptEntryMap, this.options);
+
+    private static targetBackgroundScriptEntryMap = {
+        [BuildTarget.CHROME]:       'platform/extension/shared/background_script.ts',
+        [BuildTarget.FIREFOX]:      'platform/extension/shared/background_script.ts',
+        [BuildTarget.EDGE]:         'platform/extension/shared/background_script.ts',
     }
-    public get contentScriptEntryCc() {
-        return PathUtils.normalizeModuleExtension(path.posix.join(
-            PathUtils.outputDir,
-            PathUtils.tsccDir,
-            PathUtils.targetContentScriptEntryMap[this.options.target]
-        ));
-    }
-    public get contentScriptEntryGoogModule() {
-        return 'goog:' + PathUtils.pathToGoogModule(this.contentScriptEntryCc);
-    }
+
+    public backgroundScriptEntry = new PathUtils.BundleEntry(PathUtils.targetBackgroundScriptEntryMap, this.options);
+
     private static targetCommonScriptMap = {
         [BuildTarget.USERSCRIPT]:   'platform/userscript/common.ts',
         [BuildTarget.CHROME]:       'platform/extension/shared/common.ts',
         [BuildTarget.FIREFOX]:      'platform/extension/shared/common.ts',
         [BuildTarget.EDGE]:         'platform/extension/shared/common.ts'
     }
-    public get commonEntryCc() {
-        return PathUtils.normalizeModuleExtension(path.posix.join(
-            PathUtils.tsccPath,
-            PathUtils.targetCommonScriptMap[this.options.target]
-        ));
-    }
-    public get commonEntryGoogModule() {
-        return 'goog:' + PathUtils.pathToGoogModule(this.commonEntryCc);
-    }
+
+    public commonEntry = new PathUtils.BundleEntry(PathUtils.targetCommonScriptMap, this.options);
 
     public get tsickleExternsPath() {
         return path.posix.join(
@@ -183,9 +185,10 @@ class PathUtils {
         );
     }
 
-    public static alertTemplatePath     = 'src/ui/template.html'
     public static translationJSONPath   = 'src/locales/translations.json'
-    public static assetsPath            = 'src/platform/extension/shared/assets'
+    public static assetsPath            = 'src/assets'
+
+    public static postCssPath           = 'src/ui/pcss/';
 
     public get assetOutputPath() {
         return path.posix.join(this.outputPath, 'assets');
@@ -207,72 +210,209 @@ class PathUtils {
 
 }
 
+/******************************************************************************************************/
 
-class CssUtils {
+interface IResourceProvider {
+    prepareResource(resources:ResourceManager):Promise<void>
+}
 
-    private static postCssDir = 'src/ui/pcss';
-    private static postCssGlob = 'src/ui/pcss/**.pcss';
-    private static baseSrc = [
-        'vars.pcss',
-        'mixins.pcss',
-        'global.pcss',
-        'fonts.pcss'
-    ];
+/**
+ * Depending on build configuration, accompanying resources are either:
+ *  1. Moved to build directory, or
+ *  2. Inlined in JS files.
+ * Resource providers register themselves to ResourceManager, and in their `prepareResource` call,
+ * they use `registerInlinedResource` in their own discretion.
+ * The manager gathers resources to be inlined and exports a single universal inliner that can be
+ * used throughout the build process.
+ */
+class ResourceManager {
+    public inline:(content:string)=>string
+
+    private resourceMap = {};
+    private providers:IResourceProvider[] = [];
+
+    public registerInlinedResource(marker:string, data:{data:string, path:string}) {
+        this.resourceMap[marker] = data;
+    }
+    public registerProvider(provider:IResourceProvider) {
+        this.providers.push(provider);
+    }
+
+    public async prepare() {
+        await Promise.all(this.providers.map(provider => provider.prepareResource(this)));
+        this.inline = (new InlineResource(this.resourceMap)).inline;
+    }
+}
+
+/******************************************************************************************************/
+
+class CssBuilder implements IResourceProvider {
 
     /**
      * For userscripts, we inline css for alerts to the userscript source, and host the
      * options css in a dedicated page.
      */
-    private static alertSrc = CssUtils.baseSrc.concat('alerts.pcss', 'pin.pcss');
-    private static optionsSrc = CssUtils.baseSrc.concat('settings.pcss');
-    private static allSrc = CssUtils.baseSrc.concat('alerts.pcss', 'pin.pcss', 'settings.pcss');
+    private static alertEntry = 'alerts.pcss';
+    private static optionsEntry = 'options.pcss';
+    private static allEntry = 'all.pcss';
+
+    private static makePath(name:string) {
+        return path.posix.join(PathUtils.postCssPath, name);
+    }
+
+    private static alertSrc = CssBuilder.makePath(CssBuilder.alertEntry);
+    private static optionsSrc = CssBuilder.makePath(CssBuilder.optionsEntry);
+    private static allSrc = CssBuilder.makePath(CssBuilder.allEntry);
 
     private static bundledCssName = 'styles.css';
     private static cssTempDir = 'css_temp';
 
-    private static cssTempPath = path.posix.join(PathUtils.outputDir, CssUtils.cssTempDir, CssUtils.bundledCssName);
+    private static cssTempPath = path.posix.join(PathUtils.outputDir, CssBuilder.cssTempDir);
 
-    private static renamingOutPath = path.posix.join(PathUtils.tsccPath, 'renaming_map.js');
+    public static renamingOutPath = path.posix.join(PathUtils.tsccPath, 'renaming_map.js');
 
-    private static compilePostCss(srcs:string[]):NodeJS.ReadableStream {
+    private static compilePostCss(srcs:string):NodeJS.ReadableStream {
         return gulp.src(srcs)
             .pipe(postcss([
                 imp(),
                 nesting(),
-                svg(),
+                svg({ paths: [ path.resolve(PathUtils.postCssPath) ] }),
                 mixins(),
                 cssnext({ browsers: ["IE 10", "> 1%"] }),
+
             ]))
-            .pipe(rename(CssUtils.bundledCssName));
+            .pipe(rename(CssBuilder.bundledCssName));
     }
 
-    private static async getUnminifiedCss(srcs:string[]):Promise<string> {
-        return await toPromise(CssUtils.compilePostCss(srcs), true);
+    private static async compileWithClosure(srcs:string):Promise<NodeJS.ReadableStream> {
+        await fsExtra.mkdirp(CssBuilder.cssTempPath);
+        await toPromise(
+            CssBuilder.compilePostCss(srcs)
+                /** @todo Make this really 'temp'  */
+                .pipe(gulp.dest(CssBuilder.cssTempPath))
+        );
+
+        return new JarUtils(JarUtils.STYLESHEETS_PATH, [
+            `--output-renaming-map-format`,     `CLOSURE_COMPILED`,
+            `--rename`,                         `CLOSURE`,
+            `--output-renaming-map`,             CssBuilder.renamingOutPath,
+            `--allow-unrecognized-properties`,
+            path.posix.join(CssBuilder.cssTempPath, CssBuilder.bundledCssName)
+        ]);
     }
 
-    private static async getMinifiedCss(srcs:string[]):Promise<string> {
-        await toPromise(CssUtils.compilePostCss(srcs));
-
-        return await toPromise(new JarUtils(JarUtils.STYLESHEETS_PATH, [
-            `--output-renaming-map-format`, `CLOSURE_COMPILED`,
-            `--rename`,                     `CLOSURE`,
-            `--output-renaming-map`,         CssUtils.renamingOutPath,
-             CssUtils.cssTempPath
-        ]), true);
+    public async prepareResource(resc:ResourceManager) {
+        if (this.options.isExtension) {
+            // For extensions, we bundle the whole css to a single file, and moves to assets folder.
+            if (this.options.shouldMinify) {
+                (await CssBuilder.compileWithClosure(CssBuilder.allSrc))
+                    .pipe(gulp.dest(this.paths.assetOutputPath));
+            } else {
+                CssBuilder.compilePostCss(CssBuilder.allSrc)
+                    .pipe(gulp.dest(this.paths.assetOutputPath));
+            }
+        } else {
+            // For userscripts, we bundle alert css, and inlines it.
+            resc.registerInlinedResource("ALERT_STYLE", {
+                data: await toPromise(
+                    this.options.shouldMinify ?
+                        (await CssBuilder.compileWithClosure(CssBuilder.alertSrc)) :
+                        CssBuilder.compilePostCss(CssBuilder.alertSrc),
+                    true),
+                path: 'alert.css'
+            })
+        }
     }
 
-    private async getCss(srcs:string[]):Promise<string> {
-        return this.options.shouldMinify ? CssUtils.getMinifiedCss(srcs) : CssUtils.getUnminifiedCss(srcs);
-    } 
+    constructor(
+        private options:BuildOption,
+        private paths:PathUtils
+    ) { }
 
-    public async getAlertCss():Promise<string> {
-        return this.getCss(CssUtils.alertSrc);
+}
+
+/******************************************************************************************************/
+
+class SoyBuilder implements IResourceProvider {
+
+    private static soyPath = 'src/ui/soy/';
+
+    private static alertTemplateName = 'alert.soy';
+    private static optionsTemplateName = 'options.soy';
+
+    private static alertTemplatePath = path.posix.join(SoyBuilder.soyPath, SoyBuilder.alertTemplateName);
+    private static optionsTemplatePath = path.posix.join(SoyBuilder.soyPath, SoyBuilder.optionsTemplateName);
+
+    public static soyUtilsPath = path.posix.join(SoyBuilder.soyPath, 'third_party/soyutils.js');
+
+    private static compileRollup(srcs:string):NodeJS.ReadableStream {
+        return new JarUtils(JarUtils.TEMPLATES_PATH, [
+            `--cssHandlingScheme`,  `LITERAL`,
+            `--srcs`,                srcs,
+            `--outputPathFormat`,   `{INPUT_FILE_NAME_NO_EXT}.literal.soy.js`,
+            `--bidiGlobalDir`,      `1`,
+            `--shouldGenerateJsdoc`,
+        ])
+            .pipe(insert.transform(SoyBuilder.transformGetMsgRollup))
+            .pipe(append(SoyBuilder.soyUtilsPath));
     }
-    public async getOptionsCss():Promise<string> {
-        return this.getCss(CssUtils.optionsSrc);
+
+    /**
+     * Transforms `goog.getMsg` calls to runtime i18nService call.
+     */
+    private static transformGetMsgCc(content:string):string {
+        const importNamespace = `var __soyUtils__adguard = goog.require('build.tscc.content_script_namespace');`;
+        return content.replace(SoyBuilder.reGetMsg, (match, c1, c2) => `__soyUtils_adguard.i18nservice.getMsg\(${c1}${c2}`) + '\n' + importNamespace;
     }
-    public async getAllCss():Promise<string> {
-        return this.getCss(CssUtils.allSrc);
+
+    private static transformGetMsgRollup(content:string):string {
+        return content.replace(SoyBuilder.reGetMsg, (match, c1, c2) => `adguard.i18nservice.getMsg\(${c1}${c2}`);
+    }
+
+    private static reGetMsg = /goog\.getMsg\(\s*([A-Za-z_\-]+)(?:\{\$[A-Za-z_\-]*\})*\s*(,|\))/g;
+
+    private static compileCc(srcs:string):NodeJS.ReadableStream {
+        return new JarUtils(JarUtils.TEMPLATES_PATH, [
+            `--cssHandlingScheme`,  `GOOG`,
+            `--srcs`,                srcs,
+            `--outputPathFormat`,   `{INPUT_FILE_NAME_NO_EXT}.goog.soy.js`,
+            `--bidiGlobalDir`,      `1`,
+            `--shouldGenerateJsdoc`,
+            `--shouldProvideRequireSoyNamespaces`,
+            `--shouldGenerateGoogMsgDefs`
+        ]).pipe(insert.transform(SoyBuilder.transformGetMsgCc))
+    }
+
+    public async prepareResource(resc:ResourceManager) {
+        if (!this.options.shouldMinify) {
+            // Templates are compiled and inlined in rollup build.
+            // TODO: prepend soyutils on both alert and options template.
+            resc.registerInlinedResource("TEMPLATE_ROLLUP", {
+                data: await toPromise(SoyBuilder.compileRollup(SoyBuilder.alertTemplatePath), true),
+                path: 'alert.soy.js'
+            });
+            if (this.options.target !== BuildTarget.USERSCRIPT) {
+                // For extension builds, inline templates for options page as well.
+                resc.registerInlinedResource("SETTINGS_TEMPLATE_ROLLUP", {
+                    data: await toPromise(SoyBuilder.compileRollup(SoyBuilder.optionsTemplatePath), true),
+                    path: 'options.soy.js'
+                });
+            }
+        } else {
+            // Templates are compiled and moved to Closure Compiler directory.
+            const tasks = [];
+            tasks.push(toPromise(
+                SoyBuilder.compileCc(SoyBuilder.alertTemplatePath)
+                    .pipe(gulp.dest(PathUtils.tsccPath))
+            ));
+            if (this.options.isExtension) {
+                tasks.push(toPromise(
+                    SoyBuilder.compileCc(SoyBuilder.optionsTemplatePath)
+                        .pipe(gulp.dest(PathUtils.tsccPath))
+                ));
+            }
+            await Promise.all(tasks);
+        }
     }
 
     constructor(
@@ -281,68 +421,9 @@ class CssUtils {
 
 }
 
-class SoyUtils {
-    
-    private static soyGlob = 'src/ui/soy/**.soy';
+/******************************************************************************************************/
 
-    private static soyPath = 'src/ui/soy/';
-
-    private static alertTemplateName = 'alert.soy';
-    private static optionsTemplateName = 'options.soy';
-
-    public static alertTemplatePath = path.posix.join(SoyUtils.soyPath, SoyUtils.alertTemplateName);
-    public static optionsTemplatePath = path.posix.join(SoyUtils.soyPath, SoyUtils.optionsTemplateName);
-
-    private static soyUtilsPath = path.posix.join(SoyUtils.soyPath, 'third_party/soyutils.js');
-
-    public async compileRollup(srcs:string):Promise<string> {
-        return toPromise(
-            new JarUtils(JarUtils.TEMPLATES_PATH, [
-                `--cssHandlingScheme`,  `LITERAL`,
-                `--srcs`,                srcs,
-                `--outputPathFormat`,   `{INPUT_FILE_NAME_NO_EXT}.literal.soy.js`,
-                `--bidiGlobalDir`,      `1`,
-                `--shouldGenerateJsdoc`,
-            ])
-                .pipe(insert.transform(SoyUtils.transformGetMsgRollup))
-                .pipe(append(SoyUtils.soyUtilsPath)),
-            true
-        );
-    }
-
-    /**
-     * Transforms `goog.getMsg` calls to runtime i18nService call.
-     */
-    private static transformGetMsgCc(content:string):string {
-        const importNamespace = `var __soyUtils__adguard = goog.require('build.tscc.content_script_namespace');`;
-
-        return content.replace(SoyUtils.reGetMsg, '__soyUtils__adguard.i18nService.getMsg\(') + '\n' + importNamespace;
-    }
-
-    private static transformGetMsgRollup(content:string):string {
-        return content.replace(SoyUtils.reGetMsg, 'adugard.i18nservice.getMsg\(');
-    }
-
-    private static reGetMsg = /goog\.getMsg\(/g;
-
-    public async compileCc(srcs:string):Promise<string> {
-        return toPromise(
-            new JarUtils(JarUtils.TEMPLATES_PATH, [
-                `--cssHandlingScheme`,  `GOOG`,
-                `--srcs`,                srcs,
-                `--outputPathFormat`,   `{INPUT_FILE_NAME_NO_EXT}.goog.soy.js`,
-                `--bidiGlobalDir`,      `1`,
-                `--shouldGenerateJsdoc`,
-                `--shouldProvideRequireSoyNamespaces`,
-                `--shouldGenerateGoogMsgDefs`
-            ]).pipe(insert.transform(SoyUtils.transformGetMsgCc)),
-            true
-        );
-    }
-
-}
-
-class LocaleUtils {
+class LocaleUtils implements IResourceProvider {
 
     private translationJSONCached:{[locale:string]:{[messageId:string]:{message:string}}}
     public async getTranslationJSON() {
@@ -373,7 +454,7 @@ class LocaleUtils {
      * We collapse 'message' property in the json object containing translations,
      * in order to have a shorter representation in the userscript source.
      */
-    public async getUserscriptInlinableJSON() {
+    private async getUserscriptInlinableJSON() {
         const out = {};
         const json = await this.getTranslationJSON();
         for (let locale in json) {
@@ -411,7 +492,7 @@ class LocaleUtils {
         return <{[locale:string]:{[messageId:string]:{message:string}}}>out;
     }
 
-    public async moveLocalesToTargetDir() {
+    private async moveLocalesToTargetDir() {
         const localePath = path.posix.join(this.paths.outputPath, '_locales');
         const [json] = await Promise.all([this.getExtensionJSON(), fsExtra.mkdirp(localePath)]);
         return Promise.all(Object.keys(json).map(async (locale) => {
@@ -421,6 +502,17 @@ class LocaleUtils {
         }));
     }
 
+    public async prepareResource(resc) {
+        if (this.options.isExtension) {
+            await this.moveLocalesToTargetDir();
+        } else {
+            resc.registerInlinedResource("USERSCRIPT_TRANSLATIONS", {
+                data: JSON.stringify(await this.getUserscriptInlinableJSON()),
+                path: 'userscript_translations.json'
+            });
+        }
+    }
+
     constructor(
         private options:BuildOption,
         private paths:PathUtils
@@ -428,72 +520,9 @@ class LocaleUtils {
 
 }
 
-class ResourceUtils {
+/******************************************************************************************************/
 
-    private static commonResourceMap = {
-        "ALERT_TEMPLATE": PathUtils.alertTemplatePath
-    };
-
-    public async getInlinedResourceMap() {
-        let resources = {
-            "ALERT_TEMPLATE": PathUtils.alertTemplatePath
-        };
-
-        if (this.options.target === BuildTarget.USERSCRIPT) {
-            resources["USERSCRIPT_TRANSLATIONS"] = {
-                data: JSON.stringify(await this.locales.getUserscriptInlinableJSON()),
-                path: 'userscript_translations.json'
-            };
-        }
-
-        if (!this.options.shouldMinify) {
-            resources["TEMPLATE_ROLLUP"] = {
-                data: await this.soy.compileRollup(SoyUtils.alertTemplatePath),
-                path: 'alert.soy.js' // Why the fuck do we need this?
-            };
-        }
-
-        if (this.options.target !== BuildTarget.USERSCRIPT) {
-            resources["ALERT_STYLE"] = {
-                data: await this.css.getAlertCss(),
-                path: 'alert.css'
-            };
-        }
-
-        return resources;
-    }
-
-    public async prepareNotInlinedResources():Promise<void> {
-        
-    }
-
-    public async getSettingsPageInlinedResourceMap() {
-        let resources = {};
-
-        // We inline css for userscript 
-        if ()
-    }
-
-
-
-    public async prepareSettingsPageResources():Promise<void> {
-
-
-
-
-        // options page templates
-    }
-
-    constructor(
-        private options:BuildOption,
-        private locales:LocaleUtils,
-        private css:CssUtils,
-        private soy:SoyUtils
-    ) { }
-
-}
-
-export default class Builder {
+class Builder {
 
     private static version = '2.2.1';
 
@@ -526,59 +555,83 @@ export default class Builder {
         return Builder.channelDownloadUpdateURLMap[this.options.channel];
     }
 
-    private async loadResources() {
-        if (!this.inlineResource) {
-            this.inlineResource = (new InlineResource(await this.resources.getInlinedResourceMap())).inline;
-        }
-    }
-
-    private inlineResource:(file:string)=>string
     private paths:PathUtils;
     private locales:LocaleUtils;
-    private resources:ResourceUtils;
+    private soy:SoyBuilder;
+    private css:CssBuilder;
+    private rescMgr:ResourceManager;
+
     constructor(
         private options:BuildOption,
     ) {
-        this.paths = new PathUtils(options);
-        this.locales = new LocaleUtils(options, this.paths);
-        this.resources = new ResourceUtils(options, this.locales);
+        this.paths      = new PathUtils(options);
+
+        this.locales    = new LocaleUtils(options, this.paths);
+        this.soy        = new SoyBuilder(options);
+        this.css        = new CssBuilder(options, this.paths);
+
+        this.rescMgr    = new ResourceManager();
+
+        this.rescMgr.registerProvider(this.locales);
+        this.rescMgr.registerProvider(this.soy);
+        this.rescMgr.registerProvider(this.css);
+
         this.build = this.build.bind(this);
     }
 
     private static rollupTsconfigOverride = { compilerOptions: { target: "es5" } };
+    private static rollupOptsBase = {
+        plugins: [(<any>typescript2)({ tsconfigOverride: Builder.rollupTsconfigOverride })],
+        format: 'iife',
+        strict: false
+    };
+
     private get pageScriptRollupOptions() {
-        return {
-            entry: this.paths.pageScriptEntry,
-            plugins: [(<any>typescript2)({ tsconfigOverride: Builder.rollupTsconfigOverride })],
+        return Object.assign({}, Builder.rollupOptsBase, {
+            entry: this.paths.pageScriptEntry.rollup,
             format: 'es', // In order not to produce unnecessary closure.
-            strict: false
-        };
+        });
     }
     private get contentScriptRollupOptions() {
-        return {
-            entry: this.paths.contentScriptEntry,
-            plugins: [(<any>typescript2)({ tsconfigOverride: Builder.rollupTsconfigOverride })],
-            format: 'iife',
-            strict: false
-        };
+        return Object.assign({}, Builder.rollupOptsBase, {
+            entry: this.paths.contentScriptEntry.rollup
+        });
+    }
+    private get backgroundScriptRollupOptions() {
+        return Object.assign({}, Builder.rollupOptsBase, {
+            entry: this.paths.backgroundScriptEntry.rollup
+        });
     }
 
     private async rollup():Promise<Reservoir> {
         const options = this.options;
-        const bundlePageScript = gulp.src('src/**/*.ts')
-            .pipe(<any>preprocess({ context: this.options.preprocessContext }))
-            .pipe(rollup(this.pageScriptRollupOptions))
-            .pipe(insert.transform(this.inlineResource))
 
-        const bundleContentScript = gulp.src('src/**/*.ts')
-            .pipe(<any>preprocess({ context: this.options.preprocessContext }))
+        const sourceStream = gulp.src('src/**/*.ts')
+            .pipe(<any>preprocess({ context: options.preprocessContext }));
+
+        const bundlePageScript = sourceStream
+            .pipe(rollup(this.pageScriptRollupOptions))
+            .pipe(insert.transform(this.rescMgr.inline))
+
+        const bundleContentScript = sourceStream
             .pipe(rollup(this.contentScriptRollupOptions))
-            .pipe(insert.transform(this.inlineResource))
+            .pipe(insert.transform(this.rescMgr.inline))
+
+        const bundleBackgroundScript = options.isExtension ? sourceStream
+            .pipe(rollup(this.backgroundScriptRollupOptions))
+            .pipe(insert.transform(this.rescMgr.inline))
+            .pipe(rename('background_script.js'))
+            .pipe(gulp.dest(this.paths.outputPath))
+        : null;
 
         const contentScriptResv = new Reservoir(bundleContentScript);
 
         const [pageScriptRaw] =
-            await Promise.all([toPromise(bundlePageScript, true), toPromise(bundleContentScript)]);
+            await Promise.all([
+                toPromise(bundlePageScript, true),
+                toPromise(bundleContentScript),
+                options.isExtension ? toPromise(bundleBackgroundScript) : null
+            ]);
 
         const wrappedPageScript = this.options.target === BuildTarget.USERSCRIPT ?
             `function popupBlocker(window,PARENT_FRAME_KEY,CONTENT_SCRIPT_KEY){${pageScriptRaw}}` :
@@ -601,7 +654,18 @@ export default class Builder {
 
     private ccOptionsFromManifest(manifest:tsickle.ModulesManifest):string[] {
         const sorter = new ManifestSort(manifest);
-        const deps = sorter.getDeps([this.paths.commonEntryCc, this.paths.pageScriptEntryCc, this.paths.contentScriptEntryCc]);
+
+        const entries = [
+            this.paths.commonEntry.cc,
+            this.paths.pageScriptEntry.cc,
+            this.paths.contentScriptEntry.cc,
+        ];
+        this.options.isExtension && entries.push(
+            this.paths.backgroundScriptEntry.cc
+        );
+
+        const deps = sorter.getDeps(entries);
+
         const flags = [
             '--charset',                  'UTF-8',
             '--compilation_level',        'ADVANCED',
@@ -613,20 +677,28 @@ export default class Builder {
             '--externs',                  'externs.js',
             '--externs',                   this.paths.tsickleExternsPath,
             '--rewrite_polyfills',         String(false),
+            '--module_output_path_prefix', this.paths.outputPath + '/',
 
-            '--entry_point',               this.paths.commonEntryGoogModule,
+            '--entry_point',               this.paths.commonEntry.googModule,
             '--module',                   `common:auto`,
-            '--entry_point',               this.paths.pageScriptEntryGoogModule,
+
+            '--entry_point',               this.paths.pageScriptEntry.googModule,
             '--module',                   `page_script:${deps.num_js[1]}:common`,
-            '--entry_point',               this.paths.contentScriptEntryGoogModule,
-            '--module',                   `content_script:${deps.num_js[2]}:common`,
 
-            '--module_output_path_prefix', this.paths.outputPath + '/'
+            '--entry_point',               this.paths.contentScriptEntry.googModule,
+            '--module',                   `content_script:${deps.num_js[2]}:common`
         ];
-
+        this.options.isExtension && flags.push(
+            '--entry_point',               this.paths.backgroundScriptEntry.googModule,
+            '--module',                   `background_script:${deps.num_js[3]}:common`
+        );
+        // Provide modules from sources other than tsickle.
+        flags.push('--js', SoyBuilder.soyUtilsPath);
+        flags.push('--js', CssBuilder.renamingOutPath);
         for (let fileName of deps.sorted) {
             flags.push('--js', fileName);
         }
+
         return flags;
     }
 
@@ -654,11 +726,8 @@ export default class Builder {
                 .pipe(<any>preprocess({ context: options.preprocessContext }))
                 .pipe(gulp.dest(PathUtils.tsicklePath))
         );
-        const compileCss = toPromise(
-            this.css.prepare()
-        );
 
-        await Promise.all([preprocessTask, compileCss]);
+        await preprocessTask;
 
         log.info("Tsickle start");
         const result:tsickle.EmitResult|1 = tsickleMain(
@@ -680,7 +749,7 @@ export default class Builder {
                         // Do not inline resources to externs file.
                         return content;
                     }
-                    return this.inlineResource(content)
+                    return this.rescMgr.inline(content);
                 }))
                 .pipe(gulp.dest(PathUtils.tsccPath))
         );
@@ -802,7 +871,8 @@ export default class Builder {
     }
 
     async build() {
-        await Promise.all([this.loadResources(), this.clean()]);
+        await this.clean();
+        await this.rescMgr.prepare();
 
         const channel = this.options.channel;
         const target  = this.options.target;
@@ -829,7 +899,6 @@ export default class Builder {
                     .pipe(gulp.dest(this.paths.outputPath))
             ));
             tasks.push(fs.writeFile(path.posix.join(this.paths.outputPath, 'manifest.json'), manifest));
-            tasks.push(this.locales.moveLocalesToTargetDir());
             tasks.push(fsExtra.copy(PathUtils.assetsPath, this.paths.assetOutputPath));
         }
 
@@ -854,7 +923,7 @@ const devPreprocessCtxt = {
 for (let target in BuildTarget) {
     for (let channel in Channel) {
         let taskName = `${Channel[channel]}-${BuildTarget[target]}`;
-        
+
         let option = new BuildOption(
             <BuildTarget>BuildTarget[target],
             <Channel>Channel[channel],

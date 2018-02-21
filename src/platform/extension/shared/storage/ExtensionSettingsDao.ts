@@ -1,9 +1,9 @@
 import chrome from '../platform_namespace';
-import IStorageManager, { AllOptions, OptionsCallback } from '../../../../storage/IStorageManager';
+import ISettingsDao, { AllOptions, OptionsCallback } from '../../../../storage/ISettingsDao';
 import { isUndef } from '../../../../shared/instanceof';
 import OptionsController from '../../../../ui/options/OptionsController';
 
-export default class ExtensionStorageManager implements IStorageManager {
+export default class ExtensionSettingsDao implements ISettingsDao {
 
     private storage = chrome.storage.local;
     private getCallback(cb?:OptionsCallback) {
@@ -60,7 +60,7 @@ export default class ExtensionStorageManager implements IStorageManager {
     }
     enumerateOptions(cb:OptionsCallback):void {
         this.storage.get(null, (items) => {
-            cb(ExtensionStorageManager.itemsToOptions(items));
+            cb(ExtensionSettingsDao.itemsToOptions(items));
         });
     }
 

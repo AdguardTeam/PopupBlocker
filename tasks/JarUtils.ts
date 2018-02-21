@@ -14,29 +14,28 @@ import nesting = require('postcss-nested');
 
 import Reservoir from './Reservoir';
 
-import log from 'fancy-log';
+import * as log from 'fancy-log';
 
 import { spawn, ChildProcess } from 'child_process';
 import { Stream } from 'stream';
 
-
 /**
- * Closure stylesheets compiler
+ * Wrapper arround closure tools JARs.
  */
 export default class JarUtils extends Stream.Readable {
 
-    public static STYLESHEETS_PATH = 'tasks/css/third_party/closure_stylesheets.jar';
-    public static TEMPLATES_PATH = 'tasks/soy/third_party/SoyToJsSrcCompiler.jar';
+    public static STYLESHEETS_PATH = 'tasks/third_party/closure_stylesheets.jar';
+    public static TEMPLATES_PATH = 'tasks/third_party/SoyToJsSrcCompiler.jar';
 
     constructor(
         private jarPath,
         private args:string[]
     ) {
-        super({objectMode: true});
+        super({ objectMode: true });
     }
 
     public async _read() {
-        const process = spawn(this.jarPath, this.args);
+        const process = spawn('java', ['-jar', this.jarPath,  ...this.args]);
 
         let stdOutData = '';
         let stdErrData = '';

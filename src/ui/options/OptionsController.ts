@@ -1,6 +1,6 @@
 /// <reference path="../../../node_modules/closure-library.ts/closure-library.d.ts/all.d.ts"/>
 
-import IStorageManager, { AllOptions } from "../../storage/IStorageManager";
+import ISettingsDao, { AllOptions } from "../../storage/ISettingsDao";
 import { isUndef, isElement } from "../../shared/instanceof";
 import { trustedEventListener } from "../event_listener_decorators";
 import IOptionsController from "./IOptionsController";
@@ -22,7 +22,7 @@ const enum DomainIsRelevantFor {
 export default abstract class OptionsController implements IOptionsController {
 
     constructor(
-        private settingsManager:IStorageManager,
+        private settingsManager:ISettingsDao,
         /**
          * Stylesheet content is different between userscript and extensions settings page.
          * This class receives the stylesheet content in the constructor to provide an easy

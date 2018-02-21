@@ -1,5 +1,4 @@
-import IContentScriptApi from "../../../storage/IContentScriptApi";
-import IUserscriptSettings from "./IUserscriptSettings";
+import IContentScriptApiFacade from "../../../storage/IContentScriptApiFacade";
 import * as log from '../../../shared/log';
 import { isUndef } from '../../../shared/instanceof';
 import IAlertController from "../../../ui/alert/IAlertController";
@@ -8,7 +7,7 @@ import IAlertController from "../../../ui/alert/IAlertController";
  * Note: it should always request new data with GM_getValue, 
  * in order to retrieve the most up-to-date data.
  */
-export default class UserscriptStorageProvider implements IContentScriptApi {
+export default class UserscriptContentScriptApiFacade implements IContentScriptApiFacade {
     public domain = location.hostname;
     constructor(
         private alertController:IAlertController,

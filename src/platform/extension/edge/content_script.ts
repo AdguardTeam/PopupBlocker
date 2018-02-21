@@ -1,6 +1,6 @@
 import chrome from '../shared/platform_namespace';
-import AlertController from '../../../ui/alert_controller';
-import ExtensionStorageManager from '../shared/storage/ExtensionStorageManager';
+import ExtensionAlertController from '../shared/ui/ExtensionAlertController';
+import ExtensionSettingsDao from '../shared/storage/ExtensionSettingsDao';
 import EdgeI18nService from './localization/EdgeI18nService'
 import main from '../shared/content_script_main';
 
@@ -8,8 +8,8 @@ import main from '../shared/content_script_main';
 /**************************************************************************/
 
 const i18nService       = new EdgeI18nService(chrome.i18n.getMessage);
-const storageManager    = new ExtensionStorageManager();
-const alertController   = new AlertController(i18nService, storageManager);
+const storageManager    = new ExtensionSettingsDao();
+const alertController   = new ExtensionAlertController(storageManager);
 
 /**************************************************************************/
 

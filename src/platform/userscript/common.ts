@@ -1,3 +1,3 @@
-import IContentScriptApi from '../../storage/IContentScriptApi';
+import IContentScriptApiFacade from '../../storage/IContentScriptApiFacade';
 import createUrl, * as url from '../../shared/url';
 import * as log from '../../shared/log';

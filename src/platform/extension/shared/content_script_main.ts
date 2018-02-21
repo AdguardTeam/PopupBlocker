@@ -1,5 +1,5 @@
 import chrome from './platform_namespace';
-import { CONTENT_PAGE_MAGIC, DownwardMsgTypesEnum, UpwardMsgTypesEnum, UpwardMsgTypes, SettingsDeltaMsg, Settings } from "./MessageTypes";
+import { CONTENT_PAGE_MAGIC, DownwardMsgTypesEnum, UpwardMsgTypesEnum, UpwardMsgTypes, SettingsDeltaMsg, Settings } from "./message_types";
 import IAlertController from "../../../ui/alert/IAlertController";
 import * as log from '../../../shared/log';
 import II18nService from '../../../localization/II18nService';
@@ -59,7 +59,7 @@ function linkPageScript (alertController:IAlertController) {
         }
         if (location.hostname in changes) {
             storageChange = changes[location.hostname];
-            partialSettings.originIsWhitelisted = storageChange.newValue;
+            partialSettings.domainOption = storageChange.newValue;
         }
         receivePort.then(function(port) {
             port.postMessage(<SettingsDeltaMsg>{

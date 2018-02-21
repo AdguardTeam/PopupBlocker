@@ -16,11 +16,11 @@
             <div class="{css settings__in} {css settings__in--popup}">
                 <div class="{css settings__close}"></div>
                 <div class="{css settings__title}">
-                    {msg}add_site{/msg}
+                    {msg desc="Add a site"}add_site{/msg}
                 </div>
                 <form action="#">
-                    <input class="{css settings__input}" type="text" placeholder="{msg}site_input_ph{/msg}">
-                    <input class="{css settings__submit}" type="submit" value="{msg}add_site{/msg}">
+                    <input class="{css settings__input}" type="text" placeholder="{msg desc="Enter site name"}site_input_ph{/msg}">
+                    <input class="{css settings__submit}" type="submit" value="{msg desc="Add a site"}add_site{/msg}">
                 </form>
             </div>
         </div>
@@ -31,28 +31,28 @@
  * Settings page template.
  */
 {template .settingsContent}
-    {@param allowedOrigins: Array<string>}
-    {@param allowedDestinations: Array<string>}
-    {@param silencedOrigins: Array<string>}
+    {@param allowedOrigins: list<string>}
+    {@param allowedDestinations: list<string>}
+    {@param silencedOrigins: list<string>}
 
     <div class="{css settings__in}">
         <div class="{css settings__close}"></div>
         <div class="{css settings__title}">
-            {msg}userscript_name{/msg}
+            {msg desc=""}userscript_name{/msg}
         </div>
 
         <div class="{css settings__block}" data-for="{css allowed}">
             <div class="{css settings__row}">
                 <div class="{css settings__subtitle}">
-                    {msg}allowed{/msg}
+                    {msg desc=""}allowed{/msg}
                 </div>
                 <div class="{css settings__control}">
                     <button class="{css settings__control-item}">
-                        {msg}add{/msg}
+                        {msg desc=""}add{/msg}
                     </button>
                 </div>
                 <div class="{css settings__row-empty}">
-                    {msg}allowed_empty{/msg}
+                    {msg desc=""}allowed_empty{/msg}
                 </div>
             </div>
 
@@ -70,15 +70,15 @@
         <div class="{css settings__block}" data-for="{css silenced}">
             <div class="{css settings__row}">
                 <div class="{css settings__subtitle}">
-                    {msg}silenced{/msg}
+                    {msg desc=""}silenced{/msg}
                 </div>
                 <div class="{css settings__control}">
                     <div class="{css settings__control-item}">
-                        {msg}add{/msg}
+                        {msg desc=""}add{/msg}
                     </div>
                 </div>
                 <div class="{css settings__row-empty}">
-                    {msg}silenced_empty{/msg}
+                    {msg desc=""}silenced_empty{/msg}
                 </div>
             </div>
 
@@ -95,15 +95,15 @@
         <div class="{css settings__block}" data-for="{css allowed_dest}">
             <div class="{css settings__row}">
                 <div class="{css settings__subtitle}">
-                    {msg}allowed_dest{/msg}
+                    {msg desc=""}allowed_dest{/msg}
                 </div>
                 <div class="{css settings__control}">
                     <div class="{css settings__control-item}">
-                        {msg}add{/msg}
+                        {msg desc=""}add{/msg}
                     </div>
                 </div>
                 <div class="{css settings__row-empty}">
-                    {msg}allowed_dest_empty{/msg}
+                    {msg desc=""}allowed_dest_empty{/msg}
                 </div>
             </div>
 
