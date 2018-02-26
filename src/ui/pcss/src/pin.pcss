@@ -11,8 +11,12 @@
     background-color: var(--white-color);
     background-repeat: no-repeat;
     background-position: 50%;
+    transition: var(--t3) background-color;
+    padding: 0;
 
-    @mixin btn-reset;
+    &:hover {
+        background-color: var(--green02);
+    }
 
     &--show {
         display: block;

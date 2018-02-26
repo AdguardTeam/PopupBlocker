@@ -14,6 +14,7 @@
     "@types/filesystem": "^0.0.28",
     "@types/gulp": "^4.0.5",
     "@types/mocha": "^2.2.46",
+    "@types/vinyl": "^2.0.2",
     "add-stream": "^1.0.0",
     "async-file": "^2.0.2",
     "chai": "^4.1.2",
@@ -27,12 +28,14 @@
     "gulp-concat": "^2.6.1",
     "gulp-debug": "^3.2.0",
     "gulp-filter": "^5.1.0",
+    "gulp-hydra": "^1.0.1",
     "gulp-insert": "^0.5.0",
     "gulp-merge": "^0.1.1",
     "gulp-postcss": "^7.0.1",
     "gulp-preprocess": "^2.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-rollup": "^2.15.0",
+    "gulp-run": "^1.7.1",
     "gulp-soynode": "^2.0.0",
     "gulp-uglify": "^3.0.0",
     "inline-resource-literal": "https://github.com/seanl-adg/InlineResourceLiteral.git",
@@ -45,16 +48,18 @@
     "postcss-nested": "^2.0.2",
     "postcss-partial-import": "^4.1.0",
     "postcss-svg": "^1.0.6",
+    "replace-in-file": "^3.1.1",
     "rollup-plugin-typescript2": "^0.8.0",
     "run-sequence": "^2.2.0",
     "stream-to-promise": "^2.2.0",
     "stream-to-string": "^1.1.0",
     "through2": "^2.0.3",
+    "to-through": "^2.0.0",
     "ts-node": "^4.1.0",
     "tsickle": "^0.25.0",
     "typescript": "2.5.3"
   },
   "dependencies": {
-    "closure-templates-incrementaldom": "^0.0.3"
+    "google-closure-library": "^20180204.0.0"
   }
 }

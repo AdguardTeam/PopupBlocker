@@ -1,8 +1,22 @@
 import { ModulesManifest } from 'tsickle/src/tsickle';
+import path = require('path');
 
-interface Deps {
+interface IDeps {
     sorted:string[]
     num_js:number[]
+    [index:number]:string[]
+}
+
+class Deps implements IDeps {
+    [index:number]:string[];
+    constructor(
+        public sorted:string[],
+        public num_js:number[]
+    ) {
+        for (let i = 0, acc = 0; i < num_js.length; i++) {
+            this[i] = sorted.slice(acc, acc += num_js[i]);
+        }
+    }
 }
 
 /**
@@ -21,8 +35,9 @@ export default class ManifestSort {
         private manifest:ModulesManifest
     ) { }
 
-    getDeps(entries:string[]):Deps {
+    getDeps(entries:string[]):IDeps {
         const num_js = [];
+
         this.visited = new Set();
         let prev = 0;
         for (let fileName of entries) {
@@ -42,9 +57,14 @@ export default class ManifestSort {
         let counter = 0;
         for (let l = totalFiles.length - 1; l >= 0; l--) {
             let fileName = totalFiles[l];
+            let filePath = path.parse(fileName);
             if (!this.visited.has(fileName)) {
-                sorted.unshift(fileName);
-                counter++;
+                if (/I[A-Z]/.test(filePath.name)) {
+                    // Hack to detect type-only modules
+                    sorted.unshift(fileName);
+                    counter++;
+                }
+                
             }
         }
 
@@ -53,7 +73,7 @@ export default class ManifestSort {
                               // unshift'ed.
 
         this.visited = null;
-        return { sorted, num_js };
+        return new Deps(sorted, num_js);
     }
 
     private visited:Set<string>; // Short-lived

@@ -19,7 +19,7 @@ const enum DomainIsRelevantFor {
     WHITELISTED_AS_DESTINATION
 }
 
-export default abstract class OptionsController implements IOptionsController {
+export default class OptionsController implements IOptionsController {
 
     constructor(
         private settingsManager:ISettingsDao,

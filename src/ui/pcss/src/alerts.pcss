@@ -22,15 +22,7 @@
     }
 
     &__close {
-        display: block;
-        position: absolute;
-        background-image: svg("../icons/cross");
-        cursor: pointer;
-        top: 20px;
-        right: 20px;
-        width: 15px;
-        height: 15px;
-        @mixin btn-reset;
+        @mixin close-btn;
     }
 
     &__in {
@@ -82,8 +74,11 @@
         width: 170px;
         @mixin ellipsis;
 
-        @mixin btn-reset;
-
         @mixin bnt-white;
+
+        &:active {
+            background-color: var(--green5B);
+            color: var(--white-color);
+        }
     }
 }

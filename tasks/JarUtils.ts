@@ -1,9 +1,8 @@
-import rm  = require('rimraf');
-
 import Vinyl = require('vinyl');
 import path = require('path');
 
 import gulp = require('gulp');
+
 import postcss = require('gulp-postcss');
 
 import imp = require('postcss-partial-import');
@@ -14,27 +13,44 @@ import nesting = require('postcss-nested');
 
 import Reservoir from './Reservoir';
 
-import * as log from 'fancy-log';
+import log = require('fancy-log');
 
-import { spawn, ChildProcess } from 'child_process';
+import { spawn } from 'child_process';
 import { Stream } from 'stream';
 
 /**
  * Wrapper arround closure tools JARs.
  */
-export default class JarUtils extends Stream.Readable {
+export default class JarUtils extends Stream.Transform {
 
-    public static STYLESHEETS_PATH = 'tasks/third_party/closure_stylesheets.jar';
-    public static TEMPLATES_PATH = 'tasks/third_party/SoyToJsSrcCompiler.jar';
+    public static STYLESHEETS_PATH = 'third_party/closure_stylesheets.jar';
+    public static TEMPLATES_PATH = 'third_party/SoyToJsSrcCompiler.jar';
+    public static MSG_EXTRACTOR_PATH = 'third_parth/SoyMsgExtractor.jar';
 
     constructor(
         private jarPath,
-        private args:string[]
+        private args:string[],
+        private outPath:string = 'dummy'
     ) {
         super({ objectMode: true });
+
+        process.nextTick((function() {
+            let stdInStream = new Stream.Readable({
+                read: function() {
+                    return new Vinyl();
+                }
+            });
+            stdInStream.pipe(this);
+            stdInStream.push(null);
+        }).bind(this));
     }
 
-    public async _read() {
+    _transform(file, enc, cb) {
+        cb();
+    }
+
+    async _flush(cb) {
+
         const process = spawn('java', ['-jar', this.jarPath,  ...this.args]);
 
         let stdOutData = '';
@@ -65,16 +81,18 @@ export default class JarUtils extends Stream.Readable {
         }
 
         if (code !== 0) {
-            throw new Error('unknown error');
+            this.emit('error', `unknown error from ${this.jarPath}`);
+            cb();
+            return;
         }
 
         if (stdOutData.trim().length > 0) {
             const file = new Vinyl({
-                path: '',
-                content: new Buffer(stdOutData)
+                path: this.outPath,
+                contents: new Buffer(stdOutData)
             });
-
             this.push(file);
         }
+        cb();
     }
 }

@@ -4,6 +4,6 @@
  */
 
 import IContentScriptApiFacade from '../../../storage/IContentScriptApiFacade';
-import createUrl, * as url from '../../../shared/url';
+import ISettingsDao from '../../../storage/ISettingsDao';
 import * as MessageTypes from './message_types';
-import * as log from '../../../shared/log';
+// import * as log from '../../../shared/log';

@@ -35,12 +35,15 @@
     text-overflow: ellipsis;
 }
 
-@define-mixin btn-reset {
-    font-size: inherit;
-    color: inherit;
-    padding: 0;
-    border: 0;
-    outline: none;
+@define-mixin link-reset {
+    color: var(--gray-base);
+    transition: var(--t3) color;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+        color: var(--green74);
+    }
 }
 
 @define-mixin select-reset {
@@ -48,6 +51,16 @@
     appearance:none;
     outline: none;
     font-size: inherit;
-    background-color: transparent;
     border: 0;
+}
+
+@define-mixin close-btn {
+    display: block;
+    position: absolute;
+    background-image: svg("../icons/cross");
+    cursor: pointer;
+    top: 20px;
+    right: 20px;
+    width: 15px;
+    height: 15px;
 }

@@ -1,19 +1,26 @@
 .settings {
-    position: fixed;
-    width: 100vw;
-    height: 100vh;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    background-color: rgba(0, 0, 0, 0.5);
+    height: 100%;
+    display: flex;
 
-    &--show {
-        display: flex;
+    &-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        background-color: rgba(0, 0, 0, 0.5);
+
+        &--show {
+            display: flex;
+        }
     }
 
     &__in {
-        overflow: auto;
+        margin: auto;
         width: 540px;
         min-height: 360px;
         position: relative;
@@ -27,15 +34,7 @@
     }
 
     &__close {
-        display: block;
-        position: absolute;
-        background-image: svg("../icons/cross");
-        cursor: pointer;
-        top: 20px;
-        right: 20px;
-        width: 15px;
-        height: 15px;
-        @mixin btn-reset;
+        @mixin close-btn;
     }
 
     &__title {
@@ -88,9 +87,8 @@
             max-width: 80px;
             display: block;
             cursor: pointer;
+            padding: 0;
             @mixin ellipsis;
-
-            @mixin btn-reset;
 
             color: var(--green5B);
 
@@ -107,7 +105,7 @@
         background-repeat: no-repeat;
         background-image: svg("../icons/del");
         cursor: pointer;
-        @mixin btn-reset;
+        padding: 0;
     }
 
     &__input {
@@ -126,13 +124,9 @@
         height: 40px;
         line-height: 40px;
         color: var(--white-color);
-        @mixin select-reset;
-
-        @mixin ellipsis;
-
         background-color: var(--green74);
-
         transition: var(--t3) background-color;
+        @mixin ellipsis;
 
         &:hover {
             background-color: #58a273;
