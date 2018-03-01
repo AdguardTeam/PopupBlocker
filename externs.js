@@ -1,4 +1,4 @@
 /**
  * @constructor
  */
-var Proxy = function(obj, handler) {};
+// var Proxy = function(obj, handler) {};

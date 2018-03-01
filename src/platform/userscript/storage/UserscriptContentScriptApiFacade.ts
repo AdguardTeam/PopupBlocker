@@ -28,7 +28,6 @@ export default class UserscriptContentScriptApiFacade implements IContentScriptA
                 return false;
         }
     }
-
     originIsSilenced():boolean {
         let val = GM_getValue(this.domain);
         let type = typeof val;
@@ -51,7 +50,6 @@ export default class UserscriptContentScriptApiFacade implements IContentScriptA
             this.alertController.createAlert(orig_domain, popup_url);
         });
     }
-
 
     public envIsFirefoxGreasemonkey = typeof InstallTrigger !== 'undefined' && document.currentScript;
 

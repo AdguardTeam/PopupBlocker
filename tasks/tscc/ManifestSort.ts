@@ -60,11 +60,10 @@ export default class ManifestSort {
             let filePath = path.parse(fileName);
             if (!this.visited.has(fileName)) {
                 if (/I[A-Z]/.test(filePath.name)) {
-                    // Hack to detect type-only modules
+                    // Hack to detect type-only modules..
                     sorted.unshift(fileName);
                     counter++;
                 }
-                
             }
         }
 
@@ -78,15 +77,24 @@ export default class ManifestSort {
 
     private visited:Set<string>; // Short-lived
 
-    private visit(fileName:string, cb?:(filename:string, parent:string)=>void) {
+    private visit(fileName:string) {
         if (this.visited.has(fileName)) { return; }
         this.visited.add(fileName);
+        
         const referenced = this.manifest.getReferencedModules(fileName);
-        if (typeof referenced === 'undefined') { return; }
+
         for (let ref of referenced) {
             const refFileName = this.manifest.getFileNameFromModule(ref);
-            cb && cb.call(this, refFileName, fileName);
-            this.visit(refFileName, cb);
+            if (typeof refFileName !== 'string') {
+                // Even if a module is referenced by a file, a physical
+                // file name may be missing for ambient modules declared
+                // with `declare` TS keyword. For example, we have
+                // 'goog:popupblockerUI' and 'goog:soyData.VERY_UNSAFE'.
+                // Such modules need to be explicitly added to the compiler flag
+                // via other means.
+                continue;
+            }
+            this.visit(refFileName);
         }
     }
 

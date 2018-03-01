@@ -19,7 +19,7 @@ export default class ExtensionSettingsDao implements ISettingsDao {
         for (let key in items) {
             if (items.hasOwnProperty(key)) {
                 if (key === 'whitelist') {
-                    whitelistedDest = items[key].split(',');
+                    whitelistedDest = items[key];
                 } else if (items[key] === DomainOptionEnum.WHITELISTED) {
                     whitelisted.push(key);
                 } else {
@@ -35,16 +35,21 @@ export default class ExtensionSettingsDao implements ISettingsDao {
     }
 
     setSourceOption(domain:string, option:DomainOptionEnum, cb?:(data:AllOptions)=>void):void {
-        this.storage.set({
-            [domain]: option
-        }, this.getCallback(cb));
+        let _cb = this.getCallback(cb);
+        if (option === DomainOptionEnum.NONE) {
+            this.storage.remove(domain, _cb)
+        } else {
+            this.storage.set({
+                [domain]: option
+            }, _cb);
+        }
     }
     setIsWhitelistedDestination(domain:string, option:boolean, cb?:(data:AllOptions)=>void):void {
         this.storage.get('whitelist', (items) => {
-            let whitelisted:string[] = items['whitelist'] || [];
-            let index = whitelisted.indexOf(domain)
-
+            let whitelisted = items['whitelist'] || [];
+            let index = whitelisted.indexOf(domain);
             let isWhitelisted = index !== -1;
+
             if (option && !isWhitelisted) {
                 whitelisted.push(domain);
             } else if (!option && isWhitelisted) {
@@ -53,8 +58,9 @@ export default class ExtensionSettingsDao implements ISettingsDao {
                 cb(null); // Indicates there was no change in data.
                 return;
             }
+
             this.storage.set({
-                'whitelist': whitelisted.join(',')
+                'whitelist': whitelisted
             }, this.getCallback(cb));
         });
     }

@@ -1,8 +1,10 @@
 /// <reference path="../../../node_modules/closure-library.ts/closure-library.d.ts/all.d.ts"/>
+/// <reference path="../../../node_modules/closure-tools-helper/soyutils.d.ts"/>
 
 import ISettingsDao from "../../storage/ISettingsDao";
 import IAlertController from "./IAlertController";
-import { trustedEventListener } from "../event_listener_decorators";
+import { trustedEventListener, getByClsName } from "../ui_utils";
+import { isUndef } from "../../shared/instanceof";
 
 /*******************************************************************************/
 // Importing soy templates
@@ -10,17 +12,27 @@ import { trustedEventListener } from "../event_listener_decorators";
 // For rollup, we replace RESOURCE_TEMPLATE_ROLLUP with a generated template js
 // (including soyutils.js)
 
-var popupblockerUI = goog.require('popupblockerUI');
-RESOURCE_TEMPLATES_ROLLUP;
+import * as popupblockerUI from 'goog:popupblockerUI';
+import 'goog:soydata.VERY_UNSAFE';
+
+"REMOVE_START";
+RESOURCE_SOYUTILS;
+RESOURCE_TEMPLATE_ROLLUP;
+"REMOVE_END";
+declare const RESOURCE_SOYUTILS;
+declare const RESOURCE_TEMPLATE_ROLLUP;
 
 /*******************************************************************************/
+
+const px = 'px';
 
 export default abstract class BaseAlertController implements IAlertController {
 
     protected abstract getAlertStyle():string
     protected abstract openSettingsPage():void
 
-    private numPopup:number = 0
+    private domainToPopupCount:stringmap<number> = Object.create(null);
+
     private origDomain:string
     private destUrl:string
 
@@ -29,12 +41,18 @@ export default abstract class BaseAlertController implements IAlertController {
     private iframe:HTMLIFrameElement
     private shadowHostEl:HTMLElement
     private frameDoc:HTMLDocument
+    private alertRoot:HTMLElement
+    private pinRoot:HTMLElement
+
+    private iframeWidth:number
+    private iframeHeight:number
 
     constructor(
         private storageManager:ISettingsDao
     ) {
         this.updateIframe               = trustedEventListener(this.updateIframe, this);
         this.updateIframeContent        = trustedEventListener(this.updateIframeContent, this);
+        this.onCloseClick               = trustedEventListener(this.onCloseClick, this);
         this.onPinClick                 = trustedEventListener(this.onPinClick, this);
         this.onContinueBlockingClick    = trustedEventListener(this.onContinueBlockingClick, this);
         this.onOptionChange             = trustedEventListener(this.onOptionChange, this);
@@ -42,8 +60,30 @@ export default abstract class BaseAlertController implements IAlertController {
 
     private static shadowDomV1Support = 'attachShadow' in Element.prototype;
 
+    private static initialAlertFrameStyle = {
+        "position": "fixed",
+        "right": 0 + px,
+        "bottom": 0 + px,
+        "border": "none",
+        "z-index": String(-1 - (1 << 31)),
+    }
+
     private appendIframe() {
         let iframe = this.iframe = document.createElement('iframe');
+        iframe.setAttribute('allowTransparency', 'true');
+
+        iframe.addEventListener('load', this.updateIframe);
+        iframe.addEventListener('load', () => {
+            // Without this, the background of the iframe will be white in IE11
+            this.frameDoc.body.setAttribute('style', 'background-color:transparent;');
+        });
+
+        for (let property in BaseAlertController.initialAlertFrameStyle) {
+            iframe.style[property] = BaseAlertController.initialAlertFrameStyle[property];
+        }
+        this.iframeWidth = this.iframeHeight = 0;
+        iframe.style.width = iframe.style.height = 0 + px;
+
         if (BaseAlertController.shadowDomV1Support) {
             let host = this.shadowHostEl = document.createElement('div');
             let root = host.attachShadow({ mode: 'closed' });
@@ -55,14 +95,17 @@ export default abstract class BaseAlertController implements IAlertController {
     }
 
     createAlert(origDomain:string, destUrl:string) {
-        this.numPopup++;
+        if (isUndef(this.domainToPopupCount[origDomain])) {
+            this.domainToPopupCount[origDomain] = 1;
+        } else {
+            this.domainToPopupCount[origDomain]++;
+        }
         this.origDomain = origDomain;
         this.destUrl = destUrl;
 
         if (!this.iframe) {
-            this.appendIframe();
             this.collapsed = true;
-            this.iframe.addEventListener('load', this.updateIframe);
+            this.appendIframe();
         } else {
             this.updateIframeContent();
         }
@@ -70,43 +113,57 @@ export default abstract class BaseAlertController implements IAlertController {
 
     private toggleCollapse() {
         const document = this.frameDoc;
-        const root = document.getElementsByClassName(goog.getCssName('alert'))[0];
+        const root = getByClsName(goog.getCssName('alert'), this.frameDoc)[0];
         root.classList.toggle(goog.getCssName('alert--show'));
         this.collapsed = !this.collapsed;
+        this.updateIframeDimension();
+    }
 
-        // Adjust iframe size.
-
+    private updateIframeDimension() {
+        if (!this.frameDoc) return;
+        let { offsetLeft, offsetTop } = (this.collapsed ? this.pinRoot : this.alertRoot);
+        this.iframe.style.width = (this.iframeWidth -= offsetLeft) + px;
+        this.iframe.style.height = (this.iframeHeight -= offsetTop) + px;
     }
 
     private updateIframe(evt?:Event) {
         const document = this.frameDoc = this.iframe.contentDocument;
-        const template = popupblockerUI.alertHead(this.getAlertStyle);
+        const template = popupblockerUI.head({
+            cssText: soydata.VERY_UNSAFE.ordainSanitizedHtml(this.getAlertStyle())
+        });
         document.documentElement.innerHTML = template;
         this.updateIframeContent();
     }
 
     private updateIframeContent(evt?:Event) {
-        if (evt && !evt.isTrusted) { return; }
         this.iframe.removeEventListener('load', this.updateIframeContent);
         const document = this.frameDoc;
-        const template = popupblockerUI.alertContent({
-            numPopup: this.numPopup,
+        const template = popupblockerUI.content({
+            numPopup: this.domainToPopupCount[this.origDomain],
             origDomain: this.origDomain,
             destUrl: this.destUrl
         });
         document.body.innerHTML = template;
 
+        let doc = this.frameDoc;
+
+        // Get references of elements.
+        this.alertRoot = <HTMLElement>getByClsName(goog.getCssName('alert'), doc)[0];
+        this.pinRoot = <HTMLElement>getByClsName(goog.getCssName('pin'), doc)[0];
+        
         // Get references of interactive elements.
-        const closeBtn = document.getElementsByClassName(goog.getCssName('alert__close'))[0];
-        const pin = document.getElementsByClassName(goog.getCssName('pin'))[0];
-        const continueBtn = document.getElementsByClassName(goog.getCssName('alert__btn'))[0];
-        const select = document.getElementsByClassName(goog.getCssName('alert__select'))[0];
+        const closeBtn = getByClsName(goog.getCssName('alert__close'), doc)[0];
+        const pin = getByClsName(goog.getCssName('pin'), doc)[0];
+        const continueBtn = getByClsName(goog.getCssName('alert__btn'), doc)[0];
+        const select = getByClsName(goog.getCssName('alert__select'), doc)[0];
         
         // Attach event listeners.
         closeBtn.addEventListener('click', this.onCloseClick);
         pin.addEventListener('click', this.onPinClick);
         continueBtn.addEventListener('click', this.onContinueBlockingClick);
         select.addEventListener('change', this.onOptionChange);
+
+        this.updateIframeDimension();
     }
 
     private onCloseClick(evt:MouseEvent) {
@@ -143,14 +200,17 @@ export default abstract class BaseAlertController implements IAlertController {
     }
 
     private destroy() {
-        if (this.iframe) {
-            this.iframe.parentNode.removeChild(this.iframe);
+        let iframe = this.iframe;
+        if (iframe) {
+            iframe.parentNode.removeChild(iframe);
             this.iframe = undefined;
             this.frameDoc = undefined;
         }
+        let shadowHostEl = this.shadowHostEl;
+        if (shadowHostEl) {
+            shadowHostEl.parentNode.removeChild(shadowHostEl);
+            this.shadowHostEl = undefined;
+        }
     }
+
 }
-
-//
-
-declare const RESOURCE_TEMPLATES_ROLLUP:any;

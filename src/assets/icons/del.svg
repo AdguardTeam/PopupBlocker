@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="15px" height="16px" viewBox="0 0 15 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 25</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Artboard-Copy-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-530.000000, -658.000000)" opacity="0.599581069">
+        <g id="Group-8" transform="translate(38.000000, 558.890625)">
+            <g id="Group-25" transform="translate(492.592969, 99.714062)">
+                <g id="Group-3">
+                    <path d="M12,12.4375111 C12,13.0776889 11.56512,13.6 11.03136,13.6 L3.36864,13.6 C2.83296,13.6 2.4,13.08 2.4,12.4375111 L2.4,3.2 L12,3.2 L12,12.4375111 Z M1.6,2.4 L1.6,12.394 C1.6,13.503 2.43906667,14.4 3.47506667,14.4 L10.9249333,14.4 C11.9581333,14.4 12.8,13.502 12.8,12.394 L12.8,2.4 L1.6,2.4 Z" id="Fill-1" fill="#868686"></path>
+                    <path d="M10.8,2.8 L10.8,1.6 C10.8,0.9372583 10.2627417,0.4 9.6,0.4 L4.8,0.4 C4.1372583,0.4 3.6,0.9372583 3.6,1.6 L3.6,2.8 L10.8,2.8 Z" id="Combined-Shape" stroke="#868686" stroke-width="0.8"></path>
+                    <path d="M6,5.2 L6,11.6" id="Line" stroke="#868686" stroke-width="0.8" stroke-linecap="round"></path>
+                    <path d="M8.4,5.2 L8.4,11.6" id="Line" stroke="#868686" stroke-width="0.8" stroke-linecap="round"></path>
+                    <path d="M0.4,2.8 L14,2.8" id="Line" stroke="#868686" stroke-width="0.8" stroke-linecap="round"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

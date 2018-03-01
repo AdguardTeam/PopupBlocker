@@ -9,7 +9,7 @@ import getMessage from './get_message';
 import I18nService from '../../localization/I18nService';
 
 const settingsDao = new UserscriptSettingsDao();
-const optionsController = new OptionsController(settingsDao, '');
+const optionsController = new OptionsController(settingsDao);
 
 adguard.i18nService = new I18nService(getMessage);
 

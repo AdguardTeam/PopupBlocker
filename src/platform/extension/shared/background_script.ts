@@ -4,17 +4,16 @@
 import chrome from './platform_namespace';
 import { BGMsgTypesEnum } from './message_types';
 
-const grayIconPaths = {
-    "16": "/assets/gray_16.png",
-    "48": "/assets/gray_48.png",
-    "128": "/assets/gray_128.png"
-};
+const iconSizes = ["16", "19", "38", "48", "128"];
 
-const orangeIconPaths = {
-    "16": "/assets/blocked_16.png",
-    "48": "/assets/blocked_48.png",
-    "128": "/assets/blocked_128.png"
-};
+const grayIconPaths = {};
+const orangeIconPaths = {};
+
+for (let i = 0, l = iconSizes.length; i < l; i++) {
+    let size = iconSizes[i];
+    orangeIconPaths[size] = `/assets/${size}.png`;
+    grayIconPaths[size] = `/assets/${size}-g.png`;
+}
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     switch (message) {
@@ -29,6 +28,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 path: grayIconPaths,
                 tabId: sender.tab.id
             });
+            break;
+        case BGMsgTypesEnum.OPEN_OPTIONS_PAGE:
+            chrome.runtime.openOptionsPage();
             break;
     }
 });

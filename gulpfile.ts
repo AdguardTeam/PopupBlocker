@@ -1,4 +1,4 @@
-import path = require('path');
+import { posix as path } from 'path';
 import * as fs from 'async-file';
 import * as fsExtra from 'fs-extra';
 import Reservoir from './tasks/Reservoir';
@@ -17,7 +17,7 @@ import rollup = require('gulp-rollup');
 import filter = require('gulp-filter');
 import debug = require('gulp-debug');
 import hydra = require('gulp-hydra');
-import run = require('gulp-run')
+import run = require('gulp-run');
 
 import postcss = require('gulp-postcss');
 import imp = require('postcss-partial-import');
@@ -26,20 +26,21 @@ import mixins = require('postcss-mixins');
 import cssnext = require('postcss-cssnext');
 import nesting = require('postcss-nested');
 
+import xml2js = require('xml2js');
+
 import InlineResource = require('inline-resource-literal');
 
 import typescript = require('@alexlur/rollup-plugin-typescript');
 import typescript2 = require('rollup-plugin-typescript2');
 
-import * as closureCompiler from 'google-closure-compiler';
-
 import { main as tsickleMain } from './tasks/tscc/third-party/tsickle/main';
 import ManifestSort from './tasks/tscc/ManifestSort';
 import * as tsickle from 'tsickle/src/tsickle';
 
-import JarUtils from './tasks/JarUtils';
+import * as closureTools from 'closure-tools-helper';
+
 process.setMaxListeners(0); 
-const ccPlugin = closureCompiler.gulp({});
+const ccPlugin = closureTools.compiler.gulp({});
 
 enum BuildTarget {
     USERSCRIPT  = 'userscript',
@@ -93,8 +94,6 @@ abstract class TextUtils {
     }
 }
 
-
-
 class PathUtils {
 
     public static sourceDir     = 'src';
@@ -105,10 +104,10 @@ class PathUtils {
 
     public static tsicklePath = PathUtils.tsickleDir;
 
-    public static tsccPath = path.posix.join(PathUtils.outputDir, PathUtils.tsccDir);
+    public static tsccPath = path.join(PathUtils.outputDir, PathUtils.tsccDir);
 
     public get outputPath() {
-        return path.posix.join(PathUtils.outputDir, this.options.target, '');
+        return path.join(PathUtils.outputDir, this.options.target, '');
     }
 
     private static BundleEntry = class BundleEntry {
@@ -117,7 +116,7 @@ class PathUtils {
             private options:BuildOption
         ) { }
         public get rollup() {
-            return path.posix.join(
+            return path.join(
                 PathUtils.sourceDir,
                 this.targetToPathMap[this.options.target]
             );
@@ -127,7 +126,7 @@ class PathUtils {
             return path.replace(BundleEntry.reModuleExtension, '.js');
         }
         public get cc() {
-            return BundleEntry.normalizeModuleExtension(path.posix.join(
+            return BundleEntry.normalizeModuleExtension(path.join(
                 PathUtils.outputDir,
                 PathUtils.tsccDir,
                 this.targetToPathMap[this.options.target]
@@ -181,7 +180,6 @@ class PathUtils {
 
     public commonEntry = new PathUtils.BundleEntry(PathUtils.targetCommonScriptMap, this.options);
 
-
     private static targetOptionsMap = {
         [BuildTarget.USERSCRIPT]:   'platform/userscript/options.ts',
         [BuildTarget.CHROME]:       'platform/extension/shared/options.ts',
@@ -192,19 +190,26 @@ class PathUtils {
     public optionsEntry = new PathUtils.BundleEntry(PathUtils.targetOptionsMap, this.options);
 
     public get tsickleExternsPath() {
-        return path.posix.join(
+        return path.join(
             PathUtils.tsccPath,
             'generated-externs.js'
         );
     }
 
-    public static translationJSONPath   = 'src/locales/translations.json'
+    public static i18nRoot               = 'src/locales';
+    public static i18nMiscSourceJSONPath = path.join(PathUtils.i18nRoot, 'misc.json');
+    public static i18nSourceJSONPath     = path.join(PathUtils.i18nRoot, 'source.json');
+    public static i18nJSONPath           = path.join(PathUtils.i18nRoot, 'translations.json');
+    public static i18nUserscriptKeysPath = path.join(PathUtils.i18nRoot, 'userscript_keys.json');
+    public static i18nExtensionKeysPath  = path.join(PathUtils.i18nRoot, 'extension_keys.json');
+    public static i18nSettingsKeysPath   = path.join(PathUtils.i18nRoot, 'userscript_settings_keys.json');
+
     public static assetsPath            = 'src/assets'
 
     public static postCssPath           = 'src/ui/pcss/';
 
     public get assetOutputPath() {
-        return path.posix.join(this.outputPath, 'assets', '');
+        return path.join(this.outputPath, 'assets', '');
     }
 
     public static commonExtensionManifestPath = 'src/platform/extension/shared/manifest.json';
@@ -216,6 +221,8 @@ class PathUtils {
     public get manifestPath() {
         return PathUtils.targetManifestPathMap[this.options.target];
     }
+
+    public static optionsPagePath = 'src/platform/extension/shared/options.html';
 
     constructor(
         private options:BuildOption
@@ -252,9 +259,9 @@ class ResourceManager {
     }
 
     public async prepare() {
-        log('ResourceManager: start preparing all');
+        log.info('ResourceManager: preparation start ');
         await Promise.all(this.providers.map(provider => provider.prepareResource(this)));
-        log('ResourceManager: preparation finished');
+        log.info('ResourceManager: preparation end');
         this.inline = (new InlineResource(this.resourceMap)).inline;
     }
 }
@@ -272,7 +279,7 @@ class CssBuilder implements IResourceProvider {
     private static allEntry = 'all.pcss';
 
     private static makePath(name:string) {
-        return path.posix.join(PathUtils.postCssPath, name);
+        return path.join(PathUtils.postCssPath, name);
     }
 
     private static alertSrc = CssBuilder.makePath(CssBuilder.alertEntry);
@@ -282,37 +289,56 @@ class CssBuilder implements IResourceProvider {
     private static bundledCssName = 'styles.css';
     private static cssTempDir = 'css_temp';
 
-    private static cssTempPath = path.posix.join(PathUtils.outputDir, CssBuilder.cssTempDir);
-    private static cssTempPathWithName = path.posix.join(CssBuilder.cssTempPath, CssBuilder.bundledCssName);
+    private static cssTempPath = path.join(PathUtils.outputDir, CssBuilder.cssTempDir);
+    private static cssTempPathWithName = path.join(CssBuilder.cssTempPath, CssBuilder.bundledCssName);
 
-    public static renamingOutPath = path.posix.join(PathUtils.tsccPath, 'renaming_map.js');
+    private static counter = 0;
+
+    private static get nextRenamingMapPath() {
+        return (CssBuilder.currentRenamingMapPath = path.join(PathUtils.tsccPath, `renaming_map_${CssBuilder.counter++}.js`));
+    }
+
+    private static currentRenamingMapPath:string;
+
+    public static get renamingMapPath() {
+        return CssBuilder.currentRenamingMapPath;
+    }
 
     private static compilePostCss(srcs:string):NodeJS.ReadableStream {
         return gulp.src(srcs)
             .pipe(postcss([
                 imp(),
                 nesting(),
-                svg(),
+                // svg(),
                 mixins(),
                 cssnext({ browsers: ["IE 10", "> 1%"] }),
             ]))
             .pipe(rename(CssBuilder.bundledCssName));
     }
 
-    private static async compileWithClosure(srcs:string):Promise<NodeJS.ReadableStream> {
+    private static async compileWithClosure(srcs:string) {
         await fsExtra.mkdirp(CssBuilder.cssTempPath)
         await toPromise(
             CssBuilder.compilePostCss(srcs)
                 /** @todo Make this really 'temp'  */
                 .pipe(gulp.dest(CssBuilder.cssTempPath))
         );
-        return new JarUtils(JarUtils.STYLESHEETS_PATH, [
+
+        const prevRenamingMapPath = CssBuilder.currentRenamingMapPath;
+
+        const args = [
             `--output-renaming-map-format`,     `CLOSURE_COMPILED`,
             `--rename`,                         `CLOSURE`,
-            `--output-renaming-map`,             CssBuilder.renamingOutPath,
+            `--output-renaming-map`,             CssBuilder.nextRenamingMapPath,
             `--allow-unrecognized-properties`,
             CssBuilder.cssTempPathWithName
-        ], CssBuilder.bundledCssName);
+        ];
+
+        prevRenamingMapPath && args.push(
+            `--input-renaming-map`,              prevRenamingMapPath
+        );
+
+        return closureTools.stylesheets(args, CssBuilder.bundledCssName);
     }
 
     public async prepareResource(resc:ResourceManager) {
@@ -328,7 +354,7 @@ class CssBuilder implements IResourceProvider {
 
         if (this.options.isExtension) {
             await toPromise((this.options.shouldMinify ?
-                await CssBuilder.compileWithClosure(CssBuilder.optionsSrc) :
+                (await CssBuilder.compileWithClosure(CssBuilder.optionsSrc)).resume() :
                 CssBuilder.compilePostCss(CssBuilder.optionsSrc))
                 .pipe(insert.transform(content => {
                     return content
@@ -354,41 +380,51 @@ class SoyBuilder implements IResourceProvider {
 
     private static soyPath = 'src/ui/soy';
 
-    // Systematically obtain names of various transpiled soy files.
+    // A Helper class to systematically obtain names of various transpiled soy files
     private static Sauce = class Sauce {
         constructor(private name:string) { }
         public get soy() { return this.name + '.soy' }
-        public get soyPath() { return path.posix.join(SoyBuilder.soyPath, this.soy) }
+        public get soyPath() { return path.join(SoyBuilder.soyPath, this.soy) }
         public get rollup() { return this.name + '.literal.soy.js' }
-        public get rollupPath() { return path.posix.join(SoyBuilder.soyTempPath, this.rollup) }
+        public get rollupPath() { return path.join(SoyBuilder.soyTempPath, this.rollup) }
         public get goog() { return this.name + '.goog.soy.js' }
-        public get googPath() { return path.posix.join(PathUtils.tsccPath, this.goog) }
+        public get googPath() { return path.join(PathUtils.tsccPath, this.goog) }
+        public get xliff() { return this.name + '.xliff' }
+        public get xliffPath() { return path.join(PathUtils.outputDir, this.xliff) }
     }
 
     public static alert = new SoyBuilder.Sauce('alert');
     public static options = new SoyBuilder.Sauce('options');
 
-    public static soyUtilsPath = 'third_party/soyutils.js'
-    public static soyUtilsUseGoogPath = 'third_party/soyUtils_usegoog.js';
+    public static soyUtilsPath = 'node_modules/closure-tools-helper/third-party/closure-templates/soyutils.js';
+    public static soyUtilsUseGoogPath = 'node_modules/closure-tools-helper/third-party/closure-templates/soyutils_usegoog.js';
 
     private static soyTempDir = 'soy_temp';
-    private static soyTempPath = path.posix.join(PathUtils.outputDir, SoyBuilder.soyTempDir, '');
+    private static soyTempPath = path.join(PathUtils.outputDir, SoyBuilder.soyTempDir, '');
 
-    private static tempOutFormat = new SoyBuilder.Sauce(path.posix.join(SoyBuilder.soyTempPath, `{INPUT_FILE_NAME_NO_EXT}`));
-    private static tempOutGlob = new SoyBuilder.Sauce(path.posix.join(SoyBuilder.soyTempPath, '*'));
+    private static tempOutFormat = new SoyBuilder.Sauce(path.join(SoyBuilder.soyTempPath, `{INPUT_FILE_NAME_NO_EXT}`));
+    private static tempOutGlob = new SoyBuilder.Sauce(path.join(SoyBuilder.soyTempPath, '*'));
 
     /**
      * Transforms `goog.getMsg` calls to runtime i18nService call.
      */
-    private static reGetMsg = /goog\.getMsg\(\s*([A-Za-z_\-]+)(?:\{\$[A-Za-z_\-]*\})*\s*(,|\))/g;
+    private static reGetMsg = /goog\.getMsg\(\s*'\s*([A-Za-z_\-]+)(?:\{\$[A-Za-z_\-]*\})*'\s*(,|\))/g;
     private static transformGetMsgRollup(match, c1, c2) {
-        return `__soyUtils_adguard.i18nservice.getMsg\(${c1}${c2}`;
+        return `__soyUtils_adguard.default.i18nService.getMsg\(${c1}${c2}`;
     }
     private static transformGetMsgCc(match, c1, c2) {
-        return `__soyUtils_adguard.i18nservice.getMsg\(${c1}${c2}`;
+        return `__soyUtils_adguard.default.i18nService.getMsg\('${c1}'${c2}`;
     }
-    private static importOurGetMsg = `var __soyUtils__adguard = goog.require('build.tscc.content_script_namespace');`;
-
+    private static transformGoogProvideToGoogModule(content:string, file:Vinyl):string {
+        let namespace:string;
+        content = content.replace(/goog\.provide\('(.*)'\)/, (_, c1) => {
+            namespace = c1;
+            return `goog.module('${namespace}');\nvar __soyUtils_adguard = goog.require('build.tscc.content_script_namespace')`;
+        });
+        content = content.replace(new RegExp(`${namespace}\\.`, 'gm'), `exports.`);
+        content = content.replace(SoyBuilder.reGetMsg, SoyBuilder.transformGetMsgCc);
+        return content;
+    }
     private static async compileRollup(srcs:string[]):Promise<void> {
         const args = [
             `--cssHandlingScheme`,  `LITERAL`,
@@ -400,10 +436,10 @@ class SoyBuilder implements IResourceProvider {
             args.push(`--srcs`, src);
         }
 
-        await toPromise(new JarUtils(JarUtils.TEMPLATES_PATH, args).resume());
+        await toPromise(closureTools.templates(args).resume());
         await toPromise(
             gulp.src(SoyBuilder.tempOutGlob.rollup)
-                .pipe(insert.transform(content => {
+                .pipe(insert.transform((content, file) => {
                     return content.replace(SoyBuilder.reGetMsg, SoyBuilder.transformGetMsgRollup);
                 }))
                 .pipe(gulp.dest(SoyBuilder.soyTempPath)) // Replace in-place
@@ -413,6 +449,7 @@ class SoyBuilder implements IResourceProvider {
     private static async compileCc(srcs:string[]):Promise<void> {
         const args = [
             `--cssHandlingScheme`,  `GOOG`,
+            `--codeStyle`,          `CONCAT`,
             `--outputPathFormat`,    SoyBuilder.tempOutFormat.goog,
             `--bidiGlobalDir`,      `1`,
             `--shouldGenerateJsdoc`,
@@ -423,13 +460,15 @@ class SoyBuilder implements IResourceProvider {
             args.push(`--srcs`, src);
         }
 
-        await toPromise(new JarUtils(JarUtils.TEMPLATES_PATH, args).resume());
+        await toPromise(closureTools.templates(args).resume());
         await toPromise(
             gulp.src(SoyBuilder.tempOutGlob.goog)
-                .pipe(insert.transform(content => {
-                    return SoyBuilder.importOurGetMsg +
-                        content.replace(SoyBuilder.reGetMsg, SoyBuilder.transformGetMsgCc);
-                }))
+                .pipe(insert.transform(
+                    new closureTools.TemplatesRuntimeI18nTransformer(
+                        `__soyutils_adguard.default.i18nService.getMsg`,
+                        `var __soyutils_adguard = goog.require('build.tscc.content_script_namespace')`
+                    ).transform
+                ))
                 .pipe(gulp.dest(PathUtils.tsccPath)) // Move to closure compiler directory
         );
     }
@@ -444,15 +483,13 @@ class SoyBuilder implements IResourceProvider {
 
         if (this.options.shouldMinify) {
             await SoyBuilder.compileCc(srcs);
-            resc.registerInlinedResource("TEMPLATE_ROLLUP", SoyBuilder.alert.rollupPath);
-            if (isExtension) {
-                resc.registerInlinedResource("SETTINGS_TEMPALTE_ROLLUP", SoyBuilder.options.rollupPath);
-            }
         } else {
             await SoyBuilder.compileRollup(srcs);
+            resc.registerInlinedResource("TEMPLATE_ROLLUP", SoyBuilder.alert.rollupPath);
+            if (isExtension) {
+                resc.registerInlinedResource("OPTIONS_TEMPALTE_ROLLUP", SoyBuilder.options.rollupPath);
+            }
         }
-
-        log.info("Soy compilation has finished.");
     }
 
     constructor(
@@ -463,17 +500,35 @@ class SoyBuilder implements IResourceProvider {
 
 /******************************************************************************************************/
 
+async function readJSON(path:string):Promise<any> {
+    return JSON.parse(await fs.readFile(path));
+}
+
+async function writeJSON(path:string, content:any) {
+    return await fs.writeFile(path, JSON.stringify(content));
+}
+
 class LocaleUtils implements IResourceProvider {
 
-    private translationJSONCached:{[locale:string]:{[messageId:string]:{message:string}}}
-    public async getTranslationJSON() {
-        if (!this.translationJSONCached) {
-            this.translationJSONCached = JSON.parse((await fs.readFile(PathUtils.translationJSONPath)).toString());
+    private static JSONFile = class JSONFile<T> {
+        constructor(private filePath:string) { }
+        private cached:T
+        public async read() {
+            if (!this.cached) {
+                this.cached = await readJSON(this.filePath);
+            }
+            return this.cached;
         }
-        return this.translationJSONCached;
     }
 
+    public static translation = new LocaleUtils.JSONFile<{[key:string]:{message:string,description?:string}}>(PathUtils.i18nJSONPath);
+    
+    private static userscriptKeys = new LocaleUtils.JSONFile<string[]>(PathUtils.i18nUserscriptKeysPath);
+    private static extensionKeys = new LocaleUtils.JSONFile<string[]>(PathUtils.i18nExtensionKeysPath);
+    private static settingsKeys = new LocaleUtils.JSONFile<string[]>(PathUtils.i18nSettingsKeysPath);
+
     private static EXTENSION_NAME = "extension_name";
+
 
     private static extensionOnlyMessages = {
         [LocaleUtils.EXTENSION_NAME]: true,
@@ -496,12 +551,11 @@ class LocaleUtils implements IResourceProvider {
      */
     private async getUserscriptInlinableJSON() {
         const out = {};
-        const json = await this.getTranslationJSON();
+        const [json, userscriptKeys] = await Promise.all([LocaleUtils.translation.read(), LocaleUtils.userscriptKeys.read()]);
         for (let locale in json) {
             out[locale] = {};
-            for (let messageId in json[locale]) {
-                if (LocaleUtils.extensionOnlyMessages[messageId] === true) { continue; }
-                out[locale][messageId] = json[locale][messageId].message;
+            for (let key of userscriptKeys) {
+                out[locale][key] = json[locale][key].message;
             }
         }
         return <{[locale:string]:{[messageId:string]:string}}>out;
@@ -515,16 +569,20 @@ class LocaleUtils implements IResourceProvider {
      */
     private async getExtensionJSON() {
         const out = {};
-        const json = await this.getTranslationJSON();
+        const [json, extensionKeys] = await Promise.all([LocaleUtils.translation.read(), LocaleUtils.extensionKeys.read()]);
+
         for (let locale in json) {
             out[locale] = {};
-            for (let messageId in json[locale]) {
-                let message = json[locale][messageId].message;
-                if (messageId === LocaleUtils.EXTENSION_NAME) {
+            for (let key of extensionKeys) {
+                let message = json[locale][key].message;
+                // A workaround for chrome webstore bug.
+                // It has problems in recognizing i18n'd string in extension name.
+                if (key === LocaleUtils.EXTENSION_NAME) {
                     message += this.channelSuffix;
                 }
+                // Replace dollar signs
                 message = message.replace(/\$/g, '$$$');
-                out[locale][messageId] = {
+                out[locale][key] = {
                     message: message
                 };
             }
@@ -532,13 +590,25 @@ class LocaleUtils implements IResourceProvider {
         return <{[locale:string]:{[messageId:string]:{message:string}}}>out;
     }
 
+    private async getSettingsJSON() {
+        const out = {};
+        const [json, settingsKeys] = await Promise.all([LocaleUtils.translation.read(), LocaleUtils.settingsKeys.read()]);
+        for (let locale in json) {
+            out[locale] = {};
+            for (let key of settingsKeys) {
+                out[locale][key] = json[locale][key].message;
+            }
+        }
+        return <{[locale:string]:{[messageId:string]:string}}>out;
+    }
+
     private async moveLocalesToTargetDir() {
-        const localePath = path.posix.join(this.paths.outputPath, '_locales');
+        const localePath = path.join(this.paths.outputPath, '_locales');
         const [json] = await Promise.all([this.getExtensionJSON(), fsExtra.mkdirp(localePath)]);
         return Promise.all(Object.keys(json).map(async (locale) => {
-            let localeNextPath = path.posix.join(localePath, locale);
+            let localeNextPath = path.join(localePath, locale);
             await fsExtra.mkdirp(localeNextPath);
-            await fs.writeFile(path.posix.join(localeNextPath, 'messages.json'), JSON.stringify(json[locale]));
+            await fs.writeFile(path.join(localeNextPath, 'messages.json'), JSON.stringify(json[locale]));
         }));
     }
 
@@ -551,7 +621,6 @@ class LocaleUtils implements IResourceProvider {
                 path: 'userscript_translations.json'
             });
         }
-        log.info("I18n preparation has finished.");
     }
 
     constructor(
@@ -623,7 +692,7 @@ class Builder {
     private get bundleNames() {
         let bundleNames = ["common", "page_script", "content_script"];
         if (this.options.isExtension) {
-            bundleNames.push("extension_common", "settings_dao", "background_script", "options");
+            bundleNames.push("extension_common", "settings", "background_script", "options");
         }
         return bundleNames;
     }
@@ -648,13 +717,11 @@ class Builder {
         const input = [
             this.paths.pageScriptEntry.rollup,
             this.paths.contentScriptEntry.rollup
-        ]
-        if (this.options.isExtension) {
-            input.push(
-                this.paths.backgroundScriptEntry.rollup,
-                this.paths.optionsEntry.rollup
-            );
-        }
+        ];
+        this.options.isExtension && input.push(
+            this.paths.backgroundScriptEntry.rollup,
+            this.paths.optionsEntry.rollup
+        );
         return Object.assign({ input }, Builder.rollupOptsBase);
     }
 
@@ -800,36 +867,31 @@ class Builder {
             '--externs',                   this.paths.tsickleExternsPath,
             '--rewrite_polyfills',         String(false),
             '--module_output_path_prefix', this.paths.outputPath + '/',
-            '--output_module_dependencies', 'modDeps.json',
 
-            
             '--module',                   `common:${deps.num_js[0]}`,
             ...Builder.js(deps[0]),
 
-            '--module',                   `extension_common:0:common` ,
-            '--module',                   `settings_dao:0:extension_common`,
+            '--module',                   `settings:0:common`,
 
             '--module',                   `page_script:${deps.num_js[1]}:common`,
             ...Builder.js(deps[1]),
 
-            '--module',                   `content_script:${deps.num_js[2] + Builder.soyDeps.length + 4}:settings_dao`,
+            '--module',                   `content_script:${deps.num_js[2] + Builder.soyDeps.length + 4}:settings`,
             // closure templates deps start
             ...Builder.js(Builder.soyDeps),
             '--js',                        SoyBuilder.soyUtilsUseGoogPath,
-            '--js',                        CssBuilder.renamingOutPath,
+            '--js',                        CssBuilder.renamingMapPath,
             '--js',                        SoyBuilder.alert.googPath,
-            '--js',                        SoyBuilder.options.googPath, 
+            '--js',                        SoyBuilder.options.googPath,
             // closure templates deps end
             ...Builder.js(deps[2]),
         ];
 
         this.options.isExtension && flags.push(
-            // '--entry_point',               this.paths.backgroundScriptEntry.googModule,
-            '--module',                   `background_script:${deps.num_js[3]}:extension_common`,
+            '--module',                   `background_script:${deps.num_js[3]}:common`,
             ...Builder.js(deps[3]),
 
-            // '--entry_point',               this.paths.optionsEntry.googModule,
-            '--module',                   `options:${deps.num_js[4]}:settings_dao`,
+            '--module',                   `options:${deps.num_js[4]}:settings`,
             ...Builder.js(deps[4])
         );
 
@@ -895,29 +957,31 @@ class Builder {
         const compiledStream = ccPlugin(this.ccOptionsFromManifest(result.modulesManifest))
             .src()
             .pipe(insert.transform(TextUtils.removeCcExport))
-            .pipe(debug({ title: "gulp closure compiler"}))
             .pipe(hydra(this.bundleFilter));
 
-        compiledStream["common"].pipe(gulp.dest('build/temp')); // Temp
+        const bundleTasks = [];
 
-        
-
-        for (let bundleName of this.bundleNames.slice(1)) { // Minus "common.js"
-            compiledStream[bundleName] = merge(compiledStream["common"], compiledStream[bundleName]);
+        for (let bundleName of this.bundleNames) { // Minus "common.js"
+            if (bundleName === 'page_script' || bundleName === 'content_script') continue;
+            bundleTasks.push(toPromise(
+                compiledStream[bundleName]
+                    .pipe(gulp.dest('.'))
+            ));
         }
 
-        const bundleTasks = [
-            toPromise(compiledStream["page_script"].pipe(gulp.dest('build/temp')), true),
-            ...this.bundleNames.slice(2) // Minus common.js and page.js
-                .map(name => toPromise(compiledStream[name].pipe(gulp.dest('build/temp'))))
-        ];
+        // Prepend common.js to page_script.js.
+        compiledStream["page_script"] = merge(compiledStream["common"], compiledStream["page_script"])
+            .pipe(concat('page_script.js', {newLine: ';'}));
+
+        bundleTasks.unshift(
+            toPromise(compiledStream["page_script"], true),
+            toPromise(compiledStream["content_script"])
+        );
 
         const contentScriptResv = new Reservoir(compiledStream["content_script"]);
 
         log.info("Closure compiler start");
-
         const [pageScriptRaw] = await Promise.all(bundleTasks);
-
         log.info("Closure compiler end");
 
         // 5. Inline page_script to content_script
@@ -941,7 +1005,7 @@ class Builder {
     }
 
     private async meta() {
-        const translation = await this.locales.getTranslationJSON();
+        const translation = await LocaleUtils.translation.read();
         const lines:string[] = [];
         function insertKey(key:string, value:string) {
             lines.push(`// @${key} ${value}`);
@@ -1034,7 +1098,7 @@ class Builder {
 
             const contentScript = this.options.shouldMinify ? await this.tscc() : await this.rollup();
             const manifest = target === BuildTarget.USERSCRIPT ? await this.meta() : await this.manifest();
-
+            // ToDo: Move this logic to more appropriate part 
             const tasks = [];
             if (target === BuildTarget.USERSCRIPT) {
                 tasks.push(toPromise(
@@ -1044,7 +1108,7 @@ class Builder {
                         .pipe(insert.prepend(manifest))
                         .pipe(gulp.dest(this.paths.outputPath))
                 ));
-                tasks.push(fs.writeFile(path.posix.join(this.paths.outputPath, 'popupblocker.meta.js'), manifest));
+                tasks.push(fs.writeFile(path.join(this.paths.outputPath, 'popupblocker.meta.js'), manifest));
             } else {
                 // extension env
                 tasks.push(toPromise(
@@ -1053,8 +1117,9 @@ class Builder {
                         .pipe(rename('content_script.js'))
                         .pipe(gulp.dest(this.paths.outputPath))
                 ));
-                tasks.push(fs.writeFile(path.posix.join(this.paths.outputPath, 'manifest.json'), manifest));
+                tasks.push(fs.writeFile(path.join(this.paths.outputPath, 'manifest.json'), manifest));
                 tasks.push(fsExtra.copy(PathUtils.assetsPath, this.paths.assetOutputPath));
+                tasks.push(fsExtra.copy(PathUtils.optionsPagePath, this.paths.outputPath + '/options.html'));
             }
 
             await Promise.all(tasks);
@@ -1157,7 +1222,7 @@ import { spawn } from 'child_process';
 gulp.task('i18n-up', async () => {
     try {
         const base = require('./config/.key.js');
-        const file = (await fs.readFile('src/locales/en.json')).toString();
+        const file = (await fs.readFile(PathUtils.i18nSourceJSONPath)).toString();
 
         const _options = {
             language: 'en',
@@ -1183,7 +1248,7 @@ gulp.task('i18n-down',  async () => {
         let languageCode = lang.code;
         let option = Object.assign({
             language: languageCode,
-            fileName: 'en.json'
+            fileName: 'en.json' // Do not change this
         }, base);
         let response = await onesky.getFile(option);
         if (response) {
@@ -1191,15 +1256,126 @@ gulp.task('i18n-down',  async () => {
         }
     }));
 
-    await fs.writeFile(PathUtils.translationJSONPath, JSON.stringify(map));
+    await writeJSON(PathUtils.i18nJSONPath, map);
 });
 
-gulp.task('extract-msg', async () => {
-    await toPromise(new JarUtils(JarUtils.MSG_EXTRACTOR_PATH, [
-        `--outputPathFormat`, 'build/{INPUT_FILE_NAME_NO_EXT}.msg.xlf',
-        `--srcs`, SoyBuilder.alert.soyPath,
-        `--srcs`, SoyBuilder.options.soyPath
-    ]));
+/**
+ * Converts xliff files generated by Closure Templates to json recognized by extension and userscripts.
+ * 
+ * Note that we use a custom format that includes original phrase in descriptions.
+ */
+async function xliffToJson(xliffContent:string) {
+    const xmlParser = new xml2js.Parser();
+    
+    const json:any = await (new Promise((resolve, reject) => {
+        xmlParser.parseString(xliffContent, (err, data) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(data);
+        })
+    }));
+
+    const error:()=>never = () => {
+        throw new Error('Invalid data, check soy sources');
+    }
+
+    const map = Object.create(null);
+    const transUnit = json.xliff.file[0].body[0]['trans-unit'];
+
+    for (let unit of transUnit) {
+        let source = unit.source[0];
+        if (typeof source === 'undefined') { error(); }
+        if (typeof source === 'object') {
+            // source is string for usual messages, 
+            // but is an object having keys '_' and 'x' in case when it contains
+            // placeholders
+            source = source._;
+        }
+        if (typeof source !== 'string') { error(); }
+        if (!unit.note) { error(); }
+        let message = unit.note[0]._;
+        if (typeof message !== 'string') { error(); }
+
+        map[source] = { message };
+    }
+
+    return map;
+}
+
+gulp.task('i18n-extract', async () => {
+    const sauces = [
+        SoyBuilder.alert,
+        SoyBuilder.options
+    ];
+
+    await Promise.all(sauces.map(sauce => {
+        return toPromise(closureTools.extractTemplateMsg([
+            `--outputFile`, sauce.xliffPath,
+            sauce.soyPath
+        ]).resume());
+    }));
+    log.info("Message extraction has been finished.");
+
+    const maps = await Promise.all(sauces.map(async (sauce) => {
+        return await fs.readFile(sauce.xliffPath)
+            .then(file => file.toString())
+            .then(async (content) => xliffToJson(content))
+    }));
+    
+    // Merge maps and report error when encountered multiple phrases with the same name.
+    const merged = Object.create(null);
+
+    for (let map of maps) {
+        for (let key in map) {
+            if (merged[key]) { // If phrase already exists
+                if (merged[key].message !== map[key].message) // and have different translations
+                throw new Error(`Phrase name collision for ${key}`);
+            } else {
+                merged[key] = map[key];
+            }
+        }
+    }
+
+    const writeTasks = [];
+
+    // Write translation
+    const misc = await readJSON(PathUtils.i18nMiscSourceJSONPath);
+    const translation = Object.assign({}, merged, misc);
+
+    writeTasks.push(writeJSON(PathUtils.i18nSourceJSONPath, translation));
+
+    // Write userscript_keys.json
+    // Userscript-keys contain certain keys from misc and
+    // keys from alert.soy file.
+
+    const userscriptKeys = [];
+    const extensionKeys = [];
+    const settingsKeys = [];
+    for (let key in misc) {
+        if (misc[key].description === 'userscript_only') {
+            userscriptKeys.push(key);
+        } else if (misc[key].description === 'extension_only') {
+            extensionKeys.push(key);
+        } else {
+            userscriptKeys.push(key);
+            extensionKeys.push(key);
+        }
+    }
+    for (let key in maps[0]) { // keys from alert.soy
+        userscriptKeys.push(key);
+        extensionKeys.push(key);
+    }
+    for (let key in maps[1]) {
+        extensionKeys.push(key);
+        settingsKeys.push(key);
+    }
+
+    writeTasks.push(writeJSON(PathUtils.i18nUserscriptKeysPath, userscriptKeys));
+    writeTasks.push(writeJSON(PathUtils.i18nExtensionKeysPath, extensionKeys));
+    writeTasks.push(writeJSON(PathUtils.i18nSettingsKeysPath, settingsKeys));
+
+    await Promise.all(writeTasks);
 });
 
 process.on('unhandledRejection', r => log.error(r));

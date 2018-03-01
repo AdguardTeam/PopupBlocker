@@ -1,10 +1,10 @@
 import BaseAlertController from "../../../../ui/alert/BaseAlertController";
 import chrome from '../platform_namespace';
+import { BGMsgTypesEnum } from "../message_types";
 
 const getURL = chrome.runtime.getURL;
 
 export default class ExtensionAlertController extends BaseAlertController {
-    private static getURL = chrome.runtime.getURL;
     private alertStyle:string
     protected getAlertStyle() {
         if (typeof this.alertStyle === 'undefined') {
@@ -17,6 +17,6 @@ export default class ExtensionAlertController extends BaseAlertController {
         return this.alertStyle;
     }
     protected openSettingsPage() {
-        chrome.runtime.openOptionsPage();
+        chrome.runtime.sendMessage(BGMsgTypesEnum.OPEN_OPTIONS_PAGE);
     }
 }

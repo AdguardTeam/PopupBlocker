@@ -1,36 +1,29 @@
-{namespace popupblockerUI}
+{namespace popupblockerOptionsUI}
 
 /**
- *
+ * Content of <body>
  */
-{template .settingsOuter}
-    {@param cssText:string}
-
-    <head>
-        {call .head data="all"/}
-    </head>
-    <body>
-        <div class="{css settings} {css settings--show}">
-        </div>
-        <div class="{css settings}">
-            <div class="{css settings__in} {css settings__in--popup}">
-                <div class="{css settings__close}"></div>
-                <div class="{css settings__title}">
-                    {msg desc="Add a site"}add_site{/msg}
-                </div>
-                <form action="#">
-                    <input class="{css settings__input}" type="text" placeholder="{msg desc="Enter site name"}site_input_ph{/msg}">
-                    <input class="{css settings__submit}" type="submit" value="{msg desc="Add a site"}add_site{/msg}">
-                </form>
+{template .outer}
+    <div class="{css settings}">
+    </div>
+    <div class="{css settings} {css settings-modal}">
+        <div class="{css settings__in} {css settings__in--popup}">
+            <div class="{css settings__close}"></div>
+            <div class="{css settings__title}">
+                {msg desc="Add a site"}add_site{/msg}
             </div>
+            <form action="#">
+                <input class="{css settings__input}" type="text" placeholder="{msg desc="Enter site name"}site_input_ph{/msg}">
+                <input class="{css settings__submit}" type="submit" value="{msg desc="Add a site"}add_site{/msg}">
+            </form>
         </div>
-    </body>
+    </div>
 {/template}
 
 /**
  * Settings page template.
  */
-{template .settingsContent}
+{template .content}
     {@param allowedOrigins: list<string>}
     {@param allowedDestinations: list<string>}
     {@param silencedOrigins: list<string>}
@@ -38,21 +31,21 @@
     <div class="{css settings__in}">
         <div class="{css settings__close}"></div>
         <div class="{css settings__title}">
-            {msg desc=""}userscript_name{/msg}
+            {msg desc="AdGuard Popup Blocker"}userscript_name{/msg}
         </div>
 
         <div class="{css settings__block}" data-for="{css allowed}">
             <div class="{css settings__row}">
                 <div class="{css settings__subtitle}">
-                    {msg desc=""}allowed{/msg}
+                    {msg desc="Allowed"}allowed{/msg}
                 </div>
                 <div class="{css settings__control}">
                     <button class="{css settings__control-item}">
-                        {msg desc=""}add{/msg}
+                        {msg desc="Add"}add{/msg}
                     </button>
                 </div>
                 <div class="{css settings__row-empty}">
-                    {msg desc=""}allowed_empty{/msg}
+                    {msg desc="List of allowed sites is empty"}allowed_empty{/msg}
                 </div>
             </div>
 
@@ -70,15 +63,15 @@
         <div class="{css settings__block}" data-for="{css silenced}">
             <div class="{css settings__row}">
                 <div class="{css settings__subtitle}">
-                    {msg desc=""}silenced{/msg}
+                    {msg desc="Silenced"}silenced{/msg}
                 </div>
                 <div class="{css settings__control}">
                     <div class="{css settings__control-item}">
-                        {msg desc=""}add{/msg}
+                        {msg desc="Add"}add{/msg}
                     </div>
                 </div>
                 <div class="{css settings__row-empty}">
-                    {msg desc=""}silenced_empty{/msg}
+                    {msg desc="List of silenced sites is empty"}silenced_empty{/msg}
                 </div>
             </div>
 
@@ -95,15 +88,15 @@
         <div class="{css settings__block}" data-for="{css allowed_dest}">
             <div class="{css settings__row}">
                 <div class="{css settings__subtitle}">
-                    {msg desc=""}allowed_dest{/msg}
+                    {msg desc="Allowed as target"}allowed_dest{/msg}
                 </div>
                 <div class="{css settings__control}">
                     <div class="{css settings__control-item}">
-                        {msg desc=""}add{/msg}
+                        {msg desc="Add"}add{/msg}
                     </div>
                 </div>
                 <div class="{css settings__row-empty}">
-                    {msg desc=""}allowed_dest_empty{/msg}
+                    {msg desc="List of allowed target sites is empty"}allowed_dest_empty{/msg}
                 </div>
             </div>
 
@@ -116,6 +109,5 @@
                 </div>
             {/foreach}
         </div>
-
     </div>
 {/template}

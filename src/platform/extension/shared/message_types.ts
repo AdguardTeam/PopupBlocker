@@ -41,5 +41,6 @@ export type UpwardMsgTypes = SettingsChangeMsg | CreateAlertMsg;
 // CT ➜ BG
 export const enum BGMsgTypesEnum {
     SET_ICON_AS_ENABLED,
-    SET_ICON_AS_DISABLED
+    SET_ICON_AS_DISABLED,
+    OPEN_OPTIONS_PAGE
 }

@@ -9,7 +9,7 @@ import I18nService from '../../../localization/I18nService';
 import adguard from '../../../content_script_namespace';
 
 const settingsDao = new ExtensionSettingsDao();
-const optionsController = new OptionsController(settingsDao, '');
+const optionsController = new OptionsController(settingsDao);
 
 adguard.i18nService = new I18nService(chrome.i18n.getMessage);
 

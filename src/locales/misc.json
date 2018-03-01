@@ -1,0 +1,19 @@
+{
+    "extension_name": {
+        "message": "Popup Blocker by AdGuard",
+        "description": "extension_only"
+    },
+    "userscript_name": {
+        "message": "AdGuard Popup Blocker",
+        "description": "userscript_only"
+    },
+    "extension_description": {
+        "message": "Blocks popup ads on web pages"
+    },
+    "on_navigation_by_popunder": {
+        "message": "This transition to the new page is likely to be caused by a pop-under. Do you wish to continue?"
+    },
+    "aborted_popunder_execution": {
+        "message": "PopupBlocker aborted a script execution to prevent background redirect"
+    }
+}

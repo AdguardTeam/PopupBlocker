@@ -2,14 +2,22 @@
 
 import ISettingsDao, { AllOptions } from "../../storage/ISettingsDao";
 import { isUndef, isElement } from "../../shared/instanceof";
-import { trustedEventListener } from "../event_listener_decorators";
+import { trustedEventListener, getByClsName } from "../ui_utils";
 import IOptionsController from "./IOptionsController";
 
 /*******************************************************************************/
 // Importing soy templates
-// We only provide closure compiler build for settings page.
+// For closure compiler, we use goog.require('popupblockerOptionsUI')
+// For rollup, we replace RESOURCE_OPTIONS_TEMPLATE_ROLLUP with a generated template js
+// (including soyutils.js)
 
-var popupblockerUI = goog.require('popupblockerUI');
+const popupblockerOptionsUI = goog.require('popupblockerOptionsUI');
+"REMOVE_START";
+RESOURCE_SOYUTILS;
+RESOURCE_OPTIONS_TEMPLATE_ROLLUP;
+"REMOVE_END";
+declare const RESOURCE_SOYUTILS;
+declare const RESOURCE_OPTIONS_TEMPLATE_ROLLUP;
 
 /*******************************************************************************/
 
@@ -22,18 +30,12 @@ const enum DomainIsRelevantFor {
 export default class OptionsController implements IOptionsController {
 
     constructor(
-        private settingsManager:ISettingsDao,
-        /**
-         * Stylesheet content is different between userscript and extensions settings page.
-         * This class receives the stylesheet content in the constructor to provide an easy
-         * way of using the same implementation for both platforms.
-         */
-        private SETTINGS_STYLE:string
+        private settingsDao:ISettingsDao
     ) {
         // Decorate event handlers.
         this.handleContentClick  = trustedEventListener(this.handleContentClick, this);
-        this.onPopupClose        = trustedEventListener(this.onPopupClose, true);
-        this.onPopupSubmit       = trustedEventListener(this.onPopupSubmit, true);
+        this.onPopupClose        = trustedEventListener(this.onPopupClose, this);
+        this.onPopupSubmit       = trustedEventListener(this.onPopupSubmit, this);
 
         // Bind `this` to storage operation callbacks.
         this.renderBody          = this.renderBody.bind(this);
@@ -49,8 +51,8 @@ export default class OptionsController implements IOptionsController {
      * Render part of settings page, which does not change during settings data change.
      */
     private renderOuter() {
-        let template = popupblockerUI.settingsOuter(this.SETTINGS_STYLE);
-        document.documentElement.innerHTML = template;
+        let template = popupblockerOptionsUI.outer();
+        document.body.innerHTML = template;
 
         // Get references of elements.
         let roots = getByClsName(goog.getCssName('settings'));
@@ -76,28 +78,28 @@ export default class OptionsController implements IOptionsController {
         if (!OptionsController.domainIsValid(value)) { return; }
         switch (this.currentPopupIsFor) {
             case DomainIsRelevantFor.WHITELISTED:
-                this.settingsManager.setSourceOption(value, DomainOptionEnum.WHITELISTED, this.closePopupAndRender);
+                this.settingsDao.setSourceOption(value, DomainOptionEnum.WHITELISTED, this.closePopupAndRender);
                 break;
             case DomainIsRelevantFor.SILENCED:
-                this.settingsManager.setSourceOption(value, DomainOptionEnum.SILENCED, this.closePopupAndRender);
+                this.settingsDao.setSourceOption(value, DomainOptionEnum.SILENCED, this.closePopupAndRender);
                 break;
             case DomainIsRelevantFor.WHITELISTED_AS_DESTINATION:
-                this.settingsManager.setIsWhitelistedDestination(value, true, this.closePopupAndRender);
+                this.settingsDao.setIsWhitelistedDestination(value, true, this.closePopupAndRender);
                 break;
         }
     }
 
     private closePopupAndRender(data?:AllOptions) {
-        this.popupRoot.classList.remove(goog.getCssName('settings--show'));
+        this.closePopup();
         this.popupInput.value = '';
         this.renderBody(data);
     }
     private showPopup(isFor:DomainIsRelevantFor) {
         this.currentPopupIsFor = isFor;
-        this.popupRoot.classList.add(goog.getCssName('settings--show'));
+        this.popupRoot.classList.add(goog.getCssName('settings-modal--show'));
     }
     private closePopup() {
-        this.popupRoot.classList.remove(goog.getCssName('settings--show'));
+        this.popupRoot.classList.remove(goog.getCssName('settings-modal--show'));
     }
 
     /**
@@ -105,11 +107,18 @@ export default class OptionsController implements IOptionsController {
      */
     private renderBody(data:AllOptions) {
         if (data === null) { return; }
-        let [whitelisted, silenced, whitelistedDests] = data;
-        let template = popupblockerUI.settingsContent(whitelisted, silenced, whitelistedDests);
+        let whitelisted = data[0];
+        let silenced = data[1];
+        let whitelistedDests = data[2];
+        // let [whitelisted, silenced, whitelistedDests] = data;
+        let template = popupblockerOptionsUI.content({
+            allowedOrigins: whitelisted,
+            silencedOrigins: silenced,
+            allowedDestinations: whitelistedDests
+        });
         document.body.firstElementChild.innerHTML = template;
     }
-    
+
     // Event handling delegator
     private handleContentClick(evt:MouseEvent) {
         let target = evt.target;
@@ -134,13 +143,13 @@ export default class OptionsController implements IOptionsController {
     private handleSettingsDeleteClick(target:Element) {
         // This is dependent on an order of elements specified in the markup.
         // Should be updated when markup changes.
-        let domain = target.previousElementSibling.textContent;
+        let domain = target.previousElementSibling.textContent.trim();
 
         let isFor = OptionsController.controlElementIsFor(target);
         if (isFor === DomainIsRelevantFor.WHITELISTED_AS_DESTINATION) {
-            this.settingsManager.setIsWhitelistedDestination(domain, false, this.renderBody);
+            this.settingsDao.setIsWhitelistedDestination(domain, false, this.renderBody);
         } else {
-            this.settingsManager.setSourceOption(domain, DomainOptionEnum.NONE, this.renderBody);
+            this.settingsDao.setSourceOption(domain, DomainOptionEnum.NONE, this.renderBody);
         }
     }
     private handleSettingsCloseClick() {
@@ -170,10 +179,6 @@ export default class OptionsController implements IOptionsController {
 
     initialize() {
         this.renderOuter();
-        this.settingsManager.enumerateOptions(this.renderBody);
+        this.settingsDao.enumerateOptions(this.renderBody);
     }
-}
-
-function getByClsName(className:string, element:Element|Document = document) {
-    return element.getElementsByClassName(className);
 }
