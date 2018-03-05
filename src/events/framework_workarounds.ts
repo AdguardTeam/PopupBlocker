@@ -73,10 +73,57 @@ declare const $:JQueryStatic;
  * is `document`. It needs to be improved if it causes missed popups on websites
  * which use react and popups at the same time, or it is challenged by popup scripts.
  */
+
+// When `window.__REACT_DEVTOOLS_GLOBAL_HOOK__` property exists, react will access and call
+// some of its methods. We use it as a hack to detect react instances.
+// We can always harden this by replicating the `hook` object here, at a cost of maintainance burden.
+function isInOfficialDevtoolsScript():boolean {
+    if (document.head) { return false; }
+    let script = document.currentScript;
+    if (!script) { return false; }
+    let textContent = script.textContent;
+    // https://github.com/facebook/react-devtools/blob/master/backend/installGlobalHook.js#L147
+    if (textContent.indexOf('^_^') !== -1) { return true; }
+    return false;
+}
+
+const HOOK_PROPERTY_NAME = '__REACT_DEVTOOLS_GLOBAL_HOOK__';
+
+let accessedReactInternals = false;
+
+if (!Object.prototype.hasOwnProperty.call(window, HOOK_PROPERTY_NAME)) {
+    let tempValue = {}; // to be used as window.__REACT_DEVTOOLS_GLOBAL_HOOK__
+    Object.defineProperty(tempValue, 'isDisabled', {
+        get: function() {
+            accessedReactInternals = true;
+            // Signals that a devtools is disabled, to minimize possible breakages.
+            // https://github.com/facebook/react/blob/master/packages/react-reconciler/src/ReactFiberDevToolsHook.js#L40
+            return true;
+        },
+        set: function() { }
+    });
+    Object.defineProperty(window, HOOK_PROPERTY_NAME, {
+        get: function() {
+            if (isInOfficialDevtoolsScript()) {
+                return undefined; // So that it re-defines the property
+            }
+            return tempValue;
+        },
+        set: function(i) { /* Ignored */ },
+        configurable: true // So that react-devtools can re-define it
+    });
+}
+
 const reactRootSelector = '[data-reactroot]';
 const reactIdSelector = '[data-reactid]';
 export function isReactInstancePresent():boolean {
-    return !!document.querySelector(reactRootSelector) || !!document.querySelector(reactIdSelector);
+    if (!!document.querySelector(reactRootSelector) || !!document.querySelector(reactIdSelector)) { return true; }
+    if (accessedReactInternals) { return true; }
+    // Otherwise, react-devtools could have overridden the hook.
+    if (typeof window[HOOK_PROPERTY_NAME] === 'object' && Object.keys(window[HOOK_PROPERTY_NAME]["_renderers"]).length !== 0) {
+        return true;
+    }
+    return false;
 }
 
 /**
