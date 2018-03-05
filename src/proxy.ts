@@ -185,8 +185,8 @@ export function makeObjectProxy(obj) {
     return proxy;
 }
 
-const defaultApplyHandler:ApplyHandler = supported ? _reflect : (_target, _this, _arguments) => (_target.apply(_this, _arguments));
-const defaultOption = () => (true);
+export const defaultApplyHandler:ApplyHandler = supported ? _reflect : (_target, _this, _arguments) => (_target.apply(_this, _arguments));
+export const defaultOption = () => (true);
 
 function makeFunctionWrapper(orig:Function, applyHandler:ApplyHandler) {
     let wrapped;

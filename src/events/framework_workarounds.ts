@@ -7,7 +7,8 @@
  */
 
 import { closest } from '../shared/dom';
-import { isElement } from '../shared/instanceof';
+import { isElement, isMouseEvent } from '../shared/instanceof';
+import WeakMap from '../shared/WeakMap';
 
 const _data = '_data', originalEvent = 'originalEvent', selector = 'selector';
 /**
@@ -48,9 +49,110 @@ export function getSelectorFromCurrentjQueryEventHandler(event:Event):string|und
     }
 }
 
+/**
+ * The above was not enough for many cases, mostly because event handlers can be attached in
+ * strict context and Function.arguments can be mutated in function calls.
+ * 
+ * Below we patches certain jQuery internals to create a mapping of native events and jQuery events.
+ * jQuery sets `currentTarget` property on jQuery event instances while triggering event handlers. 
+ */
+let jQueries:JQueryStatic[] = [];
+let jQueryToEventMap:IWeakMap<JQueryStatic, IWeakMap<Event, JQueryEvent>> = new WeakMap();
+
+import { wrapMethod, defaultApplyHandler } from '../proxy';
+
+function patchJQueryEvent() {
+    let jQuery:JQueryStatic = window['jQuery'] || window['$'];
+    
+    if (typeof jQuery !== 'function' ) { return; }
+    if (!('noConflict' in jQuery)) { return; }
+
+    if (jQueries.indexOf(jQuery) !== -1) {
+        // Already patched
+        return;
+    }
+
+    let eventMap:IWeakMap<Event,JQueryEvent> = new WeakMap();
+
+    jQueries.push(jQuery);
+    jQueryToEventMap.set(jQuery, eventMap);
+
+    const isNativeEvent = (event:Event|JQueryEvent):event is Event => {
+        return !event[jQuery.expando];
+    };
+
+    // In order to minimize detection surface, we use `wrapMethod` instead of simply re-assigning properties.
+
+
+    /**
+     * Notes on implementation:
+     *  1. In order to minimize detection surface, we use `wrapMethod` instead of simply re-assigning properties.
+     *  2. Always use `orig` and do not implement the patch in your own; intended behavior of such methods
+     *     can be drastically different across jQuery versions.
+     */
+    wrapMethod(jQuery.event, 'fix', (orig, _this, _arguments) => {
+        let originalEvent:Event|JQueryEvent = _arguments[0];
+        let ret:JQueryEvent = defaultApplyHandler(orig, _this, _arguments);
+        if (isNativeEvent(originalEvent) && isMouseEvent(originalEvent)) {
+            eventMap.set(<Event>originalEvent, ret);
+        }
+        return ret;
+    }, false);
+
+    wrapMethod(jQuery.event, 'dispatch', (orig, _this, _arguments) => {
+        let nativeEvent:Event|JQueryEvent = _arguments[0];
+        let ret = defaultApplyHandler(orig, _this, _arguments);
+        if (isNativeEvent(nativeEvent) && isMouseEvent(nativeEvent)) {
+            // jQuery does not clear up `currentTarget` property of their event instances
+            // after dispatching is finished.            
+            let jQueryEvent = getJQueryEvent(nativeEvent, jQuery);
+            jQueryEvent.currentTarget = null;
+        }
+        return ret;
+    }, false);
+
+    wrapMethod(jQuery, 'noConflict', noConflictApplyHandler, false);
+}
+
+function noConflictApplyHandler(orig:Function, _this, _arguments:any[]|IArguments) {
+    let deep = _arguments[0];
+    let ret = defaultApplyHandler(orig, _this, _arguments);
+    if (deep === true) {
+        // Patch another jQuery instance exposed to window.jQuery.
+        patchJQueryEvent();
+    }
+}
+
+/**
+ * Attempts to patch before any other page's click event handler is executed.
+ */
+window.addEventListener('click', patchJQueryEvent, true);
+
+function getJQueryEvent(event:Event, jQuery:JQueryStatic):JQueryEvent {
+    return jQueryToEventMap.get(jQuery).get(event);
+}
+
+export function getCurrentJQueryTarget(event:Event):EventTarget {
+    for (let i = 0, l = jQueries.length; i < l; i++) {
+        let jQuery = jQueries[i];
+        let jQueryEvent = getJQueryEvent(event, jQuery);
+        if (typeof jQueryEvent !== 'object') { continue; }
+        if (!jQueryEvent.currentTarget) { continue; }
+        return jQueryEvent.currentTarget;
+    }
+}
+
+
 // These are type declarations for jQuery only for the parts we need to access.
+
 declare interface JQueryEvent {
     originalEvent:Event
+    currentTarget:EventTarget
+}
+
+declare interface JQueryEventCtor {
+    (event:Event|JQueryEvent):JQueryEvent 
+    new(event:Event|JQueryEvent):JQueryEvent
 }
 
 declare interface JQueryHandlerObj {
@@ -60,10 +162,21 @@ declare interface JQueryHandlerObj {
 
 declare interface JQueryStatic {
     _data:(elem:EventTarget, name:string, value?:any)=>{[id:string]:JQueryHandlerObj[]}
+    event: {
+        special:stringmap<{
+            postDispatch:(event:JQueryEvent)=>void
+        }>,
+        fix:(event:Event|JQueryEvent)=>JQueryEvent
+    }
+    Event:JQueryEventCtor
+    readonly expando:string
+    noConflict:(deep?:boolean)=>JQueryStatic
+    (...args):any
 }
 
 declare const jQuery:JQueryStatic;
 declare const $:JQueryStatic;
+
 
 /**
  * React production build by default attaches an event listener to `document`
