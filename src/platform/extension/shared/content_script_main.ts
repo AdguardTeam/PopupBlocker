@@ -41,6 +41,8 @@ function linkPageScript (settingsDao:ISettingsDao, alertController:IAlertControl
     });
 
     function updateIcon(settings:Partial<Settings>) {
+        // Send message from top frames only
+        if (top !== window) { return; }
         if (settings.domainOption === DomainOptionEnum.WHITELISTED) {
             chrome.runtime.sendMessage(BGMsgTypesEnum.SET_ICON_AS_DISABLED);
         } else {
