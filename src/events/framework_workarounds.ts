@@ -230,10 +230,11 @@ export function isReactInstancePresent():boolean {
     if (!!document.querySelector(reactRootSelector) || !!document.querySelector(reactIdSelector)) { return true; }
     if (accessedReactInternals) { return true; }
     // Otherwise, react-devtools could have overridden the hook.
-    if (typeof window[HOOK_PROPERTY_NAME] === 'object' && Object.keys(window[HOOK_PROPERTY_NAME]["_renderers"]).length !== 0) {
-        return true;
-    }
-    return false;
+    let hook = window[HOOK_PROPERTY_NAME];
+    if (typeof hook !== 'object') { return false; }
+    if (typeof hook["_renderers"] !== 'object') { return false; }
+    if (Object.keys(hook["_renderers"]).length === 0) { return false; }
+    return true;
 }
 
 /**
