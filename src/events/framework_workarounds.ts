@@ -53,11 +53,11 @@ export function getSelectorFromCurrentjQueryEventHandler(event:Event):string|und
  * The above was not enough for many cases, mostly because event handlers can be attached in
  * strict context and Function.arguments can be mutated in function calls.
  * 
- * Below we patches certain jQuery internals to create a mapping of native events and jQuery events.
+ * Below we patch jQuery internals to create a mapping of native events and jQuery events.
  * jQuery sets `currentTarget` property on jQuery event instances while triggering event handlers. 
  */
-let jQueries:JQueryStatic[] = [];
-let jQueryToEventMap:IWeakMap<JQueryStatic, IWeakMap<Event, JQueryEvent>> = new WeakMap();
+const jQueries:JQueryStatic[] = [];
+const jQueryToEventMap:IWeakMap<JQueryStatic, IWeakMap<Event, JQueryEvent>> = new WeakMap();
 
 import { wrapMethod, defaultApplyHandler } from '../proxy';
 
@@ -80,9 +80,6 @@ function patchJQueryEvent() {
     const isNativeEvent = (event:Event|JQueryEvent):event is Event => {
         return !event[jQuery.expando];
     };
-
-    // In order to minimize detection surface, we use `wrapMethod` instead of simply re-assigning properties.
-
 
     /**
      * Notes on implementation:
