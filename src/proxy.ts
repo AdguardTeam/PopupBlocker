@@ -64,7 +64,7 @@ const isNativeFn = function (fn:Function):boolean {
 const proxyToReal = typeof PARENT_FRAME_KEY === 'string' ? window.parent[PARENT_FRAME_KEY][0] : new WeakMap();
 const realToProxy = typeof PARENT_FRAME_KEY === 'string' ? window.parent[PARENT_FRAME_KEY][1] : new WeakMap();
 
-export const expose = (key:PropertyKey) => { window[key] = [proxyToReal, realToProxy, timeline, adguard.storageProvider]; };
+export const expose = (key:PropertyKey) => { window[key] = [proxyToReal, realToProxy, timeline, adguard.contentScriptApiFacade]; };
 export const unexpose = (key:PropertyKey) => { delete window[key]; };
 
 export type ApplyHandler = (target:Function, _this:any, _arguments:IArguments|any[], context?:any) => any;

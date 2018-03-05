@@ -1,12 +1,16 @@
 import chrome from './platform_namespace';
-import { CONTENT_PAGE_MAGIC, DownwardMsgTypesEnum, UpwardMsgTypesEnum, UpwardMsgTypes, SettingsDeltaMsg, Settings } from "./message_types";
+import { CONTENT_PAGE_MAGIC, DownwardMsgTypesEnum, UpwardMsgTypesEnum, UpwardMsgTypes, SettingsDeltaMsg, Settings, BGMsgTypesEnum, FromBGMsgTypesEnum } from "./message_types";
 import IAlertController from "../../../ui/alert/IAlertController";
 import * as log from '../../../shared/log';
 import II18nService from '../../../localization/II18nService';
 import adguard from '../../../content_script_namespace';
+import ISettingsDao from '../../../storage/ISettingsDao';
 
-function linkPageScript (alertController:IAlertController) {
-    const receivePort = new Promise<MessagePort>(function(resolve, reject) {
+const domain = location.host;
+
+function linkPageScript (settingsDao:ISettingsDao, alertController:IAlertController) {
+
+    const portReceived = new Promise<MessagePort>(function(resolve, reject) {
         window.addEventListener("message", function(event) {
             if (event.source !== window) { return; }
             if (event.data !== CONTENT_PAGE_MAGIC) { return; }
@@ -20,54 +24,75 @@ function linkPageScript (alertController:IAlertController) {
     function onMessage(message:MessageEvent) {
         const data:UpwardMsgTypes = message.data;
         switch (data.$type) {
-            case UpwardMsgTypesEnum.SETTINGS_CHANGE:
-                chrome.storage.local.set(message.data);
-                break;
             case UpwardMsgTypesEnum.CREATE_ALERT:
                 alertController.createAlert(data.orig_domain, data.popup_url);
         }
     }
 
-    receivePort
+    portReceived
         .then(function(port) {
             port.onmessage = onMessage;
         });
 
-    const getSettings = new Promise(function(resolve, reject) {
-        chrome.storage.local.get(["whitelist", location.host], function(items) {
-            resolve(items);
+    const initialSettingsReceived = new Promise<Partial<Settings>>(function(resolve, reject) {
+        settingsDao.getDomainOption(domain, (settings) => {
+            resolve(settings);
         });
     });
 
-    Promise.all([receivePort, getSettings])
+    function updateIcon(settings:Partial<Settings>) {
+        if (settings.domainOption === DomainOptionEnum.WHITELISTED) {
+            chrome.runtime.sendMessage(BGMsgTypesEnum.SET_ICON_AS_DISABLED);
+        } else {
+            chrome.runtime.sendMessage(BGMsgTypesEnum.SET_ICON_AS_ENABLED);
+        }
+    }
+
+    initialSettingsReceived.then(updateIcon)
+
+    Promise.all([portReceived, initialSettingsReceived])
         .then(function(resolved) {
             const port = resolved[0];
             const settings = resolved[1];
             port.postMessage(<SettingsDeltaMsg>{
                 $type: DownwardMsgTypesEnum.SETTINGS_DELTA,
-                settings: settings
+                $settings: settings
             });
         });
 
-    chrome.storage.onChanged.addListener(function(changes, namespace) {
-        if (namespace !== 'local') { return; }
-        let partialSettings:Partial<Settings> = {};
-        let storageChange;
-        if ('whitelisted' in changes) {
-            storageChange = changes['whitelisted'];
-            partialSettings.whitelistedDestinations = storageChange.newVal;
-        }
-        if (location.hostname in changes) {
-            storageChange = changes[location.hostname];
-            partialSettings.domainOption = storageChange.newValue;
-        }
-        receivePort.then(function(port) {
+    settingsDao.onDomainSettingsChange(domain, (partialSettings) => {
+        updateIcon(partialSettings);
+        portReceived.then(function(port) {
             port.postMessage(<SettingsDeltaMsg>{
                 $type: DownwardMsgTypesEnum.SETTINGS_DELTA,
-                settings: partialSettings
+                $settings: partialSettings
             });
         });
     });
+}
+
+function linkBackgroundScript(settingsDao:ISettingsDao) {
+    const onPrevSettingsReceived = (settings:Settings) => {
+        let prevDomainOption = settings.domainOption;
+        let nextDomainOption:DomainOptionEnum;
+        if (prevDomainOption === DomainOptionEnum.WHITELISTED) {
+            nextDomainOption = DomainOptionEnum.NONE;
+        } else {
+            nextDomainOption = DomainOptionEnum.WHITELISTED;
+        }
+
+        settingsDao.setSourceOption(domain, nextDomainOption);
+    };
+
+    const onMessage = (message:FromBGMsgTypesEnum) => {
+        switch (message) {
+            case FromBGMsgTypesEnum.ICON_CLICKED:
+                settingsDao.getDomainOption(domain, onPrevSettingsReceived);
+            break;
+        }
+    };
+
+    chrome.runtime.onMessage.addListener(onMessage);
 }
 
 function runScript(code) {
@@ -78,10 +103,11 @@ function runScript(code) {
     parent.removeChild(el);
 }
 
-export default function main(i18nService:II18nService, alertController:IAlertController) {
+export default function main(i18nService:II18nService, settingsDao:ISettingsDao, alertController:IAlertController) {
     adguard.i18nService = i18nService;
-
-    linkPageScript(alertController);
+    
+    linkPageScript(settingsDao, alertController);
+    linkBackgroundScript(settingsDao);
 
     const PAGE_SCRIPT = RESOURCE_ARGS("PAGE_SCRIPT",
         "VAR_ABORT",        i18nService.$getMessage('aborted_popunder_execution'),

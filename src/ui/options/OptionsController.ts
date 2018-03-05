@@ -40,6 +40,8 @@ export default class OptionsController implements IOptionsController {
         // Bind `this` to storage operation callbacks.
         this.renderBody          = this.renderBody.bind(this);
         this.closePopupAndRender = this.closePopupAndRender.bind(this);
+
+        this.listenForChanges();
     }
 
     private popupRoot:Element
@@ -89,10 +91,9 @@ export default class OptionsController implements IOptionsController {
         }
     }
 
-    private closePopupAndRender(data?:AllOptions) {
+    private closePopupAndRender() {
         this.closePopup();
         this.popupInput.value = '';
-        this.renderBody(data);
     }
     private showPopup(isFor:DomainIsRelevantFor) {
         this.currentPopupIsFor = isFor;
@@ -147,13 +148,17 @@ export default class OptionsController implements IOptionsController {
 
         let isFor = OptionsController.controlElementIsFor(target);
         if (isFor === DomainIsRelevantFor.WHITELISTED_AS_DESTINATION) {
-            this.settingsDao.setIsWhitelistedDestination(domain, false, this.renderBody);
+            this.settingsDao.setIsWhitelistedDestination(domain, false);
         } else {
-            this.settingsDao.setSourceOption(domain, DomainOptionEnum.NONE, this.renderBody);
+            this.settingsDao.setSourceOption(domain, DomainOptionEnum.NONE);
         }
     }
     private handleSettingsCloseClick() {
         window.close();
+    }
+
+    private listenForChanges() {
+        this.settingsDao.onSettingsChange(this.renderBody);
     }
 
     private static isForAttrName = 'data-for';

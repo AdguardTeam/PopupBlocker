@@ -5,6 +5,7 @@ import ISettingsDao from "../../storage/ISettingsDao";
 import IAlertController from "./IAlertController";
 import { trustedEventListener, getByClsName } from "../ui_utils";
 import { isUndef } from "../../shared/instanceof";
+import { shadowDomV1Support } from '../../shared/dom';
 
 /*******************************************************************************/
 // Importing soy templates
@@ -13,7 +14,7 @@ import { isUndef } from "../../shared/instanceof";
 // (including soyutils.js)
 
 import * as popupblockerUI from 'goog:popupblockerUI';
-import 'goog:soydata.VERY_UNSAFE';
+import * as soydata_VERY_UNSAFE from 'goog:soydata.VERY_UNSAFE';
 
 "REMOVE_START";
 RESOURCE_SOYUTILS;
@@ -28,7 +29,28 @@ const px = 'px';
 
 export default abstract class BaseAlertController implements IAlertController {
 
-    protected abstract getAlertStyle():string
+    private static fontsDir = '/assets/fonts/';
+
+    private getCssText() {
+        const fontsDir = BaseAlertController.fontsDir;
+        const opensans = "/OpenSans-";
+        const woff = '.woff';
+        const WOFF_OPENSANS_REGULAR = `${fontsDir}regular${opensans}Regular${woff}`;
+        const WOFF_OPENSANS_SEMIBOLD = `${fontsDir}semibold${opensans}Semibold${woff}`;
+        const WOFF_OPENSANS_BOLD = `${fontsDir}bold${opensans}Bold${woff}`;
+        const WOFF2_OPENSANS_REGULAR = WOFF_OPENSANS_REGULAR + 2;
+        const WOFF2_OPENSANS_SEMIBOLD = WOFF_OPENSANS_SEMIBOLD + 2;
+        const WOFF2_OPENSANS_BOLD = WOFF_OPENSANS_BOLD + 2;
+        return RESOURCE_ARGS("ALERT_CSS",
+            "WOFF_OPENSANS_REGULAR",     this.$getURL(WOFF_OPENSANS_REGULAR),
+            "WOFF2_OPENSANS_REGULAR",    this.$getURL(WOFF2_OPENSANS_REGULAR),
+            "WOFF_OPENSANS_SEMIBOLD",    this.$getURL(WOFF_OPENSANS_SEMIBOLD),
+            "WOFF2_OPENSANS_SEMIBOLD",   this.$getURL(WOFF2_OPENSANS_SEMIBOLD),
+            "WOFF_OPENSANS_BOLD",        this.$getURL(WOFF_OPENSANS_BOLD),
+            "WOFF2_OPENSANS_BOLD",       this.$getURL(WOFF2_OPENSANS_BOLD)
+        );
+    }
+
     protected abstract openSettingsPage():void
 
     private domainToPopupCount:stringmap<number> = Object.create(null);
@@ -48,24 +70,45 @@ export default abstract class BaseAlertController implements IAlertController {
     private iframeHeight:number
 
     constructor(
-        private storageManager:ISettingsDao
+        private storageManager:ISettingsDao,
+        private $getURL:(resc_marker:string)=>string
     ) {
         this.updateIframe               = trustedEventListener(this.updateIframe, this);
-        this.updateIframeContent        = trustedEventListener(this.updateIframeContent, this);
         this.onCloseClick               = trustedEventListener(this.onCloseClick, this);
         this.onPinClick                 = trustedEventListener(this.onPinClick, this);
         this.onContinueBlockingClick    = trustedEventListener(this.onContinueBlockingClick, this);
         this.onOptionChange             = trustedEventListener(this.onOptionChange, this);
     }
 
-    private static shadowDomV1Support = 'attachShadow' in Element.prototype;
+    private static BLUR_OFFSET = 10 + 3; // Specified in styles as box-shadow: 0 0 10px 3px
 
-    private static initialAlertFrameStyle = {
-        "position": "fixed",
-        "right": 0 + px,
-        "bottom": 0 + px,
-        "border": "none",
-        "z-index": String(-1 - (1 << 31)),
+    private static initialAlertFrameStyle = [
+        "position", "fixed",
+        "right",     0 + px,
+        "bottom",    0 + px,
+        "border",   "none" ,
+        "z-index",   String(-1 - (1 << 31))
+    ];
+
+    private static shadowHostStyle = [
+        "display",  "block",
+        "position", "relative",
+        "width",     String(0),
+        "height",    String(0),
+        "margin",    String(0),
+        "padding",   String(0),
+        "overflow", "hidden",
+        "z-index",   String(-1 - (1 << 31))
+    ];
+
+    private static concatStyle(style:string[], important:boolean):string {
+        let cssText = '';
+        for (let i = 0, l = style.length; i < l; i++) {
+            cssText += style[i] + ':' + style[++i];
+            if (important) { cssText += '!important' }
+            cssText += ';';
+        }
+        return cssText;
     }
 
     private appendIframe() {
@@ -78,16 +121,20 @@ export default abstract class BaseAlertController implements IAlertController {
             this.frameDoc.body.setAttribute('style', 'background-color:transparent;');
         });
 
-        for (let property in BaseAlertController.initialAlertFrameStyle) {
-            iframe.style[property] = BaseAlertController.initialAlertFrameStyle[property];
-        }
+        iframe.style.cssText = BaseAlertController.concatStyle(BaseAlertController.initialAlertFrameStyle, false);
+
         this.iframeWidth = this.iframeHeight = 0;
         iframe.style.width = iframe.style.height = 0 + px;
 
-        if (BaseAlertController.shadowDomV1Support) {
+        if (shadowDomV1Support) {
             let host = this.shadowHostEl = document.createElement('div');
             let root = host.attachShadow({ mode: 'closed' });
             document.documentElement.appendChild(host);
+
+            let hostStyleEl = document.createElement('style');
+            hostStyleEl.textContent = `:host{${BaseAlertController.concatStyle(BaseAlertController.shadowHostStyle, true)}}`;
+        
+            root.appendChild(hostStyleEl);
             root.appendChild(iframe);
         } else {
             document.documentElement.appendChild(iframe);
@@ -112,31 +159,31 @@ export default abstract class BaseAlertController implements IAlertController {
     }
 
     private toggleCollapse() {
-        const document = this.frameDoc;
-        const root = getByClsName(goog.getCssName('alert'), this.frameDoc)[0];
-        root.classList.toggle(goog.getCssName('alert--show'));
+        this.alertRoot.classList.toggle(goog.getCssName('alert--show'));
         this.collapsed = !this.collapsed;
         this.updateIframeDimension();
     }
 
-    private updateIframeDimension() {
+    private updateIframeDimension(evt?:Event) {
         if (!this.frameDoc) return;
         let { offsetLeft, offsetTop } = (this.collapsed ? this.pinRoot : this.alertRoot);
-        this.iframe.style.width = (this.iframeWidth -= offsetLeft) + px;
-        this.iframe.style.height = (this.iframeHeight -= offsetTop) + px;
+        // Adjusts iframe width and height so that the top left corner of the element
+        // (pinRoot in collapsed, alertRoot in un-collapsed mode) plus its shadow fits in the iframe
+        this.iframe.style.width = (this.iframeWidth -= offsetLeft - BaseAlertController.BLUR_OFFSET) + px;
+        this.iframe.style.height = (this.iframeHeight -= offsetTop - BaseAlertController.BLUR_OFFSET) + px;
     }
 
     private updateIframe(evt?:Event) {
         const document = this.frameDoc = this.iframe.contentDocument;
         const template = popupblockerUI.head({
-            cssText: soydata.VERY_UNSAFE.ordainSanitizedHtml(this.getAlertStyle())
+            cssText: soydata_VERY_UNSAFE.ordainSanitizedHtml(this.getCssText())
         });
+        
         document.documentElement.innerHTML = template;
         this.updateIframeContent();
     }
 
-    private updateIframeContent(evt?:Event) {
-        this.iframe.removeEventListener('load', this.updateIframeContent);
+    private updateIframeContent() {
         const document = this.frameDoc;
         const template = popupblockerUI.content({
             numPopup: this.domainToPopupCount[this.origDomain],
@@ -163,6 +210,10 @@ export default abstract class BaseAlertController implements IAlertController {
         continueBtn.addEventListener('click', this.onContinueBlockingClick);
         select.addEventListener('change', this.onOptionChange);
 
+        // The template is rendered in a collapsed state.
+        if (!this.collapsed) {
+            this.alertRoot.classList.add(goog.getCssName('alert--show'));
+        }
         this.updateIframeDimension();
     }
 

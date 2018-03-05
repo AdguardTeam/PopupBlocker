@@ -112,7 +112,7 @@ export const createAlertInTopFrame = supported && !isTop && !isEmpty ? (orig_dom
     //
     // const targetFrame = getSafeNonEmptyParent(window);
     // targetFrame.setTimeout(adguard.storageProvider.showAlert, 0, orig_domain, popup_domain);
-    adguard.storageProvider.showAlert(orig_domain, popup_domain);
+    adguard.contentScriptApiFacade.showAlert(orig_domain, popup_domain);
 } : /* noop */(orig_domain:string, popup_domain:string, isGeneric:boolean):void => {
     // If a current window is not top and the browser does not support WeakMap, do nothing.
 };

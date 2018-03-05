@@ -18,29 +18,30 @@ export const enum DownwardMsgTypesEnum {
 }
 export interface SettingsDeltaMsg {
     $type:DownwardMsgTypesEnum.SETTINGS_DELTA,
-    settings:Settings
+    $settings:Settings
 }
 export type DownwardMsgTypes = SettingsDeltaMsg
 
 // PG ➜ CT
 export const enum UpwardMsgTypesEnum {
-    SETTINGS_CHANGE,
     CREATE_ALERT
-}
-export interface SettingsChangeMsg {
-    $type:UpwardMsgTypesEnum.SETTINGS_CHANGE,
-    settings:Settings
 }
 export interface CreateAlertMsg {
     $type:UpwardMsgTypesEnum.CREATE_ALERT,
     orig_domain:string,
     popup_url:string
 }
-export type UpwardMsgTypes = SettingsChangeMsg | CreateAlertMsg;
+export type UpwardMsgTypes = CreateAlertMsg;
 
 // CT ➜ BG
 export const enum BGMsgTypesEnum {
     SET_ICON_AS_ENABLED,
     SET_ICON_AS_DISABLED,
-    OPEN_OPTIONS_PAGE
+    OPEN_OPTIONS_PAGE,
+    GET_RESOURCE_ACCESS_KEY
+}
+
+// BT ➜ CT
+export const enum FromBGMsgTypesEnum {
+    ICON_CLICKED
 }

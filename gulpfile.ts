@@ -21,7 +21,8 @@ import run = require('gulp-run');
 
 import postcss = require('gulp-postcss');
 import imp = require('postcss-partial-import');
-import svg = require('postcss-svg');
+import svg = require('postcss-inline-svg');
+import svgo = require('postcss-svgo');
 import mixins = require('postcss-mixins');
 import cssnext = require('postcss-cssnext');
 import nesting = require('postcss-nested');
@@ -268,23 +269,31 @@ class ResourceManager {
 
 /******************************************************************************************************/
 
+interface ICssSource {
+    fileName:string,
+    srcPath:string,
+    resourceMarker?:string
+}
+
 class CssBuilder implements IResourceProvider {
 
-    /**
-     * For userscripts, we inline css for alerts to the userscript source, and host the
-     * options css in a dedicated page.
-     */
-    private static alertEntry = 'alerts.pcss';
-    private static optionsEntry = 'options.pcss';
-    private static allEntry = 'all.pcss';
-
-    private static makePath(name:string) {
-        return path.join(PathUtils.postCssPath, name);
+    private static Source = class Source implements ICssSource {
+        constructor(
+            public fileName:string,
+            public resourceMarker?:string
+        ) { }
+        get srcPath() {
+            return path.join(PathUtils.postCssPath, this.fileName + '.pcss');
+        }
     }
 
-    private static alertSrc = CssBuilder.makePath(CssBuilder.alertEntry);
-    private static optionsSrc = CssBuilder.makePath(CssBuilder.optionsEntry);
-    private static allSrc = CssBuilder.makePath(CssBuilder.allEntry);
+    private getSourceOutPath(src:ICssSource) {
+        return path.join(this.paths.assetOutputPath, 'css', src.fileName + '.css');
+    }
+
+    private static alerts = new CssBuilder.Source('alerts', 'ALERT_CSS');
+    private static options = new CssBuilder.Source('options');
+    private static all = new CssBuilder.Source('all');
 
     private static bundledCssName = 'styles.css';
     private static cssTempDir = 'css_temp';
@@ -309,7 +318,8 @@ class CssBuilder implements IResourceProvider {
             .pipe(postcss([
                 imp(),
                 nesting(),
-                // svg(),
+                svg({ path: 'src/ui' }),
+                svgo(),
                 mixins(),
                 cssnext({ browsers: ["IE 10", "> 1%"] }),
             ]))
@@ -341,29 +351,35 @@ class CssBuilder implements IResourceProvider {
         return closureTools.stylesheets(args, CssBuilder.bundledCssName);
     }
 
-    public async prepareResource(resc:ResourceManager) {
-        // Alert style is always inlined
-        resc.registerInlinedResource("ALERT_STYLE", {
-            data: await toPromise(
-                this.options.shouldMinify ?
-                    (await CssBuilder.compileWithClosure(CssBuilder.alertSrc)).resume() :
-                    CssBuilder.compilePostCss(CssBuilder.alertSrc),
-                true),
-            path: 'alert.css'
-        });
+    private async compileSource(src:ICssSource) {
+        if (this.options.shouldMinify) {
+            return await CssBuilder.compileWithClosure(src.srcPath);
+        } else {
+            return CssBuilder.compilePostCss(src.srcPath);
+        }
+    }
 
-        if (this.options.isExtension) {
-            await toPromise((this.options.shouldMinify ?
-                (await CssBuilder.compileWithClosure(CssBuilder.optionsSrc)).resume() :
-                CssBuilder.compilePostCss(CssBuilder.optionsSrc))
-                .pipe(insert.transform(content => {
-                    return content
-                        .replace('RESOURCE_OPENSANS_REGULAR', '/assets/fonts/regular/OpenSans-Regular.woff')
-                        .replace('RESOURCE_OPENSANS_SEMIBOLD', '/assets/fonts/semibold/OpenSans-Semibold.woff')
-                        .replace('RESOURCE_OPENSANS_BOLD', '/assets/fonts/bold/OpenSans-Bold.woff')
-                }))
-                .pipe(gulp.dest(this.paths.assetOutputPath))
+    public async prepareResource(resc:ResourceManager) {
+        const inlineSource = async (src:ICssSource) => {
+            resc.registerInlinedResource(src.resourceMarker, {
+                data: await toPromise((await this.compileSource(src)).resume(), true),
+                path: this.getSourceOutPath(src)
+            });
+        };
+        const moveSource = async (src:ICssSource) => {
+            await toPromise(
+                (await this.compileSource(src)).resume()
+                    .pipe(rename(this.getSourceOutPath(src)))
+                    .pipe(gulp.dest('.'))
             );
+        };
+
+        // Alert style is moved to /assets/alert.css.
+        await inlineSource(CssBuilder.alerts);
+
+        // For extensions, options page style is compiled and moved to /assets/options.css.
+        if (this.options.isExtension) {
+            await moveSource(CssBuilder.options);
         }
     }
 
@@ -405,26 +421,6 @@ class SoyBuilder implements IResourceProvider {
     private static tempOutFormat = new SoyBuilder.Sauce(path.join(SoyBuilder.soyTempPath, `{INPUT_FILE_NAME_NO_EXT}`));
     private static tempOutGlob = new SoyBuilder.Sauce(path.join(SoyBuilder.soyTempPath, '*'));
 
-    /**
-     * Transforms `goog.getMsg` calls to runtime i18nService call.
-     */
-    private static reGetMsg = /goog\.getMsg\(\s*'\s*([A-Za-z_\-]+)(?:\{\$[A-Za-z_\-]*\})*'\s*(,|\))/g;
-    private static transformGetMsgRollup(match, c1, c2) {
-        return `__soyUtils_adguard.default.i18nService.getMsg\(${c1}${c2}`;
-    }
-    private static transformGetMsgCc(match, c1, c2) {
-        return `__soyUtils_adguard.default.i18nService.getMsg\('${c1}'${c2}`;
-    }
-    private static transformGoogProvideToGoogModule(content:string, file:Vinyl):string {
-        let namespace:string;
-        content = content.replace(/goog\.provide\('(.*)'\)/, (_, c1) => {
-            namespace = c1;
-            return `goog.module('${namespace}');\nvar __soyUtils_adguard = goog.require('build.tscc.content_script_namespace')`;
-        });
-        content = content.replace(new RegExp(`${namespace}\\.`, 'gm'), `exports.`);
-        content = content.replace(SoyBuilder.reGetMsg, SoyBuilder.transformGetMsgCc);
-        return content;
-    }
     private static async compileRollup(srcs:string[]):Promise<void> {
         const args = [
             `--cssHandlingScheme`,  `LITERAL`,
@@ -439,9 +435,9 @@ class SoyBuilder implements IResourceProvider {
         await toPromise(closureTools.templates(args).resume());
         await toPromise(
             gulp.src(SoyBuilder.tempOutGlob.rollup)
-                .pipe(insert.transform((content, file) => {
-                    return content.replace(SoyBuilder.reGetMsg, SoyBuilder.transformGetMsgRollup);
-                }))
+                .pipe(insert.transform(
+                    new closureTools.TemplatesRuntimeI18nTransformer('adguard.i18nService.getMsg').transform
+                ))
                 .pipe(gulp.dest(SoyBuilder.soyTempPath)) // Replace in-place
         );
     }
@@ -1167,6 +1163,11 @@ for (let target in BuildTarget) {
         gulp.task(taskName + '-unminified', new Builder(option_unminified).build);
     }
 }
+
+gulp.task('temp', new Builder(new BuildOption(BuildTarget.CHROME, Channel.BETA, {
+    NO_PROXY: true,
+    DEBUG: true
+})).build);
 
 /******************************************************************************/
 

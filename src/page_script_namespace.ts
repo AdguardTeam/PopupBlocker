@@ -5,7 +5,7 @@
 import IContentScriptApiFacade from "./storage/IContentScriptApiFacade";
 
 interface IAdguard {
-    storageProvider?:IContentScriptApiFacade
+    contentScriptApiFacade?:IContentScriptApiFacade
 }
 
 let adguard:IAdguard = {};

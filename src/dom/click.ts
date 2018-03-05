@@ -10,13 +10,13 @@ import onBlocked from '../on_blocked';
 const clickVerified:ApplyHandler = function(_click, _this, _arguments, context) {
     if (getTagName(_this) === 'A') {
         log.print('click() was called on an anchor tag');
-        if (adguard.storageProvider.originIsWhitelisted()) {
+        if (adguard.contentScriptApiFacade.originIsWhitelisted()) {
             return _click.call(_this);
         }
         // Checks if an url is in a whitelist
         let url = createUrl(_this.href);
         let destDomain = url[1];
-        if (adguard.storageProvider.destinationIsWhitelisted(destDomain)) {
+        if (adguard.contentScriptApiFacade.destinationIsWhitelisted(destDomain)) {
             log.print(`The domain ${destDomain} is in whitelist.`);
             _click.call(_this);
             return;

@@ -1,6 +1,7 @@
 import IContentScriptApiFacade from "../../../../storage/IContentScriptApiFacade";
 import { CONTENT_PAGE_MAGIC, DownwardMsgTypesEnum, DownwardMsgTypes, Settings, UpwardMsgTypesEnum, CreateAlertMsg } from '../message_types'
 import * as log from '../../../../shared/log';
+import { isUndef } from "../../../../shared/instanceof";
 
 
 export default class ExtensionContentScriptApiFacade implements IContentScriptApiFacade {
@@ -16,7 +17,8 @@ export default class ExtensionContentScriptApiFacade implements IContentScriptAp
             const data:DownwardMsgTypes = message.data;
             switch (data.$type) {
                 case DownwardMsgTypesEnum.SETTINGS_DELTA:
-                    this.receiveSettings(data.settings);
+                    log.print(`Received setting is: `, data.$settings);
+                    this.receiveSettings(data.$settings);
                     break;
             }
         }
@@ -25,10 +27,10 @@ export default class ExtensionContentScriptApiFacade implements IContentScriptAp
     private currentDomainOption:DomainOptionEnum
 
     private receiveSettings(settings:Partial<Settings>) {
-        if (typeof settings.whitelistedDestinations !== 'undefined') {
+        if (!isUndef(settings.whitelistedDestinations)) {
             this.whitelistedDestinations = settings.whitelistedDestinations;
         }
-        if (typeof settings.domainOption !== 'undefined') {
+        if (!isUndef(settings.domainOption)) {
             this.currentDomainOption = settings.domainOption;
         }
     }
@@ -37,7 +39,7 @@ export default class ExtensionContentScriptApiFacade implements IContentScriptAp
         return this.currentDomainOption === DomainOptionEnum.WHITELISTED;
     }
     destinationIsWhitelisted(destination:string):boolean {
-        if (typeof this.whitelistedDestinations === 'undefined') {
+        if (isUndef(this.whitelistedDestinations)) {
             // Settings are not received.
             return false;
         }

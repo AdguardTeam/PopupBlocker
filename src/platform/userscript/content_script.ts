@@ -5,24 +5,16 @@ import UserscriptContentScriptApiFacade from './storage/UserscriptContentScriptA
 import adguard from '../../content_script_namespace';
 import getMessage from './get_message';
 
-/**************************************************************************/
-/**************************************************************************/
-
 const i18nService       = new I18nService(getMessage);
 const storageManager    = new UserscriptSettingsDao();
-const alertController   = new UserscriptAlertController(storageManager);
+const alertController   = new UserscriptAlertController(storageManager, GM_getResourceURL);
 const storageProvider   = new UserscriptContentScriptApiFacade(alertController, getMessage);
 
 const BRIDGE_KEY = storageProvider.expose();
 
-/**************************************************************************/
-
 adguard.i18nService = i18nService;
 
-/**************************************************************************/
 window.popupBlocker = RESOURCE_PAGE_SCRIPT;
-
-/**************************************************************************/
 
 /**
  * In Firefox, userscripts can't write properties of unsafeWindow, so we
@@ -40,10 +32,6 @@ if (storageProvider.envIsFirefoxGreasemonkey) {
     popupBlocker(win,undefined,BRIDGE_KEY);
 }
 
-/**************************************************************************/
+//
 
 declare var RESOURCE_PAGE_SCRIPT;
-
-
-/**************************************************************************/
-/**************************************************************************/

@@ -6,9 +6,9 @@ import adguard from '../../../page_script_namespace';
 import ExtensionContentScriptApiFacade from './storage/ExtensionContentScriptApiFacade';
 
 if (typeof PARENT_FRAME_KEY === 'undefined') {
-    adguard.storageProvider = new ExtensionContentScriptApiFacade();
+    adguard.contentScriptApiFacade = new ExtensionContentScriptApiFacade();
 } else {
-    adguard.storageProvider = window.parent[PARENT_FRAME_KEY][3];
+    adguard.contentScriptApiFacade = window.parent[PARENT_FRAME_KEY][3];
 }
 
 import '../../../messaging';

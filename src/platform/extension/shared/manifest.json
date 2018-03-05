@@ -36,7 +36,9 @@
     },
     "permissions": [
         "<all_urls>",
-        "storage"
+        "storage",
+        "webRequest",
+        "webRequestBlocking"
     ],
     "browser_action": {
         "default_icon": {
@@ -51,6 +53,6 @@
         "page": "options.html"
     },
     "web_accessible_resources": [
-        "/assets/*"
+        "/assets/fonts/*"
     ]
 }

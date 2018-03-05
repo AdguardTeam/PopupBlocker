@@ -14,13 +14,13 @@ const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _argu
     if (isMouseEvent(evt) && isClickEvent(evt) && getTagName(_this) === 'A' && !evt.isTrusted) {
         log.call('It is a MouseEvent on an anchor tag.');
         log.print('dispatched event is:', evt);
-        if (adguard.storageProvider.originIsWhitelisted()) {
+        if (adguard.contentScriptApiFacade.originIsWhitelisted()) {
             return _dispatchEvent.call(_this, evt);
         }
         // Checks if an url is in a whitelist
         let url = createUrl(_this.href);
         let destDomain = url[1];
-        if (adguard.storageProvider.destinationIsWhitelisted(destDomain)) {
+        if (adguard.contentScriptApiFacade.destinationIsWhitelisted(destDomain)) {
             log.print(`The domain ${destDomain} is in whitelist.`);
             return _dispatchEvent.call(_this, evt);
         }

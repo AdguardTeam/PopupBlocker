@@ -5,17 +5,6 @@ import { BGMsgTypesEnum } from "../message_types";
 const getURL = chrome.runtime.getURL;
 
 export default class ExtensionAlertController extends BaseAlertController {
-    private alertStyle:string
-    protected getAlertStyle() {
-        if (typeof this.alertStyle === 'undefined') {
-            this.alertStyle = RESOURCE_ARGS("ALERT_STYLE",
-                "OPENSANS_REGULAR",     getURL('/assets/fonts/regular/OpenSans-Regular.woff'),
-                "OPENSANS_SEMIBOLD",    getURL('/assets/fonts/semibold/OpenSans-Semibold.woff'),
-                "OPENSANS_BOLD",        getURL('/assets/fonts/bold/OpenSans-Bold.woff')
-            );
-        }
-        return this.alertStyle;
-    }
     protected openSettingsPage() {
         chrome.runtime.sendMessage(BGMsgTypesEnum.OPEN_OPTIONS_PAGE);
     }
