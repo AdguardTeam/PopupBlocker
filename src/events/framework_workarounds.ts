@@ -7,8 +7,8 @@
  */
 
 import { wrapMethod, defaultApplyHandler, ApplyHandler } from '../proxy';
-import { closest } from '../shared/dom';
-import { isElement, isMouseEvent, isNode, isWindow, isUndef } from '../shared/instanceof';
+import { closest, targetsAreChainable } from '../shared/dom';
+import { isElement, isMouseEvent, isNode, isWindow, isUndef, isClickEvent, isTouchEvent } from '../shared/instanceof';
 import WeakMap from '../shared/WeakMap';
 
 const _data = '_data', originalEvent = 'originalEvent', selector = 'selector';
@@ -132,10 +132,12 @@ class JQueryEventStack {
      * Wraps jQuery.event.fix
      */
     private fixApplyHandler:ApplyHandler = (orig, __this, _arguments) => {
-        let originalEvent:Event|JQueryEvent = _arguments[0];
+        let event:Event|JQueryEvent = _arguments[0];
         let ret:JQueryEvent = defaultApplyHandler(orig, __this, _arguments);
-        if (this.isNativeEvent(originalEvent) && isMouseEvent(originalEvent)) {
-            this.eventMap.set(<Event>originalEvent, ret);
+        if (this.isNativeEvent(event)) {
+            if ((isMouseEvent(event) && isClickEvent(event)) || isTouchEvent(event)) {
+                this.eventMap.set(<Event>event, ret);
+            }
         }
         return ret;
     }
@@ -184,7 +186,7 @@ class JQueryEventStack {
             We need to take `document` as a "genuine" target in such cases. As such, 
             despite some theoretical possibilities, we take a leap of faith "that only real-world
             re-triggering that preserves the intention of user input are those which triggers
-            event on the target itself again or on its ancestor nodes".
+            event on the target itself again or on its descendent nodes".
 
         **/
         let current:JQueryEvent = root;
@@ -194,8 +196,9 @@ class JQueryEventStack {
             // prev event is related to next event
             // only if next.target contains current.target.
             let nextTarget = next.target;
+
             if (isNode(nextTarget)) {
-                if (nextTarget.contains(<Node>current.target)) {
+                if (targetsAreChainable(<Node>current.target, nextTarget)) {
                     current = this.isNativeEvent(next) ? this.getRelatedJQueryEvent(next) : next;
                     continue;
                 } else {

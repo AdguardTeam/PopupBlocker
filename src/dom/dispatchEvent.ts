@@ -2,16 +2,16 @@ import { ApplyHandler, ApplyOption, wrapMethod } from '../proxy';
 import { retrieveEvent, verifyEvent, verifyCurrentEvent } from '../events/verify';
 import examineTarget from '../events/examine_target';
 import { setBeforeunloadHandler } from './unload';
-import { isNode, isMouseEvent, isUIEvent, isClickEvent } from '../shared/instanceof';
-import { getTagName } from '../shared/dom';
+import { isNode, isMouseEvent, isUIEvent, isClickEvent, isAnchor } from '../shared/instanceof';
+import { getTagName, targetsAreChainable } from '../shared/dom';
 import adguard from '../adguard';
 import * as log from '../shared/log';
 import createUrl from '../shared/url';
 import onBlocked from '../on_blocked';
 
-const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _arguments, context) {
+const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this:EventTarget, _arguments, context) {
     let evt:Event = _arguments[0];
-    if (isMouseEvent(evt) && isClickEvent(evt) && getTagName(_this) === 'A' && !evt.isTrusted) {
+    if (isMouseEvent(evt) && isClickEvent(evt) && isNode(_this) && isAnchor(_this) && !evt.isTrusted) {
         log.call('It is a MouseEvent on an anchor tag.');
         log.print('dispatched event is:', evt);
         if (adguard.storageProvider.originIsWhitelisted()) {
@@ -33,11 +33,9 @@ const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this, _argu
             // In case of popup/popunder scripts, the target of an event to be dispatched
             // is normally an anchor tag that is just created or is detached to the document.
             // See: https://github.com/AdguardTeam/PopupBlocker/issues/49
+            // This logic is separated out in shared/dom.ts.
             let currentTarget = currentEvent.target;
-            if (!isNode(currentTarget) ||
-                // Certain iOS browser allow text nodes as event targets.
-                // We treat its parent as a correct target in such cases.
-                !(currentTarget.nodeType === 3 /* Node.TEXT_NODE */ ? currentTarget.parentNode : currentTarget).contains(_this)) {
+            if (!isNode(currentTarget) || !isNode(_this) || !targetsAreChainable(currentTarget, _this)) {
                 log.print('It did not pass the test, not dispatching event');
                 onBlocked(url[2], false, currentEvent);
                 log.callEnd();
