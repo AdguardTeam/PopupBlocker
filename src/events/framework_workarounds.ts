@@ -61,7 +61,8 @@ class JQueryEventStack {
 
     static initialize() {
         // Attempts to patch before any other page's click event handler is executed.
-        window.addEventListener('click', JQueryEventStack.attemptPatch, true);
+        window.addEventListener('mousedown', JQueryEventStack.attemptPatch, true);
+        window.addEventListener('touchstart', JQueryEventStack.attemptPatch, true)
     }
 
     static getCurrentJQueryTarget(event:MouseEvent|TouchEvent):EventTarget {
