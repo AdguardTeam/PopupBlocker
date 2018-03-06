@@ -6,8 +6,9 @@
  * Such workarounds are not very robust, hence 'attempt', but it will still provide huge benefit to users.
  */
 
+import { wrapMethod, defaultApplyHandler, ApplyHandler } from '../proxy';
 import { closest } from '../shared/dom';
-import { isElement, isMouseEvent } from '../shared/instanceof';
+import { isElement, isMouseEvent, isNode, isWindow, isUndef } from '../shared/instanceof';
 import WeakMap from '../shared/WeakMap';
 
 const _data = '_data', originalEvent = 'originalEvent', selector = 'selector';
@@ -56,94 +57,158 @@ export function getSelectorFromCurrentjQueryEventHandler(event:Event):string|und
  * Below we patch jQuery internals to create a mapping of native events and jQuery events.
  * jQuery sets `currentTarget` property on jQuery event instances while triggering event handlers. 
  */
-const jQueries:JQueryStatic[] = [];
-const jQueryToEventMap:IWeakMap<JQueryStatic, IWeakMap<Event, JQueryEvent>> = new WeakMap();
+class JQueryEventStack {
 
-import { wrapMethod, defaultApplyHandler } from '../proxy';
-
-function patchJQueryEvent() {
-    let jQuery:JQueryStatic = window['jQuery'] || window['$'];
-    
-    if (typeof jQuery !== 'function' ) { return; }
-    if (!('noConflict' in jQuery)) { return; }
-
-    if (jQueries.indexOf(jQuery) !== -1) {
-        // Already patched
-        return;
+    static initialize() {
+        // Attempts to patch before any other page's click event handler is executed.
+        window.addEventListener('click', JQueryEventStack.attemptPatch, true);
     }
 
-    let eventMap:IWeakMap<Event,JQueryEvent> = new WeakMap();
+    static getCurrentJQueryTarget(event:MouseEvent|TouchEvent):EventTarget {
+        let jQueries = JQueryEventStack.jQueries;
+        for (let i = 0, l = jQueries.length; i < l; i++) {
+            let jQuery = jQueries[i];
+            let stack = JQueryEventStack.jqToStack.get(jQuery);
+            if (isUndef(stack)) { continue; }
+            let currentTarget = stack.getNestedTarget(event);
+            if (!currentTarget) { continue; }
+            return currentTarget;
+        }
+    }
 
-    jQueries.push(jQuery);
-    jQueryToEventMap.set(jQuery, eventMap);
+    private static jQueries:JQueryStatic[] = [];
+    private static jqToStack:IWeakMap<JQueryStatic,JQueryEventStack> = new WeakMap();
 
-    const isNativeEvent = (event:Event|JQueryEvent):event is Event => {
-        return !event[jQuery.expando];
-    };
+    private static attemptPatch() {
+        let jQuery = JQueryEventStack.detectionHeuristic();
+        if (isUndef(jQuery)) { return; }
+        if (JQueryEventStack.jQueries.indexOf(jQuery) !== -1) { /* Already patched */ return; }
+
+        let eventMap:IWeakMap<Event,JQueryEvent> = new WeakMap();
+
+        JQueryEventStack.jQueries.push(jQuery);
+        JQueryEventStack.jqToStack.set(jQuery, new JQueryEventStack(jQuery).wrap());
+    }
+
+    private static detectionHeuristic():JQueryStatic {
+        let jQuery = window['jQuery'] || window['$'];
+        if (typeof jQuery !== 'function' ) { return; }
+        if (!('noConflict' in jQuery)) { return; }
+        // Test for private property
+        if (!('_data' in jQuery)) { return; }
+        return <JQueryStatic>jQuery;
+    }
+
+    constructor(
+        private jQuery:JQueryStatic
+    ) { }
+
+    private eventMap:IWeakMap<Event,JQueryEvent> = new WeakMap();
+    private eventStack:(Event|JQueryEvent)[] = [];
+
+    private isNativeEvent(event:Event|JQueryEvent):event is Event {
+        return !event[this.jQuery.expando];
+    }
+    private getRelatedJQueryEvent(event:Event):JQueryEvent {
+        return this.eventMap.get(event);
+    }
+    /**
+     * Wraps jQuery.event.dispatch.
+     * It is used in jQuery to call event handlers attached via $(..).on and such,
+     * in case of native events and $(..).trigger().
+     */
+    private dispatchApplyHandler:ApplyHandler = (orig, __this, _arguments) => {
+        let event:Event|JQueryEvent = _arguments[0];
+        this.eventStack.push(event);
+        try {
+            return defaultApplyHandler(orig, __this, _arguments);
+        } finally {
+            // Make sure that the eventStack is cleared up even if a dispatching fails.
+            this.eventStack.pop();
+        }
+    }
+    /**
+     * Wraps jQuery.event.fix
+     */
+    private fixApplyHandler:ApplyHandler = (orig, __this, _arguments) => {
+        let originalEvent:Event|JQueryEvent = _arguments[0];
+        let ret:JQueryEvent = defaultApplyHandler(orig, __this, _arguments);
+        if (this.isNativeEvent(originalEvent) && isMouseEvent(originalEvent)) {
+            this.eventMap.set(<Event>originalEvent, ret);
+        }
+        return ret;
+    }
+    private static noConflictApplyHandler(orig:Function, __this, _arguments:any[]|IArguments) {
+        let deep = _arguments[0];
+        let ret = defaultApplyHandler(orig, __this, _arguments);
+        if (deep === true) {
+            // Patch another jQuery instance exposed to window.jQuery.
+            JQueryEventStack.attemptPatch();
+        }
+    }
+
+    private wrap():this {
+        let jQuery = this.jQuery;
+        wrapMethod(jQuery.event, 'dispatch', this.dispatchApplyHandler, false);
+        wrapMethod(jQuery.event, 'fix', this.fixApplyHandler, false);
+        wrapMethod(jQuery, 'noConflict', JQueryEventStack.noConflictApplyHandler, false);
+        return this;
+    }
 
     /**
-     * Notes on implementation:
-     *  1. In order to minimize detection surface, we use `wrapMethod` instead of simply re-assigning properties.
-     *  2. Always use `orig` and do not implement the patch in your own; intended behavior of such methods
-     *     can be drastically different across jQuery versions.
+     * Performs a smart detection of `currentTarget`.
+     * Getting it from the current `window.event`'s related jQuery.Event is not sufficient;
+     * See {@link https://github.com/AdguardTeam/PopupBlocker/issues/90}.
+     * 
+     * This is a heuristic to determine an 'intended target' that is useful in detection of
+     * unwanted popups; It does not claim to be a perfect solution.
      */
-    wrapMethod(jQuery.event, 'fix', (orig, _this, _arguments) => {
-        let originalEvent:Event|JQueryEvent = _arguments[0];
-        let ret:JQueryEvent = defaultApplyHandler(orig, _this, _arguments);
-        if (isNativeEvent(originalEvent) && isMouseEvent(originalEvent)) {
-            eventMap.set(<Event>originalEvent, ret);
+    private getNestedTarget(event:MouseEvent|TouchEvent):EventTarget {
+        let eventStack = this.eventStack;
+
+        // The root event must be of related to provided event.
+        let root = this.getRelatedJQueryEvent(event);
+        if (eventStack[0] !== event && eventStack[0] !== root) { return; }
+
+        // If there are remaining events in the stack, and the next nested event is "related"
+        // to the current event, we take it as a "genuine" event that is eligible to extract
+        // currentTarget information.
+        let current:JQueryEvent = root;
+
+        for (let i = 1, l = eventStack.length; i < l; i++) {
+            let next = eventStack[i];
+            // prev event is related to next event
+            // only if next.target contains current.target.
+            let nextTarget = next.target;
+            if (isNode(nextTarget)) {
+                if (nextTarget.contains(<Node>current.target)) {
+                    current = this.isNativeEvent(next) ? this.getRelatedJQueryEvent(next) : next;
+                    continue;
+                } else {
+                    break;
+                }
+            } else if (isWindow(nextTarget)) {
+                return nextTarget;
+            } else {
+                // If a target of a jQuery event is not a node nor window,
+                // it is not what we are expecting for.
+                return;
+            }
         }
-        return ret;
-    }, false);
 
-    wrapMethod(jQuery.event, 'dispatch', (orig, _this, _arguments) => {
-        let nativeEvent:Event|JQueryEvent = _arguments[0];
-        let ret = defaultApplyHandler(orig, _this, _arguments);
-        if (isNativeEvent(nativeEvent) && isMouseEvent(nativeEvent)) {
-            // jQuery does not clear up `currentTarget` property of their event instances
-            // after dispatching is finished.            
-            let jQueryEvent = getJQueryEvent(nativeEvent, jQuery);
-            jQueryEvent.currentTarget = null;
-        }
-        return ret;
-    }, false);
-
-    wrapMethod(jQuery, 'noConflict', noConflictApplyHandler, false);
-}
-
-function noConflictApplyHandler(orig:Function, _this, _arguments:any[]|IArguments) {
-    let deep = _arguments[0];
-    let ret = defaultApplyHandler(orig, _this, _arguments);
-    if (deep === true) {
-        // Patch another jQuery instance exposed to window.jQuery.
-        patchJQueryEvent();
+        return current.currentTarget;
     }
 }
 
-/**
- * Attempts to patch before any other page's click event handler is executed.
- */
-window.addEventListener('click', patchJQueryEvent, true);
+JQueryEventStack.initialize();
 
-function getJQueryEvent(event:Event, jQuery:JQueryStatic):JQueryEvent {
-    return jQueryToEventMap.get(jQuery).get(event);
-}
-
-export function getCurrentJQueryTarget(event:Event):EventTarget {
-    for (let i = 0, l = jQueries.length; i < l; i++) {
-        let jQuery = jQueries[i];
-        let jQueryEvent = getJQueryEvent(event, jQuery);
-        if (typeof jQueryEvent !== 'object') { continue; }
-        if (!jQueryEvent.currentTarget) { continue; }
-        return jQueryEvent.currentTarget;
-    }
-}
-
+export const getCurrentJQueryTarget = JQueryEventStack.getCurrentJQueryTarget;
 
 // These are type declarations for jQuery only for the parts we need to access.
 
 declare interface JQueryEvent {
     originalEvent:Event
+    target:EventTarget
     currentTarget:EventTarget
 }
 
