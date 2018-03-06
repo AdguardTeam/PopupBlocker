@@ -171,9 +171,22 @@ class JQueryEventStack {
         let root = this.getRelatedJQueryEvent(event);
         if (eventStack[0] !== event && eventStack[0] !== root) { return; }
 
-        // If there are remaining events in the stack, and the next nested event is "related"
-        // to the current event, we take it as a "genuine" event that is eligible to extract
-        // currentTarget information.
+        /********************************************************************************************
+           
+            If there are remaining events in the stack, and the next nested event is "related"
+            to the current event, we take it as a "genuine" event that is eligible to extract
+            currentTarget information.
+            Why test "related"ness? Suppose a third-party script adds event listeners like below:
+
+              $(document).on('click', () => { $(hiddenElement).trigger('click'); });
+              $(hiddenElement).on('click', () => { openPopup(); } );
+
+            We need to take `document` as a "genuine" target in such cases. As such, 
+            despite some theoretical possibilities, we take a leap of faith "that only real-world
+            re-triggering that preserves the intention of user input are those which triggers
+            event on the target itself again or on its ancestor nodes".
+
+        **/
         let current:JQueryEvent = root;
 
         for (let i = 1, l = eventStack.length; i < l; i++) {
