@@ -675,24 +675,31 @@ for (let target in BuildTarget) {
 
 /******************************************************************************/
 
-gulp.task('build-test', () => {
-    return gulp.src(['test/**/*.ts', 'src/**/*.ts'])
-        .pipe(<any>preprocess({
-            context: {
-                RECORD: true
-            }
-        }))
-        .pipe(rollup({
-            entry: 'test/index.ts',
-            plugins: [(<any>typescript)()],
-            format: 'iife',
-            strict: false
-        }))
-        .pipe(rename('index.js'))
-        .pipe(gulp.dest('./test/build'));
-});
+function testBuilderFactory(tsconfigOverride?) {
+    const plugin = tsconfigOverride ? (<any>typescript2)({ tsconfigOverride }) : (<any>typescript)();
 
-gulp.task('travis', ['dev-userscript'], () => {
+    return () => {
+        return gulp.src(['test/**/*.ts', 'src/**/*.ts'])
+            .pipe(<any>preprocess({
+                context: {
+                    RECORD: true
+                }
+            }))
+            .pipe(rollup({
+                entry: 'test/index.ts',
+                plugins: [ plugin ],
+                format: 'iife',
+                strict: false
+            }))
+            .pipe(rename('index.js'))
+            .pipe(gulp.dest('./test/build'));
+    }
+}
+
+gulp.task('build-test', testBuilderFactory());
+gulp.task('build-test-es5', testBuilderFactory({ compilerOptions: { target: "es5" } }))
+
+gulp.task('travis', ['dev-userscript', 'build-test-es5'], () => {
     return [
         fs.writeFile('build/.nojekyll', ''),
         gulp.src(PathUtils.outputDir + '/userscript/**.js')

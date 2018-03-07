@@ -57,7 +57,7 @@ export function getSelectorFromCurrentjQueryEventHandler(event:Event):string|und
  * Below we patch jQuery internals to create a mapping of native events and jQuery events.
  * jQuery sets `currentTarget` property on jQuery event instances while triggering event handlers. 
  */
-class JQueryEventStack {
+export class JQueryEventStack {
 
     static initialize() {
         // Attempts to patch before any other page's click event handler is executed.
@@ -168,6 +168,8 @@ class JQueryEventStack {
      */
     private getNestedTarget(event:MouseEvent|TouchEvent):EventTarget {
         let eventStack = this.eventStack;
+
+        if (eventStack.length === 0) { return; }
 
         // The root event must be of related to provided event.
         let root = this.getRelatedJQueryEvent(event);
