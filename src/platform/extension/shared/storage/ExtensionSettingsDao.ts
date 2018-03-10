@@ -1,10 +1,11 @@
 import chrome from '../platform_namespace';
-import ISettingsDao, { AllOptions, AllOptionsCallback, DomainSettingsCallback } from '../../../../storage/ISettingsDao';
+import { AllOptions, AllOptionsCallback } from '../../../../storage/ISettingsDao';
 import { isUndef } from '../../../../shared/instanceof';
 import OptionsController from '../../../../ui/options/OptionsController';
 import { Settings } from '../message_types';
+import IExtensionSettingsDao, { DomainSettingsCallback } from './IExtensionSettingsDao';
 
-export default class ExtensionSettingsDao implements ISettingsDao {
+export default class ExtensionSettingsDao implements IExtensionSettingsDao {
 
     private static WHITELISTED_DEST_KEY = 'whitelist';
 

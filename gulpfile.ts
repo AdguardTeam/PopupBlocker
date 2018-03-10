@@ -837,6 +837,24 @@ class Builder {
     }
 
     private ccOptionsFromManifest(manifest:tsickle.ModulesManifest):string[] {
+
+
+        let sourceGlob = [
+            path.join(PathUtils.tsccPath, '**/*.js')
+        ]
+        
+        const soySources = [SoyBuilder.alert.googPath];
+        if (this.options.isExtension) { soySources.push(SoyBuilder.options.googPath); }
+
+        sourceGlob.push(...soySources);
+
+
+        const depsWriter = new closureTools.DepsWriter(source)
+
+
+
+
+
         const sorter = new ManifestSort(manifest);
 
         const entries = [
@@ -850,6 +868,7 @@ class Builder {
         );
 
         const deps = sorter.getDeps(entries);
+
 
         const flags = [
             '--charset',                  'UTF-8',
@@ -872,13 +891,12 @@ class Builder {
             '--module',                   `page_script:${deps.num_js[1]}:common`,
             ...Builder.js(deps[1]),
 
-            '--module',                   `content_script:${deps.num_js[2] + Builder.soyDeps.length + 4}:settings`,
+            '--module',                   `content_script:${deps.num_js[2] + Builder.soyDeps.length + 2 + soySources.length}:settings`,
             // closure templates deps start
             ...Builder.js(Builder.soyDeps),
             '--js',                        SoyBuilder.soyUtilsUseGoogPath,
             '--js',                        CssBuilder.renamingMapPath,
-            '--js',                        SoyBuilder.alert.googPath,
-            '--js',                        SoyBuilder.options.googPath,
+            ...Builder.js(soySources),
             // closure templates deps end
             ...Builder.js(deps[2]),
         ];
@@ -891,6 +909,7 @@ class Builder {
             ...Builder.js(deps[4])
         );
 
+        console.log(JSON.stringify(flags));
         return flags;
     }
 
@@ -1030,6 +1049,14 @@ class Builder {
         insertKey('grant',       'GM_getValue');
         insertKey('grant',       'GM_setValue');
         insertKey('grant',       'unsafeWindow');
+        insertKey('resource',    'WOFF_OPENSANS_BOLD       ./asset/fonts/bold/OpenSans-Bold.woff');
+        insertKey('resource',    'WOFF2_OPENSANS_BOLD      ./assets/fonts/bold/OpenSans-Bold.woff2');
+        insertKey('resource',    'WOFF_OPENSANS_REGULAR    ./assets/fonts/regular/OpenSans-Regular.woff');
+        insertKey('resource',    'WOFF2_OPENSANS_REGULAR   ./assets/fonts/regular/OpenSans-Regular.woff2');
+        insertKey('resource',    'WOFF_OPENSANS_SEMIBOLD   ./assets/fonts/semibold/OpenSans-SemiBold.woff');
+        insertKey('resource',    'WOFF2_OPENSANS_SEMIBOLD  ./assets/fonts/semibold/OpenSans-SemiBold.woff2');
+
+
         insertKey('run-at',      'document-start');
 
         if (this.options.channel === Channel.RELEASE) {

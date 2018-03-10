@@ -4,11 +4,11 @@ import IAlertController from "../../../ui/alert/IAlertController";
 import * as log from '../../../shared/log';
 import II18nService from '../../../localization/II18nService';
 import adguard from '../../../content_script_namespace';
-import ISettingsDao from '../../../storage/ISettingsDao';
+import IExtensionSettingsDao from './storage/IExtensionSettingsDao';
 
 const domain = location.host;
 
-function linkPageScript (settingsDao:ISettingsDao, alertController:IAlertController) {
+function linkPageScript (settingsDao:IExtensionSettingsDao, alertController:IAlertController) {
 
     const portReceived = new Promise<MessagePort>(function(resolve, reject) {
         window.addEventListener("message", function(event) {
@@ -73,7 +73,7 @@ function linkPageScript (settingsDao:ISettingsDao, alertController:IAlertControl
     });
 }
 
-function linkBackgroundScript(settingsDao:ISettingsDao) {
+function linkBackgroundScript(settingsDao:IExtensionSettingsDao) {
     const onPrevSettingsReceived = (settings:Settings) => {
         let prevDomainOption = settings.domainOption;
         let nextDomainOption:DomainOptionEnum;
@@ -105,7 +105,7 @@ function runScript(code) {
     parent.removeChild(el);
 }
 
-export default function main(i18nService:II18nService, settingsDao:ISettingsDao, alertController:IAlertController) {
+export default function main(i18nService:II18nService, settingsDao:IExtensionSettingsDao, alertController:IAlertController) {
     adguard.i18nService = i18nService;
     
     linkPageScript(settingsDao, alertController);

@@ -1,5 +1,3 @@
-import { Settings } from "../platform/extension/shared/message_types";
-
 export default interface ISettingsDao {
     /**
      * Modifies settings, and if a callback is provided, calls it.
@@ -17,12 +15,6 @@ export default interface ISettingsDao {
      * changes made by the instance itself.
      */
     onSettingsChange(cb:AllOptionsCallback):void
-    /**
-     * These are only used by extension to get initial option.
-     * Userscript implementation queries storage sychronously everytime with GM_getValue.
-     */
-    getDomainOption?(domain:string, cb:DomainSettingsCallback):void
-    onDomainSettingsChange?(domain:string, cb:DomainSettingsCallback):void
 }
 
 export type AllOptions = [string[], string[], string[]];
@@ -30,4 +22,4 @@ export type AllOptions = [string[], string[], string[]];
  * `null` argument is used to indicate that no storage change was made.
  */
 export type AllOptionsCallback = (data:AllOptions|null)=>void
-export type DomainSettingsCallback = (data:Partial<Settings>|null)=>void
+
