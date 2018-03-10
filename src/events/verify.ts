@@ -2,7 +2,7 @@ import * as log from '../shared/log';
 import WeakMap from '../weakmap';
 import CurrentMouseEvent from './current_mouse_event';
 import { eventTargetIsRootNode, maybeOverlay } from './element_tests';
-import { getSelectorFromCurrentjQueryEventHandler, isReactInstancePresent, jsActionTarget } from './framework_workarounds';
+import { getSelectorFromCurrentjQueryEventHandler, isReactInstancePresent, jsActionTarget, getCurrentJQueryTarget } from './framework_workarounds';
 import { isNode, isElement, isMouseEvent, isTouchEvent, isClickEvent } from '../shared/instanceof';
 import { matches, getTagName } from '../shared/dom';
 
@@ -106,9 +106,11 @@ export const verifyEvent = log.connect((event?:Event):boolean => {
                 } else {
                     log.print('VerifyEvent - the current target is document/html/body, but the event is in a bubbling phase.');
                     // Workaround for jQuery
-                    let selector = getSelectorFromCurrentjQueryEventHandler(event);
-                    if (selector) {
-                        if (matches.call(document.documentElement, selector) || matches.call(document.body, selector)) {
+                    let jQueryTarget = getCurrentJQueryTarget(event);
+                    if (jQueryTarget) {
+                        log.print('jQueryTarget exists: ', jQueryTarget);
+                        // Performs the check with jQueryTarget again.
+                        if (eventTargetIsRootNode(jQueryTarget) || (isElement(jQueryTarget) && maybeOverlay(jQueryTarget))) {
                             return false;
                         }
                     } else if (!isReactInstancePresent() || (isNode(currentTarget) && getTagName(currentTarget) !== '#DOCUMENT')) {

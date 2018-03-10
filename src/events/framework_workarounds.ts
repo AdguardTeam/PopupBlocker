@@ -6,8 +6,10 @@
  * Such workarounds are not very robust, hence 'attempt', but it will still provide huge benefit to users.
  */
 
-import { closest } from '../shared/dom';
-import { isElement } from '../shared/instanceof';
+import { wrapMethod, defaultApplyHandler, ApplyHandler } from '../proxy';
+import { closest, targetsAreChainable } from '../shared/dom';
+import { isElement, isMouseEvent, isNode, isWindow, isUndef, isClickEvent, isTouchEvent } from '../shared/instanceof';
+import WeakMap from '../shared/WeakMap';
 
 const _data = '_data', originalEvent = 'originalEvent', selector = 'selector';
 /**
@@ -48,9 +50,190 @@ export function getSelectorFromCurrentjQueryEventHandler(event:Event):string|und
     }
 }
 
+/**
+ * The above was not enough for many cases, mostly because event handlers can be attached in
+ * strict context and Function.arguments can be mutated in function calls.
+ * 
+ * Below we patch jQuery internals to create a mapping of native events and jQuery events.
+ * jQuery sets `currentTarget` property on jQuery event instances while triggering event handlers. 
+ */
+export class JQueryEventStack {
+
+    static initialize() {
+        // Attempts to patch before any other page's click event handler is executed.
+        window.addEventListener('mousedown', JQueryEventStack.attemptPatch, true);
+        window.addEventListener('touchstart', JQueryEventStack.attemptPatch, true)
+    }
+
+    static getCurrentJQueryTarget(event:MouseEvent|TouchEvent):EventTarget {
+        let jQueries = JQueryEventStack.jQueries;
+        for (let i = 0, l = jQueries.length; i < l; i++) {
+            let jQuery = jQueries[i];
+            let stack = JQueryEventStack.jqToStack.get(jQuery);
+            if (isUndef(stack)) { continue; }
+            let currentTarget = stack.getNestedTarget(event);
+            if (!currentTarget) { continue; }
+            return currentTarget;
+        }
+    }
+
+    private static jQueries:JQueryStatic[] = [];
+    private static jqToStack:IWeakMap<JQueryStatic,JQueryEventStack> = new WeakMap();
+
+    private static attemptPatch() {
+        let jQuery = JQueryEventStack.detectionHeuristic();
+        if (isUndef(jQuery)) { return; }
+        if (JQueryEventStack.jQueries.indexOf(jQuery) !== -1) { /* Already patched */ return; }
+
+        let eventMap:IWeakMap<Event,JQueryEvent> = new WeakMap();
+
+        JQueryEventStack.jQueries.push(jQuery);
+        JQueryEventStack.jqToStack.set(jQuery, new JQueryEventStack(jQuery).wrap());
+    }
+
+    private static detectionHeuristic():JQueryStatic {
+        let jQuery = window['jQuery'] || window['$'];
+        if (typeof jQuery !== 'function' ) { return; }
+        if (!('noConflict' in jQuery)) { return; }
+        // Test for private property
+        if (!('_data' in jQuery)) { return; }
+        return <JQueryStatic>jQuery;
+    }
+
+    constructor(
+        private jQuery:JQueryStatic
+    ) { }
+
+    private eventMap:IWeakMap<Event,JQueryEvent> = new WeakMap();
+    private eventStack:(Event|JQueryEvent)[] = [];
+
+    private isNativeEvent(event:Event|JQueryEvent):event is Event {
+        return !event[this.jQuery.expando];
+    }
+    private getRelatedJQueryEvent(event:Event):JQueryEvent {
+        return this.eventMap.get(event);
+    }
+    /**
+     * Wraps jQuery.event.dispatch.
+     * It is used in jQuery to call event handlers attached via $(..).on and such,
+     * in case of native events and $(..).trigger().
+     */
+    private dispatchApplyHandler:ApplyHandler = (orig, __this, _arguments) => {
+        let event:Event|JQueryEvent = _arguments[0];
+        this.eventStack.push(event);
+        try {
+            return defaultApplyHandler(orig, __this, _arguments);
+        } finally {
+            // Make sure that the eventStack is cleared up even if a dispatching fails.
+            this.eventStack.pop();
+        }
+    }
+    /**
+     * Wraps jQuery.event.fix
+     */
+    private fixApplyHandler:ApplyHandler = (orig, __this, _arguments) => {
+        let event:Event|JQueryEvent = _arguments[0];
+        let ret:JQueryEvent = defaultApplyHandler(orig, __this, _arguments);
+        if (this.isNativeEvent(event)) {
+            if ((isMouseEvent(event) && isClickEvent(event)) || isTouchEvent(event)) {
+                this.eventMap.set(<Event>event, ret);
+            }
+        }
+        return ret;
+    }
+    private static noConflictApplyHandler(orig:Function, __this, _arguments:any[]|IArguments) {
+        let deep = _arguments[0];
+        let ret = defaultApplyHandler(orig, __this, _arguments);
+        if (deep === true) {
+            // Patch another jQuery instance exposed to window.jQuery.
+            JQueryEventStack.attemptPatch();
+        }
+    }
+
+    private wrap():this {
+        let jQuery = this.jQuery;
+        wrapMethod(jQuery.event, 'dispatch', this.dispatchApplyHandler, false);
+        wrapMethod(jQuery.event, 'fix', this.fixApplyHandler, false);
+        wrapMethod(jQuery, 'noConflict', JQueryEventStack.noConflictApplyHandler, false);
+        return this;
+    }
+
+    /**
+     * Performs a smart detection of `currentTarget`.
+     * Getting it from the current `window.event`'s related jQuery.Event is not sufficient;
+     * See {@link https://github.com/AdguardTeam/PopupBlocker/issues/90}.
+     * 
+     * This is a heuristic to determine an 'intended target' that is useful in detection of
+     * unwanted popups; It does not claim to be a perfect solution.
+     */
+    private getNestedTarget(event:MouseEvent|TouchEvent):EventTarget {
+        let eventStack = this.eventStack;
+
+        if (eventStack.length === 0) { return; }
+
+        // The root event must be of related to provided event.
+        let root = this.getRelatedJQueryEvent(event);
+        if (eventStack[0] !== event && eventStack[0] !== root) { return; }
+
+        /********************************************************************************************
+           
+            If there are remaining events in the stack, and the next nested event is "related"
+            to the current event, we take it as a "genuine" event that is eligible to extract
+            currentTarget information.
+            Why test "related"ness? Suppose a third-party script adds event listeners like below:
+
+              $(document).on('click', () => { $(hiddenElement).trigger('click'); });
+              $(hiddenElement).on('click', () => { openPopup(); } );
+
+            We need to take `document` as a "genuine" target in such cases. As such, 
+            despite some theoretical possibilities, we take a leap of faith "that only real-world
+            re-triggering that preserves the intention of user input are those which triggers
+            event on the target itself again or on its descendent nodes".
+
+        **/
+        let current:JQueryEvent = root;
+
+        for (let i = 1, l = eventStack.length; i < l; i++) {
+            let next = eventStack[i];
+            // prev event is related to next event
+            // only if next.target contains current.target.
+            let nextTarget = next.target;
+
+            if (isNode(nextTarget)) {
+                if (targetsAreChainable(<Node>current.target, nextTarget)) {
+                    current = this.isNativeEvent(next) ? this.getRelatedJQueryEvent(next) : next;
+                    continue;
+                } else {
+                    break;
+                }
+            } else if (isWindow(nextTarget)) {
+                return nextTarget;
+            } else {
+                // If a target of a jQuery event is not a node nor window,
+                // it is not what we are expecting for.
+                return;
+            }
+        }
+
+        return current.currentTarget;
+    }
+}
+
+JQueryEventStack.initialize();
+
+export const getCurrentJQueryTarget = JQueryEventStack.getCurrentJQueryTarget;
+
 // These are type declarations for jQuery only for the parts we need to access.
+
 declare interface JQueryEvent {
     originalEvent:Event
+    target:EventTarget
+    currentTarget:EventTarget
+}
+
+declare interface JQueryEventCtor {
+    (event:Event|JQueryEvent):JQueryEvent 
+    new(event:Event|JQueryEvent):JQueryEvent
 }
 
 declare interface JQueryHandlerObj {
@@ -60,10 +243,21 @@ declare interface JQueryHandlerObj {
 
 declare interface JQueryStatic {
     _data:(elem:EventTarget, name:string, value?:any)=>{[id:string]:JQueryHandlerObj[]}
+    event: {
+        special:stringmap<{
+            postDispatch:(event:JQueryEvent)=>void
+        }>,
+        fix:(event:Event|JQueryEvent)=>JQueryEvent
+    }
+    Event:JQueryEventCtor
+    readonly expando:string
+    noConflict:(deep?:boolean)=>JQueryStatic
+    (...args):any
 }
 
 declare const jQuery:JQueryStatic;
 declare const $:JQueryStatic;
+
 
 /**
  * React production build by default attaches an event listener to `document`
@@ -73,10 +267,58 @@ declare const $:JQueryStatic;
  * is `document`. It needs to be improved if it causes missed popups on websites
  * which use react and popups at the same time, or it is challenged by popup scripts.
  */
+
+// When `window.__REACT_DEVTOOLS_GLOBAL_HOOK__` property exists, react will access and call
+// some of its methods. We use it as a hack to detect react instances.
+// We can always harden this by replicating the `hook` object here, at a cost of maintainance burden.
+function isInOfficialDevtoolsScript():boolean {
+    if (document.head) { return false; }
+    let script = document.currentScript;
+    if (!script) { return false; }
+    let textContent = script.textContent;
+    // https://github.com/facebook/react-devtools/blob/master/backend/installGlobalHook.js#L147
+    if (textContent.indexOf('^_^') !== -1) { return true; }
+    return false;
+}
+
+const HOOK_PROPERTY_NAME = '__REACT_DEVTOOLS_GLOBAL_HOOK__';
+
+let accessedReactInternals = false;
+
+if (!Object.prototype.hasOwnProperty.call(window, HOOK_PROPERTY_NAME)) {
+    let tempValue = {}; // to be used as window.__REACT_DEVTOOLS_GLOBAL_HOOK__
+    Object.defineProperty(tempValue, 'isDisabled', {
+        get: function() {
+            accessedReactInternals = true;
+            // Signals that a devtools is disabled, to minimize possible breakages.
+            // https://github.com/facebook/react/blob/master/packages/react-reconciler/src/ReactFiberDevToolsHook.js#L40
+            return true;
+        },
+        set: function() { }
+    });
+    Object.defineProperty(window, HOOK_PROPERTY_NAME, {
+        get: function() {
+            if (isInOfficialDevtoolsScript()) {
+                return undefined; // So that it re-defines the property
+            }
+            return tempValue;
+        },
+        set: function(i) { /* Ignored */ },
+        configurable: true // So that react-devtools can re-define it
+    });
+}
+
 const reactRootSelector = '[data-reactroot]';
 const reactIdSelector = '[data-reactid]';
 export function isReactInstancePresent():boolean {
-    return !!document.querySelector(reactRootSelector) || !!document.querySelector(reactIdSelector);
+    if (!!document.querySelector(reactRootSelector) || !!document.querySelector(reactIdSelector)) { return true; }
+    if (accessedReactInternals) { return true; }
+    // Otherwise, react-devtools could have overridden the hook.
+    let hook = window[HOOK_PROPERTY_NAME];
+    if (typeof hook !== 'object') { return false; }
+    if (typeof hook["_renderers"] !== 'object') { return false; }
+    if (Object.keys(hook["_renderers"]).length === 0) { return false; }
+    return true;
 }
 
 /**
