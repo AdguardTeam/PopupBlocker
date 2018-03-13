@@ -316,8 +316,9 @@ export function isReactInstancePresent():boolean {
     // Otherwise, react-devtools could have overridden the hook.
     let hook = window[HOOK_PROPERTY_NAME];
     if (typeof hook !== 'object') { return false; }
-    if (typeof hook["_renderers"] !== 'object') { return false; }
-    if (Object.keys(hook["_renderers"]).length === 0) { return false; }
+    let _renderers = hook["_renderers"];
+    if (typeof _renderers !== 'object' || _renderers === null) { return false; }
+    if (Object.keys(_renderers).length === 0) { return false; }
     return true;
 }
 
