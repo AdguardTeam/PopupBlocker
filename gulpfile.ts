@@ -14,6 +14,7 @@ import preprocess = require('gulp-preprocess');
 import rename = require('gulp-rename');
 import rollup = require('gulp-rollup');
 import filter = require('gulp-filter');
+import uglify = require('gulp-uglify');
 import debug = require('gulp-debug');
 
 import InlineResource = require('inline-resource-literal');
@@ -674,6 +675,52 @@ for (let target in BuildTarget) {
 }
 
 /******************************************************************************/
+
+// UglifyJS option for dead code removal and stripping out comments.
+const uglifyOptions = {
+    warnings: 'verbose',
+    mangle: false,
+    compress: {
+        sequences: false,
+        properties: false,
+        drop_debugger: true,
+        dead_code: true,
+        conditionals: false,
+        comparisons: false,
+        evaluate: false,
+        booleans: false,
+        typeofs: false,
+        loops: false,
+        unused: true,
+        toplevel: false,
+        hoist_funs: false,
+        if_return: false,
+        inline: false,
+        join_vars: false,
+        collapse_vars: false,
+        reduce_vars: false,
+        keep_fargs: true,
+        // UglifyJs by default does not remove functions with empty function body.
+        // We declare here that certain functions used for logging are side-effect free,
+        // so that UglifyJs can remove them.
+        pure_funcs: ['print', 'call', 'callEnd', 'closeAllGroup']
+    },
+    output: {
+        beautify: true,
+        comments: false,
+        indent_level: 2
+    }
+};
+
+gulp.task('greasyfork-postprocess', () => {
+    return gulp.src('build/userscript/popupblocker.user.js')
+        .pipe(uglify(uglifyOptions))
+        .pipe(insert.prepend(require('fs').readFileSync('build/userscript/popupblocker.meta.js').toString()))
+        .pipe(gulp.dest('build/userscript'));
+});
+
+/******************************************************************************/
+
 
 function testBuilderFactory(tsconfigOverride?) {
     const plugin = tsconfigOverride ? (<any>typescript2)({ tsconfigOverride }) : (<any>typescript)();
