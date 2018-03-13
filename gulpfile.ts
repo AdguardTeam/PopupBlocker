@@ -18,6 +18,7 @@ import filter = require('gulp-filter');
 import debug = require('gulp-debug');
 import hydra = require('gulp-hydra');
 import run = require('gulp-run');
+import file = require('gulp-file');
 
 import postcss = require('gulp-postcss');
 import imp = require('postcss-partial-import');
@@ -38,7 +39,7 @@ import { main as tsickleMain } from './tasks/tscc/third-party/tsickle/main';
 
 import * as closureTools from 'closure-tools-helper';
 
-process.setMaxListeners(0); 
+process.setMaxListeners(0);
 const ccPlugin = closureTools.compiler.gulp({});
 
 enum BuildTarget {
@@ -296,7 +297,7 @@ class CssBuilder implements IResourceProvider {
     private static bundledCssName = 'styles.css';
     private static cssTempDir = 'css_temp';
 
-    private static cssTempPath = path.join(PathUtils.outputDir, CssBuilder.cssTempDir);
+    public static cssTempPath = path.join(PathUtils.outputDir, CssBuilder.cssTempDir);
     private static cssTempPathWithName = path.join(CssBuilder.cssTempPath, CssBuilder.bundledCssName);
 
     private static counter = 0;
@@ -414,7 +415,7 @@ class SoyBuilder implements IResourceProvider {
     public static soyUtilsUseGoogPath = 'node_modules/closure-tools-helper/third-party/closure-templates/soyutils_usegoog.js';
 
     private static soyTempDir = 'soy_temp';
-    private static soyTempPath = path.join(PathUtils.outputDir, SoyBuilder.soyTempDir, '');
+    public static soyTempPath = path.join(PathUtils.outputDir, SoyBuilder.soyTempDir, '');
 
     private static tempOutFormat = new SoyBuilder.Sauce(path.join(SoyBuilder.soyTempPath, `{INPUT_FILE_NAME_NO_EXT}`));
     private static tempOutGlob = new SoyBuilder.Sauce(path.join(SoyBuilder.soyTempPath, '*'));
@@ -425,6 +426,7 @@ class SoyBuilder implements IResourceProvider {
             `--outputPathFormat`,    SoyBuilder.tempOutFormat.rollup,
             `--bidiGlobalDir`,      `1`,
             `--shouldGenerateJsdoc`,
+            `--shouldGenerateGoogMsgDefs`
         ];
         for (let src of srcs) {
             args.push(`--srcs`, src);
@@ -481,8 +483,9 @@ class SoyBuilder implements IResourceProvider {
             await SoyBuilder.compileRollup(srcs);
             resc.registerInlinedResource("TEMPLATE_ROLLUP", SoyBuilder.alert.rollupPath);
             if (isExtension) {
-                resc.registerInlinedResource("OPTIONS_TEMPALTE_ROLLUP", SoyBuilder.options.rollupPath);
+                resc.registerInlinedResource("OPTIONS_TEMPLATE_ROLLUP", SoyBuilder.options.rollupPath);
             }
+            resc.registerInlinedResource("SOYUTILS", SoyBuilder.soyUtilsPath);
         }
     }
 
@@ -516,7 +519,7 @@ class LocaleUtils implements IResourceProvider {
     }
 
     public static translation = new LocaleUtils.JSONFile<{[key:string]:{message:string,description?:string}}>(PathUtils.i18nJSONPath);
-    
+
     private static userscriptKeys = new LocaleUtils.JSONFile<string[]>(PathUtils.i18nUserscriptKeysPath);
     private static extensionKeys = new LocaleUtils.JSONFile<string[]>(PathUtils.i18nExtensionKeysPath);
     private static settingsKeys = new LocaleUtils.JSONFile<string[]>(PathUtils.i18nSettingsKeysPath);
@@ -628,7 +631,7 @@ class LocaleUtils implements IResourceProvider {
 
 class Builder {
 
-    private static version = '2.2.1';
+    private static version = '2.2.3';
 
     private static exclusions = [
         'https://www.linkedin.com/*',
@@ -694,10 +697,14 @@ class Builder {
         let filter = {}, bundleNames = this.bundleNames;
         for (let bundleName of bundleNames) {
             filter[bundleName] = (file) => {
-                return file.path.endsWith(bundleName + '.js');
+                return (new RegExp(bundleName + '\\.[jt]s$')).test(file.path);
             }
         }
         return filter;
+    }
+
+    private wrapPageScript(pageScriptRaw:string):string {
+        return `function popupBlocker(window,PARENT_FRAME_KEY,CONTENT_SCRIPT_KEY){${pageScriptRaw}}`;
     }
 
     private static rollupTsconfigOverride = { compilerOptions: { target: "es5" } };
@@ -719,54 +726,38 @@ class Builder {
         return Object.assign({ input }, Builder.rollupOptsBase);
     }
 
-    private async rollup():Promise<Reservoir> {
+    private async rollup():Promise<StringMap<Reservoir>> {
         const options = this.options;
 
-        // 1. Preprocess
         const sourceStream = gulp.src('src/**/*.ts')
             .pipe(<any>preprocess({ context: options.preprocessContext }));
 
-        // 2. Rollup
-        sourceStream    
+        const bundles = sourceStream
             .pipe(rollup(this.rollupOpts))
             .pipe(insert.transform(this.rescMgr.inline))
             .pipe(hydra(this.bundleFilter));
 
-        const contentScriptResv = new Reservoir(sourceStream["content_script"]);
-
-        const bundleTasks = [
-            toPromise(sourceStream["page_script"], true),
-            toPromise(sourceStream["content_script"])
-        ];
-        if (options.isExtension) {
-            Array.prototype.push.apply(bundleTasks,
-                ["background_script", "options"].map(bundleName => toPromise(
-                    sourceStream[bundleName]
-                        .pipe(gulp.dest(this.paths.outputPath)) // Pipe to output directory directly
-                ))
+        let bundleNames = this.bundleNames;
+        let out:StringMap<Reservoir> = {};
+        for (let bundleName of bundleNames) {
+            out[bundleName] = new Reservoir(
+                bundles[bundleName]
+                    .pipe(rename(path.join(this.paths.outputPath, bundleName + '.js')))
             );
         }
 
-        const [pageScriptRaw] = await Promise.all(bundleTasks);
-
-        // 3. Inline page_script to content_script
-        const wrappedPageScript = this.options.target === BuildTarget.USERSCRIPT ?
-            `function popupBlocker(window,PARENT_FRAME_KEY,CONTENT_SCRIPT_KEY){${pageScriptRaw}}` :
-            `function popupBlocker(window,PARENT_FRAME_KEY){${pageScriptRaw}}`;
-
-        const inlinePageScript = (new InlineResource({
-            PAGE_SCRIPT: {
-                path: `${this.paths.outputPath}page_script.js`,
-                data: wrappedPageScript
-            }
-        })).inline;
-
-        return new Reservoir(
-            contentScriptResv
-                .release()
-                .pipe(insert.transform(TextUtils.removeGlobalAssignment))
-                .pipe(insert.transform(inlinePageScript))
+        out["common"] = new Reservoir(
+            gulp.src('src/bundler_resources/rollup_shims/common.js')
+                .pipe(insert.transform(this.rescMgr.inline))
+                .pipe(rename(path.join(this.paths.outputPath, 'common.js')))
         );
+
+        out["settings"] = new Reservoir(
+            file('settings.js', '', { src: true })
+                .pipe(rename(path.join(this.paths.outputPath, 'settings.js')))
+        );
+
+        return out;
     }
 
     /**
@@ -841,7 +832,7 @@ class Builder {
             '!' + SoyBuilder.soyUtilsUseGoogPath,
             '!' + CssBuilder.renamingMapPath
         ];
-        
+
         const soySources = [SoyBuilder.alert.googPath];
         if (this.options.isExtension) {
             soySources.push(SoyBuilder.options.googPath);
@@ -872,7 +863,7 @@ class Builder {
             '--assume_function_wrapper',   String(true),
             '--warning_level',            'VERBOSE',
             '--strict_mode_input',         String(false),
-            '--externs',                  'externs.js',
+            '--externs',                  'src/bundler_resources/externs/externs.js',
             '--externs',                   this.paths.tsickleExternsPath,
             '--rewrite_polyfills',         String(false),
             '--module_output_path_prefix', this.paths.outputPath + '/',
@@ -921,19 +912,16 @@ class Builder {
         return content.replace(Builder.reWorkaroundTsickleBug, Builder.workaroundCallback);
     }
 
-    private async tscc():Promise<Reservoir> {
+    private async tscc():Promise<StringMap<Reservoir>> {
         const options = this.options;
 
-        // 1. Preprocess
         const preprocessTask = toPromise(
             gulp.src('src/**/*.ts')
                 .pipe(<any>preprocess({ context: options.preprocessContext }))
                 .pipe(gulp.dest(PathUtils.tsicklePath))
         );
-
         await preprocessTask;
 
-        // 2. Tsickle
         log.info("Tsickle start");
         const result:0|1 = tsickleMain(
             `--externs=${PathUtils.tsccPath}/generated-externs.js --typed -- -p tasks/tscc`
@@ -942,11 +930,11 @@ class Builder {
         log.info("Tsickle end");
 
         if (result === 1) { throw new Error("Tsickle Error"); }
-       
-        // 3. Text transformations to js files emitted form tsickle
-        // 3-1. Apply tsickle workarounds
-        // 3-2. Inline resources
-        // 3-3. etc..
+
+        // Text transformations to js files emitted form tsickle
+        // 1. Apply tsickle workarounds
+        // 2. Inline resources
+        // 3. etc..
         await toPromise(
             gulp.src(`${PathUtils.tsccPath}/**/*.js`)
                 .pipe(insert.transform(Builder.tsickleWorkaround))
@@ -960,59 +948,17 @@ class Builder {
                 .pipe(gulp.dest(PathUtils.tsccPath))
         );
 
-        // 4. Closure Compiler
-        const compiledStream = ccPlugin(this.ccOptionsFromManifest())
+        const bundles = ccPlugin(this.ccOptionsFromManifest())
             .src()
             .pipe(insert.transform(TextUtils.removeCcExport))
             .pipe(hydra(this.bundleFilter));
 
-        const bundleTasks = [];
-
-        if (options.isExtension) {
-            // For extensions, bundles except page_script and content_script shall be moved directly
-            // to the output directory.
-            for (let bundleName of this.bundleNames) {
-                if (bundleName === 'page_script' || bundleName === 'content_script') continue;
-                bundleTasks.push(toPromise(
-                    compiledStream[bundleName]
-                        .pipe(gulp.dest('.'))
-                ));
-            }
+        let bundleNames = this.bundleNames;
+        let out:StringMap<Reservoir> = {};
+        for (let bundleName of bundleNames) {
+            out[bundleName] = new Reservoir(bundles[bundleName]);
         }
-
-        // Prepend common.js to page_script.js.
-        compiledStream["page_script"] = merge(compiledStream["common"], compiledStream["page_script"])
-            .pipe(concat('page_script.js', {newLine: ';'}));
-
-        bundleTasks.unshift(
-            toPromise(compiledStream["page_script"], true),
-            toPromise(compiledStream["content_script"])
-        );
-
-        const contentScriptResv = new Reservoir(compiledStream["content_script"]);
-
-        log.info("Closure compiler start");
-        const [pageScriptRaw] = await Promise.all(bundleTasks);
-        log.info("Closure compiler end");
-
-        // 5. Inline page_script to content_script
-        const wrappedPageScript = this.options.target === BuildTarget.USERSCRIPT ?
-            `function popupBlocker(window,PARENT_FRAME_KEY,CONTENT_SCRIPT_KEY){${pageScriptRaw}}` :
-            `function popupBlocker(window,PARENT_FRAME_KEY){${pageScriptRaw}}`;
-
-        const inlinePageScript = (new InlineResource({
-            PAGE_SCRIPT: {
-                path: `${this.paths.outputPath}page_script.min.js`,
-                data: wrappedPageScript
-            }
-        })).inline;
-
-        return new Reservoir(
-            contentScriptResv
-                .release()
-                .pipe(insert.transform(TextUtils.removeGlobalAssignment))
-                .pipe(insert.transform(inlinePageScript))
-        );
+        return out;
     }
 
     private async meta() {
@@ -1044,13 +990,15 @@ class Builder {
         insertKey('match',       'https://*/*');
         insertKey('grant',       'GM_getValue');
         insertKey('grant',       'GM_setValue');
+        insertKey('grant',       'GM_getResourceURL');
         insertKey('grant',       'unsafeWindow');
-        insertKey('resource',    'WOFF_OPENSANS_BOLD       ./asset/fonts/bold/OpenSans-Bold.woff');
-        insertKey('resource',    'WOFF2_OPENSANS_BOLD      ./assets/fonts/bold/OpenSans-Bold.woff2');
-        insertKey('resource',    'WOFF_OPENSANS_REGULAR    ./assets/fonts/regular/OpenSans-Regular.woff');
-        insertKey('resource',    'WOFF2_OPENSANS_REGULAR   ./assets/fonts/regular/OpenSans-Regular.woff2');
-        insertKey('resource',    'WOFF_OPENSANS_SEMIBOLD   ./assets/fonts/semibold/OpenSans-SemiBold.woff');
-        insertKey('resource',    'WOFF2_OPENSANS_SEMIBOLD  ./assets/fonts/semibold/OpenSans-SemiBold.woff2');
+        insertKey('icon',        './assets/128.png');
+        insertKey('resource',    'WOFF_OPENSANS_BOLD ./asset/fonts/bold/OpenSans-Bold.woff');
+        insertKey('resource',    'WOFF2_OPENSANS_BOLD ./assets/fonts/bold/OpenSans-Bold.woff2');
+        insertKey('resource',    'WOFF_OPENSANS_REGULAR ./assets/fonts/regular/OpenSans-Regular.woff');
+        insertKey('resource',    'WOFF2_OPENSANS_REGULAR ./assets/fonts/regular/OpenSans-Regular.woff2');
+        insertKey('resource',    'WOFF_OPENSANS_SEMIBOLD ./assets/fonts/semibold/OpenSans-SemiBold.woff');
+        insertKey('resource',    'WOFF2_OPENSANS_SEMIBOLD ./assets/fonts/semibold/OpenSans-SemiBold.woff2');
 
 
         insertKey('run-at',      'document-start');
@@ -1094,8 +1042,13 @@ class Builder {
             .map(dir => fsExtra.mkdirp(dir)));
     }
     private async cleanBuildArtifacts() {
-        await Promise.all([PathUtils.tsicklePath, PathUtils.tsccPath]
-            .map(dir => fsExtra.remove(dir)));
+        const dirs = [
+            PathUtils.tsicklePath,
+            PathUtils.tsccPath,
+            CssBuilder.cssTempPath,
+            SoyBuilder.soyTempPath
+        ];
+        await Promise.all(dirs.map(dir => fsExtra.remove(dir)));
     }
 
     private static MAX_BUILD_TIMEOUT = 1000 * 60 * 10; // 10 minutes
@@ -1104,6 +1057,56 @@ class Builder {
         process.exit(1);
     }
     private buildTimer:NodeJS.Timer;
+
+    async buildUserscript(bundles:StringMap<Reservoir>, manifest:string) {
+        let commonScriptRaw = await toPromise(bundles["common"].release(), true);
+        let pageScriptRaw = await toPromise(
+            bundles["page_script"].release()
+                .pipe(insert.prepend(commonScriptRaw)),
+            true
+        );
+        const inliner = new InlineResource({
+            "PAGE_SCRIPT": {
+                path: `${this.paths.outputPath}/page_script.js`,
+                data: this.wrapPageScript(pageScriptRaw)
+            }
+        }).inline;
+        await toPromise(
+            bundles["content_script"].release()
+                .pipe(insert.prepend(commonScriptRaw))
+                .pipe(insert.transform(inliner))
+                .pipe(insert.prepend(manifest))
+                .pipe(rename('popupblocker.user.js'))
+                .pipe(gulp.dest(this.paths.outputPath))
+        );
+    }
+
+    async buildExtension(bundles:StringMap<Reservoir>, manifest:string) {
+        // bundles other than content_script and page_script are moved to build directory directly.
+        let bundleNames = this.bundleNames;
+        let otherBundleTasks = [];
+        for (let bundleName of bundleNames) {
+            if (bundleName === 'content_script' || bundleName === 'page_script') { continue; }
+            otherBundleTasks.push(toPromise(
+                    bundles[bundleName].release().pipe(gulp.dest('.'))
+            ));
+        }
+        await otherBundleTasks;
+
+        // Inline page_script to content_script.
+        const pageScriptRaw = await toPromise(bundles["page_script"].release(), true);
+        const inliner = new InlineResource({
+            "PAGE_SCRIPT": {
+                path: 'just a stub.js',
+                data: this.wrapPageScript(pageScriptRaw)
+            }
+        }).inline;
+        await toPromise(
+            bundles["content_script"].release()
+                .pipe(insert.transform(inliner))
+                .pipe(gulp.dest('.'))
+        );
+    }
 
     async build() {
         this.buildTimer = setTimeout(Builder.onBuildTimeout, Builder.MAX_BUILD_TIMEOUT);
@@ -1115,34 +1118,26 @@ class Builder {
             const channel = this.options.channel;
             const target  = this.options.target;
 
-            const contentScript = this.options.shouldMinify ? await this.tscc() : await this.rollup();
-            const manifest = target === BuildTarget.USERSCRIPT ? await this.meta() : await this.manifest();
-            // ToDo: Move this logic to more appropriate part 
-            const tasks = [];
-            if (target === BuildTarget.USERSCRIPT) {
-                tasks.push(toPromise(
-                    contentScript
-                        .release()
-                        .pipe(rename('popupblocker.user.js'))
-                        .pipe(insert.prepend(manifest))
-                        .pipe(gulp.dest(this.paths.outputPath))
-                ));
-                tasks.push(fs.writeFile(path.join(this.paths.outputPath, 'popupblocker.meta.js'), manifest));
-            } else {
-                // extension env
-                tasks.push(toPromise(
-                    contentScript
-                        .release()
-                        .pipe(rename('content_script.js'))
-                        .pipe(gulp.dest(this.paths.outputPath))
-                ));
-                tasks.push(fs.writeFile(path.join(this.paths.outputPath, 'manifest.json'), manifest));
-                tasks.push(fsExtra.copy(PathUtils.assetsPath, this.paths.assetOutputPath));
-                tasks.push(fsExtra.copy(PathUtils.optionsPagePath, this.paths.outputPath + '/options.html'));
-            }
+            const bundles = this.options.shouldMinify ? await this.tscc() : await this.rollup();
+            const manifest = this.options.isExtension ? await this.manifest() : await this.meta();
 
-            await Promise.all(tasks);
-            // await this.cleanBuildArtifacts();
+            const mainTasks = [];
+
+            if (this.options.isExtension) {
+                mainTasks.push(this.buildExtension(bundles, manifest));
+                mainTasks.push(fs.writeFile(path.join(this.paths.outputPath, 'manifest.json'), manifest));
+                mainTasks.push(fsExtra.copy(PathUtils.optionsPagePath, this.paths.outputPath + '/options.html'));
+            } else {
+                mainTasks.push(this.buildUserscript(bundles, manifest));
+                mainTasks.push(fs.writeFile(path.join(this.paths.outputPath, 'popupblocker.meta.js'), manifest));
+            }
+            mainTasks.push(fsExtra.copy(PathUtils.assetsPath, this.paths.assetOutputPath));
+
+            log.info("Main task start");
+            await Promise.all(mainTasks);
+            log.info("Main task end");
+
+            await this.cleanBuildArtifacts();
         } catch (e) {
             log.error("Build Error");
             log.error(e);
@@ -1151,6 +1146,10 @@ class Builder {
         }
     }
 
+}
+
+type StringMap<T> = {
+    [key:string]:T
 }
 
 /******************************************************************************/
@@ -1186,11 +1185,6 @@ for (let target in BuildTarget) {
         gulp.task(taskName + '-unminified', new Builder(option_unminified).build);
     }
 }
-
-gulp.task('temp', new Builder(new BuildOption(BuildTarget.CHROME, Channel.BETA, {
-    NO_PROXY: true,
-    DEBUG: true
-})).build);
 
 /******************************************************************************/
 
@@ -1285,12 +1279,12 @@ gulp.task('i18n-down',  async () => {
 
 /**
  * Converts xliff files generated by Closure Templates to json recognized by extension and userscripts.
- * 
+ *
  * Note that we use a custom format that includes original phrase in descriptions.
  */
 async function xliffToJson(xliffContent:string) {
     const xmlParser = new xml2js.Parser();
-    
+
     const json:any = await (new Promise((resolve, reject) => {
         xmlParser.parseString(xliffContent, (err, data) => {
             if (err) {
@@ -1311,7 +1305,7 @@ async function xliffToJson(xliffContent:string) {
         let source = unit.source[0];
         if (typeof source === 'undefined') { error(); }
         if (typeof source === 'object') {
-            // source is string for usual messages, 
+            // source is string for usual messages,
             // but is an object having keys '_' and 'x' in case when it contains
             // placeholders
             source = source._;
@@ -1346,7 +1340,7 @@ gulp.task('i18n-extract', async () => {
             .then(file => file.toString())
             .then(async (content) => xliffToJson(content))
     }));
-    
+
     // Merge maps and report error when encountered multiple phrases with the same name.
     const merged = Object.create(null);
 

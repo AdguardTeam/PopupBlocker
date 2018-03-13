@@ -1457,6 +1457,13 @@ gulp-debug@^3.2.0:
     through2 "^2.0.0"
     tildify "^1.1.2"
 
+gulp-file@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/gulp-file/-/gulp-file-0.4.0.tgz#451356a2ac5089c6db91a0444252a0543657006b"
+  dependencies:
+    through2 "^0.4.1"
+    vinyl "^2.1.0"
+
 gulp-filter@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/gulp-filter/-/gulp-filter-5.1.0.tgz#a05e11affb07cf7dcf41a7de1cb7b63ac3783e73"
@@ -4089,7 +4096,7 @@ svgo@^0.7.0:
     sax "~1.2.1"
     whet.extend "~0.9.9"
 
-through2@^0.4.2:
+through2@^0.4.1, through2@^0.4.2:
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/through2/-/through2-0.4.2.tgz#dbf5866031151ec8352bb6c4db64a2292a840b9b"
   dependencies:

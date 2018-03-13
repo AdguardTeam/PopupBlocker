@@ -1,6 +1,6 @@
 {
   "name": "PopupBlocker",
-  "version": "2.2.1",
+  "version": "2.2.3",
   "description": "Block popups preemptively by wrapping browser APIs for additional check",
   "scripts": {
     "dev": "gulp dev && gulp watch"
@@ -28,6 +28,7 @@
     "gulp-clean": "^0.3.2",
     "gulp-concat": "^2.6.1",
     "gulp-debug": "^3.2.0",
+    "gulp-file": "^0.4.0",
     "gulp-filter": "^5.1.0",
     "gulp-hydra": "^1.0.1",
     "gulp-insert": "^0.5.0",

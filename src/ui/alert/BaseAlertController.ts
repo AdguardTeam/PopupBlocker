@@ -17,10 +17,8 @@ import * as popupblockerUI from 'goog:popupblockerUI';
 import * as soydata_VERY_UNSAFE from 'goog:soydata.VERY_UNSAFE';
 
 "REMOVE_START";
-RESOURCE_SOYUTILS;
 RESOURCE_TEMPLATE_ROLLUP;
 "REMOVE_END";
-declare const RESOURCE_SOYUTILS;
 declare const RESOURCE_TEMPLATE_ROLLUP;
 
 /*******************************************************************************/

@@ -11,12 +11,11 @@ import IOptionsController from "./IOptionsController";
 // For rollup, we replace RESOURCE_OPTIONS_TEMPLATE_ROLLUP with a generated template js
 // (including soyutils.js)
 
-const popupblockerOptionsUI = goog.require('popupblockerOptionsUI');
+import * as popupblockerOptionsUI from 'goog:popupblockerOptionsUI'
+
 "REMOVE_START";
-RESOURCE_SOYUTILS;
 RESOURCE_OPTIONS_TEMPLATE_ROLLUP;
 "REMOVE_END";
-declare const RESOURCE_SOYUTILS;
 declare const RESOURCE_OPTIONS_TEMPLATE_ROLLUP;
 
 /*******************************************************************************/
