@@ -10,6 +10,19 @@ export const closest = 'closest' in Element.prototype ? (el:Element, selector:st
     }
 };
 
+/**
+ * This serves as a whitelist on various checks where we block re-triggering of events.
+ * See dom/dispatchEvent.ts.
+ */
+export function targetsAreChainable(prev:Node, next:Node):boolean {
+    if (prev.nodeType === 3 /* Node.TEXT_NODE */) {
+        // Based on observation that certain libraries re-triggers
+        // an event on text nodes on its parent due to iOS quirks.
+        return next === prev.parentNode;
+    }
+    return prev.contains(next);
+}
+
 export const getTagName = (el:Node):string => {
     return el.nodeName.toUpperCase();
 };

@@ -24,6 +24,12 @@ describe('CurrentMouseEvent', function () {
 
         let pr = typeof Promise !== 'undefined' ? Promise : { resolve: () => ({ then: (fn) => {fn();} }) };
 
+        const getRndEvt = () => {
+            let evt = getEvt(getType());
+            evt["counter"] = counter;
+            return evt;
+        }
+
         const callback = function(evt) {
             counter++;
             // Tests whether currentEvent returns the right event.
@@ -33,15 +39,15 @@ describe('CurrentMouseEvent', function () {
             if (counter < LIMIT) {
                 switch (counter % 7) {
                     case 0:
-                        setTimeout(document.body.dispatchEvent(getEvt(getType())));
+                        setTimeout(document.body.dispatchEvent(getRndEvt()));
                         break;
                     case 1:
-                        pr.resolve().then(() => { document.body.dispatchEvent(getEvt(getType())); });
+                        pr.resolve().then(() => { document.body.dispatchEvent(getRndEvt()); });
                         break;
                     case 2:
                     case 3:
                     case 4:
-                        document.body.dispatchEvent(getEvt(getType()));
+                        document.body.dispatchEvent(getRndEvt());
                         break;
                 }
             }
@@ -71,7 +77,7 @@ describe('CurrentMouseEvent', function () {
         document.addEventListener('click', callback, true);
         document.body.addEventListener('click', callback);
 
-        document.body.dispatchEvent(getEvt(getType()));
+        document.body.dispatchEvent(getRndEvt());
 
         setTimeout(() => {
             setTimeout(() => {

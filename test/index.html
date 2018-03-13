@@ -6,31 +6,50 @@
     </head>
     <body>
         <div id="mocha"></div>
+        
+
         <script src="../node_modules/mocha/mocha.js"></script>
         <script src="../node_modules/chai/chai.js"></script>
+
         <script>
             mocha.setup({
               ui: 'bdd'
             });
         </script>
+
         <script id="externs">
             function popupBlocker() {};
             _BRIDGE_KEY = 'key';
             window['key'] = {};
         </script>
+
         <script id="localization_test_phrases">
-                var RESOURCE_USERSCRIPT_TRANSLATIONS = {
-                    "en": {
-                        'phrase1': 'a{{2}}b{{1}}c{{0}}',
-                        'phrase2': 'd{{1}}e{{0}}f',
-                        'phrase3': 'g${key1}{{2}}h{{0}}${key2}i{{1}}'
-                    }
-                };
-            </script>
+            var RESOURCE_USERSCRIPT_TRANSLATIONS = {
+                "en": {
+                    'phrase1': 'a{{2}}b{{1}}c{{0}}',
+                    'phrase2': 'd{{1}}e{{0}}f',
+                    'phrase3': 'g${key1}{{2}}h{{0}}${key2}i{{1}}'
+                }
+            };
+        </script>
+
+        <script src="third_party/bluebird-3.5.0.min.js"></script>
+        <script>
+            var BlueBird = Promise.noConflict();
+            if (typeof Promise !== 'function') {
+                window.Promise = BlueBird;
+            }
+        </script>
+        
+        <script src="third_party/jquery-1.12.4.min.js"></script>
+        <script src="third_party/jquery-2.2.4.min.js"></script>
+        <script src="third_party/jquery-3.3.1.min.js"></script>
+
         <script src="./build/index.js"></script>
         <script>
             mocha.run();
         </script>
+                
         <div id="translateTestRoot" style="display:none">
             <!--i18n:phrase1-->
             <div id='0'>
@@ -46,5 +65,7 @@
             <div id='4'></div>
             <div id='5'></div>
         </div>
+
+        <div id="JQueryTestRoot" style="display:none"></div>
     </body>
 </html>
