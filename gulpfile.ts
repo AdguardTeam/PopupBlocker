@@ -1085,20 +1085,28 @@ class Builder {
     async buildExtension(bundles:StringMap<Reservoir>, manifest:string) {
         // bundles other than content_script and page_script are moved to build directory directly.
         let bundleNames = this.bundleNames;
+
         let otherBundleTasks = [];
         for (let bundleName of bundleNames) {
             if (bundleName === 'content_script' || bundleName === 'page_script') { continue; }
+            let toStringFlag = bundleName === "common" ? true : undefined;
             otherBundleTasks.push(toPromise(
-                    bundles[bundleName].release().pipe(gulp.dest('.'))
+                    bundles[bundleName].release()
+                        .pipe(gulp.dest('.')),
+                    toStringFlag
             ));
         }
-        await otherBundleTasks;
+        const [commonScriptRaw] = await Promise.all(otherBundleTasks);
 
         // Inline page_script to content_script.
-        const pageScriptRaw = await toPromise(bundles["page_script"].release(), true);
+        const pageScriptRaw = await toPromise(
+            bundles["page_script"].release()
+                .pipe(insert.prepend(commonScriptRaw)),
+            true
+        );
         const inliner = new InlineResource({
             "PAGE_SCRIPT": {
-                path: 'just a stub.js',
+                path: `${this.paths.outputPath}/page_script.js`,
                 data: this.wrapPageScript(pageScriptRaw)
             }
         }).inline;

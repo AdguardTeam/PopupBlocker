@@ -78,19 +78,23 @@ if (shadowDomV1Support) {
 
 //
 
+function checkLastError() {
+    chrome.runtime.lastError;
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     switch (message) {
         case BGMsgTypesEnum.SET_ICON_AS_ENABLED:   
             chrome.browserAction.setIcon({
                 path: orangeIconPaths,
                 tabId: sender.tab.id
-            });
+            }, checkLastError);
             break;
         case BGMsgTypesEnum.SET_ICON_AS_DISABLED:
             chrome.browserAction.setIcon({
                 path: grayIconPaths,
                 tabId: sender.tab.id
-            });
+            }, checkLastError);
             break;
         case BGMsgTypesEnum.OPEN_OPTIONS_PAGE:
             chrome.runtime.openOptionsPage();
