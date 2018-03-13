@@ -4,6 +4,6 @@ export default class UserscriptAlertController extends BaseAlertController {
     private static OPTIONS_PAGE_URL = 'https://adguardteam.github.io/PopupBlocker/options.html';
     private optionsPageName = `__pb_${Math.random()}`;
     protected openSettingsPage() {
-        open(UserscriptAlertController.OPTIONS_PAGE_URL, this.optionsPageName);
+        window.open(UserscriptAlertController.OPTIONS_PAGE_URL, this.optionsPageName);
     }
 }

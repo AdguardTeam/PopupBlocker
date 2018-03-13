@@ -166,10 +166,8 @@ function main(args) {
         mkdirp.sync(path.dirname(settings.externsPath));
         fs.writeFileSync(settings.externsPath, tsickle.getGeneratedExterns(result.externs));
     }
-// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Patched
-    return result;
-// Patched >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    // return 0;
+
+    return 0;
 }
 // CLI entry point
 if (require.main === module) {

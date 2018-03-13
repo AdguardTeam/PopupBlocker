@@ -35,8 +35,6 @@ import typescript = require('@alexlur/rollup-plugin-typescript');
 import typescript2 = require('rollup-plugin-typescript2');
 
 import { main as tsickleMain } from './tasks/tscc/third-party/tsickle/main';
-import ManifestSort from './tasks/tscc/ManifestSort';
-import * as tsickle from 'tsickle/src/tsickle';
 
 import * as closureTools from 'closure-tools-helper';
 
@@ -142,7 +140,7 @@ class PathUtils {
             return path.replace(/[\/\\]/g, '.');
         }
         public get googModule() {
-            return 'goog:' + BundleEntry.pathToGoogModule(this.cc);
+            return BundleEntry.pathToGoogModule(this.cc);
         }
     }
 
@@ -836,39 +834,35 @@ class Builder {
         return out;
     }
 
-    private ccOptionsFromManifest(manifest:tsickle.ModulesManifest):string[] {
-
-
+    private ccOptionsFromManifest():string[] {
         let sourceGlob = [
-            path.join(PathUtils.tsccPath, '**/*.js')
-        ]
+            path.join(PathUtils.tsccPath, '**/*.js'),
+            '!' + this.paths.tsickleExternsPath,
+            '!' + SoyBuilder.soyUtilsUseGoogPath,
+            '!' + CssBuilder.renamingMapPath
+        ];
         
         const soySources = [SoyBuilder.alert.googPath];
-        if (this.options.isExtension) { soySources.push(SoyBuilder.options.googPath); }
+        if (this.options.isExtension) {
+            soySources.push(SoyBuilder.options.googPath);
+        }
 
         sourceGlob.push(...soySources);
 
-
-        const depsWriter = new closureTools.DepsWriter(source)
-
-
-
-
-
-        const sorter = new ManifestSort(manifest);
-
-        const entries = [
-            this.paths.commonEntry.cc,
-            this.paths.pageScriptEntry.cc,
-            this.paths.contentScriptEntry.cc,
+        const entryPoints = [
+            this.paths.commonEntry.googModule,
+            this.paths.pageScriptEntry.googModule,
+            this.paths.contentScriptEntry.googModule
         ];
-        this.options.isExtension && entries.push(
-            this.paths.backgroundScriptEntry.cc,
-            this.paths.optionsEntry.cc
-        );
 
-        const deps = sorter.getDeps(entries);
+        if (this.options.isExtension) {
+            entryPoints.push(
+                this.paths.backgroundScriptEntry.googModule,
+                this.paths.optionsEntry.googModule
+            );
+        }
 
+        const deps = new closureTools.DepsSorter(sourceGlob).getDeps(entryPoints);
 
         const flags = [
             '--charset',                  'UTF-8',
@@ -883,33 +877,31 @@ class Builder {
             '--rewrite_polyfills',         String(false),
             '--module_output_path_prefix', this.paths.outputPath + '/',
 
-            '--module',                   `common:${deps.num_js[0]}`,
+            '--module',                   `common:${deps[0].length}`,
             ...Builder.js(deps[0]),
 
             '--module',                   `settings:0:common`,
 
-            '--module',                   `page_script:${deps.num_js[1]}:common`,
+            '--module',                   `page_script:${deps[1].length}:common`,
             ...Builder.js(deps[1]),
 
-            '--module',                   `content_script:${deps.num_js[2] + Builder.soyDeps.length + 2 + soySources.length}:settings`,
+            '--module',                   `content_script:${deps[2].length + Builder.soyDeps.length + 2}:settings`,
             // closure templates deps start
             ...Builder.js(Builder.soyDeps),
             '--js',                        SoyBuilder.soyUtilsUseGoogPath,
             '--js',                        CssBuilder.renamingMapPath,
-            ...Builder.js(soySources),
             // closure templates deps end
             ...Builder.js(deps[2]),
         ];
 
         this.options.isExtension && flags.push(
-            '--module',                   `background_script:${deps.num_js[3]}:common`,
+            '--module',                   `background_script:${deps[3].length}:common`,
             ...Builder.js(deps[3]),
 
-            '--module',                   `options:${deps.num_js[4]}:settings`,
+            '--module',                   `options:${deps[4].length}:settings`,
             ...Builder.js(deps[4])
         );
 
-        console.log(JSON.stringify(flags));
         return flags;
     }
 
@@ -943,7 +935,7 @@ class Builder {
 
         // 2. Tsickle
         log.info("Tsickle start");
-        const result:tsickle.EmitResult|1 = tsickleMain(
+        const result:0|1 = tsickleMain(
             `--externs=${PathUtils.tsccPath}/generated-externs.js --typed -- -p tasks/tscc`
                 .split(' ')
         );
@@ -969,19 +961,23 @@ class Builder {
         );
 
         // 4. Closure Compiler
-        const compiledStream = ccPlugin(this.ccOptionsFromManifest(result.modulesManifest))
+        const compiledStream = ccPlugin(this.ccOptionsFromManifest())
             .src()
             .pipe(insert.transform(TextUtils.removeCcExport))
             .pipe(hydra(this.bundleFilter));
 
         const bundleTasks = [];
 
-        for (let bundleName of this.bundleNames) { // Minus "common.js"
-            if (bundleName === 'page_script' || bundleName === 'content_script') continue;
-            bundleTasks.push(toPromise(
-                compiledStream[bundleName]
-                    .pipe(gulp.dest('.'))
-            ));
+        if (options.isExtension) {
+            // For extensions, bundles except page_script and content_script shall be moved directly
+            // to the output directory.
+            for (let bundleName of this.bundleNames) {
+                if (bundleName === 'page_script' || bundleName === 'content_script') continue;
+                bundleTasks.push(toPromise(
+                    compiledStream[bundleName]
+                        .pipe(gulp.dest('.'))
+                ));
+            }
         }
 
         // Prepend common.js to page_script.js.
