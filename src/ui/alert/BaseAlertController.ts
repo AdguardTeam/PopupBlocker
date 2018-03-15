@@ -6,22 +6,8 @@ import IAlertController from "./IAlertController";
 import { trustedEventListener, getByClsName } from "../ui_utils";
 import { isUndef } from "../../shared/instanceof";
 import { shadowDomV1Support } from '../../shared/dom';
-
-/*******************************************************************************/
-// Importing soy templates
-// For closure compiler, we use goog.require('popupblockerUI')
-// For rollup, we replace RESOURCE_TEMPLATE_ROLLUP with a generated template js
-// (including soyutils.js)
-
-import * as popupblockerUI from 'goog:popupblockerUI';
-import * as soydata_VERY_UNSAFE from 'goog:soydata.VERY_UNSAFE';
-
-"REMOVE_START";
-RESOURCE_TEMPLATE_ROLLUP;
-"REMOVE_END";
-declare const RESOURCE_TEMPLATE_ROLLUP;
-
-/*******************************************************************************/
+import popupblockerUI from 'goog:popupblockerUI';
+import soydata_VERY_UNSAFE from 'goog:soydata.VERY_UNSAFE';
 
 const px = 'px';
 

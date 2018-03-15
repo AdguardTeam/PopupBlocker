@@ -4,3 +4,4 @@ build_tsickle
 .rpt2_cache
 config
 yarn-error
+.DS_Store

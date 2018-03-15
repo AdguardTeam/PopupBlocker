@@ -4,21 +4,7 @@ import ISettingsDao, { AllOptions } from "../../storage/ISettingsDao";
 import { isUndef, isElement } from "../../shared/instanceof";
 import { trustedEventListener, getByClsName } from "../ui_utils";
 import IOptionsController from "./IOptionsController";
-
-/*******************************************************************************/
-// Importing soy templates
-// For closure compiler, we use goog.require('popupblockerOptionsUI')
-// For rollup, we replace RESOURCE_OPTIONS_TEMPLATE_ROLLUP with a generated template js
-// (including soyutils.js)
-
-import * as popupblockerOptionsUI from 'goog:popupblockerOptionsUI'
-
-"REMOVE_START";
-RESOURCE_OPTIONS_TEMPLATE_ROLLUP;
-"REMOVE_END";
-declare const RESOURCE_OPTIONS_TEMPLATE_ROLLUP;
-
-/*******************************************************************************/
+import popupblockerOptionsUI from 'goog:popupblockerOptionsUI'
 
 const enum DomainIsRelevantFor {
     WHITELISTED,

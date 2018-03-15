@@ -1,4 +1,4 @@
-import { posix as path } from 'path';
+import { posix as path }  from 'path';
 import * as fs from 'async-file';
 import * as fsExtra from 'fs-extra';
 import Reservoir from './tasks/Reservoir';
@@ -482,7 +482,7 @@ class SoyBuilder implements IResourceProvider {
             await SoyBuilder.compileCc(srcs);
         } else {
             await SoyBuilder.compileRollup(srcs);
-            resc.registerInlinedResource("TEMPLATE_ROLLUP", SoyBuilder.alert.rollupPath);
+            resc.registerInlinedResource("ALERT_TEMPLATE_ROLLUP", SoyBuilder.alert.rollupPath);
             if (isExtension) {
                 resc.registerInlinedResource("OPTIONS_TEMPLATE_ROLLUP", SoyBuilder.options.rollupPath);
             }
@@ -708,9 +708,31 @@ class Builder {
         return `function popupBlocker(window,PARENT_FRAME_KEY,CONTENT_SCRIPT_KEY){${pageScriptRaw}}`;
     }
 
+    /**
+     * Custom rollup plugin to link `goog:...` modules to their corresponding shims.
+     */
+    private static rollupExternalModuleLinker = {
+        resolveId(importee, importer) {
+            let path = require('path'); // Using 'posix' does not work well with rollup internals.
+            switch (importee) {
+                case "goog:popupblockerUI":
+                    return require('path').resolve(__dirname, "src/bundler_supplements/rollup_external_modules/popupblockerUI.js");
+                case "goog:popupblockerOptionsUI":
+                    return require('path').resolve(__dirname, "src/bundler_supplements/rollup_external_modules/popupblockerOptionsUI.js");
+                case "goog:soydata.VERY_UNSAFE":
+                    return require('path').resolve(__dirname, "src/bundler_supplements/rollup_external_modules/soydata_VERY_UNSAFE.js");
+                case "goog:soyutils":
+                    return require('path').resolve(__dirname, "src/bundler_supplements/rollup_external_modules/soyutils.js");
+            }
+        }
+    }
+
     private static rollupTsconfigOverride = { compilerOptions: { target: "es5" } };
     private static rollupOptsBase = {
-        plugins: [(<any>typescript2)({ tsconfigOverride: Builder.rollupTsconfigOverride })],
+        plugins: [
+            (<any>typescript2)({ tsconfigOverride: Builder.rollupTsconfigOverride }),
+            Builder.rollupExternalModuleLinker
+        ],
         format: 'iife',
         strict: false
     };
@@ -728,17 +750,20 @@ class Builder {
     }
 
     private async rollup():Promise<StringMap<Reservoir>> {
-        const options = this.options;
+        let options = this.options;
+        let bundleNames = this.bundleNames;
 
-        const sourceStream = gulp.src('src/**/*.ts')
+        const sourceStream = gulp.src([
+            'src/**/*.ts',
+            'src/bundler_supplements/rollup_external_modules/**/*.js' // Load external modules, to be linked to `goog:...` imports.
+        ])
             .pipe(<any>preprocess({ context: options.preprocessContext }));
 
         const bundles = sourceStream
             .pipe(rollup(this.rollupOpts))
             .pipe(insert.transform(this.rescMgr.inline))
             .pipe(hydra(this.bundleFilter));
-
-        let bundleNames = this.bundleNames;
+        // Create reservoirs
         let out:StringMap<Reservoir> = {};
         for (let bundleName of bundleNames) {
             out[bundleName] = new Reservoir(
@@ -747,12 +772,11 @@ class Builder {
             );
         }
 
+        // Create dummy modules
         out["common"] = new Reservoir(
-            gulp.src('src/bundler_resources/rollup_shims/common.js')
-                .pipe(insert.transform(this.rescMgr.inline))
+            file('common.js', '', { src: true })
                 .pipe(rename(path.join(this.paths.outputPath, 'common.js')))
         );
-
         out["settings"] = new Reservoir(
             file('settings.js', '', { src: true })
                 .pipe(rename(path.join(this.paths.outputPath, 'settings.js')))
@@ -826,7 +850,7 @@ class Builder {
         return out;
     }
 
-    private ccOptionsFromManifest():string[] {
+    private getCcOptions():string[] {
         let sourceGlob = [
             path.join(PathUtils.tsccPath, '**/*.js'),
             '!' + this.paths.tsickleExternsPath,
@@ -864,7 +888,7 @@ class Builder {
             '--assume_function_wrapper',   String(true),
             '--warning_level',            'VERBOSE',
             '--strict_mode_input',         String(false),
-            '--externs',                  'src/bundler_resources/externs/externs.js',
+            '--externs',                  'src/bundler_supplements/externs/externs.js',
             '--externs',                   this.paths.tsickleExternsPath,
             '--rewrite_polyfills',         String(false),
             '--module_output_path_prefix', this.paths.outputPath + '/',
@@ -949,7 +973,7 @@ class Builder {
                 .pipe(gulp.dest(PathUtils.tsccPath))
         );
 
-        const bundles = ccPlugin(this.ccOptionsFromManifest())
+        const bundles = ccPlugin(this.getCcOptions())
             .src()
             .pipe(insert.transform(TextUtils.removeCcExport))
             .pipe(hydra(this.bundleFilter));

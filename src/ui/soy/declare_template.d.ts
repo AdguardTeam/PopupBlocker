@@ -1,9 +1,15 @@
 declare module 'goog:popupblockerUI' {
-    export function head(param:any):string;
-    export function content(param:any):string;
+    namespace popupblockerUI {
+        export function head(param:any):string;
+        export function content(param:any):string;
+    }
+    export default popupblockerUI;
 }
 
 declare module 'goog:popupblockerOptionsUI' {
-    export function outer():string;
-    export function content(param:any):string;
+    namespace popupblockerOptionsUI {
+        export function outer():string;
+        export function content(param:any):string;
+    }
+    export default popupblockerOptionsUI
 }

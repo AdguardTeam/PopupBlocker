@@ -1,5 +1,8 @@
+// soyutils.js will be inlined here.
 RESOURCE_SOYUTILS;
 
+// A few closure library functions that are used in compiled soy templates
+// but are missing in soyutils.js
 goog.getCssName = function (arg) {
     return arg;
 };
@@ -20,6 +23,4 @@ goog.asserts.assertArray = function (arg) {
     return arg;
 };
 
-// Modules imported via goog.require calls.
-var popupblockerUI, popupblockerOptionsUI;
-var soydata_VERY_UNSAFE = soydata.VERY_UNSAFE;
+export { goog, soy, soydata }
