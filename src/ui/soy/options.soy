@@ -29,15 +29,13 @@
     {@param silencedOrigins: list<string>}
 
     <div class="{css settings__in}">
-        <div class="{css settings__close}"></div>
-        <div class="{css settings__title}">
-            {msg desc="AdGuard Popup Blocker"}userscript_name{/msg}
-        </div>
-
         <div class="{css settings__block}" data-for="{css allowed}">
             <div class="{css settings__row}">
-                <div class="{css settings__subtitle}">
-                    {msg desc="Allowed"}allowed{/msg}
+                <div class="{css tooltip-container}">
+                    <div class="{css settings__subtitle}">
+                        {msg desc="Allowed"}allowed{/msg}
+                    </div>
+                    <div data-tooltip="This is help tooltip Please read me" class="{css tooltip}"></div>
                 </div>
                 <div class="{css settings__control}">
                     <button class="{css settings__control-item}">
