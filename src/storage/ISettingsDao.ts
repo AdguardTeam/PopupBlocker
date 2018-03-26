@@ -4,7 +4,6 @@ export default interface ISettingsDao {
      * Beware - This callback should be called **before** onSettingsChange callbacks.
      */
     setSourceOption(domain:string, option:DomainOptionEnum, cb?:func):void
-    setIsWhitelistedDestination(domain:string, option:boolean, cb?:func):void
     /**
      * @return an array of whitelisted domains, an array of silenced domains, an array of domains
      * which are whitelisted as destinations, each of which are sorted in alphabetical order.
@@ -17,7 +16,7 @@ export default interface ISettingsDao {
     onSettingsChange(cb:AllOptionsCallback):void
 }
 
-export type AllOptions = [string[], string[], string[]];
+export type AllOptions = [/* Whitelisted */string[], /* Silenced */string[]];
 /**
  * `null` argument is used to indicate that no storage change was made.
  */

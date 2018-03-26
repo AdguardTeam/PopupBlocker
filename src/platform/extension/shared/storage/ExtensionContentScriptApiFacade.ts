@@ -23,7 +23,6 @@ export default class ExtensionContentScriptApiFacade implements IContentScriptAp
             }
         }
     }
-    private whitelistedDestinations:string[]
     private currentDomainOption:DomainOptionEnum
 
     private receiveSettings(settings:Partial<Settings>) {

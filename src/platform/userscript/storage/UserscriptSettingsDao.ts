@@ -7,45 +7,36 @@ export default class UserscriptSettingsDao implements ISettingsDao {
         if (!isUndef(cb)) { cb(); }
         this.fireListeners();
     }
-    setIsWhitelistedDestination(domain:string, option:boolean, cb?:func):void {
-        let whitelistedDestinationsStringified = GM_getValue('whitelist', '');
-        let whitelistedDestinations = whitelistedDestinationsStringified.split(',');
-        let index = whitelistedDestinations.indexOf(domain);
-        let isWhitelisted = index !== -1
-
-        if (option && !isWhitelisted) {
-            whitelistedDestinations.push(domain);
-        } else if (!option && isWhitelisted) {
-            whitelistedDestinations.splice(index, 1);
-        } else {
-            cb(null);
-            return;
-        }
-        GM_setValue('whitelist', whitelistedDestinations.join(','));
-    
-        if (!isUndef(cb)) { cb(); }
-        this.fireListeners();
-    }
-    private getEnumeratedOptions():[string[], string[], string[]] {
+    private getEnumeratedOptions():[string[], string[]] {
         let keys = GM_listValues();
         let whitelisted = [];
         let silenced = [];
-        let whitelistedDest;
         for (let i = 0, l = keys.length; i < l; i++) {
             let key = keys[i];
-            if (key === 'whitelist') {
-                whitelistedDest = GM_getValue('whitelist').split(',');
-            } else {
-                // key is a domain.
-                if (GM_getValue(key) === DomainOptionEnum.WHITELISTED) {
-                    whitelisted.push(key);
-                } else {
-                    silenced.push(key);
+            let value = GM_getValue(key);
+            let valueType = typeof value;
+
+            if (valueType === 'number') {
+                // Settings signature from v2.2 and onward.
+                switch (value) {
+                    case DomainOptionEnum.WHITELISTED:
+                        whitelisted.push(key);
+                        break;
+                    case DomainOptionEnum.SILENCED:
+                        silenced.push(key);
                 }
+            } else if (valueType == 'string') {
+                // Old settings signature in <=2.1                
+                try {
+                    let settings = JSON.parse(value);
+                    let whitelisted = settings.whitelisted;
+                    if (!isUndef(whitelisted)) {
+                        whitelisted.push(key);
+                    }
+                } catch(e) { }
             }
         }
-        whitelisted = whitelisted || [];
-        return [whitelisted, silenced, whitelistedDest];
+        return [whitelisted, silenced];
     }
 
     enumerateOptions(cb:AllOptionsCallback):void {

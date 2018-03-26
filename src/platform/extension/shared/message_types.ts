@@ -8,7 +8,6 @@
 
 export interface Settings {
     domainOption:DomainOptionEnum,
-    whitelistedDestinations:string[]
 }
 
 // CT ➜ PG

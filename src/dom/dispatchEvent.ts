@@ -20,7 +20,7 @@ const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this:EventT
         // Checks if an url is in a whitelist
         let url = createUrl(_this.href);
         let destDomain = url[1];
-        if (adguard.contentScriptApiFacade.destinationIsWhitelisted(destDomain)) {
+        if (adguard.contentScriptApiFacade.originIsWhitelisted(destDomain)) {
             log.print(`The domain ${destDomain} is in whitelist.`);
             return _dispatchEvent.call(_this, evt);
         }

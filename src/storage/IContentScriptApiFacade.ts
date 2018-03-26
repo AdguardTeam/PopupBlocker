@@ -9,8 +9,7 @@
  *                FF export helpers (exportFunction, cloneInto).
  */
 export default interface IContentScriptApiFacade {
-    originIsWhitelisted():boolean
-    destinationIsWhitelisted(dest:string):boolean
+    originIsWhitelisted(origin?:string):boolean
     originIsSilenced():boolean
 
     showAlert(orig_domain:string, popup_url:string):void

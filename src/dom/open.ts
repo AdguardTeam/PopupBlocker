@@ -18,7 +18,7 @@ const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, conte
     log.call('Called window.open with url ' + targetHref);
     const url = createUrl(targetHref);
     const destDomain = url[1];
-    if (adguard.contentScriptApiFacade.destinationIsWhitelisted(destDomain)) {
+    if (adguard.contentScriptApiFacade.originIsWhitelisted(destDomain)) {
         log.print(`The domain ${destDomain} is in whitelist.`);
         return _open.apply(_this, _arguments);
     }

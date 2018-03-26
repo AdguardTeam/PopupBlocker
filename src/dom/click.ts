@@ -16,7 +16,7 @@ const clickVerified:ApplyHandler = function(_click, _this, _arguments, context) 
         // Checks if an url is in a whitelist
         let url = createUrl(_this.href);
         let destDomain = url[1];
-        if (adguard.contentScriptApiFacade.destinationIsWhitelisted(destDomain)) {
+        if (adguard.contentScriptApiFacade.originIsWhitelisted(destDomain)) {
             log.print(`The domain ${destDomain} is in whitelist.`);
             _click.call(_this);
             return;
