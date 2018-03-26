@@ -20,7 +20,7 @@ export default class Timeline {
         this.events = [[]];
         this.isRecording = false;
         // Registers a unique event when it is first created.
-        this.registerEvent(new TimelineEvent(TLEventType.CREATE, undefined, undefined), 0);
+        this.registerEvent(new TimelineEvent(TLEventType.CREATE, undefined, window), 0);
     }
     /**
      * When an event is registered, it performs some checks by calling functions of type `condition`
