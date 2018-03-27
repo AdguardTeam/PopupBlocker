@@ -18,9 +18,9 @@ export function targetsAreChainable(prev:Node, next:Node):boolean {
     if (prev.nodeType === 3 /* Node.TEXT_NODE */) {
         // Based on observation that certain libraries re-triggers
         // an event on text nodes on its parent due to iOS quirks.
-        return next === prev.parentNode;
+        prev = prev.parentNode;
     }
-    return prev.contains(next);
+    return prev === next;
 }
 
 export const getTagName = (el:Node):string => {
