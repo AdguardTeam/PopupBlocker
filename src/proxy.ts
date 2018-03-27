@@ -23,9 +23,9 @@ const _call = Function.prototype.call;
 
 const _toStringFn = Function.prototype.toString;
 const _exec = RegExp.prototype.exec; // Issue 102: Keep native RegExp methods.
-                                           // RegExp.prototype.test, even thought being a native function,
-                                           // may call third-party code outside our membrane.
-                                           // Instead, we need to use `exec` whenever possible.
+                                     // RegExp.prototype.test, even thought being a native function,
+                                     // may call third-party code outside our membrane.
+                                     // Instead, we need to use `exec` whenever possible.
 
 let _reflect;
 if (supported) { _reflect = Reflect.apply; }
@@ -52,7 +52,7 @@ const isNativeFn = function (fn:Function):boolean {
         // It is their responsibility to do so transparently.
         return true;
     }
-    
+
     let tostr;
     try {
         tostr = _reflect(_toStringFn, fn, []);
@@ -87,7 +87,7 @@ export type ApplyOption = (target:Function, _this:any, _arguments:IArguments|any
  * _this: Event.prototype.addEventListener
  * _arguments: [window, 'click', function() { }]
  * We unproxies 'window' in the above case.
- * 
+ *
  * @param target Must be one of Function#(bind, apply, call).
  * @param _this A function which called (bind, apply, call).
  * @param _arguments
@@ -223,7 +223,7 @@ function copyProperty(orig, wrapped, prop:PropertyKey) {
 }
 
 /**
- * @param option Can be a boolean 'false' to disable logging, or can be a function which accepts the same type 
+ * @param option Can be a boolean 'false' to disable logging, or can be a function which accepts the same type
  * of params as ApplyHandler and returns booleans which indicates whether to log it or not.
  */
 function makeLoggedFunctionWrapper(orig:Function, type:TLEventType, name:PropertyKey, applyHandler?:ApplyHandler, option?:boolean|ApplyOption) {
