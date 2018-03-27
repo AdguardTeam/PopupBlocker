@@ -23,7 +23,7 @@ const _call = Function.prototype.call;
 
 const _toStringFn = Function.prototype.toString;
 const _exec = RegExp.prototype.exec; // Issue 102: Keep native RegExp methods.
-                                     // RegExp.prototype.test, even thought being a native function,
+                                     // RegExp.prototype.test, even though being a native function,
                                      // may call third-party code outside our membrane.
                                      // Instead, we need to use `exec` whenever possible.
 
