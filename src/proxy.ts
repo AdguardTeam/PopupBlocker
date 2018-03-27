@@ -22,6 +22,10 @@ const _apply = Function.prototype.apply;
 const _call = Function.prototype.call;
 
 const _toStringFn = Function.prototype.toString;
+const _exec = RegExp.prototype.exec; // Issue 102: Keep native RegExp methods.
+                                           // RegExp.prototype.test, even thought being a native function,
+                                           // may call third-party code outside our membrane.
+                                           // Instead, we need to use `exec` whenever possible.
 
 let _reflect;
 if (supported) { _reflect = Reflect.apply; }
@@ -42,6 +46,12 @@ const reIsNative = new RegExp('^' + _toStringFn.call(Object.prototype.hasOwnProp
  */
 const isNativeFn = function (fn:Function):boolean {
     if (typeof fn !== 'function') { return false; }
+
+    if (fn === _bind || fn === _call || fn === _apply || fn === _toStringFn || fn === _exec) {
+        // This is our assumption. If, for example, another browser extension modifies them before us,
+        // It is their responsibility to do so transparently.
+        return true;
+    }
     
     let tostr;
     try {
@@ -57,7 +67,7 @@ const isNativeFn = function (fn:Function):boolean {
             return false;
         }
     }
-    return reIsNative.test(tostr);
+    return _reflect(_exec, reIsNative, [tostr]) !== null;
 }
 
 // See HTMLIFrame.ts
