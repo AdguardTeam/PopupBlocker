@@ -35,7 +35,8 @@ const createOpen:condition = (index, events) => {
         let isSameOriginChildContext = browsingContext.frameElement !== null;
         if (isSameOriginChildContext) {
             let timing = browsingContext.performance.timing;
-            if (timing.fetchStart === 0 || timing.fetchStart === timing.responseEnd) {
+            let { fetchStart, responseEnd } = timing;
+            if (fetchStart === 0 || fetchStart === responseEnd) {
                 return false;
             }
         }
