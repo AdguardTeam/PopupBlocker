@@ -568,8 +568,8 @@ class-utils@^0.3.5:
     static-extend "^0.1.1"
 
 clean-css@4.1.x, clean-css@^4.1.9:
-  version "4.1.9"
-  resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-4.1.9.tgz#35cee8ae7687a49b98034f70de00c4edd3826301"
+  version "4.1.11"
+  resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-4.1.11.tgz#2ecdf145aba38f54740f26cefd0ff3e03e125d6a"
   dependencies:
     source-map "0.5.x"
 
@@ -617,17 +617,19 @@ closure-library.ts@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/closure-library.ts/-/closure-library.ts-1.0.0.tgz#6156bc3456cc8f7e8a59dcc27bc0df1c659c53e9"
 
-"closure-tools-helper@https://github.com/seanl-adg/closure-tools-helper.git#1.0.3":
-  version "1.0.2"
-  resolved "https://github.com/seanl-adg/closure-tools-helper.git#ead0450bfbc5b788a0b21db5b51479e53c2c6e51"
+"closure-tools-helper@https://github.com/seanl-adg/closure-tools-helper.git#1.0.4":
+  version "1.0.4"
+  resolved "https://github.com/seanl-adg/closure-tools-helper.git#1d281c55005ecbb35c358399ebb0e7f0ba79cab3"
   dependencies:
     closure-library.ts "^1.0.0"
     esprima "^4.0.0"
     estraverse "^4.2.0"
     fancy-log "^1.3.2"
     fast-glob "^2.1.0"
+    fs-extra "^5.0.0"
     google-closure-compiler "^20180204.0.0"
-    google-closure-library "^20180204.0.0"
+    google-closure-library "20180204.0.0"
+    gulp "^3.9.1"
     gulp-insert "^0.5.0"
     vinyl "^2.1.0"
 
@@ -705,9 +707,9 @@ commander@2.11.0:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.11.0.tgz#157152fd1e7a6c8d98a5b715cf376df928004563"
 
-commander@2.14.x, commander@~2.14.1:
-  version "2.14.1"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-2.14.1.tgz#2235123e37af8ca3c65df45b026dbd357b01b9aa"
+commander@2.15.x, commander@~2.15.0:
+  version "2.15.1"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.15.1.tgz#df46e867d0fc2aec66a34662b406a9ccafff5b0f"
 
 commander@~2.12.1:
   version "2.12.2"
@@ -1384,14 +1386,6 @@ glogg@^1.0.0:
   dependencies:
     sparkles "^1.0.0"
 
-google-closure-compiler@^20171023.0.1:
-  version "20171023.0.1"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler/-/google-closure-compiler-20171023.0.1.tgz#8d0df115e7481902dac3019e55010b6004d29eb5"
-  dependencies:
-    chalk "^1.0.0"
-    vinyl "^2.0.1"
-    vinyl-sourcemaps-apply "^0.2.0"
-
 google-closure-compiler@^20180204.0.0:
   version "20180204.0.0"
   resolved "https://registry.yarnpkg.com/google-closure-compiler/-/google-closure-compiler-20180204.0.0.tgz#b097ffb750c65ca07a2da469d76c551d3b8e21a3"
@@ -1400,7 +1394,7 @@ google-closure-compiler@^20180204.0.0:
     vinyl "^2.0.1"
     vinyl-sourcemaps-apply "^0.2.0"
 
-google-closure-library@^20180204.0.0:
+google-closure-library@20180204.0.0:
   version "20180204.0.0"
   resolved "https://registry.yarnpkg.com/google-closure-library/-/google-closure-library-20180204.0.0.tgz#ad3c5a18dfd731c6149c5220d2991c0c9129718a"
 
@@ -1720,12 +1714,12 @@ html-comment-regex@^1.1.0:
   resolved "https://registry.yarnpkg.com/html-comment-regex/-/html-comment-regex-1.1.1.tgz#668b93776eaae55ebde8f3ad464b307a4963625e"
 
 html-minifier@^3.5.8:
-  version "3.5.9"
-  resolved "https://registry.yarnpkg.com/html-minifier/-/html-minifier-3.5.9.tgz#74424014b872598d4bb0e20ac420926ec61024b6"
+  version "3.5.12"
+  resolved "https://registry.yarnpkg.com/html-minifier/-/html-minifier-3.5.12.tgz#6bfad4d0327f5b8d2b62f5854654ac3703b9b031"
   dependencies:
     camel-case "3.0.x"
     clean-css "4.1.x"
-    commander "2.14.x"
+    commander "2.15.x"
     he "1.1.x"
     ncname "1.0.x"
     param-case "2.1.x"
@@ -1784,18 +1778,9 @@ ini@^1.3.4:
   version "1.3.5"
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.5.tgz#eee25f56db1c9ec6085e0c22778083f596abf927"
 
-"inline-resource-literal@https://github.com/seanl-adg/InlineResourceLiteral.git#1.0.0":
-  version "0.0.0"
-  resolved "https://github.com/seanl-adg/InlineResourceLiteral.git#f1a510c3a815326607d51329fc5cf623d63fd80e"
-  dependencies:
-    clean-css "^4.1.9"
-    esprima "^4.0.0"
-    estraverse "^4.2.0"
-    html-minifier "^3.5.8"
-
-"inline-resource-literal@https://github.com/seanl-adg/InlineResourceLiteral.git#1.0.1":
-  version "0.0.0"
-  resolved "https://github.com/seanl-adg/InlineResourceLiteral.git#c32aa98a3c4fde3a03674a9ae33064703e2ffbb1"
+inline-resource-literal@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/inline-resource-literal/-/inline-resource-literal-1.0.2.tgz#4e92ae7994f1271e66dd8241784dbc70fb1a74c8"
   dependencies:
     clean-css "^4.1.9"
     esprima "^4.0.0"
@@ -4338,10 +4323,10 @@ typescript@2.5.3:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.5.3.tgz#df3dcdc38f3beb800d4bc322646b04a3f6ca7f0d"
 
 uglify-js@3.3.x:
-  version "3.3.12"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.3.12.tgz#efd87c16a1f4c674a8a5ede571001ef634dcc883"
+  version "3.3.16"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.3.16.tgz#23ba13efa27aa00885be7417819e8a9787f94028"
   dependencies:
-    commander "~2.14.1"
+    commander "~2.15.0"
     source-map "~0.6.1"
 
 uglify-js@^3.0.5:

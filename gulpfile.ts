@@ -40,8 +40,11 @@ import { main as tsickleMain } from './tasks/tscc/third-party/tsickle/main';
 
 import * as closureTools from 'closure-tools-helper';
 
+/******************************************************************************************************/
+
 process.setMaxListeners(0);
-const ccPlugin = closureTools.compiler.gulp({});
+
+/******************************************************************************************************/
 
 enum BuildTarget {
     USERSCRIPT  = 'userscript',
@@ -62,6 +65,8 @@ interface IPreprocessContext {
     NO_PROXY?:boolean,
     NO_EVENT?:boolean
 }
+
+/******************************************************************************************************/
 
 class BuildOption {
     constructor(
@@ -85,6 +90,7 @@ class BuildOption {
     }
 }
 
+/******************************************************************************************************/
 
 abstract class TextUtils {
     static removeCcExport(content) {
@@ -94,6 +100,134 @@ abstract class TextUtils {
         return content.replace(/window.popupBlocker\s*=\s*/, '');
     }
 }
+
+/******************************************************************************************************/
+
+/**
+ * A bundle entry may not have a prescribed path depending on build target.
+ * In such case a corresponding property's value will be `null`.
+ */
+class BundleEntry implements IBundleEntry {
+    constructor(
+        public outName:string,
+        private targetToPathMap: { [key in BuildTarget]?: string },
+        private options:BuildOption
+    ) { }
+    private get path() {
+        return this.targetToPathMap[this.options.target];
+    }
+    public get rollup():string|null {
+        if (!this.path) { return null; }
+        return path.join(PathUtils.sourceDir, this.path);
+    }
+    private static reModuleExtension = /\.[jt]sx?$/;
+    private static normalizeModuleExtension(path:string) {
+        return path.replace(BundleEntry.reModuleExtension, '.js');
+    }
+    public get cc():string|null {
+        if (!this.path) { return null; }
+        return BundleEntry.normalizeModuleExtension(path.join(
+            PathUtils.outputDir,
+            PathUtils.tsccDir,
+            this.path
+        ));
+    }
+    private static pathToGoogModule(path:string):string {
+        const regex = BundleEntry.reModuleExtension;
+        // Strip file extension
+        if (regex.test(path)) {
+            path = RegExp['leftContext'];
+        }
+        return path.replace(/[\/\\]/g, '.');
+    }
+    public get googModule():string|null {
+        if (!this.path) { return null; }
+        return BundleEntry.pathToGoogModule(this.cc);
+    }
+}
+
+class BundleContext {
+    private modules:{
+        entry:BundleEntry,
+        deps:BundleEntry[],
+        extraSources:string[]
+    }[] = [];
+    addModule(entry:BundleEntry, deps:BundleEntry[] = [], extraSources:string[] = []) {
+        this.modules.push({entry, deps, extraSources});
+    }
+    getCcOptions() {
+        return this.modules.map(mod => ({
+            id: mod.entry.googModule,
+            name: mod.entry.outName,
+            deps: mod.deps.map(entry => entry.outName),
+            extraSources: mod.extraSources
+        }));
+    }
+    private static tsconfigOverride = {
+        compilerOptions: {
+            target: "es5"
+        }
+    };
+    private rollupExternalDepsMap:StringMap<string> = Object.create(null);
+    addRollupExternalDeps(moduleId:string, path:string) {
+        this.rollupExternalDepsMap[moduleId] = path;
+    }
+    private static emptyBundleId = "\0empty_bundle_id";
+    private get rollupExternalModuleLinker() {
+        return {
+            resolveId: (importee, importer) => {
+                let depsPath = this.rollupExternalDepsMap[importee];
+                if (depsPath) {
+                    return require('path').resolve(__dirname, depsPath);
+                    // Using 'posix' does not work well with rollup internals.
+                }
+                if (importee.startsWith(BundleContext.emptyBundleId)) {
+                    return importee;
+                }
+            },
+            load: (id:string) => {
+                if (id.startsWith(BundleContext.emptyBundleId)) {
+                    return Promise.resolve('');
+                }
+            }
+        }
+    }
+    getRollupOptions() {
+        const input = this.modules
+            .map(mod => {
+                let path = mod.entry.rollup;
+                if (path !== null) {
+                    return path;
+                } else {
+                    return require('path').join(BundleContext.emptyBundleId, mod.entry.outName + '.js');
+                }
+            });
+        return {
+            input,
+            format: 'iife',
+            strict: false,
+            plugins: [
+                (<any>typescript2)({ tsconfigOverride: BundleContext.tsconfigOverride }),
+                this.rollupExternalModuleLinker
+            ]
+        }
+    }
+    get bundleNames():string[] {
+        return this.modules.map(mod => mod.entry.outName);
+    }
+    // To be used with gulp-hydra plugin
+    get bundleFilter() {
+        let filter = {}, bundleNames = this.bundleNames;
+        for (let bundleName of bundleNames) {
+            filter[bundleName] = (file) => {
+                return (new RegExp(bundleName + '\\.[jt]s$')).test(file.path);
+            }
+        }
+        return filter;
+    }
+}
+
+/******************************************************************************************************/
 
 class PathUtils {
 
@@ -111,41 +245,6 @@ class PathUtils {
         return path.join(PathUtils.outputDir, this.options.target, '');
     }
 
-    private static BundleEntry = class BundleEntry {
-        constructor(
-            private targetToPathMap: { [key in BuildTarget]?: string },
-            private options:BuildOption
-        ) { }
-        public get rollup() {
-            return path.join(
-                PathUtils.sourceDir,
-                this.targetToPathMap[this.options.target]
-            );
-        }
-        private static reModuleExtension = /\.[jt]sx?$/;
-        private static normalizeModuleExtension(path:string) {
-            return path.replace(BundleEntry.reModuleExtension, '.js');
-        }
-        public get cc() {
-            return BundleEntry.normalizeModuleExtension(path.join(
-                PathUtils.outputDir,
-                PathUtils.tsccDir,
-                this.targetToPathMap[this.options.target]
-            ));
-        }
-        private static pathToGoogModule(path:string):string {
-            const regex = BundleEntry.reModuleExtension;
-            // Strip file extension
-            if (regex.test(path)) {
-                path = RegExp['leftContext'];
-            }
-            return path.replace(/[\/\\]/g, '.');
-        }
-        public get googModule() {
-            return BundleEntry.pathToGoogModule(this.cc);
-        }
-    }
-
     private static targetPageScriptEntryMap = {
         [BuildTarget.USERSCRIPT]:   'platform/userscript/page_script.ts',
         [BuildTarget.CHROME]:       'platform/extension/shared/page_script.ts',
@@ -153,7 +252,7 @@ class PathUtils {
         [BuildTarget.EDGE]:         'platform/extension/shared/page_script.ts'
     }
 
-    public pageScriptEntry = new PathUtils.BundleEntry(PathUtils.targetPageScriptEntryMap, this.options);
+    public pageScriptEntry = new BundleEntry("page_script", PathUtils.targetPageScriptEntryMap, this.options);
 
     private static targetContentScriptEntryMap = {
         [BuildTarget.USERSCRIPT]:   'platform/userscript/content_script.ts',
@@ -162,7 +261,7 @@ class PathUtils {
         [BuildTarget.EDGE]:         'platform/extension/edge/content_script.ts'
     }
 
-    public contentScriptEntry = new PathUtils.BundleEntry(PathUtils.targetContentScriptEntryMap, this.options);
+    public contentScriptEntry = new BundleEntry("content_script", PathUtils.targetContentScriptEntryMap, this.options);
 
     private static targetBackgroundScriptEntryMap = {
         [BuildTarget.CHROME]:       'platform/extension/shared/background_script.ts',
@@ -170,7 +269,7 @@ class PathUtils {
         [BuildTarget.EDGE]:         'platform/extension/shared/background_script.ts',
     }
 
-    public backgroundScriptEntry = new PathUtils.BundleEntry(PathUtils.targetBackgroundScriptEntryMap, this.options);
+    public backgroundScriptEntry = new BundleEntry("background_script", PathUtils.targetBackgroundScriptEntryMap, this.options);
 
     private static targetCommonScriptMap = {
         [BuildTarget.USERSCRIPT]:   'platform/userscript/common.ts',
@@ -179,7 +278,7 @@ class PathUtils {
         [BuildTarget.EDGE]:         'platform/extension/shared/common.ts'
     }
 
-    public commonEntry = new PathUtils.BundleEntry(PathUtils.targetCommonScriptMap, this.options);
+    public commonEntry = new BundleEntry("common", PathUtils.targetCommonScriptMap, this.options);
 
     private static targetOptionsMap = {
         [BuildTarget.USERSCRIPT]:   'platform/userscript/options.ts',
@@ -188,7 +287,7 @@ class PathUtils {
         [BuildTarget.EDGE]:         'platform/extension/shared/options.ts'
     }
 
-    public optionsEntry = new PathUtils.BundleEntry(PathUtils.targetOptionsMap, this.options);
+    public optionsEntry = new BundleEntry("options", PathUtils.targetOptionsMap, this.options);
 
     public get tsickleExternsPath() {
         return path.join(
@@ -261,7 +360,11 @@ class ResourceManager {
 
     public async prepare() {
         log.info('ResourceManager: preparation start ');
-        await Promise.all(this.providers.map(provider => provider.prepareResource(this)));
+        await Promise.all(this.providers.map(provider => {
+            return provider.prepareResource(this).then(() => {
+                log.info(`Resource preparation for ${provider.constructor.name} has been finished`);
+            });
+        }));
         log.info('ResourceManager: preparation end');
         this.inline = (new InlineResource(this.resourceMap)).inline;
     }
@@ -353,7 +456,7 @@ class CssBuilder implements IResourceProvider {
 
     private async compileSource(src:ICssSource) {
         if (this.options.shouldMinify) {
-            return await CssBuilder.compileWithClosure(src.srcPath);
+            return (await CssBuilder.compileWithClosure(src.srcPath)).src();
         } else {
             return CssBuilder.compilePostCss(src.srcPath);
         }
@@ -362,13 +465,13 @@ class CssBuilder implements IResourceProvider {
     public async prepareResource(resc:ResourceManager) {
         const inlineSource = async (src:ICssSource) => {
             resc.registerInlinedResource(src.resourceMarker, {
-                data: await toPromise((await this.compileSource(src)).resume(), true),
+                data: await toPromise(await this.compileSource(src), true),
                 path: this.getSourceOutPath(src)
             });
         };
         const moveSource = async (src:ICssSource) => {
             await toPromise(
-                (await this.compileSource(src)).resume()
+                (await this.compileSource(src))
                     .pipe(rename(this.getSourceOutPath(src)))
                     .pipe(gulp.dest('.'))
             );
@@ -433,14 +536,12 @@ class SoyBuilder implements IResourceProvider {
             args.push(`--srcs`, src);
         }
 
-        await toPromise(closureTools.templates(args).resume());
-        await toPromise(
-            gulp.src(SoyBuilder.tempOutGlob.rollup)
-                .pipe(insert.transform(
-                    new closureTools.TemplatesRuntimeI18nTransformer('adguard.i18nService.getMsg').transform
-                ))
-                .pipe(gulp.dest(SoyBuilder.soyTempPath)) // Replace in-place
-        );
+        await toPromise(closureTools.templates(args, {
+            googGetMsg: `adguard.i18nService.getMsg`,
+            header: '',
+            inputGlob: SoyBuilder.tempOutGlob.rollup,
+            outputPath: SoyBuilder.soyTempPath
+        }).src());
     }
 
     private static async compileCc(srcs:string[]):Promise<void> {
@@ -457,17 +558,14 @@ class SoyBuilder implements IResourceProvider {
             args.push(`--srcs`, src);
         }
 
-        await toPromise(closureTools.templates(args).resume());
-        await toPromise(
-            gulp.src(SoyBuilder.tempOutGlob.goog)
-                .pipe(insert.transform(
-                    new closureTools.TemplatesRuntimeI18nTransformer(
-                        `__soyutils_adguard.default.i18nService.getMsg`,
-                        `var __soyutils_adguard = goog.require('build.tscc.content_script_namespace')`
-                    ).transform
-                ))
-                .pipe(gulp.dest(PathUtils.tsccPath)) // Move to closure compiler directory
-        );
+        const stream = closureTools.templates(args, {
+            googGetMsg: `__soyutils_adguard.default.i18nService.getMsg`,
+            header:     `var __soyutils_adguard = goog.require('build.tscc.content_script_namespace')`,
+            inputGlob:   SoyBuilder.tempOutGlob.goog,
+            outputPath:  PathUtils.tsccPath
+        }).src();
+
+        await toPromise(stream);
     }
 
     public async prepareResource(resc:ResourceManager) {
@@ -687,238 +785,72 @@ class Builder {
         this.build = this.build.bind(this);
     }
 
-    private get bundleNames() {
-        let bundleNames = ["common", "page_script", "content_script"];
+    private getBundleContext() {
+        const ctxt = new BundleContext();
+
+        const { commonEntry, pageScriptEntry, contentScriptEntry, backgroundScriptEntry, optionsEntry }
+            = this.paths;
+
+        const settings = new BundleEntry("settings", {}, this.options);
+
+        ctxt.addModule(commonEntry);
+        ctxt.addModule(pageScriptEntry, [commonEntry]);
+
         if (this.options.isExtension) {
-            bundleNames.push("extension_common", "settings", "background_script", "options");
+            ctxt.addModule(settings, [commonEntry]);
+            ctxt.addModule(contentScriptEntry, [settings], [CssBuilder.renamingMapPath]);
+            ctxt.addModule(backgroundScriptEntry, [commonEntry]);
+            ctxt.addModule(optionsEntry, [settings]);
+        } else {
+            ctxt.addModule(contentScriptEntry, [commonEntry], [CssBuilder.renamingMapPath]);
         }
-        return bundleNames;
-    }
-    private get bundleFilter() {
-        let filter = {}, bundleNames = this.bundleNames;
-        for (let bundleName of bundleNames) {
-            filter[bundleName] = (file) => {
-                return (new RegExp(bundleName + '\\.[jt]s$')).test(file.path);
-            }
-        }
-        return filter;
+
+        ctxt.addRollupExternalDeps(
+            "goog:popupblockerUI",
+            "src/bundler_supplements/rollup_external_modules/popupblockerUI.js"
+        );
+        ctxt.addRollupExternalDeps(
+            "goog:popupblockerOptionsUI",
+            "src/bundler_supplements/rollup_external_modules/popupblockerOptionsUI.js"
+        );
+        ctxt.addRollupExternalDeps(
+            "goog:soydata.VERY_UNSAFE",
+            "src/bundler_supplements/rollup_external_modules/soydata_VERY_UNSAFE.js"
+        );
+        ctxt.addRollupExternalDeps(
+            "goog:soyutils",
+            "src/bundler_supplements/rollup_external_modules/soyutils.js"
+        );
+
+        return ctxt;
     }
 
     private wrapPageScript(pageScriptRaw:string):string {
         return `function popupBlocker(window,PARENT_FRAME_KEY,CONTENT_SCRIPT_KEY){${pageScriptRaw}}`;
     }
 
-    /**
-     * Custom rollup plugin to link `goog:...` modules to their corresponding shims.
-     */
-    private static rollupExternalModuleLinker = {
-        resolveId(importee, importer) {
-            let path = require('path'); // Using 'posix' does not work well with rollup internals.
-            switch (importee) {
-                case "goog:popupblockerUI":
-                    return require('path').resolve(__dirname, "src/bundler_supplements/rollup_external_modules/popupblockerUI.js");
-                case "goog:popupblockerOptionsUI":
-                    return require('path').resolve(__dirname, "src/bundler_supplements/rollup_external_modules/popupblockerOptionsUI.js");
-                case "goog:soydata.VERY_UNSAFE":
-                    return require('path').resolve(__dirname, "src/bundler_supplements/rollup_external_modules/soydata_VERY_UNSAFE.js");
-                case "goog:soyutils":
-                    return require('path').resolve(__dirname, "src/bundler_supplements/rollup_external_modules/soyutils.js");
-            }
-        }
-    }
-
-    private static rollupTsconfigOverride = { compilerOptions: { target: "es5" } };
-    private static rollupOptsBase = {
-        plugins: [
-            (<any>typescript2)({ tsconfigOverride: Builder.rollupTsconfigOverride }),
-            Builder.rollupExternalModuleLinker
-        ],
-        format: 'iife',
-        strict: false
-    };
-
-    private get rollupOpts() {
-        const input = [
-            this.paths.pageScriptEntry.rollup,
-            this.paths.contentScriptEntry.rollup
-        ];
-        this.options.isExtension && input.push(
-            this.paths.backgroundScriptEntry.rollup,
-            this.paths.optionsEntry.rollup
-        );
-        return Object.assign({ input }, Builder.rollupOptsBase);
-    }
-
     private async rollup():Promise<StringMap<Reservoir>> {
-        let options = this.options;
-        let bundleNames = this.bundleNames;
-
+        const bundleCtxt = this.getBundleContext();
         const sourceStream = gulp.src([
             'src/**/*.ts',
             'src/bundler_supplements/rollup_external_modules/**/*.js' // Load external modules, to be linked to `goog:...` imports.
         ])
-            .pipe(<any>preprocess({ context: options.preprocessContext }));
+            .pipe(<any>preprocess({ context: this.options.preprocessContext }));
 
         const bundles = sourceStream
-            .pipe(rollup(this.rollupOpts))
+            .pipe(rollup(bundleCtxt.getRollupOptions()))
             .pipe(insert.transform(this.rescMgr.inline))
-            .pipe(hydra(this.bundleFilter));
+            .pipe(hydra(bundleCtxt.bundleFilter));
         // Create reservoirs
         let out:StringMap<Reservoir> = {};
-        for (let bundleName of bundleNames) {
+        for (let bundleName of bundleCtxt.bundleNames) {
             out[bundleName] = new Reservoir(
                 bundles[bundleName]
                     .pipe(rename(path.join(this.paths.outputPath, bundleName + '.js')))
             );
         }
 
-        // Create dummy modules
-        out["common"] = new Reservoir(
-            file('common.js', '', { src: true })
-                .pipe(rename(path.join(this.paths.outputPath, 'common.js')))
-        );
-        out["settings"] = new Reservoir(
-            file('settings.js', '', { src: true })
-                .pipe(rename(path.join(this.paths.outputPath, 'settings.js')))
-        );
-
         return out;
-    }
-
-    /**
-     * Built using closurebuilder.py
-     * {@link https://developers.google.com/closure/library/docs/closurebuilder}
-     * ToDo: make build process generate this deps dynamically
-     */
-    private static soyDeps = [
-        "node_modules/google-closure-library/closure/goog/base.js",
-        "node_modules/google-closure-library/closure/goog/string/stringbuffer.js",
-        "node_modules/google-closure-library/closure/goog/dom/nodetype.js",
-        "node_modules/google-closure-library/closure/goog/debug/error.js",
-        "node_modules/google-closure-library/closure/goog/asserts/asserts.js",
-        "node_modules/google-closure-library/closure/goog/functions/functions.js",
-        "node_modules/google-closure-library/closure/goog/array/array.js",
-        "node_modules/google-closure-library/closure/goog/math/math.js",
-        "node_modules/google-closure-library/closure/goog/iter/iter.js",
-        "node_modules/google-closure-library/closure/goog/structs/map.js",
-        "node_modules/google-closure-library/closure/goog/string/string.js",
-        "node_modules/google-closure-library/closure/goog/uri/utils.js",
-        "node_modules/google-closure-library/closure/goog/object/object.js",
-        "node_modules/google-closure-library/closure/goog/structs/structs.js",
-        "node_modules/google-closure-library/closure/goog/uri/uri.js",
-        "node_modules/google-closure-library/closure/goog/fs/url.js",
-        "node_modules/google-closure-library/closure/goog/string/typedstring.js",
-        "node_modules/google-closure-library/closure/goog/string/const.js",
-        "node_modules/google-closure-library/closure/goog/i18n/bidi.js",
-        "node_modules/google-closure-library/closure/goog/html/trustedresourceurl.js",
-        "node_modules/google-closure-library/closure/goog/html/safeurl.js",
-        "node_modules/google-closure-library/closure/goog/html/safestyle.js",
-        "node_modules/google-closure-library/closure/goog/html/safescript.js",
-        "node_modules/google-closure-library/closure/goog/html/safestylesheet.js",
-        "node_modules/google-closure-library/closure/goog/dom/tags.js",
-        "node_modules/google-closure-library/closure/goog/dom/htmlelement.js",
-        "node_modules/google-closure-library/closure/goog/dom/tagname.js",
-        "node_modules/google-closure-library/closure/goog/labs/useragent/util.js",
-        "node_modules/google-closure-library/closure/goog/labs/useragent/browser.js",
-        "node_modules/google-closure-library/closure/goog/html/safehtml.js",
-        "node_modules/google-closure-library/closure/goog/html/uncheckedconversions.js",
-        "node_modules/google-closure-library/closure/goog/soy/data.js",
-        "node_modules/google-closure-library/closure/goog/html/legacyconversions.js",
-        "node_modules/google-closure-library/closure/goog/labs/useragent/platform.js",
-        "node_modules/google-closure-library/closure/goog/reflect/reflect.js",
-        "node_modules/google-closure-library/closure/goog/labs/useragent/engine.js",
-        "node_modules/google-closure-library/closure/goog/useragent/useragent.js",
-        "node_modules/google-closure-library/closure/goog/math/size.js",
-        "node_modules/google-closure-library/closure/goog/dom/asserts.js",
-        "node_modules/google-closure-library/closure/goog/dom/safe.js",
-        "node_modules/google-closure-library/closure/goog/dom/browserfeature.js",
-        "node_modules/google-closure-library/closure/goog/math/coordinate.js",
-        "node_modules/google-closure-library/closure/goog/dom/dom.js",
-        "node_modules/google-closure-library/closure/goog/soy/soy.js",
-        "node_modules/google-closure-library/closure/goog/i18n/uchar.js",
-        "node_modules/google-closure-library/closure/goog/structs/inversionmap.js",
-        "node_modules/google-closure-library/closure/goog/i18n/graphemebreak.js",
-        "node_modules/google-closure-library/closure/goog/format/format.js",
-        "node_modules/google-closure-library/closure/goog/i18n/bidiformatter.js"
-    ]
-
-    private static js(names:string[]) {
-        let out = [];
-        for (let name of names) {
-            out.push('--js', name);
-        }
-        return out;
-    }
-
-    private getCcOptions():string[] {
-        let sourceGlob = [
-            path.join(PathUtils.tsccPath, '**/*.js'),
-            '!' + this.paths.tsickleExternsPath,
-            '!' + SoyBuilder.soyUtilsUseGoogPath,
-            '!' + CssBuilder.renamingMapPath
-        ];
-
-        const soySources = [SoyBuilder.alert.googPath];
-        if (this.options.isExtension) {
-            soySources.push(SoyBuilder.options.googPath);
-        }
-
-        sourceGlob.push(...soySources);
-
-        const entryPoints = [
-            this.paths.commonEntry.googModule,
-            this.paths.pageScriptEntry.googModule,
-            this.paths.contentScriptEntry.googModule
-        ];
-
-        if (this.options.isExtension) {
-            entryPoints.push(
-                this.paths.backgroundScriptEntry.googModule,
-                this.paths.optionsEntry.googModule
-            );
-        }
-
-        const deps = new closureTools.DepsSorter(sourceGlob).getDeps(entryPoints);
-
-        const flags = [
-            '--charset',                  'UTF-8',
-            '--compilation_level',        'ADVANCED',
-            '--language_in',              'ECMASCRIPT6',
-            '--language_out',             'ECMASCRIPT5',
-            '--assume_function_wrapper',   String(true),
-            '--warning_level',            'VERBOSE',
-            '--strict_mode_input',         String(false),
-            '--externs',                  'src/bundler_supplements/externs/externs.js',
-            '--externs',                   this.paths.tsickleExternsPath,
-            '--rewrite_polyfills',         String(false),
-            '--module_output_path_prefix', this.paths.outputPath + '/',
-
-            '--module',                   `common:${deps[0].length}`,
-            ...Builder.js(deps[0]),
-
-            '--module',                   `settings:0:common`,
-
-            '--module',                   `page_script:${deps[1].length}:common`,
-            ...Builder.js(deps[1]),
-
-            '--module',                   `content_script:${deps[2].length + Builder.soyDeps.length + 2}:settings`,
-            // closure templates deps start
-            ...Builder.js(Builder.soyDeps),
-            '--js',                        SoyBuilder.soyUtilsUseGoogPath,
-            '--js',                        CssBuilder.renamingMapPath,
-            // closure templates deps end
-            ...Builder.js(deps[2]),
-        ];
-
-        this.options.isExtension && flags.push(
-            '--module',                   `background_script:${deps[3].length}:common`,
-            ...Builder.js(deps[3]),
-
-            '--module',                   `options:${deps[4].length}:settings`,
-            ...Builder.js(deps[4])
-        );
-
-        return flags;
     }
 
     /**
@@ -939,6 +871,8 @@ class Builder {
 
     private async tscc():Promise<StringMap<Reservoir>> {
         const options = this.options;
+        const bundleCtxt = this.getBundleContext();
+
 
         const preprocessTask = toPromise(
             gulp.src('src/**/*.ts')
@@ -973,12 +907,31 @@ class Builder {
                 .pipe(gulp.dest(PathUtils.tsccPath))
         );
 
-        const bundles = ccPlugin(this.getCcOptions())
+        const compilationStream = await closureTools.compiler([
+            '--charset',                  'UTF-8',
+            '--compilation_level',        'ADVANCED',
+            '--language_in',              'ECMASCRIPT6',
+            '--language_out',             'ECMASCRIPT5',
+            '--assume_function_wrapper',   String(true),
+            '--warning_level',            'VERBOSE',
+            '--strict_mode_input',         String(false),
+            '--externs',                  'src/bundler_supplements/externs/externs.js',
+            '--externs',                   this.paths.tsickleExternsPath,
+            '--rewrite_polyfills',         String(false),
+            '--module_output_path_prefix', this.paths.outputPath + '/'
+        ], [
+            path.join(PathUtils.tsccPath, '**/*.js'),
+            SoyBuilder.soyUtilsUseGoogPath,
+            '!' + this.paths.tsickleExternsPath,
+            '!' + CssBuilder.renamingMapPath
+        ], bundleCtxt.getCcOptions());
+
+        const bundles = compilationStream
             .src()
             .pipe(insert.transform(TextUtils.removeCcExport))
-            .pipe(hydra(this.bundleFilter));
+            .pipe(hydra(bundleCtxt.bundleFilter));
 
-        let bundleNames = this.bundleNames;
+        let bundleNames = bundleCtxt.bundleNames;
         let out:StringMap<Reservoir> = {};
         for (let bundleName of bundleNames) {
             out[bundleName] = new Reservoir(bundles[bundleName]);
@@ -1024,8 +977,6 @@ class Builder {
         insertKey('resource',    'WOFF2_OPENSANS_REGULAR ./assets/fonts/regular/OpenSans-Regular.woff2');
         insertKey('resource',    'WOFF_OPENSANS_SEMIBOLD ./assets/fonts/semibold/OpenSans-SemiBold.woff');
         insertKey('resource',    'WOFF2_OPENSANS_SEMIBOLD ./assets/fonts/semibold/OpenSans-SemiBold.woff2');
-
-
         insertKey('run-at',      'document-start');
 
         if (this.options.channel === Channel.RELEASE) {
@@ -1108,7 +1059,7 @@ class Builder {
 
     async buildExtension(bundles:StringMap<Reservoir>, manifest:string) {
         // bundles other than content_script and page_script are moved to build directory directly.
-        let bundleNames = this.bundleNames;
+        let bundleNames = this.getBundleContext().bundleNames;
 
         let otherBundleTasks = [];
         for (let bundleName of bundleNames) {
@@ -1417,7 +1368,7 @@ gulp.task('i18n-extract', async () => {
         return toPromise(closureTools.extractTemplateMsg([
             `--outputFile`, sauce.xliffPath,
             sauce.soyPath
-        ]).resume());
+        ]).src());
     }));
     log.info("Message extraction has been finished.");
 
