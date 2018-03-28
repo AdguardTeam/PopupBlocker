@@ -1,6 +1,9 @@
 .settings {
     height: 100%;
     display: flex;
+    max-height: 450px;
+    min-height: 450px;
+    overflow-y: auto;
 
     &-modal {
         position: fixed;
@@ -12,7 +15,6 @@
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        background-color: rgba(0, 0, 0, 0.5);
 
         &--show {
             display: flex;
@@ -30,6 +32,7 @@
         &--popup {
             width: 400px;
             min-height: 0;
+            box-shadow: 0 0 10px 1px rgba(72, 70, 70, 0.5);
         }
     }
 
@@ -50,10 +53,6 @@
 
     &__block {
         margin-bottom: 60px;
-
-        &:last-child {
-            margin-bottom: 0;
-        }
     }
 
     &__row {
