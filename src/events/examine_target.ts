@@ -36,18 +36,26 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
         y = touch.clientY;
     }
     if (!target || !isElement(target)) { return; }
-    // Use elementsFromPoint API
+
+    /**
+     * Use Document#elementsFromPoint API to get a candidate of real target.
+     * It is IMPORTANT to call this api on a context where the event is originating from,
+     * otherwise the result can be platform-dependent.
+     */
+    const originDocument = (<MouseEvent|TouchEvent>currentEvent).view.document;
     let candidates:Element[]|NodeListOf<Element>;
-    if (document.elementsFromPoint) {
-        candidates = document.elementsFromPoint(x, y)
-    } else if (document.msElementsFromPoint) {
-        candidates = document.msElementsFromPoint(x, y);
+    if (originDocument.elementsFromPoint) {
+        candidates = originDocument.elementsFromPoint(x, y)
+    } else if (originDocument.msElementsFromPoint) {
+        candidates = originDocument.msElementsFromPoint(x, y);
     } else {
         log.print("elementsFromPoint api is missing, exiting..");
         return;
-        // log something
     }
+
+    if (!candidates) { return; }
     log.print('ElementsFromPoint:', candidates);
+
     // Use Event#deepPath API
     let path:EventTarget[]|undefined;
     if ('path' in currentEvent) {
@@ -122,7 +130,7 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
             if (candidate.parentElement === (candidate = candidates[++i])) { continue; }
             parent = candidate;
             while (parent) {
-                if (hasDefaultHandler(parent)) { 
+                if (hasDefaultHandler(parent)) {
                     check = true;
                     break iterate_candidates;
                 }

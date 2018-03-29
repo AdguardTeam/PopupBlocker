@@ -50,7 +50,17 @@ export function print(str:string, obj?):void {
     console.log(prefix + `[${indentstr}${date}]: ${str}${suffix}`);
     if (obj !== undefined) {
         console.log(prefix + '=============================');
-        console.log(obj);
+        try {
+            console.log(obj);
+            /**
+             * Acconding to testing, Edge 41.16299 throws some errors
+             * while printing some `Proxy` objects in console, such as
+             * new Proxy(window, { get: Reflect.get }).
+             * Strangely, just having a try-catch block enclosing it prevents errors.
+             */
+        } catch(e) {
+            console.log('Object not printed due to an error');
+        }
         console.log(prefix + '=============================');
     }
     // @endif
@@ -60,7 +70,7 @@ export function print(str:string, obj?):void {
  * Accepts a function, and returns a wrapped function that calls `call` and `callEnd`
  * automatically before and after invoking the function, respectively.
  * @param fn A function to wrap
- * @param message 
+ * @param message
  * @param cond optional argument, the function argument will be passed to `cond` function, and
  * its return value will determine whether to call `call` and `callEnd`.
  */

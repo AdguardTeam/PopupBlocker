@@ -22,6 +22,10 @@ const _apply = Function.prototype.apply;
 const _call = Function.prototype.call;
 
 const _toStringFn = Function.prototype.toString;
+const _exec = RegExp.prototype.exec; // Issue 102: Keep native RegExp methods.
+                                     // RegExp.prototype.test, even though being a native function,
+                                     // may call third-party code outside our membrane.
+                                     // Instead, we need to use `exec` whenever possible.
 
 let _reflect;
 if (supported) { _reflect = Reflect.apply; }
@@ -42,7 +46,13 @@ const reIsNative = new RegExp('^' + _toStringFn.call(Object.prototype.hasOwnProp
  */
 const isNativeFn = function (fn:Function):boolean {
     if (typeof fn !== 'function') { return false; }
-    
+
+    if (fn === _bind || fn === _call || fn === _apply || fn === _toStringFn || fn === _exec) {
+        // This is our assumption. If, for example, another browser extension modifies them before us,
+        // It is their responsibility to do so transparently.
+        return true;
+    }
+
     let tostr;
     try {
         tostr = _reflect(_toStringFn, fn, []);
@@ -57,7 +67,7 @@ const isNativeFn = function (fn:Function):boolean {
             return false;
         }
     }
-    return reIsNative.test(tostr);
+    return _reflect(_exec, reIsNative, [tostr]) !== null;
 }
 
 // See HTMLIFrame.ts
@@ -77,7 +87,7 @@ export type ApplyOption = (target:Function, _this:any, _arguments:IArguments|any
  * _this: Event.prototype.addEventListener
  * _arguments: [window, 'click', function() { }]
  * We unproxies 'window' in the above case.
- * 
+ *
  * @param target Must be one of Function#(bind, apply, call).
  * @param _this A function which called (bind, apply, call).
  * @param _arguments
@@ -213,7 +223,7 @@ function copyProperty(orig, wrapped, prop:PropertyKey) {
 }
 
 /**
- * @param option Can be a boolean 'false' to disable logging, or can be a function which accepts the same type 
+ * @param option Can be a boolean 'false' to disable logging, or can be a function which accepts the same type
  * of params as ApplyHandler and returns booleans which indicates whether to log it or not.
  */
 function makeLoggedFunctionWrapper(orig:Function, type:TLEventType, name:PropertyKey, applyHandler?:ApplyHandler, option?:boolean|ApplyOption) {

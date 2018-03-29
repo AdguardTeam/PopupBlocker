@@ -41,7 +41,7 @@ const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this:EventT
                 log.callEnd();
                 return false;
             }
-            log.print("dispatched event's target is contained in the original target.");
+            log.print("dispatched event's target is chainable with the original target.");
         }
         log.print("It passed the test");
         log.callEnd();
