@@ -23,29 +23,24 @@ export default class ExtensionContentScriptApiFacade implements IContentScriptAp
             }
         }
     }
+
+    private whitelist:string[]
     private currentDomainOption:DomainOptionEnum
 
     private receiveSettings(settings:Partial<Settings>) {
-        if (!isUndef(settings.whitelistedDestinations)) {
-            this.whitelistedDestinations = settings.whitelistedDestinations;
+        if (!isUndef(settings.whitelist)) {
+            this.whitelist = settings.whitelist;
         }
         if (!isUndef(settings.domainOption)) {
             this.currentDomainOption = settings.domainOption;
         }
     }
 
-    originIsWhitelisted():boolean {
-        return this.currentDomainOption === DomainOptionEnum.WHITELISTED;
-    }
-    destinationIsWhitelisted(destination:string):boolean {
-        if (isUndef(this.whitelistedDestinations)) {
-            // Settings are not received.
-            return false;
-        }
-        return this.whitelistedDestinations.indexOf(destination) !== -1;
+    originIsWhitelisted(origin:string = location.host):boolean {
+        return this.whitelist.indexOf(origin) !== -1;
     }
     originIsSilenced():boolean {
-        return this.currentDomainOption === DomainOptionEnum.SILENCED;
+        return (this.currentDomainOption & DomainOptionEnum.SILENCED) !== 0;
     }
     showAlert(orig_domain:string, popup_url:string):void {
         log.print('StorageProvider: showAlert');

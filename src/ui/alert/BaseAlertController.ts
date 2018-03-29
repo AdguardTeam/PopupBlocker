@@ -54,7 +54,7 @@ export default abstract class BaseAlertController implements IAlertController {
     private iframeHeight:number
 
     constructor(
-        private storageManager:ISettingsDao,
+        private settingsDao:ISettingsDao,
         private $getURL:(resc_marker:string)=>string
     ) {
         this.updateIframe               = trustedEventListener(this.updateIframe, this);
@@ -220,10 +220,10 @@ export default abstract class BaseAlertController implements IAlertController {
         const selectedValue =  select.value;
         switch (selectedValue) {
             case goog.getCssName('allowFrom'):
-                this.storageManager.setSourceOption(this.origDomain, DomainOptionEnum.WHITELISTED);
+                this.settingsDao.setWhitelist(this.origDomain, true);
                 break;
             case goog.getCssName('silence'):
-                this.storageManager.setSourceOption(this.origDomain, DomainOptionEnum.SILENCED);
+                this.settingsDao.setSourceOption(this.origDomain, DomainOptionEnum.SILENCED);
                 break;
             case goog.getCssName('goPref'):
                 this.openSettingsPage();

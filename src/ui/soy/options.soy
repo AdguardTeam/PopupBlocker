@@ -25,11 +25,10 @@
  */
 {template .content}
     {@param allowedOrigins: list<string>}
-    {@param allowedDestinations: list<string>}
     {@param silencedOrigins: list<string>}
 
     <div class="{css settings__in}">
-        <div class="{css settings__block}" data-for="{css allowed}">
+        <div class="{css settings__block}" data-for="0">
             <div class="{css settings__row}">
                 <div class="{css tooltip-container}">
                     <div class="{css settings__subtitle}">
@@ -58,7 +57,7 @@
         </div>
 
         
-        <div class="{css settings__block}" data-for="{css silenced}">
+        <div class="{css settings__block}" data-for="1">
             <div class="{css settings__row}">
                 <div class="{css settings__subtitle}">
                     {msg desc="Silenced"}silenced{/msg}
@@ -77,31 +76,6 @@
                 <div class="{css settings__row}">
                     <div class="{css settings__name}">
                         {$silencedOrigin}
-                    </div>
-                    <button class="{css settings__del}"></button>
-                </div>
-            {/foreach}
-        </div>
-
-        <div class="{css settings__block}" data-for="{css allowed_dest}">
-            <div class="{css settings__row}">
-                <div class="{css settings__subtitle}">
-                    {msg desc="Allowed as target"}allowed_dest{/msg}
-                </div>
-                <div class="{css settings__control}">
-                    <div class="{css settings__control-item}">
-                        {msg desc="Add"}add{/msg}
-                    </div>
-                </div>
-                <div class="{css settings__row-empty}">
-                    {msg desc="List of allowed target sites is empty"}allowed_dest_empty{/msg}
-                </div>
-            </div>
-
-            {foreach $allowedDest in $allowedDestinations}
-                <div class="{css settings__row}">
-                    <div class="{css settings__name}">
-                        {$allowedDest}
                     </div>
                     <button class="{css settings__del}"></button>
                 </div>

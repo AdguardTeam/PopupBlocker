@@ -7,7 +7,7 @@ import IExtensionSettingsDao, { DomainSettingsCallback } from './IExtensionSetti
 
 export default class ExtensionSettingsDao implements IExtensionSettingsDao {
 
-    private static WHITELISTED_DEST_KEY = 'whitelist';
+    private static WHITELIST = 'whitelist';
 
     private $storage = chrome.storage.local;
 
@@ -17,17 +17,20 @@ export default class ExtensionSettingsDao implements IExtensionSettingsDao {
 
         for (let key in items) {
             if (items.hasOwnProperty(key)) {
-                if (items[key] === DomainOptionEnum.WHITELISTED) {
-                    whitelisted.push(key);
+                if (key === ExtensionSettingsDao.WHITELIST) {
+                    whitelisted = items[key];
                 } else {
-                    silenced.push(key);
+                    let value = items[key];
+                    if ((value & DomainOptionEnum.SILENCED) !== 0) {
+                        silenced.push(key);
+                    }
                 }
             }
         }
 
         whitelisted.sort();
         silenced.sort();
-        
+
         return [whitelisted, silenced];
     }
 
@@ -40,19 +43,43 @@ export default class ExtensionSettingsDao implements IExtensionSettingsDao {
             }, cb);
         }
     }
+    setWhitelist(domain:string, whitelisted:boolean|null, cb?:func):void {
+        this.$storage.get([ExtensionSettingsDao.WHITELIST], (items) => {
+            let whitelist:string[] = items[ExtensionSettingsDao.WHITELIST];
+            let prevWhitelistInd = whitelist.indexOf(domain);
+
+            if (prevWhitelistInd === -1 && whitelisted !== false) {
+                whitelist.push(domain);
+            } else if (prevWhitelistInd !== -1 && whitelisted !== true) {
+                whitelist.splice(prevWhitelistInd, 1);
+            } else {
+                if (!isUndef(cb)) { cb(); }
+                return;
+            }
+
+            this.$storage.set({
+                [ExtensionSettingsDao.WHITELIST]: whitelist
+            }, cb);
+        });
+    }
     enumerateOptions(cb:AllOptionsCallback):void {
         this.$storage.get(null, (items) => {
             cb(ExtensionSettingsDao.itemsToOptions(items));
         });
     }
     getDomainOption(domain:string, cb:DomainSettingsCallback) {
-        this.$storage.get([domain], (items) => {
+        this.$storage.get([ExtensionSettingsDao.WHITELIST, domain], (items) => {
+            let whitelist = items[ExtensionSettingsDao.WHITELIST];
             let domainOption = items[domain];
+
+            if (isUndef(whitelist)) {
+                whitelist = [];
+            }
             if (isUndef(domainOption)) {
                 domainOption = DomainOptionEnum.NONE;
             }
 
-            cb({ domainOption });
+            cb({ whitelist, domainOption });
         });
     }
 
@@ -65,8 +92,8 @@ export default class ExtensionSettingsDao implements IExtensionSettingsDao {
     onDomainSettingsChange(domain:string, cb:DomainSettingsCallback) {
         chrome.storage.onChanged.addListener((changes, namespace) => {
             if (namespace !== 'local') { return; }
-            let domainOption:DomainOptionEnum;
 
+            let domainOption:DomainOptionEnum;
             if (domain in changes) {
                 domainOption = changes[domain].newValue;
                 if (isUndef(domainOption)) { // When a key was removed
@@ -74,7 +101,12 @@ export default class ExtensionSettingsDao implements IExtensionSettingsDao {
                 }
             }
 
-            cb({ domainOption });
+            let whitelist:string[];
+            if (ExtensionSettingsDao.WHITELIST in changes) {
+                whitelist = changes[ExtensionSettingsDao.WHITELIST].newValue;
+            }
+
+            cb({ whitelist, domainOption });
         })
     }
 

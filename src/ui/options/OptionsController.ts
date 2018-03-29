@@ -8,8 +8,7 @@ import popupblockerOptionsUI from 'goog:popupblockerOptionsUI'
 
 const enum DomainIsRelevantFor {
     WHITELISTED,
-    SILENCED,
-    WHITELISTED_AS_DESTINATION
+    SILENCED
 }
 
 export default class OptionsController implements IOptionsController {
@@ -65,13 +64,10 @@ export default class OptionsController implements IOptionsController {
         if (!OptionsController.domainIsValid(value)) { return; }
         switch (this.currentPopupIsFor) {
             case DomainIsRelevantFor.WHITELISTED:
-                this.settingsDao.setSourceOption(value, DomainOptionEnum.WHITELISTED, this.closePopupAndRender);
+                this.settingsDao.setWhitelist(value, true);
                 break;
             case DomainIsRelevantFor.SILENCED:
                 this.settingsDao.setSourceOption(value, DomainOptionEnum.SILENCED, this.closePopupAndRender);
-                break;
-            case DomainIsRelevantFor.WHITELISTED_AS_DESTINATION:
-                this.settingsDao.setIsWhitelistedDestination(value, true, this.closePopupAndRender);
                 break;
         }
     }
@@ -95,12 +91,10 @@ export default class OptionsController implements IOptionsController {
         if (data === null) { return; }
         let whitelisted = data[0];
         let silenced = data[1];
-        let whitelistedDests = data[2];
         // let [whitelisted, silenced, whitelistedDests] = data;
         let template = popupblockerOptionsUI.content({
             allowedOrigins: whitelisted,
             silencedOrigins: silenced,
-            allowedDestinations: whitelistedDests
         });
         document.body.firstElementChild.innerHTML = template;
     }
@@ -132,8 +126,8 @@ export default class OptionsController implements IOptionsController {
         let domain = target.previousElementSibling.textContent.trim();
 
         let isFor = OptionsController.controlElementIsFor(target);
-        if (isFor === DomainIsRelevantFor.WHITELISTED_AS_DESTINATION) {
-            this.settingsDao.setIsWhitelistedDestination(domain, false);
+        if (isFor === DomainIsRelevantFor.WHITELISTED) {
+            this.settingsDao.setWhitelist(domain, false);
         } else {
             this.settingsDao.setSourceOption(domain, DomainOptionEnum.NONE);
         }
@@ -150,16 +144,7 @@ export default class OptionsController implements IOptionsController {
     private static isForSelector = `[${OptionsController.isForAttrName}]`
     private static controlElementIsFor(elem:Element):DomainIsRelevantFor {
         let blockEl = elem.closest(OptionsController.isForSelector);
-        return OptionsController.attrToEnum[blockEl.getAttribute(OptionsController.isForAttrName)];
-    }
-
-    // Instead of hard-coding `DomainIsRelevantFor` enum in the html,
-    // We store a map mapping html attribute to the enum here, in order to
-    // achieve separation of concerns.
-    private static attrToEnum = {
-        [goog.getCssName('allowed')]: DomainIsRelevantFor.WHITELISTED,
-        [goog.getCssName('silenced')]: DomainIsRelevantFor.SILENCED,
-        [goog.getCssName('allowed_dest')]: DomainIsRelevantFor.WHITELISTED_AS_DESTINATION
+        return parseInt(blockEl.getAttribute(OptionsController.isForAttrName));
     }
 
     private static domainRegex =  /^((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}(?:\:[\d]{0,5})?$/;

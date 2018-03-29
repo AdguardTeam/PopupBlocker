@@ -7,7 +7,8 @@
  */
 
 export interface Settings {
-    domainOption:DomainOptionEnum,
+    whitelist:string[]
+    domainOption:DomainOptionEnum
 }
 
 // CT ➜ PG

@@ -5,6 +5,7 @@ import * as log from '../../../shared/log';
 import II18nService from '../../../localization/II18nService';
 import adguard from '../../../content_script_namespace';
 import IExtensionSettingsDao from './storage/IExtensionSettingsDao';
+import { isUndef } from '../../../shared/instanceof';
 
 const domain = location.host;
 
@@ -43,11 +44,16 @@ function linkPageScript (settingsDao:IExtensionSettingsDao, alertController:IAle
     function updateIcon(settings:Partial<Settings>) {
         // Send message from top frames only
         if (top !== window) { return; }
-        if (settings.domainOption === DomainOptionEnum.WHITELISTED) {
-            chrome.runtime.sendMessage(BGMsgTypesEnum.SET_ICON_AS_DISABLED);
-        } else {
-            chrome.runtime.sendMessage(BGMsgTypesEnum.SET_ICON_AS_ENABLED);
-        }
+
+        let whitelist = settings.whitelist;
+
+        if (isUndef(whitelist)) { return; }
+
+        const message = whitelist.indexOf(domain) === -1 ?
+            BGMsgTypesEnum.SET_ICON_AS_ENABLED :
+            BGMsgTypesEnum.SET_ICON_AS_DISABLED;
+
+        chrome.runtime.sendMessage(message);
     }
 
     initialSettingsReceived.then(updateIcon)
@@ -74,22 +80,10 @@ function linkPageScript (settingsDao:IExtensionSettingsDao, alertController:IAle
 }
 
 function linkBackgroundScript(settingsDao:IExtensionSettingsDao) {
-    const onPrevSettingsReceived = (settings:Settings) => {
-        let prevDomainOption = settings.domainOption;
-        let nextDomainOption:DomainOptionEnum;
-        if (prevDomainOption === DomainOptionEnum.WHITELISTED) {
-            nextDomainOption = DomainOptionEnum.NONE;
-        } else {
-            nextDomainOption = DomainOptionEnum.WHITELISTED;
-        }
-
-        settingsDao.setSourceOption(domain, nextDomainOption);
-    };
-
     const onMessage = (message:FromBGMsgTypesEnum) => {
         switch (message) {
             case FromBGMsgTypesEnum.ICON_CLICKED:
-                settingsDao.getDomainOption(domain, onPrevSettingsReceived);
+                settingsDao.setWhitelist(domain, null);
             break;
         }
     };

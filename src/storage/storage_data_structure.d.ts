@@ -14,7 +14,6 @@ interface DomainOption {
  * Storage type used in >=2.2.
  */
 declare const enum DomainOptionEnum {
-    NONE,
-    SILENCED,
-    WHITELISTED
+    NONE     = 0 << 0,
+    SILENCED = 1 << 0
 }
