@@ -7,7 +7,7 @@
  */
 
 export interface Settings {
-    whitelist:string[]
+    $whitelist:string[]
     domainOption:DomainOptionEnum
 }
 

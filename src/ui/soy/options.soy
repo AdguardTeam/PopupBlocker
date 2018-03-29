@@ -34,7 +34,7 @@
                     <div class="{css settings__subtitle}">
                         {msg desc="Allowed"}allowed{/msg}
                     </div>
-                    <div data-tooltip="This is help tooltip Please read me" class="{css tooltip}"></div>
+                    <div data-tooltip="{msg desc="Popups will be allowed for domains listed here."}allowed_tooltip{/msg}" class="{css tooltip}"></div>
                 </div>
                 <div class="{css settings__control}">
                     <button class="{css settings__control-item}">
@@ -59,9 +59,13 @@
         
         <div class="{css settings__block}" data-for="1">
             <div class="{css settings__row}">
-                <div class="{css settings__subtitle}">
-                    {msg desc="Silenced"}silenced{/msg}
+                <div class="{css tooltip-container}">
+                    <div class="{css settings__subtitle}">
+                        {msg desc="Silenced"}silenced{/msg}
+                    </div>
                 </div>
+                <div data-tooltip="{msg desc="Notifications for blocked popups will not be shown for domains listed here."}silenced_tooltip{/msg}" class="{css tooltip}"></div>
+                
                 <div class="{css settings__control}">
                     <div class="{css settings__control-item}">
                         {msg desc="Add"}add{/msg}

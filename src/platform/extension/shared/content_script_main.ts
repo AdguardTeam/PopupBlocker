@@ -45,7 +45,7 @@ function linkPageScript (settingsDao:IExtensionSettingsDao, alertController:IAle
         // Send message from top frames only
         if (top !== window) { return; }
 
-        let whitelist = settings.whitelist;
+        let whitelist = settings.$whitelist;
 
         if (isUndef(whitelist)) { return; }
 

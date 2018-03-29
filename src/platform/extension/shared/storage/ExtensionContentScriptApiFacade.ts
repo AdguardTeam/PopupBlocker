@@ -28,8 +28,8 @@ export default class ExtensionContentScriptApiFacade implements IContentScriptAp
     private currentDomainOption:DomainOptionEnum
 
     private receiveSettings(settings:Partial<Settings>) {
-        if (!isUndef(settings.whitelist)) {
-            this.whitelist = settings.whitelist;
+        if (!isUndef(settings.$whitelist)) {
+            this.whitelist = settings.$whitelist;
         }
         if (!isUndef(settings.domainOption)) {
             this.currentDomainOption = settings.domainOption;

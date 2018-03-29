@@ -4,6 +4,7 @@ import { isUndef } from '../../../../shared/instanceof';
 import OptionsController from '../../../../ui/options/OptionsController';
 import { Settings } from '../message_types';
 import IExtensionSettingsDao, { DomainSettingsCallback } from './IExtensionSettingsDao';
+import * as log from '../../../../shared/log';
 
 export default class ExtensionSettingsDao implements IExtensionSettingsDao {
 
@@ -35,6 +36,7 @@ export default class ExtensionSettingsDao implements IExtensionSettingsDao {
     }
 
     setSourceOption(domain:string, option:DomainOptionEnum, cb?:func):void {
+        log.print('setting source option', option);
         if (option === DomainOptionEnum.NONE) {
             this.$storage.remove(domain, cb)
         } else {
@@ -44,8 +46,9 @@ export default class ExtensionSettingsDao implements IExtensionSettingsDao {
         }
     }
     setWhitelist(domain:string, whitelisted:boolean|null, cb?:func):void {
+        log.print('setting whitelist', whitelisted);
         this.$storage.get([ExtensionSettingsDao.WHITELIST], (items) => {
-            let whitelist:string[] = items[ExtensionSettingsDao.WHITELIST];
+            let whitelist:string[] = items[ExtensionSettingsDao.WHITELIST] || [];
             let prevWhitelistInd = whitelist.indexOf(domain);
 
             if (prevWhitelistInd === -1 && whitelisted !== false) {
@@ -69,17 +72,17 @@ export default class ExtensionSettingsDao implements IExtensionSettingsDao {
     }
     getDomainOption(domain:string, cb:DomainSettingsCallback) {
         this.$storage.get([ExtensionSettingsDao.WHITELIST, domain], (items) => {
-            let whitelist = items[ExtensionSettingsDao.WHITELIST];
+            let $whitelist = items[ExtensionSettingsDao.WHITELIST];
             let domainOption = items[domain];
 
-            if (isUndef(whitelist)) {
-                whitelist = [];
+            if (isUndef($whitelist)) {
+                $whitelist = [];
             }
             if (isUndef(domainOption)) {
                 domainOption = DomainOptionEnum.NONE;
             }
 
-            cb({ whitelist, domainOption });
+            cb({ $whitelist, domainOption });
         });
     }
 
@@ -101,12 +104,12 @@ export default class ExtensionSettingsDao implements IExtensionSettingsDao {
                 }
             }
 
-            let whitelist:string[];
+            let $whitelist:string[];
             if (ExtensionSettingsDao.WHITELIST in changes) {
-                whitelist = changes[ExtensionSettingsDao.WHITELIST].newValue;
+                $whitelist = changes[ExtensionSettingsDao.WHITELIST].newValue;
             }
 
-            cb({ whitelist, domainOption });
+            cb({ $whitelist, domainOption });
         })
     }
 
