@@ -29,3 +29,4 @@ setTimeout(() => {
     clearInterval(interval);
     document.body.innerHTML = "Userscript is not installed.";
 }, MAX_USERSCRIPT_WAITING_TIME);
+

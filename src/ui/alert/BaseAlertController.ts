@@ -57,7 +57,7 @@ export default abstract class BaseAlertController implements IAlertController {
         private settingsDao:ISettingsDao,
         private $getURL:(resc_marker:string)=>string
     ) {
-        this.updateIframe               = trustedEventListener(this.updateIframe, this);
+        this.initializeIframe               = trustedEventListener(this.initializeIframe, this);
         this.onCloseClick               = trustedEventListener(this.onCloseClick, this);
         this.onPinClick                 = trustedEventListener(this.onPinClick, this);
         this.onContinueBlockingClick    = trustedEventListener(this.onContinueBlockingClick, this);
@@ -99,7 +99,7 @@ export default abstract class BaseAlertController implements IAlertController {
         let iframe = this.iframe = document.createElement('iframe');
         iframe.setAttribute('allowTransparency', 'true');
 
-        iframe.addEventListener('load', this.updateIframe);
+        iframe.addEventListener('load', this.initializeIframe);
         iframe.addEventListener('load', () => {
             // Without this, the background of the iframe will be white in IE11
             this.frameDoc.body.setAttribute('style', 'background-color:transparent;');
@@ -135,7 +135,6 @@ export default abstract class BaseAlertController implements IAlertController {
         this.destUrl = destUrl;
 
         if (!this.iframe) {
-            this.collapsed = true;
             this.appendIframe();
         } else {
             this.updateIframeContent();
@@ -157,13 +156,30 @@ export default abstract class BaseAlertController implements IAlertController {
         this.iframe.style.height = (this.iframeHeight -= offsetTop - BaseAlertController.BLUR_OFFSET) + px;
     }
 
-    private updateIframe(evt?:Event) {
+    private initializeIframe(evt?:Event) {
         const document = this.frameDoc = this.iframe.contentDocument;
+
+        // New alerts are created in an expanded state,
+        // and collapsed in 10 sec if there is no user interaction.
+        this.collapsed = false;
+        let autoCollapseTimer = setTimeout(() => {
+            if (this.collapsed === false) {
+                this.toggleCollapse();
+            }
+            this.frameDoc.removeEventListener('click', preventAutoCollapse);
+        }, 10 * 1000);
+        const preventAutoCollapse = trustedEventListener((evt) => {
+            clearTimeout(autoCollapseTimer);
+            this.frameDoc.removeEventListener('click', preventAutoCollapse);
+        }, this);
+        this.frameDoc.addEventListener('click', preventAutoCollapse);
+
+        // Render template
         const template = popupblockerUI.head({
             cssText: soydata_VERY_UNSAFE.ordainSanitizedHtml(this.getCssText())
-        });
-        
+        }); 
         document.documentElement.innerHTML = template;
+
         this.updateIframeContent();
     }
 
@@ -212,7 +228,7 @@ export default abstract class BaseAlertController implements IAlertController {
         }
     }
     private onContinueBlockingClick(evt:MouseEvent) {
-        this.destroy();
+        this.destroyAlert();
     }
 
     private onOptionChange(evt:Event) {
@@ -234,7 +250,7 @@ export default abstract class BaseAlertController implements IAlertController {
         }
     }
 
-    private destroy() {
+    private destroyAlert() {
         let iframe = this.iframe;
         if (iframe) {
             iframe.parentNode.removeChild(iframe);
