@@ -20,7 +20,7 @@ interface cloneIntoOption {
 
 declare function createObjectIn(target:object, option:DefineAs):any;
 declare function cloneInto<T extends Object>(obj:T, target:object, option?:cloneIntoOption):T;
-declare function exportFunction<T extends (...args)=>any>(fn:T, obj:object, option:exportFunctionOption):T
+declare function exportFunction<T extends (...args)=>any>(fn:T, obj:object, option?:exportFunctionOption):T
 
 // API specific to AdGuard userscript engine
 

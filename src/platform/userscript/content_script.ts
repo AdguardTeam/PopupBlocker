@@ -32,5 +32,17 @@ if (csApiFacade.envIsFirefoxGreasemonkey) {
     popupBlocker(win, undefined, BRIDGE_KEY);
 }
 
-//
+/**
+ * Expose GM_api on options page.
+ */
+function isOptionsPage() {
+    return location.href === 'https://adguardteam.github.io/PopupBlocker/options.html';
+}
+
+if (isOptionsPage()) {
+    unsafeWindow["GM_getValue"] = exportFunction(GM_getValue, unsafeWindow);
+    unsafeWindow["GM_setValue"] = exportFunction(GM_setValue, unsafeWindow);
+    unsafeWindow["GM_listValues"] = exportFunction(GM_listValues, unsafeWindow);
+}
+
 declare var RESOURCE_PAGE_SCRIPT;
