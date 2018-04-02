@@ -69,7 +69,7 @@ export default abstract class BaseAlertController implements IAlertController {
     private static initialAlertFrameStyle = [
         "position", "fixed",
         "right",     0 + px,
-        "bottom",    0 + px,
+        "top",       0 + px,
         "border",   "none" ,
         "z-index",   String(-1 - (1 << 31))
     ];
