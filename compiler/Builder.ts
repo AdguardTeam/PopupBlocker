@@ -55,7 +55,7 @@ export default class Builder {
             = this.paths;
 
         if (this.options.isSettingsOnly) {
-            return ctxt.addModule(optionsEntry);
+            return ctxt.addModule(optionsEntry, [], [CssBuilder.renamingMapPath]);
         }
 
         const settings = new BundleEntry("settings", {}, this.options);
@@ -91,13 +91,6 @@ export default class Builder {
             );
     }
 
-    private getUserscriptOptionsPageBundleContext() {
-        const ctxt = new BundleContext();
-        const { optionsEntry } = this.paths;
-        ctxt.addModule(optionsEntry);
-        return ctxt;
-    }
-
     private async clean() {
         await fsExtra.remove(PathUtils.outputDir);
         await Promise.all([this.paths.outputPath, PathUtils.tsccPath]
@@ -113,7 +106,7 @@ export default class Builder {
         await Promise.all(dirs.map(dir => fsExtra.remove(dir)));
     }
 
-    private static MAX_BUILD_TIMEOUT = 1000 * 60 * 10; // 10 minutes
+    private static readonly MAX_BUILD_TIMEOUT = 1000 * 60 * 10; // 10 minutes
     private static onBuildTimeout() {
         log.error("Build Timeout");
         process.exit(1);
@@ -211,7 +204,6 @@ export default class Builder {
         await Promise.all(tasks);
     }
 
-
     async build() {
         this.buildTimer = setTimeout(Builder.onBuildTimeout, Builder.MAX_BUILD_TIMEOUT);
 
@@ -246,7 +238,7 @@ export default class Builder {
 
             log.info("Main task end");
 
-            await this.cleanBuildArtifacts();
+            // await this.cleanBuildArtifacts();
         } catch (e) {
             log.error("Build Error");
             log.error(e);

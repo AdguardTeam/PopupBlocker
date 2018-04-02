@@ -85,7 +85,7 @@ export default class Bundler {
 
         log.info("Tsickle start");
         const result:0|1 = tsickleMain(
-            `--externs=${PathUtils.tsccPath}/generated-externs.js --typed -- -p tasks/tscc`
+            `--externs=${PathUtils.tsccPath}/generated-externs.js --typed -- -p compiler/bundle`
                 .split(' ')
         );
         log.info("Tsickle end");

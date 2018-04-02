@@ -37,7 +37,6 @@ export default class CssBuilder implements IResourceProvider {
             return path.join(PathUtils.postCssPath, this.fileName + '.pcss');
         }
     }
-    
 
     private getSourceOutPath(src:ICssSource) {
         return path.join(this.paths.assetOutputPath, 'css', src.fileName + '.css');

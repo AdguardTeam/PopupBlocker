@@ -1,13 +1,21 @@
 import typescript2 = require('rollup-plugin-typescript2');
 import BundleEntry from './BundleEntry';
 
-
+/**
+ * BundleContext encodes dependency information.
+ * Use `addModule` and `addRollupExternalDeps` methods to provide information.
+ * Other public methods and properties provide information extracted from it.
+ */
 export default class BundleContext {
     private modules:{
         entry:BundleEntry,
         deps:BundleEntry[],
         extraSources:string[]
     }[] = [];
+    /**
+     * It declares a module having an entry point `entry` and depending on `...deps` modules.
+     * `extraSources` parameter directly corresponds to `closure-tools-helper`'s 'extraSources' option.
+     */
     addModule(entry:BundleEntry, deps:BundleEntry[] = [], extraSources:string[] = []):this {
         this.modules.push({entry, deps, extraSources});
         return this;
@@ -26,17 +34,28 @@ export default class BundleContext {
         }
     };
     private rollupExternalDepsMap:StringMap<string> = Object.create(null);
+    /**
+     * Tells rollup to resolve "import .. from `${moduleId}`" to
+     * a file located in `path`.
+     * It is used to resolve closure-compiler-specific `goog:...` modules.
+     */
     addRollupExternalDeps(moduleId:string, path:string):this {
         this.rollupExternalDepsMap[moduleId] = path;
         return this;
     }
-    private static emptyBundleId = "\0empty_bundle_id";
+    private static readonly emptyBundleId = "\0empty_bundle_id";
+    /**
+     * This rollup plugin does 2 things:
+     *  1. Resolves external deps known to the context
+     *  2. Generates empty bundles for certain entry points
+     * {@link https://github.com/rollup/rollup/wiki/Plugins#creating-plugins}
+     */
     private get rollupExternalModuleLinker() {
         return {
             resolveId: (importee, importer) => {
                 let depsPath = this.rollupExternalDepsMap[importee];
                 if (depsPath) {
-                    return require('path').resolve(__dirname, depsPath);
+                    return require('path').resolve(process.cwd(), depsPath);
                     // Using 'posix' does not work well with rollup internals
                 }
                 if (importee.startsWith(BundleContext.emptyBundleId)) {

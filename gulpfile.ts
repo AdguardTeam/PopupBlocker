@@ -2,9 +2,6 @@ import { posix as path }  from 'path';
 import * as fs from 'async-file';
 import * as fsExtra from 'fs-extra';
 
-import Reservoir from './tasks/Reservoir';
-import toPromise from './tasks/to_promise';
-
 import log = require('fancy-log');
 
 import gulp = require('gulp');
@@ -21,13 +18,12 @@ import InlineResource = require('inline-resource-literal');
 import typescript = require('@alexlur/rollup-plugin-typescript');
 import typescript2 = require('rollup-plugin-typescript2');
 
-import { main as tsickleMain } from './tasks/tscc/third-party/tsickle/main';
-
 import * as closureTools from 'closure-tools-helper';
 
 import { BuildTarget, Channel, BuildOption } from './compiler/BuildOption';
 import Builder from './compiler/Builder';
 import PathUtils from './compiler/PathUtils';
+import { toPromise } from './compiler/utils/to_promise';
 
 /******************************************************************************************************/
 

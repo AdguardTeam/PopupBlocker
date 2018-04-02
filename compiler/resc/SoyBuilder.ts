@@ -96,7 +96,7 @@ export default class SoyBuilder implements IResourceProvider {
             await SoyBuilder.compileRollup(sauces.map(sauce => sauce.soyPath));
             // Compiled sources are inlined (mostly to rollup shims module)
             sauces.forEach(sauce => {
-                resc.registerInlinedResource(`${sauce.name}_TEMPLATE_ROLLUP`, sauce.rollupPath);
+                resc.registerInlinedResource(`${sauce.name.toUpperCase()}_TEMPLATE_ROLLUP`, sauce.rollupPath);
             });
             resc.registerInlinedResource("SOYUTILS", SoyBuilder.soyUtilsPath);
         }
