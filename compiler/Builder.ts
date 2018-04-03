@@ -242,7 +242,7 @@ export default class Builder {
 
             log.info("Main task end");
 
-            // await this.cleanBuildArtifacts();
+            await this.cleanBuildArtifacts();
         } catch (e) {
             log.error("Build Error");
             log.error(e);
