@@ -24,8 +24,8 @@ export default class ExtensionContentScriptApiFacade implements IContentScriptAp
         }
     }
 
-    private whitelist:string[]
-    private currentDomainOption:DomainOptionEnum
+    private whitelist:string[] = [];
+    private currentDomainOption:DomainOptionEnum = DomainOptionEnum.NONE;
 
     private receiveSettings(settings:Partial<Settings>) {
         if (!isUndef(settings.$whitelist)) {

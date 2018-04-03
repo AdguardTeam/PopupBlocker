@@ -46,7 +46,11 @@ export default class UserscriptSettingsDao implements IUserscriptSettingsDao {
     static readonly WHITELIST = "whitelist";
     private static getWhitelist():string[] {
         let whitelistStringified:string = GM_getValue(UserscriptSettingsDao.WHITELIST)
-        return isUndef(whitelistStringified) ? [] : whitelistStringified.split(',');
+        if (isUndef(whitelistStringified) || whitelistStringified.length === 0) {
+            // Discard zero-length string
+            return [];
+        }
+        return whitelistStringified.split(',');
     }
     setWhitelist(domain:string, whitelisted:boolean|null, cb?:func):void {
         let whitelist = UserscriptSettingsDao.getWhitelist();
