@@ -33,19 +33,19 @@
         </div>
         <div class="{css alert__btns}">
             <select class="{css alert__select}" name="options">
-                <option class="{css alert__options}" disabled selected>
+                <option value="0" disabled selected>
                     {msg desc="Options"}options{/msg}
                 </option>
-                <option class="{css alert__options}" value="{css allowFrom}">
+                <option value="1">
                    {{msg desc="Allow pop-ups for {$origDomain}"}}allow_from{$origDomain}{/msg}
                 </option>
-                <option class="{css alert__options}" value="{css silence}">
+                <option value="2">
                     {{msg desc="Don't show this message on {$origDomain}"}}silence_noti{$origDomain}{/msg}
                 </option>
-                <option class="{css alert__options}" value="{css goPref}">
+                <option value="3">
                     {msg desc="Manage preferences..."}manage_pref{/msg}
                 </option>
-                <option class="{css alert__options}" value="{css showPopup}">
+                <option value="4">
                     {{msg desc="Show {$destUrl}"}}show_popup{$destUrl}{/msg}
                 </option>
             </select>

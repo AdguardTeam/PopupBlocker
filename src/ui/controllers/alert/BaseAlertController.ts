@@ -1,13 +1,15 @@
-/// <reference path="../../../node_modules/closure-library.ts/closure-library.d.ts/all.d.ts"/>
-/// <reference path="../../../node_modules/closure-tools-helper/soyutils.d.ts"/>
+/// <reference path="../../../../node_modules/closure-library.ts/closure-library.d.ts/all.d.ts"/>
+/// <reference path="../../../../node_modules/closure-tools-helper/soyutils.d.ts"/>
 
-import ISettingsDao from "../../storage/ISettingsDao";
+import ISettingsDao from "../../../storage/ISettingsDao";
 import IAlertController from "./IAlertController";
-import { trustedEventListener, getByClsName } from "../ui_utils";
-import { isUndef } from "../../shared/instanceof";
-import { shadowDomV1Support } from '../../shared/dom';
+import { trustedEventListener, getByClsName, bind } from "../../ui_utils";
+import { isUndef } from "../../../shared/instanceof";
+import { shadowDomV1Support } from '../../../shared/dom';
 import popupblockerUI from 'goog:popupblockerUI';
 import soydata_VERY_UNSAFE from 'goog:soydata.VERY_UNSAFE';
+import ToastController from "../toast/ToastController";
+import adguard from '../../../content_script_namespace';
 
 const px = 'px';
 
@@ -53,15 +55,21 @@ export default abstract class BaseAlertController implements IAlertController {
     private iframeWidth:number
     private iframeHeight:number
 
+    private toastController:ToastController
+    private static TOAST_DURATION = 2 * 1000 // 2 seconds
+
+
     constructor(
         private settingsDao:ISettingsDao,
         private $getURL:(resc_marker:string)=>string
     ) {
-        this.initializeIframe               = trustedEventListener(this.initializeIframe, this);
+        this.initializeIframe           = trustedEventListener(this.initializeIframe, this);
         this.onCloseClick               = trustedEventListener(this.onCloseClick, this);
         this.onPinClick                 = trustedEventListener(this.onPinClick, this);
         this.onContinueBlockingClick    = trustedEventListener(this.onContinueBlockingClick, this);
         this.onOptionChange             = trustedEventListener(this.onOptionChange, this);
+
+        this.notifyAboutSavedSettings   = bind.call(this.notifyAboutSavedSettings, this);
     }
 
     private static BLUR_OFFSET = 10 + 3; // Specified in styles as box-shadow: 0 0 10px 3px
@@ -179,7 +187,8 @@ export default abstract class BaseAlertController implements IAlertController {
             cssText: soydata_VERY_UNSAFE.ordainSanitizedHtml(this.getCssText())
         }); 
         document.documentElement.innerHTML = template;
-
+       
+        // Render contents
         this.updateIframeContent();
     }
 
@@ -210,6 +219,9 @@ export default abstract class BaseAlertController implements IAlertController {
         continueBtn.addEventListener('click', this.onContinueBlockingClick);
         select.addEventListener('change', this.onOptionChange);
 
+        // Register toast controller
+        this.toastController = new ToastController(this.alertRoot, BaseAlertController.TOAST_DURATION);
+
         // The template is rendered in a collapsed state.
         if (!this.collapsed) {
             this.alertRoot.classList.add(goog.getCssName('alert--show'));
@@ -235,18 +247,26 @@ export default abstract class BaseAlertController implements IAlertController {
         const select = <HTMLSelectElement>evt.target;
         const selectedValue =  select.value;
         switch (selectedValue) {
-            case goog.getCssName('allowFrom'):
-                this.settingsDao.setWhitelist(this.origDomain, true);
+            case "1":
+                this.settingsDao.setWhitelist(this.origDomain, true, this.notifyAboutSavedSettings);
                 break;
-            case goog.getCssName('silence'):
-                this.settingsDao.setSourceOption(this.origDomain, DomainOptionEnum.SILENCED);
+            case "2":
+                this.settingsDao.setSourceOption(this.origDomain, DomainOptionEnum.SILENCED, this.notifyAboutSavedSettings);
                 break;
-            case goog.getCssName('goPref'):
+            case "3":
                 this.openSettingsPage();
                 break;
-            case goog.getCssName('showPopup'):
+            case "4":
                 window.open(this.destUrl, '_blank');
                 break;
+        }
+        select.value = "0";
+    }
+
+    private notifyAboutSavedSettings() {
+        let toastController = this.toastController;
+        if (toastController) {
+            toastController.showNotification(adguard.i18nService.$getMessage("settings_saved"));
         }
     }
 
@@ -261,6 +281,11 @@ export default abstract class BaseAlertController implements IAlertController {
         if (shadowHostEl) {
             shadowHostEl.parentNode.removeChild(shadowHostEl);
             this.shadowHostEl = undefined;
+        }
+        let toastController = this.toastController;
+        if (toastController) {
+            toastController.dismissCurrentNotification();
+            this.toastController = undefined;
         }
     }
 

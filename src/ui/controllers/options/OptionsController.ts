@@ -1,11 +1,11 @@
-/// <reference path="../../../node_modules/closure-library.ts/closure-library.d.ts/all.d.ts"/>
+/// <reference path="../../../../node_modules/closure-library.ts/closure-library.d.ts/all.d.ts"/>
 
-import ISettingsDao, { AllOptions } from "../../storage/ISettingsDao";
-import { isUndef, isElement } from "../../shared/instanceof";
-import { trustedEventListener, getByClsName } from "../ui_utils";
+import ISettingsDao, { AllOptions } from "../../../storage/ISettingsDao";
+import { isUndef, isElement } from "../../../shared/instanceof";
+import { trustedEventListener, getByClsName } from "../../ui_utils";
 import IOptionsController from "./IOptionsController";
 import popupblockerOptionsUI from 'goog:popupblockerOptionsUI'
-import * as log from '../../shared/log';
+import * as log from '../../../shared/log';
 
 const enum DomainIsRelevantFor {
     WHITELISTED,

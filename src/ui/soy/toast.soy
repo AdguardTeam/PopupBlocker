@@ -1,0 +1,14 @@
+{namespace popupblockerNotificationUI}
+
+/**
+ * Template for toast notification
+ * See https://github.com/AdguardTeam/PopupBlocker/issues/103
+ */
+{template .toast}
+    {@param message: string}
+    <div class="{css toast}">
+        <div class="{css toast__in}">
+            {$message}
+        </div>
+    </div>
+{/template}

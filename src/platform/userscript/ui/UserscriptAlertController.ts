@@ -1,4 +1,4 @@
-import BaseAlertController from "../../../ui/alert/BaseAlertController";
+import BaseAlertController from "../../../ui/controllers/alert/BaseAlertController";
 
 export default class UserscriptAlertController extends BaseAlertController {
     private static OPTIONS_PAGE_URL = 'https://adguardteam.github.io/PopupBlocker/options.html';

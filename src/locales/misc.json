@@ -15,5 +15,8 @@
     },
     "aborted_popunder_execution": {
         "message": "PopupBlocker aborted a script execution to prevent background redirect"
+    },
+    "settings_saved": {
+        "message": "Settings saved"
     }
 }

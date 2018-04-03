@@ -1,4 +1,4 @@
-import BaseAlertController from "../../../../ui/alert/BaseAlertController";
+import BaseAlertController from "../../../../ui/controllers/alert/BaseAlertController";
 import chrome from '../platform_namespace';
 import { BGMsgTypesEnum } from "../message_types";
 

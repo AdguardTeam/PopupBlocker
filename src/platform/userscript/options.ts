@@ -4,7 +4,7 @@
 
 import adguard from '../../content_script_namespace';
 import UserscriptSettingsDao from './storage/UserscriptSettingsDao';
-import OptionsController from '../../ui/options/OptionsController';
+import OptionsController from '../../ui/controllers/options/OptionsController';
 import getMessage from './get_message';
 import I18nService from '../../localization/I18nService';
 
