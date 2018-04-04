@@ -13,6 +13,36 @@ import adguard from '../../../content_script_namespace';
 
 const px = 'px';
 
+/**************************************************************************************************/
+
+/**
+ * These magic numbers are dictated in the CSS.
+ * These are base of position calculation; There are other constants that are
+ * dictated in the CSS such as the width of the alert, but we instead read it from
+ * `HTMLElement.clientWidth` to reduce coupling with CSS.
+ */
+const PIN_TOP = 50;
+const PIN_RIGHT = 50;
+const ALERT_TOP_REL_PIN = -37;
+const ALERT_RIGHT_REL_PIN = 50;
+/**
+ * Specified in styles as box-shadow: 0 0 10px 3px
+ * https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow#<blur-radius>
+ */
+const BLUR_OFFSET = 10 / 2 + 3;
+
+const PIN_OFFSET_RIGHT = BLUR_OFFSET;
+const IFRAME_RIGHT = PIN_RIGHT - PIN_OFFSET_RIGHT;
+
+const PIN_OFFSET_TOP_COLLAPSED = BLUR_OFFSET;
+const IFRAME_TOP_COLLAPSED = PIN_TOP - PIN_OFFSET_TOP_COLLAPSED;
+
+const ALERT_OFFSET_TOP_EXPANDED = BLUR_OFFSET;
+const PIN_OFFSET_TOP_EXPANDED = ALERT_OFFSET_TOP_EXPANDED - ALERT_TOP_REL_PIN;
+const IFRAME_TOP_EXPANDED = PIN_TOP - PIN_OFFSET_TOP_EXPANDED;
+
+/**************************************************************************************************/
+
 export default abstract class BaseAlertController implements IAlertController {
 
     private static fontsDir = '/assets/fonts/';
@@ -154,53 +184,21 @@ export default abstract class BaseAlertController implements IAlertController {
         this.updatePosition();
     }
 
-    /**
-     * These magic numbers are dictated in the CSS.
-     * These are base of position calculation; There are other constants that are
-     * dictated in the CSS such as the width of the alert, but we instead read it from
-     * `HTMLElement.clientWidth` to reduce coupling with CSS.
-     */
-    private static readonly PIN_TOP = 50;
-    private static readonly PIN_RIGHT = 50;
-    private static readonly ALERT_TOP_REL_PIN = -37;
-    private static readonly ALERT_RIGHT_REL_PIN = 50;
-    /**
-     * Specified in styles as box-shadow: 0 0 10px 3px
-     * https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow#<blur-radius>
-     */
-    private static BLUR_OFFSET = 10 / 2 + 3;
-
-
-    private static readonly PIN_OFFSET_RIGHT = BaseAlertController.BLUR_OFFSET;
-    private static readonly IFRAME_RIGHT = BaseAlertController.PIN_RIGHT - BaseAlertController.PIN_OFFSET_RIGHT;
-
-    private static readonly PIN_OFFSET_TOP_COLLAPSED = BaseAlertController.BLUR_OFFSET;
-    private static readonly IFRAME_TOP_COLLAPSED =
-        BaseAlertController.PIN_TOP - BaseAlertController.PIN_OFFSET_TOP_COLLAPSED;
-
-    private static readonly ALERT_OFFSET_TOP_EXPANDED = BaseAlertController.BLUR_OFFSET;
-    private static readonly PIN_OFFSET_TOP_EXPANDED =
-        BaseAlertController.ALERT_OFFSET_TOP_EXPANDED - BaseAlertController.ALERT_TOP_REL_PIN;
-    private static readonly IFRAME_TOP_EXPANDED =
-        BaseAlertController.PIN_TOP - BaseAlertController.PIN_OFFSET_TOP_EXPANDED;
-
     private updatePinRootHeight() {
-        let pinOffsetTop = this.collapsed ? BaseAlertController.PIN_OFFSET_TOP_COLLAPSED : BaseAlertController.PIN_OFFSET_TOP_EXPANDED;
+        let pinOffsetTop = this.collapsed ? PIN_OFFSET_TOP_COLLAPSED : PIN_OFFSET_TOP_EXPANDED;
         this.pinRoot.style.top = pinOffsetTop + px;
     }
 
     private updateIframePosition() {
         let iframeStyle = this.iframe.style;
-        iframeStyle.right = BaseAlertController.IFRAME_RIGHT + px;
-        iframeStyle.top = (this.collapsed ?
-            BaseAlertController.IFRAME_TOP_COLLAPSED :
-            BaseAlertController.IFRAME_TOP_EXPANDED) + px;
+        iframeStyle.right = IFRAME_RIGHT + px;
+        iframeStyle.top = (this.collapsed ? IFRAME_TOP_COLLAPSED : IFRAME_TOP_EXPANDED) + px;
 
         let { offsetLeft, offsetTop, offsetHeight } = (this.collapsed ? this.pinRoot : this.alertRoot);
         // Adjusts iframe width and height so that the bottom left corner of the element
         // (pinRoot in collapsed, alertRoot in un-collapsed mode) plus its shadow fits in the iframe
-        this.iframe.style.width = (this.iframeWidth -= offsetLeft - BaseAlertController.BLUR_OFFSET) + px;
-        this.iframe.style.height = (this.iframeHeight = offsetTop + offsetHeight + BaseAlertController.BLUR_OFFSET) + px;
+        this.iframe.style.width = (this.iframeWidth -= offsetLeft - BLUR_OFFSET) + px;
+        this.iframe.style.height = (this.iframeHeight = offsetTop + offsetHeight + BLUR_OFFSET) + px;
     }
 
     private updatePosition(evt?:Event) {
