@@ -1,11 +1,19 @@
 .toast {
     width: 100%;
-    position: fixed;
+    position: absolute;
     display: flex;
     justify-content: center;
     padding-bottom: 15px;
     bottom: 0;
     left: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s ease opacity, 0.3s ease visibility;
+
+    &--active {
+        opacity: 1;
+        visibility: visible;
+    }
 
     &__in {
         padding: 15px 30px;
