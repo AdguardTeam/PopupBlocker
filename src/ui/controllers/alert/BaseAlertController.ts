@@ -72,8 +72,6 @@ export default abstract class BaseAlertController implements IAlertController {
         this.notifyAboutSavedSettings   = bind.call(this.notifyAboutSavedSettings, this);
     }
 
-    private static BLUR_OFFSET = 10 + 3; // Specified in styles as box-shadow: 0 0 10px 3px
-
     private static initialAlertFrameStyle = [
         "position", "fixed",
         "right",     0 + px,
@@ -106,12 +104,13 @@ export default abstract class BaseAlertController implements IAlertController {
     private appendIframe() {
         let iframe = this.iframe = document.createElement('iframe');
         iframe.setAttribute('allowTransparency', 'true');
-
         iframe.addEventListener('load', this.initializeIframe);
+        /*
         iframe.addEventListener('load', () => {
             // Without this, the background of the iframe will be white in IE11
             this.frameDoc.body.setAttribute('style', 'background-color:transparent;');
         });
+        */
 
         iframe.style.cssText = BaseAlertController.concatStyle(BaseAlertController.initialAlertFrameStyle, false);
 
@@ -125,7 +124,7 @@ export default abstract class BaseAlertController implements IAlertController {
 
             let hostStyleEl = document.createElement('style');
             hostStyleEl.textContent = `:host{${BaseAlertController.concatStyle(BaseAlertController.shadowHostStyle, true)}}`;
-        
+
             root.appendChild(hostStyleEl);
             root.appendChild(iframe);
         } else {
@@ -152,16 +151,61 @@ export default abstract class BaseAlertController implements IAlertController {
     private toggleCollapse() {
         this.alertRoot.classList.toggle(goog.getCssName('alert--show'));
         this.collapsed = !this.collapsed;
-        this.updateIframeDimension();
+        this.updatePosition();
     }
 
-    private updateIframeDimension(evt?:Event) {
-        if (!this.frameDoc) return;
-        let { offsetLeft, offsetTop } = (this.collapsed ? this.pinRoot : this.alertRoot);
-        // Adjusts iframe width and height so that the top left corner of the element
+    /**
+     * These magic numbers are dictated in the CSS.
+     * These are base of position calculation; There are other constants that are
+     * dictated in the CSS such as the width of the alert, but we instead read it from
+     * `HTMLElement.clientWidth` to reduce coupling with CSS.
+     */
+    private static readonly PIN_TOP = 50;
+    private static readonly PIN_RIGHT = 50;
+    private static readonly ALERT_TOP_REL_PIN = -37;
+    private static readonly ALERT_RIGHT_REL_PIN = 50;
+    /**
+     * Specified in styles as box-shadow: 0 0 10px 3px
+     * https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow#<blur-radius>
+     */
+    private static BLUR_OFFSET = 10 / 2 + 3;
+
+
+    private static readonly PIN_OFFSET_RIGHT = BaseAlertController.BLUR_OFFSET;
+    private static readonly IFRAME_RIGHT = BaseAlertController.PIN_RIGHT - BaseAlertController.PIN_OFFSET_RIGHT;
+
+    private static readonly PIN_OFFSET_TOP_COLLAPSED = BaseAlertController.BLUR_OFFSET;
+    private static readonly IFRAME_TOP_COLLAPSED =
+        BaseAlertController.PIN_TOP - BaseAlertController.PIN_OFFSET_TOP_COLLAPSED;
+
+    private static readonly ALERT_OFFSET_TOP_EXPANDED = BaseAlertController.BLUR_OFFSET;
+    private static readonly PIN_OFFSET_TOP_EXPANDED =
+        BaseAlertController.ALERT_OFFSET_TOP_EXPANDED - BaseAlertController.ALERT_TOP_REL_PIN;
+    private static readonly IFRAME_TOP_EXPANDED =
+        BaseAlertController.PIN_TOP - BaseAlertController.PIN_OFFSET_TOP_EXPANDED;
+
+    private updatePinRootHeight() {
+        let pinOffsetTop = this.collapsed ? BaseAlertController.PIN_OFFSET_TOP_COLLAPSED : BaseAlertController.PIN_OFFSET_TOP_EXPANDED;
+        this.pinRoot.style.top = pinOffsetTop + px;
+    }
+
+    private updateIframePosition() {
+        let iframeStyle = this.iframe.style;
+        iframeStyle.right = BaseAlertController.IFRAME_RIGHT + px;
+        iframeStyle.top = (this.collapsed ?
+            BaseAlertController.IFRAME_TOP_COLLAPSED :
+            BaseAlertController.IFRAME_TOP_EXPANDED) + px;
+
+        let { offsetLeft, offsetTop, offsetHeight } = (this.collapsed ? this.pinRoot : this.alertRoot);
+        // Adjusts iframe width and height so that the bottom left corner of the element
         // (pinRoot in collapsed, alertRoot in un-collapsed mode) plus its shadow fits in the iframe
         this.iframe.style.width = (this.iframeWidth -= offsetLeft - BaseAlertController.BLUR_OFFSET) + px;
-        this.iframe.style.height = (this.iframeHeight -= offsetTop - BaseAlertController.BLUR_OFFSET) + px;
+        this.iframe.style.height = (this.iframeHeight = offsetTop + offsetHeight + BaseAlertController.BLUR_OFFSET) + px;
+    }
+
+    private updatePosition(evt?:Event) {
+        this.updatePinRootHeight();
+        this.updateIframePosition();
     }
 
     private initializeIframe(evt?:Event) {
@@ -185,9 +229,9 @@ export default abstract class BaseAlertController implements IAlertController {
         // Render template
         const template = popupblockerUI.head({
             cssText: soydata_VERY_UNSAFE.ordainSanitizedHtml(this.getCssText())
-        }); 
+        });
         document.documentElement.innerHTML = template;
-       
+
         // Render contents
         this.updateIframeContent();
     }
@@ -206,13 +250,13 @@ export default abstract class BaseAlertController implements IAlertController {
         // Get references of elements.
         this.alertRoot = <HTMLElement>getByClsName(goog.getCssName('alert'), doc)[0];
         this.pinRoot = <HTMLElement>getByClsName(goog.getCssName('pin'), doc)[0];
-        
+
         // Get references of interactive elements.
         const closeBtn = getByClsName(goog.getCssName('alert__close'), doc)[0];
-        const pin = getByClsName(goog.getCssName('pin'), doc)[0];
+        const pin = this.pinRoot;
         const continueBtn = getByClsName(goog.getCssName('alert__btn'), doc)[0];
         const select = getByClsName(goog.getCssName('alert__select'), doc)[0];
-        
+
         // Attach event listeners.
         closeBtn.addEventListener('click', this.onCloseClick);
         pin.addEventListener('click', this.onPinClick);
@@ -226,7 +270,7 @@ export default abstract class BaseAlertController implements IAlertController {
         if (!this.collapsed) {
             this.alertRoot.classList.add(goog.getCssName('alert--show'));
         }
-        this.updateIframeDimension();
+        this.updatePosition();
     }
 
     private onCloseClick(evt:MouseEvent) {

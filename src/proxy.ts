@@ -1,7 +1,7 @@
 import { timeline, position } from './timeline/index';
 import { TimelineEvent, TLEventType } from './timeline/event';
 import { isWindow, isLocation } from './shared/instanceof';
-import WeakMap from './weakmap';
+import WeakMap from './shared/WeakMap';
 import adguard from './page_script_namespace';
 // @ifndef NO_PROXY
 import { mockedWindowCollection } from './mock_window';
