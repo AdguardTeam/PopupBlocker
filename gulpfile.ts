@@ -1,4 +1,4 @@
-import { posix as path }  from 'path';
+import path = require('path');
 import * as fs from 'async-file';
 import * as fsExtra from 'fs-extra';
 
@@ -10,6 +10,7 @@ import preprocess = require('gulp-preprocess');
 import rename = require('gulp-rename');
 import rollup = require('gulp-rollup');
 import uglify = require('gulp-uglify');
+import runSequence = require('run-sequence');
 
 import xml2js = require('xml2js');
 
@@ -136,10 +137,16 @@ function testBuilderFactory(tsconfigOverride?) {
 gulp.task('build-test', testBuilderFactory());
 gulp.task('build-test-es5', testBuilderFactory({ compilerOptions: { target: "es5" } }))
 
-gulp.task('travis', ['dev-userscript', 'build-test-es5'], () => {
-    return [
-        fs.writeFile('build/.nojekyll', ''),
-        gulp.src(PathUtils.outputDir + '/userscript/**.js')
+
+gulp.task('travis-builds', (done) => {
+    runSequence('dev-userscript', 'release-userscript-settings', done);
+});
+
+gulp.task('travis', ['travis-builds', 'build-test-es5'], async () => {
+    const moveTasks = [
+        gulp.src('build/userscript/**/*')
+            .pipe(gulp.dest(PathUtils.outputDir)),
+        gulp.src('build/userscript-settings/**/*')
             .pipe(gulp.dest(PathUtils.outputDir)),
         gulp.src(['test/index.html', 'test/**/*.js'])
             .pipe(gulp.dest(PathUtils.outputDir + '/test/')),
@@ -148,7 +155,19 @@ gulp.task('travis', ['dev-userscript', 'build-test-es5'], () => {
         gulp.src('node_modules/chai/chai.js')
             .pipe(gulp.dest(PathUtils.outputDir + '/node_modules/chai/'))
     ];
+
+    await Promise.all([
+        fs.writeFile('build/.nojekyll', ''),
+        ...moveTasks.map(gulpTask => toPromise(gulpTask))
+    ]);
+
+    await Promise.all([
+        fsExtra.remove('build/userscript'),
+        fsExtra.remove('build/userscript-settings')
+    ]);
 });
+
+gulp.task('clean', Builder.clean);
 
 gulp.task('watch', () => {
     const onerror = (error) => { console.log(error.toString()); };
@@ -310,6 +329,7 @@ gulp.task('i18n-extract', async () => {
         } else {
             userscriptKeys.push(key);
             extensionKeys.push(key);
+            settingsKeys.push(key);
         }
     }
     for (let key in maps[0]) { // keys from alert.soy

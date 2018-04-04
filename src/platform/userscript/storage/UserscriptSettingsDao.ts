@@ -146,7 +146,9 @@ class AllOptionsBuilder implements GM_Iterator {
     ) { }
     callback(key:string, value) {
         if (key === UserscriptSettingsDao.WHITELIST) {
-            Array.prototype.push.apply(this.whitelisted, value.split(','));
+            if (value.length > 0) {
+                Array.prototype.push.apply(this.whitelisted, value.split(','));
+            }
         } else if (key !== UserscriptSettingsDao.DATA_VERSION_KEY) {
             if ((value & DomainOptionEnum.SILENCED) !== 0) {
                 this.silenced.push(key);

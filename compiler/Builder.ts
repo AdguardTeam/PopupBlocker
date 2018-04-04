@@ -96,11 +96,15 @@ export default class Builder {
             );
     }
 
-    private async clean() {
+    static async clean() {
         await fsExtra.remove(PathUtils.outputDir);
+    }
+
+    private async ensureDirs() {
         await Promise.all([this.paths.outputPath, PathUtils.tsccPath]
             .map(dir => fsExtra.mkdirp(dir)));
     }
+
     private async cleanBuildArtifacts() {
         const dirs = [
             PathUtils.tsicklePath,
@@ -213,7 +217,7 @@ export default class Builder {
         this.buildTimer = setTimeout(Builder.onBuildTimeout, Builder.MAX_BUILD_TIMEOUT);
 
         try {
-            await this.clean();
+            await this.ensureDirs();
             await this.rescMgr.prepare();
 
             const bundler = new Bundler(

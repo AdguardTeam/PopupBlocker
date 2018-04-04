@@ -51,6 +51,7 @@
     "postcss-svgo": "^2.1.6",
     "replace-in-file": "^3.1.1",
     "rollup-plugin-typescript2": "^0.8.0",
+    "run-sequence": "^2.2.1",
     "through2": "^2.0.3",
     "to-through": "^2.0.0",
     "ts-node": "^4.1.0",

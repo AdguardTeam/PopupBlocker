@@ -4,8 +4,10 @@ import ISettingsDao, { AllOptions } from "../../../storage/ISettingsDao";
 import { isUndef, isElement } from "../../../shared/instanceof";
 import { trustedEventListener, getByClsName } from "../../ui_utils";
 import IOptionsController from "./IOptionsController";
-import popupblockerOptionsUI from 'goog:popupblockerOptionsUI'
+import adguard from '../../../content_script_namespace';
 import * as log from '../../../shared/log';
+import popupblockerOptionsUI from 'goog:popupblockerOptionsUI'
+
 
 const enum DomainIsRelevantFor {
     WHITELISTED,
@@ -24,7 +26,7 @@ export default class OptionsController implements IOptionsController {
 
         // Bind `this` to storage operation callbacks.
         this.renderBody          = this.renderBody.bind(this);
-        this.closeAndClearPopup = this.closeAndClearPopup.bind(this);
+        this.onSettingsSave = this.onSettingsSave.bind(this);
 
         this.listenForChanges();
     }
@@ -65,15 +67,15 @@ export default class OptionsController implements IOptionsController {
         if (!OptionsController.domainIsValid(value)) { return; }
         switch (this.currentPopupIsFor) {
             case DomainIsRelevantFor.WHITELISTED:
-                this.settingsDao.setWhitelist(value, true, this.closeAndClearPopup);
+                this.settingsDao.setWhitelist(value, true, this.onSettingsSave);
                 break;
             case DomainIsRelevantFor.SILENCED:
-                this.settingsDao.setSourceOption(value, DomainOptionEnum.SILENCED, this.closeAndClearPopup);
+                this.settingsDao.setSourceOption(value, DomainOptionEnum.SILENCED, this.onSettingsSave);
                 break;
         }
     }
 
-    private closeAndClearPopup() {
+    private onSettingsSave() {
         this.closePopup();
         this.popupInput.value = '';
     }

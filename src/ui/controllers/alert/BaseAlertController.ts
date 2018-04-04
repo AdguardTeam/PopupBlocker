@@ -19,7 +19,7 @@ const px = 'px';
  * These magic numbers are dictated in the CSS.
  * These are base of position calculation; There are other constants that are
  * dictated in the CSS such as the width of the alert, but we instead read it from
- * `HTMLElement.clientWidth` to reduce coupling with CSS.
+ * `HTMLElement.offset***` api to reduce coupling with CSS.
  */
 const PIN_TOP = 50;
 const PIN_RIGHT = 50;
@@ -191,14 +191,15 @@ export default abstract class BaseAlertController implements IAlertController {
 
     private updateIframePosition() {
         let iframeStyle = this.iframe.style;
-        iframeStyle.right = IFRAME_RIGHT + px;
-        iframeStyle.top = (this.collapsed ? IFRAME_TOP_COLLAPSED : IFRAME_TOP_EXPANDED) + px;
 
         let { offsetLeft, offsetTop, offsetHeight } = (this.collapsed ? this.pinRoot : this.alertRoot);
         // Adjusts iframe width and height so that the bottom left corner of the element
         // (pinRoot in collapsed, alertRoot in un-collapsed mode) plus its shadow fits in the iframe
-        this.iframe.style.width = (this.iframeWidth -= offsetLeft - BLUR_OFFSET) + px;
-        this.iframe.style.height = (this.iframeHeight = offsetTop + offsetHeight + BLUR_OFFSET) + px;
+        iframeStyle.width = (this.iframeWidth -= offsetLeft - BLUR_OFFSET) + px;
+        iframeStyle.height = (this.iframeHeight = offsetTop + offsetHeight + BLUR_OFFSET) + px;
+
+        iframeStyle.right = IFRAME_RIGHT + px;
+        iframeStyle.top = (this.collapsed ? IFRAME_TOP_COLLAPSED : IFRAME_TOP_EXPANDED) + px;
     }
 
     private updatePosition(evt?:Event) {
