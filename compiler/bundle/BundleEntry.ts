@@ -3,7 +3,6 @@ import { posix as path } from 'path';
 import { BuildOption, BuildTarget } from "../BuildOption";
 import PathUtils from '../PathUtils';
 
-
 interface IBundleEntry {
     /**
      * When bundler bundles with this entry, the output file's name will be this.

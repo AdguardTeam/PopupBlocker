@@ -21,6 +21,7 @@ import Bundler from './bundle/Bundler';
 import BundleContext from './bundle/BundleContext';
 import MetadataUtils from './MetadataUtils';
 import BundleEntry from './bundle/BundleEntry';
+import { StringMap } from './utils/types';
 
 export default class Builder {
 
@@ -252,6 +253,3 @@ export default class Builder {
     }
 
 }
-
-
-

@@ -23,7 +23,7 @@ const mockObject = (orig:Object, mocked?:Object):Object => {
 const hrefDesc = Object.getOwnPropertyDescriptor(HTMLAnchorElement.prototype, 'href');
 
 // @ifndef NO_PROXY
-import WeakMap from './weakmap';
+import WeakMap from './shared/WeakMap';
 export const mockedWindowCollection = new WeakMap();
 // @endif
 
