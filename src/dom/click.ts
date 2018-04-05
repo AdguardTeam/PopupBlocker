@@ -9,7 +9,7 @@ import onBlocked from '../on_blocked';
 
 const clickVerified:ApplyHandler = function(_click, _this, _arguments, context) {
     if (getTagName(_this) === 'A') {
-        log.print('click() was called on an anchor tag');
+        log.print('click() was called on an anchor tag', _this);
         if (adguard.contentScriptApiFacade.originIsWhitelisted()) {
             return _click.call(_this);
         }
