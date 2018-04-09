@@ -44,6 +44,7 @@ export default class CssBuilder implements IResourceProvider {
 
     private static alerts = new CssBuilder.Source('alerts', 'ALERT_CSS');
     private static options = new CssBuilder.Source('options');
+    private static toast = new CssBuilder.Source('toast', 'TOAST_CSS');
     private static all = new CssBuilder.Source('all');
 
     private static bundledCssName = 'styles.css';
@@ -131,7 +132,11 @@ export default class CssBuilder implements IResourceProvider {
             // Alert style is moved to /assets/alert.css.
             await inlineSource(CssBuilder.alerts);
         }
-        
+
+        if (!options.isSettingsOnly) {
+            await inlineSource(CssBuilder.toast);
+        }
+
         if (options.isExtension || options.isSettingsOnly) {
             // For extensions, options page style is compiled and moved to /assets/options.css.
             // Same for userscript settings page.

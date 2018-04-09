@@ -3,13 +3,15 @@
 
 import ISettingsDao from "../../../storage/ISettingsDao";
 import IAlertController from "./IAlertController";
-import { trustedEventListener, getByClsName, bind } from "../../ui_utils";
+import { trustedEventListener, getByClsName, bind, concatStyle } from "../../ui_utils";
 import { isUndef } from "../../../shared/instanceof";
 import { shadowDomV1Support } from '../../../shared/dom';
 import popupblockerUI from 'goog:popupblockerUI';
 import soydata_VERY_UNSAFE from 'goog:soydata.VERY_UNSAFE';
 import ToastController from "../toast/ToastController";
 import adguard from '../../../content_script_namespace';
+import FrameInjector from "../utils/FrameInjector";
+import IFrameInjector from "../utils/IFrameInjector";
 
 const px = 'px';
 
@@ -76,8 +78,6 @@ export default abstract class BaseAlertController implements IAlertController {
 
     private collapsed:boolean
 
-    private iframe:HTMLIFrameElement
-    private shadowHostEl:HTMLElement
     private frameDoc:HTMLDocument
     private alertRoot:HTMLElement
     private pinRoot:HTMLElement
@@ -93,13 +93,17 @@ export default abstract class BaseAlertController implements IAlertController {
         private settingsDao:ISettingsDao,
         private $getURL:(resc_marker:string)=>string
     ) {
+        // FrameInjector takes care of event's trusted-ness.
+        this.initializeIframe           = bind.call(this.initializeIframe, this);
+        this.notifyAboutSavedSettings   = bind.call(this.notifyAboutSavedSettings, this);
+
         this.initializeIframe           = trustedEventListener(this.initializeIframe, this);
         this.onCloseClick               = trustedEventListener(this.onCloseClick, this);
         this.onPinClick                 = trustedEventListener(this.onPinClick, this);
         this.onContinueBlockingClick    = trustedEventListener(this.onContinueBlockingClick, this);
         this.onOptionChange             = trustedEventListener(this.onOptionChange, this);
 
-        this.notifyAboutSavedSettings   = bind.call(this.notifyAboutSavedSettings, this);
+        this.toastController = new ToastController(BaseAlertController.TOAST_DURATION);
     }
 
     private static initialAlertFrameStyle = [
@@ -110,56 +114,23 @@ export default abstract class BaseAlertController implements IAlertController {
         "z-index",   String(-1 - (1 << 31))
     ];
 
-    private static shadowHostStyle = [
-        "display",  "block",
-        "position", "relative",
-        "width",     String(0),
-        "height",    String(0),
-        "margin",    String(0),
-        "padding",   String(0),
-        "overflow", "hidden",
-        "z-index",   String(-1 - (1 << 31))
-    ];
-
-    private static concatStyle(style:string[], important:boolean):string {
-        let cssText = '';
-        for (let i = 0, l = style.length; i < l; i++) {
-            cssText += style[i] + ':' + style[++i];
-            if (important) { cssText += '!important' }
-            cssText += ';';
-        }
-        return cssText;
-    }
+    private frameInjector:IFrameInjector;
 
     private appendIframe() {
-        let iframe = this.iframe = document.createElement('iframe');
-        iframe.setAttribute('allowTransparency', 'true');
-        iframe.addEventListener('load', this.initializeIframe);
-        /*
-        iframe.addEventListener('load', () => {
-            // Without this, the background of the iframe will be white in IE11
-            this.frameDoc.body.setAttribute('style', 'background-color:transparent;');
-        });
-        */
+        let frameInjector = this.frameInjector = new FrameInjector();
 
-        iframe.style.cssText = BaseAlertController.concatStyle(BaseAlertController.initialAlertFrameStyle, false);
+        // Add `load` event listeners.
+        frameInjector.addOnLoadListener(this.initializeIframe)
 
+        // Set inline style for the frame.
+        /** @todo Abstract this operation from FrameInjector, remove `getFrameElement` */
+        let iframe = frameInjector.getFrameElement();
+        iframe.style.cssText = concatStyle(BaseAlertController.initialAlertFrameStyle, false);
         this.iframeWidth = this.iframeHeight = 0;
         iframe.style.width = iframe.style.height = 0 + px;
 
-        if (shadowDomV1Support) {
-            let host = this.shadowHostEl = document.createElement('div');
-            let root = host.attachShadow({ mode: 'closed' });
-            document.documentElement.appendChild(host);
-
-            let hostStyleEl = document.createElement('style');
-            hostStyleEl.textContent = `:host{${BaseAlertController.concatStyle(BaseAlertController.shadowHostStyle, true)}}`;
-
-            root.appendChild(hostStyleEl);
-            root.appendChild(iframe);
-        } else {
-            document.documentElement.appendChild(iframe);
-        }
+        // Append to the DOM.
+        frameInjector.inject();
     }
 
     createAlert(origDomain:string, destUrl:string) {
@@ -171,7 +142,7 @@ export default abstract class BaseAlertController implements IAlertController {
         this.origDomain = origDomain;
         this.destUrl = destUrl;
 
-        if (!this.iframe) {
+        if (!this.frameInjector) {
             this.appendIframe();
         } else {
             this.updateIframeContent();
@@ -190,7 +161,7 @@ export default abstract class BaseAlertController implements IAlertController {
     }
 
     private updateIframePosition() {
-        let iframeStyle = this.iframe.style;
+        let iframeStyle = this.frameInjector.getFrameElement().style;
 
         let { offsetLeft, offsetTop, offsetHeight } = (this.collapsed ? this.pinRoot : this.alertRoot);
         // Adjusts iframe width and height so that the bottom left corner of the element
@@ -208,7 +179,7 @@ export default abstract class BaseAlertController implements IAlertController {
     }
 
     private initializeIframe(evt?:Event) {
-        const document = this.frameDoc = this.iframe.contentDocument;
+        const document = this.frameDoc = this.frameInjector.getFrameElement().contentDocument;
 
         // New alerts are created in an expanded state,
         // and collapsed in 10 sec if there is no user interaction.
@@ -262,9 +233,6 @@ export default abstract class BaseAlertController implements IAlertController {
         continueBtn.addEventListener('click', this.onContinueBlockingClick);
         select.addEventListener('change', this.onOptionChange);
 
-        // Register toast controller
-        this.toastController = new ToastController(this.alertRoot, BaseAlertController.TOAST_DURATION);
-
         // The template is rendered in a collapsed state.
         if (!this.collapsed) {
             this.alertRoot.classList.add(goog.getCssName('alert--show'));
@@ -314,17 +282,9 @@ export default abstract class BaseAlertController implements IAlertController {
     }
 
     private destroyAlert() {
-        let iframe = this.iframe;
-        if (iframe) {
-            iframe.parentNode.removeChild(iframe);
-            this.iframe = undefined;
-            this.frameDoc = undefined;
-        }
-        let shadowHostEl = this.shadowHostEl;
-        if (shadowHostEl) {
-            shadowHostEl.parentNode.removeChild(shadowHostEl);
-            this.shadowHostEl = undefined;
-        }
+        this.frameInjector.$destroy();
+        this.frameInjector = undefined;
+
         let toastController = this.toastController;
         if (toastController) {
             toastController.dismissCurrentNotification();

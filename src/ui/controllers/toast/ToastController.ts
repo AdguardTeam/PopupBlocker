@@ -2,6 +2,11 @@
 
 import popupblockerNotificationUI from 'goog:popupblockerNotificationUI';
 import { isUndef } from '../../../shared/instanceof';
+import IFrameInjector from '../utils/IFrameInjector';
+import FrameInjector from '../utils/FrameInjector';
+import { bind, concatStyle } from '../../ui_utils';
+
+const px = 'px';
 
 const enum ToastState {
     NONE,
@@ -12,14 +17,26 @@ const enum ToastState {
 
 export default class ToastController {
     constructor(
-        private root:Element,
         private defaultDuration?:number
     ) { }
 
     private state:ToastState = ToastState.NONE;
-    private stateTransitionTimer:number;
+    private stateTransitionTimer:number
     private currentDuration:number
     private toastEl:Element
+
+    private frameInjector:IFrameInjector
+
+    private static TOAST_STYLE = RESOURCE_TOAST_CSS;
+
+    private static TOAST_FRAME_STYLE = [
+        "position", "fixed",
+        "bottom",    15 + px,
+        "width",     0 + px,
+        "height",    0 + px,
+        "border",   "none" ,
+        "z-index",   String(-1 - (1 << 31))
+    ]
 
     private static TRANSITION_DURATION = 300;
 
@@ -28,30 +45,48 @@ export default class ToastController {
         this.currentDuration = duration || this.defaultDuration;
 
         // Dismiss existing toast, if there was any.
-        this.dismissCurrentNotification();
         let prevState = this.state;
+        this.dismissCurrentNotification();
 
         // Attach toast Element
         let toastHTML = popupblockerNotificationUI.toast({ message });
-        this.root.insertAdjacentHTML('beforeend', toastHTML);
-        this.toastEl = this.root.lastElementChild; // The toast markup has a single root.
+        let frameInjector = this.frameInjector = new FrameInjector();
+        frameInjector.getFrameElement().style.cssText = concatStyle(ToastController.TOAST_FRAME_STYLE, false);
+        frameInjector.addOnLoadListener(() => {
+            if (isUndef(this.frameInjector)) { return; }
+            let toastHTML = popupblockerNotificationUI.toast({ message });
+            let iframe = this.frameInjector.getFrameElement();
+            let doc = iframe.contentDocument;
+            let styleEl = doc.createElement('style');
+            styleEl.textContent = ToastController.TOAST_STYLE;
+            doc.head.appendChild(styleEl);
+            doc.body.innerHTML = toastHTML;
+            this.toastEl = doc.body.firstElementChild;
+            this.updateIframePosition();
 
-        this.setState(
-            prevState === ToastState.FULL || prevState === ToastState.WANING ?
-                ToastState.FULL :
-                ToastState.WAXING
-        );
+            this.setState(
+                prevState === ToastState.FULL || prevState === ToastState.WANING ?
+                    ToastState.FULL :
+                    ToastState.WAXING
+            );
+        });
+        frameInjector.inject();
+    }
+
+    private updateIframePosition() {
+        let { offsetWidth, offsetHeight } = <HTMLElement>this.toastEl.firstElementChild;
+        let iframeStyle = this.frameInjector.getFrameElement().style;
+        iframeStyle.left = `calc(50% - ${offsetWidth / 2}px)`;
+        iframeStyle.width = offsetWidth + px;
+        iframeStyle.height = offsetHeight + px;
     }
 
     dismissCurrentNotification() {
-        if (isUndef(this.toastEl)) { return; }
-        let toastEl = this.toastEl;
-        let parentEl = toastEl.parentElement;
-        if (parentEl) {
-            parentEl.removeChild(toastEl);
-        }
+        let frameInjector = this.frameInjector;
+        if (isUndef(frameInjector)) { return; }
+        frameInjector.$destroy();
         clearTimeout(this.stateTransitionTimer);
-        this.toastEl = this.stateTransitionTimer = undefined;
+        this.frameInjector = this.toastEl = this.stateTransitionTimer = undefined;
     }
 
     private setState(state:ToastState) {
@@ -84,5 +119,7 @@ export default class ToastController {
         }
         this.state = state;
     }
-    
+
 }
+
+declare const RESOURCE_TOAST_CSS:string;

@@ -18,6 +18,7 @@ import Reservoir from '../utils/Reservoir';
 import toPromise from '../utils/to_promise';
 import CssBuilder from '../resc/CssBuilder';
 import SoyBuilder from '../resc/SoyBuilder';
+import { StringMap } from '../utils/types';
 
 
 export default class Bundler {
