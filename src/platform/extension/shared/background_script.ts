@@ -46,13 +46,9 @@ chrome.browserAction.onClicked.addListener((tab) => {
 if (shadowDomV1Support) {
 
     var accessKey = (function() {
-
         let buffer = new Uint8Array(16);
-
         crypto.getRandomValues(buffer);
-
         return btoa(String.fromCharCode.apply(null, buffer));
-
     })();
 
     const reHttp = /^http/;
@@ -83,18 +79,27 @@ function checkLastError() {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    let tabId = sender.tab.id;
     switch (message) {
         case BGMsgTypesEnum.SET_ICON_AS_ENABLED:   
             chrome.browserAction.setIcon({
                 path: orangeIconPaths,
-                tabId: sender.tab.id
+                tabId
             }, checkLastError);
+            chrome.browserAction.setTitle({
+                title: chrome.i18n.getMessage("ext_enabled"),
+                tabId
+            });
             break;
         case BGMsgTypesEnum.SET_ICON_AS_DISABLED:
             chrome.browserAction.setIcon({
                 path: grayIconPaths,
-                tabId: sender.tab.id
+                tabId
             }, checkLastError);
+            chrome.browserAction.setTitle({
+                title: chrome.i18n.getMessage("ext_disabled", new URL(sender.tab.url).host),
+                tabId
+            });
             break;
         case BGMsgTypesEnum.OPEN_OPTIONS_PAGE:
             chrome.runtime.openOptionsPage();

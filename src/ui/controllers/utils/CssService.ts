@@ -9,12 +9,12 @@ export default class CSSService {
         private $getURL:(resc_marker:string)=>string
     ) { }
 
-    private static readonly fontsDir = '/assets/fonts/';
+    private static readonly fontsDir = './assets/fonts/';
 
-    private urls:string[];
+    private fontURLs:string[];
 
-    getFontURLs() {
-        if (isUndef(this.urls)) {
+    protected getFontURLs() {
+        if (isUndef(this.fontURLs)) {
             const fontsDir = CSSService.fontsDir;
             const opensans = "/OpenSans-";
             const woff = '.woff';
@@ -24,7 +24,7 @@ export default class CSSService {
             const WOFF2_OPENSANS_REGULAR = WOFF_OPENSANS_REGULAR + 2;
             const WOFF2_OPENSANS_SEMIBOLD = WOFF_OPENSANS_SEMIBOLD + 2;
             const WOFF2_OPENSANS_BOLD = WOFF_OPENSANS_BOLD + 2;
-            this.urls = [
+            this.fontURLs = [
                 this.$getURL(WOFF_OPENSANS_REGULAR),
                 this.$getURL(WOFF2_OPENSANS_REGULAR),
                 this.$getURL(WOFF_OPENSANS_SEMIBOLD),
@@ -33,7 +33,24 @@ export default class CSSService {
                 this.$getURL(WOFF2_OPENSANS_BOLD)
             ];
         }
-        return this.urls;
+        return this.fontURLs;
+    }
+    private static reDataURI = /^data\:/;
+    private static isNotDataURI(url:string) {
+        return !CSSService.reDataURI.test(url);
+    }
+    // every browser that supports preload supports woff2.
+    getAlertPreloadFontURLs() {
+        let urls = this.getFontURLs();
+        // Regular and Bold woff2
+        return [urls[3], urls[5]]
+            .filter(CSSService.isNotDataURI); // There is no point of applying 'preload'
+                                              // to data URIs. 
+    }
+    getToastPreloadFontURLs() {
+        let urls = this.getFontURLs();
+        // Regular woff2
+        return [urls[3]].filter(CSSService.isNotDataURI);
     }
     getInlineFontCSS() {
         let urls = this.getFontURLs();

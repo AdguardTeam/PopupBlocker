@@ -38,6 +38,15 @@ export default class MetadataUtils {
         return MetadataUtils.channelDownloadUpdateURLMap[this.options.channel];
     }
 
+    private static resources = [
+        './assets/fonts/bold/OpenSans-Bold.woff',
+        './assets/fonts/bold/OpenSans-Bold.woff2',
+        './assets/fonts/regular/OpenSans-Regular.woff',
+        './assets/fonts/regular/OpenSans-Regular.woff2',
+        './assets/fonts/semibold/OpenSans-Semibold.woff',
+        './assets/fonts/semibold/OpenSans-Semibold.woff2'
+    ]
+
     /**
      * Read version from package.json.
      */
@@ -52,21 +61,23 @@ export default class MetadataUtils {
                 fs.readFile(this.paths.manifestPath) :
                 Promise.resolve('{}')
         ].map(pr => pr.then(JSON.parse)));
-    
+
         const manifest = mergeOpts(baseManifest, manifestOverride);
-    
+
         // Manual tweaks
 
         // Read version from package.json
         manifest["version"] = await MetadataUtils.getVersion();
-    
+
         // Apply default exclusions for release channel
         if (this.options.channel === Channel.RELEASE) {
             manifest["content_scripts"][0]["exclude_matches"] = MetadataUtils.exclusions;
         }
-    
+
         return JSON.stringify(manifest);
     }
+
+
 
     async getUserscriptMetadataBlock() {
         const translation = await LocaleUtils.translation.read();
@@ -103,12 +114,13 @@ export default class MetadataUtils {
         insertKey('grant',       'GM_getResourceURL');
         insertKey('grant',       'unsafeWindow');
         insertKey('icon',        './assets/128.png');
-        insertKey('resource',    'WOFF_OPENSANS_BOLD ./asset/fonts/bold/OpenSans-Bold.woff');
-        insertKey('resource',    'WOFF2_OPENSANS_BOLD ./assets/fonts/bold/OpenSans-Bold.woff2');
-        insertKey('resource',    'WOFF_OPENSANS_REGULAR ./assets/fonts/regular/OpenSans-Regular.woff');
-        insertKey('resource',    'WOFF2_OPENSANS_REGULAR ./assets/fonts/regular/OpenSans-Regular.woff2');
-        insertKey('resource',    'WOFF_OPENSANS_SEMIBOLD ./assets/fonts/semibold/OpenSans-SemiBold.woff');
-        insertKey('resource',    'WOFF2_OPENSANS_SEMIBOLD ./assets/fonts/semibold/OpenSans-SemiBold.woff2');
+
+        for (let resource of MetadataUtils.resources) {
+            // We always set resource name to be identical with its path
+            // for interoperability with extensions.
+            // This is not optimal and we may change in future.
+            insertKey('resource', `${resource} ${resource}`);
+        }
         insertKey('run-at',      'document-start');
 
         if (this.options.channel === Channel.RELEASE) {

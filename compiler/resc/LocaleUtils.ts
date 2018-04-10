@@ -55,9 +55,10 @@ export default class LocaleUtils implements IResourceProvider {
 
     /**
      * Extensions treats dollar signs as a special character used for substituting
-     * placeholders, and treats `$$` as a literal dollar sign. We have not relied
-     * on this feature and used our different placeholders, so we escape all the
-     * dollar signs.
+     * placeholders, and treats `$$` as a literal dollar sign.
+     * In our use case dollar signs can occur as a part of `goog.getMsg` substitution,
+     * i.e. in a form `{$...}`. Therefore we find such patterns and replace it to use
+     * double dollar signs.
      */
     private async getExtensionJSON() {
         const out = {};
@@ -73,10 +74,14 @@ export default class LocaleUtils implements IResourceProvider {
                     message += this.channelSuffix;
                 }
                 // Replace dollar signs
-                message = message.replace(/\$/g, '$$$');
+                message = message.replace(/\{\$/g, '\{$$$');
                 out[locale][key] = {
                     message: message
                 };
+
+                if (json[locale][key].placeholders) {
+                    out[locale][key].placeholders = json[locale][key].placeholders;
+                }
             }
         }
         return <{[locale:string]:{[messageId:string]:{message:string}}}>out;

@@ -16,6 +16,23 @@
     "aborted_popunder_execution": {
         "message": "PopupBlocker aborted a script execution to prevent background redirect"
     },
+    "ext_enabled": {
+        "message": "Popup Blocker is on duty",
+        "description": "extension_only"
+    },
+    "ext_disabled": {
+        "message": "Popup Blocker is disabled for $DOMAIN$",
+        "description": "extension_only",
+        "placeholders": {
+            "domain": {
+                "content": "$1"
+            }
+        }
+    },
+    "ext_disabled_default": {
+        "message": "Popup Blocker cannot run on this domain",
+        "description": "extension_only"
+    },
     "settings_saved": {
         "message": "Settings saved"
     }

@@ -181,7 +181,7 @@ export default abstract class BaseAlertController implements IAlertController {
         // Render template
         const template = popupblockerUI.head({
             cssText: soydata_VERY_UNSAFE.ordainSanitizedHtml(this.cssService.getAlertCSS()),
-            preloadFonts: this.cssService.getFontURLs()
+            preloadFonts: this.cssService.getAlertPreloadFontURLs()
         });
         document.documentElement.innerHTML = template;
 

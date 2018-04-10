@@ -18,7 +18,7 @@ export default class TextSizeWatcher extends SingleEventEmitter {
      */
     private static getTestText() {
         let codePoints = [];
-        for (let i = 0x21; i < 0x7a; i++) {
+        for (let i = 0x21; i <= 0x7a; i++) {
             codePoints.push(i);
         }
         return String.fromCharCode.apply(null, codePoints);

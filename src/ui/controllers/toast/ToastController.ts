@@ -25,6 +25,7 @@ export default class ToastController {
         private defaultDuration?:number
     ) {
         this.updateIframePosition = bind.call(this.updateIframePosition, this);
+        this.updateIframePositionOnLoad = bind.call(this.updateIframePositionOnLoad, this);
     }
 
     private state:ToastState = ToastState.NONE;
@@ -59,7 +60,7 @@ export default class ToastController {
         // Attach toast Element
         let outerHTML = popupblockerUI.head({
             cssText: soydata_VERY_UNSAFE.ordainSanitizedHtml(this.cssService.getToastCSS()),
-            preloadFonts: this.cssService.getFontURLs()
+            preloadFonts: this.cssService.getToastPreloadFontURLs()
         });
         let toastHTML = popupblockerNotificationUI.toast({ message });
         let frameInjector = this.frameInjector = new FrameInjector();
@@ -75,11 +76,7 @@ export default class ToastController {
             this.toastEl = doc.body.firstElementChild;
         });
 
-        frameInjector.addListener(() => {
-            this.updateIframePosition();
-            const textSizeWatcher = this.textSizeWatcher = new TextSizeWatcher(this.toastEl);
-            textSizeWatcher.addListener(this.updateIframePosition);
-        });
+        frameInjector.addListener(this.updateIframePositionOnLoad);
 
         frameInjector.addListener(() => {
             this.setState(
@@ -90,6 +87,12 @@ export default class ToastController {
         });
 
         frameInjector.inject();
+    }
+
+    private updateIframePositionOnLoad() {
+        this.updateIframePosition();
+        const textSizeWatcher = this.textSizeWatcher = new TextSizeWatcher(this.toastEl);
+        textSizeWatcher.addListener(this.updateIframePosition);
     }
 
     private updateIframePosition() {

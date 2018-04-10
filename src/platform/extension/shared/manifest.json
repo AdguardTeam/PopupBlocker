@@ -47,7 +47,8 @@
             "38": "/assets/38-g.png",
             "48": "/assets/48-g.png",
             "128": "/assets/128-g.png"
-        }
+        },
+        "default_title": "__MSG_ext_disabled_default__"
     },
     "options_ui": {
         "page": "options.html"
