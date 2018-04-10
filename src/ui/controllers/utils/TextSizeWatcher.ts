@@ -14,7 +14,7 @@ export default class TextSizeWatcher extends SingleEventEmitter {
         this.createDetectorElement();
     }
     /**
-     * Returns !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxy
+     * Returns !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz
      */
     private static getTestText() {
         let codePoints = [];
