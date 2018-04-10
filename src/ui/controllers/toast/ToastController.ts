@@ -1,10 +1,14 @@
 /// <reference path="../../../../node_modules/closure-library.ts/closure-library.d.ts/all.d.ts"/>
 
+import popupblockerUI from 'goog:popupblockerUI';
 import popupblockerNotificationUI from 'goog:popupblockerNotificationUI';
+import soydata_VERY_UNSAFE from 'goog:soydata.VERY_UNSAFE';
 import { isUndef } from '../../../shared/instanceof';
 import IFrameInjector from '../utils/IFrameInjector';
 import FrameInjector from '../utils/FrameInjector';
 import { bind, concatStyle } from '../../ui_utils';
+import CSSService from '../utils/CssService';
+import TextSizeWatcher from '../utils/TextSizeWatcher';
 
 const px = 'px';
 
@@ -17,13 +21,17 @@ const enum ToastState {
 
 export default class ToastController {
     constructor(
+        private cssService:CSSService,
         private defaultDuration?:number
-    ) { }
+    ) {
+        this.updateIframePosition = bind.call(this.updateIframePosition, this);
+    }
 
     private state:ToastState = ToastState.NONE;
     private stateTransitionTimer:number
     private currentDuration:number
     private toastEl:Element
+    private textSizeWatcher:TextSizeWatcher
 
     private frameInjector:IFrameInjector
 
@@ -49,27 +57,38 @@ export default class ToastController {
         this.dismissCurrentNotification();
 
         // Attach toast Element
+        let outerHTML = popupblockerUI.head({
+            cssText: soydata_VERY_UNSAFE.ordainSanitizedHtml(this.cssService.getToastCSS()),
+            preloadFonts: this.cssService.getFontURLs()
+        });
         let toastHTML = popupblockerNotificationUI.toast({ message });
         let frameInjector = this.frameInjector = new FrameInjector();
         frameInjector.getFrameElement().style.cssText = concatStyle(ToastController.TOAST_FRAME_STYLE, false);
-        frameInjector.addOnLoadListener(() => {
+
+        frameInjector.addListener(() => {
             if (isUndef(this.frameInjector)) { return; }
             let toastHTML = popupblockerNotificationUI.toast({ message });
             let iframe = this.frameInjector.getFrameElement();
             let doc = iframe.contentDocument;
-            let styleEl = doc.createElement('style');
-            styleEl.textContent = ToastController.TOAST_STYLE;
-            doc.head.appendChild(styleEl);
+            doc.documentElement.innerHTML = outerHTML;
             doc.body.innerHTML = toastHTML;
             this.toastEl = doc.body.firstElementChild;
-            this.updateIframePosition();
+        });
 
+        frameInjector.addListener(() => {
+            this.updateIframePosition();
+            const textSizeWatcher = this.textSizeWatcher = new TextSizeWatcher(this.toastEl);
+            textSizeWatcher.addListener(this.updateIframePosition);
+        });
+
+        frameInjector.addListener(() => {
             this.setState(
                 prevState === ToastState.FULL || prevState === ToastState.WANING ?
                     ToastState.FULL :
                     ToastState.WAXING
             );
         });
+
         frameInjector.inject();
     }
 
@@ -86,7 +105,12 @@ export default class ToastController {
         if (isUndef(frameInjector)) { return; }
         frameInjector.$destroy();
         clearTimeout(this.stateTransitionTimer);
-        this.frameInjector = this.toastEl = this.stateTransitionTimer = undefined;
+
+        let textSizeWatcher = this.textSizeWatcher;
+        if (isUndef(textSizeWatcher)) { return; }
+        textSizeWatcher.$destroy();
+
+        this.frameInjector = this.toastEl = this.stateTransitionTimer = this.textSizeWatcher = undefined;
     }
 
     private setState(state:ToastState) {

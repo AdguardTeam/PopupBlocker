@@ -14,7 +14,7 @@ export default interface IFrameInjector {
      * Add load event handlers to fire when the frame is injected with `inject` method.
      * The instance's implementation is responsible for filtering out other `load` events.
      */
-    addOnLoadListener(eventHandler:func):void
+    addListener(eventHandler:func):void
     /**
      * Completely removes the UI injected to the page DOM. The instance cannot be used after
      * this method is called.

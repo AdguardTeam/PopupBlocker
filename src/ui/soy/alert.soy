@@ -4,13 +4,17 @@
  * Common template for <head> node of alert and settings page.
  */
 {template .head}
-    {@param cssText:string}
+    {@param cssText: string}
+    {@param preloadFonts: list<string>}
     <!doctype html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        {foreach $href in $preloadFonts}
+            <link rel="preload" href="{$href}" as="font">
+        {/foreach}
         <style>{$cssText}</style>
     </head>
     </html>

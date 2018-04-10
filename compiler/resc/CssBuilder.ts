@@ -45,6 +45,7 @@ export default class CssBuilder implements IResourceProvider {
     private static alerts = new CssBuilder.Source('alerts', 'ALERT_CSS');
     private static options = new CssBuilder.Source('options');
     private static toast = new CssBuilder.Source('toast', 'TOAST_CSS');
+    private static fontsInline = new CssBuilder.Source('fonts_inline', 'FONT_INLINE_CSS');
     private static all = new CssBuilder.Source('all');
 
     private static bundledCssName = 'styles.css';
@@ -75,7 +76,7 @@ export default class CssBuilder implements IResourceProvider {
                 mixins(),
                 cssnext({ browsers: ["IE 10", "> 1%"] }),
             ]))
-            .pipe(rename(CssBuilder.bundledCssName));
+            .pipe(rename(CssBuilder.bundledCssName))
     }
 
     private static async compileWithClosure(srcs:string) {
@@ -135,6 +136,7 @@ export default class CssBuilder implements IResourceProvider {
 
         if (!options.isSettingsOnly) {
             await inlineSource(CssBuilder.toast);
+            await inlineSource(CssBuilder.fontsInline);
         }
 
         if (options.isExtension || options.isSettingsOnly) {

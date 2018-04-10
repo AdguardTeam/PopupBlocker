@@ -4,10 +4,12 @@ import UserscriptSettingsDao from './storage/UserscriptSettingsDao';
 import UserscriptContentScriptApiFacade from './storage/UserscriptContentScriptApiFacade';
 import adguard from '../../content_script_namespace';
 import getMessage from './get_message';
+import CSSService from '../../ui/controllers/utils/CssService';
 
 const i18nService       = new I18nService(getMessage);
 const settingsDao       = new UserscriptSettingsDao();
-const alertController   = new UserscriptAlertController(settingsDao, GM_getResourceURL);
+const cssService        = new CSSService(GM_getResourceURL);
+const alertController   = new UserscriptAlertController(settingsDao, cssService);
 const csApiFacade       = new UserscriptContentScriptApiFacade(settingsDao, alertController, getMessage);
 
 adguard.i18nService = i18nService;

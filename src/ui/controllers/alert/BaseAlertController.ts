@@ -12,6 +12,7 @@ import ToastController from "../toast/ToastController";
 import adguard from '../../../content_script_namespace';
 import FrameInjector from "../utils/FrameInjector";
 import IFrameInjector from "../utils/IFrameInjector";
+import CSSService from "../utils/CssService";
 
 const px = 'px';
 
@@ -47,28 +48,6 @@ const IFRAME_TOP_EXPANDED = PIN_TOP - PIN_OFFSET_TOP_EXPANDED;
 
 export default abstract class BaseAlertController implements IAlertController {
 
-    private static fontsDir = '/assets/fonts/';
-
-    private getCssText() {
-        const fontsDir = BaseAlertController.fontsDir;
-        const opensans = "/OpenSans-";
-        const woff = '.woff';
-        const WOFF_OPENSANS_REGULAR = `${fontsDir}regular${opensans}Regular${woff}`;
-        const WOFF_OPENSANS_SEMIBOLD = `${fontsDir}semibold${opensans}Semibold${woff}`;
-        const WOFF_OPENSANS_BOLD = `${fontsDir}bold${opensans}Bold${woff}`;
-        const WOFF2_OPENSANS_REGULAR = WOFF_OPENSANS_REGULAR + 2;
-        const WOFF2_OPENSANS_SEMIBOLD = WOFF_OPENSANS_SEMIBOLD + 2;
-        const WOFF2_OPENSANS_BOLD = WOFF_OPENSANS_BOLD + 2;
-        return RESOURCE_ARGS("ALERT_CSS",
-            "WOFF_OPENSANS_REGULAR",     this.$getURL(WOFF_OPENSANS_REGULAR),
-            "WOFF2_OPENSANS_REGULAR",    this.$getURL(WOFF2_OPENSANS_REGULAR),
-            "WOFF_OPENSANS_SEMIBOLD",    this.$getURL(WOFF_OPENSANS_SEMIBOLD),
-            "WOFF2_OPENSANS_SEMIBOLD",   this.$getURL(WOFF2_OPENSANS_SEMIBOLD),
-            "WOFF_OPENSANS_BOLD",        this.$getURL(WOFF_OPENSANS_BOLD),
-            "WOFF2_OPENSANS_BOLD",       this.$getURL(WOFF2_OPENSANS_BOLD)
-        );
-    }
-
     protected abstract openSettingsPage():void
 
     private domainToPopupCount:stringmap<number> = Object.create(null);
@@ -91,7 +70,7 @@ export default abstract class BaseAlertController implements IAlertController {
 
     constructor(
         private settingsDao:ISettingsDao,
-        private $getURL:(resc_marker:string)=>string
+        private cssService:CSSService
     ) {
         // FrameInjector takes care of event's trusted-ness.
         this.initializeIframe           = bind.call(this.initializeIframe, this);
@@ -103,7 +82,10 @@ export default abstract class BaseAlertController implements IAlertController {
         this.onContinueBlockingClick    = trustedEventListener(this.onContinueBlockingClick, this);
         this.onOptionChange             = trustedEventListener(this.onOptionChange, this);
 
-        this.toastController = new ToastController(BaseAlertController.TOAST_DURATION);
+        this.toastController = new ToastController(
+            this.cssService,
+            BaseAlertController.TOAST_DURATION
+        );
     }
 
     private static initialAlertFrameStyle = [
@@ -120,7 +102,7 @@ export default abstract class BaseAlertController implements IAlertController {
         let frameInjector = this.frameInjector = new FrameInjector();
 
         // Add `load` event listeners.
-        frameInjector.addOnLoadListener(this.initializeIframe)
+        frameInjector.addListener(this.initializeIframe)
 
         // Set inline style for the frame.
         /** @todo Abstract this operation from FrameInjector, remove `getFrameElement` */
@@ -198,7 +180,8 @@ export default abstract class BaseAlertController implements IAlertController {
 
         // Render template
         const template = popupblockerUI.head({
-            cssText: soydata_VERY_UNSAFE.ordainSanitizedHtml(this.getCssText())
+            cssText: soydata_VERY_UNSAFE.ordainSanitizedHtml(this.cssService.getAlertCSS()),
+            preloadFonts: this.cssService.getFontURLs()
         });
         document.documentElement.innerHTML = template;
 
