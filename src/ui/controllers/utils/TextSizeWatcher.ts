@@ -44,7 +44,7 @@ export default class TextSizeWatcher extends SingleEventEmitter {
             .appendChild(content)
             .appendChild(innerWrapper)
             .appendChild(innerContent);
-        
+
         this.root.appendChild(wrapper);
 
         let { offsetWidth, offsetHeight } = content;
