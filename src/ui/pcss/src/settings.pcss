@@ -41,6 +41,10 @@
         max-width: 270px;
         font-size: 1.6rem;
         @mixin ellipsis;
+
+        &--margin {
+            margin-bottom: 15px;
+        }
     }
 
     &__block {
@@ -125,6 +129,34 @@
 
         &:hover {
             background-color: #58a273;
+        }
+    }
+
+    &__list {
+        &-title {
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            @mixin weight-bold;
+        }
+
+        &-subtitle {
+            margin-bottom: 15px;
+        }
+
+        &-in {
+            list-style: none;
+            margin-bottom: 15px;
+        }
+
+        &-link {
+            text-decoration: none;
+            max-width: 80px;
+            cursor: pointer;
+            color: #66B574;
+
+            &:hover {
+                text-decoration: underline;
+            }
         }
     }
 }
