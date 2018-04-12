@@ -43,7 +43,8 @@ export default class CssBuilder implements IResourceProvider {
     }
 
     private static alerts = new CssBuilder.Source('alerts', 'ALERT_CSS');
-    private static options = new CssBuilder.Source('options');
+    private static extension_options = new CssBuilder.Source('extension_options');
+    private static userscript_options = new CssBuilder.Source('userscript_options');
     private static toast = new CssBuilder.Source('toast', 'TOAST_CSS');
     private static fontsInline = new CssBuilder.Source('fonts_inline', 'FONT_INLINE_CSS');
     private static all = new CssBuilder.Source('all');
@@ -139,11 +140,12 @@ export default class CssBuilder implements IResourceProvider {
             await inlineSource(CssBuilder.fontsInline);
         }
 
-        if (options.isExtension || options.isSettingsOnly) {
-            // For extensions, options page style is compiled and moved to /assets/options.css.
-            // Same for userscript settings page.
-            await moveSource(CssBuilder.options);
+        if (options.isExtension) {
+            await moveSource(CssBuilder.extension_options);
+        } else if (options.isSettingsOnly) {
+            await moveSource(CssBuilder.userscript_options);
         }
+
     }
 
     constructor(
