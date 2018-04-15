@@ -57,6 +57,7 @@
                 <a target="_blank" href="https://adguard.com/adguard-windows/overview.html" class="{css settings__list-link}">
                     AdGuard for Windows
                 </a>
+                {sp}
                 {msg desc="(Recommended)"}noinst_rec{/msg}
             </li>
             <li class="{css settings__list-item}">
@@ -120,7 +121,7 @@
     {@param name:string}
     {@param link:string}
     <li class="{css settings__list-item}">
-        {{msg desc="Install from{$startLink}{$srcName}{$endLink}"}}
+        {{msg desc="Install from {$startLink}{$name}{$endLink}"}}
             installFrom
             <a target="_blank" href="{$link}" class="{css settings__list-link}">
                 {$name}

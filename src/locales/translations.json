@@ -49,7 +49,7 @@
             "message": "Notifications for blocked popups will not be shown for domains listed here."
         },
         "installFrom": {
-            "message": "Install from{$startLink}{$srcName}{$endLink}"
+            "message": "Install from {$startLink}{$name}{$endLink}"
         },
         "noinst_step_3": {
             "message": "Step 3: Refresh this page to get the userscript settings"
