@@ -1,14 +1,15 @@
 {
     "extension_name": {
         "message": "Popup Blocker by AdGuard",
-        "description": "extension_only"
+        "platform": ["extension"]
     },
     "userscript_name": {
         "message": "AdGuard Popup Blocker",
-        "description": "userscript_only"
+        "patform": ["userscript", "userscript_settings"]
     },
     "extension_description": {
-        "message": "Blocks popup ads on web pages"
+        "message": "Blocks popup ads on web pages",
+        "platform": ["extension"]
     },
     "on_navigation_by_popunder": {
         "message": "This transition to the new page is likely to be caused by a pop-under. Do you wish to continue?"
@@ -18,11 +19,11 @@
     },
     "ext_enabled": {
         "message": "Popup Blocker is on duty",
-        "description": "extension_only"
+        "platform": ["extension"]
     },
     "ext_disabled": {
         "message": "Popup Blocker is disabled for $DOMAIN$",
-        "description": "extension_only",
+        "platform": "extension",
         "placeholders": {
             "domain": {
                 "content": "$1"
@@ -31,7 +32,7 @@
     },
     "ext_disabled_default": {
         "message": "Popup Blocker cannot run on this domain",
-        "description": "extension_only"
+        "platform": "extension"
     },
     "settings_saved": {
         "message": "Settings saved"

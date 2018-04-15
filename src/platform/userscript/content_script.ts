@@ -14,6 +14,8 @@ const csApiFacade       = new UserscriptContentScriptApiFacade(settingsDao, aler
 
 adguard.i18nService = i18nService;
 
+UserscriptSettingsDao.migrateDataIfNeeded();
+
 RESOURCE_PAGE_SCRIPT;
 
 const BRIDGE_KEY = csApiFacade.expose();

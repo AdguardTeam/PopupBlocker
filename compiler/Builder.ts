@@ -83,6 +83,10 @@ export default class Builder {
                 "src/bundler_supplements/rollup_external_modules/popupblockerOptionsUI.js"
             )
             .addRollupExternalDeps(
+                "goog:popupblockerUserscriptOptionsUI",
+                "src/bundler_supplements/rollup_external_modules/popupblockerUserscriptOptionsUI.js"
+            )
+            .addRollupExternalDeps(
                 "goog:popupblockerNotificationUI",
                 "src/bundler_supplements/rollup_external_modules/popupblockerNotificationUI.js"
             )

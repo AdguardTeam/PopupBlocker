@@ -9,16 +9,12 @@ export default class UserscriptSettingsDao implements IUserscriptSettingsDao {
      */
     static readonly CURRENT_VERSION = 2;
 
-    constructor() {
-        UserscriptSettingsDao.migrateDataIfNeeded();
-    }
-
     /**
      * A GM_value key, storing a data scheme's version number in a string.
      */
     static readonly DATA_VERSION_KEY = "ver";
 
-    private static migrateDataIfNeeded() {
+    public static migrateDataIfNeeded() {
         const dataVersion = parseFloat(GM_getValue(UserscriptSettingsDao.DATA_VERSION_KEY, '1'));
 
         if (dataVersion < 2) {

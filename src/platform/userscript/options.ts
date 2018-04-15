@@ -4,29 +4,12 @@
 
 import adguard from '../../content_script_namespace';
 import UserscriptSettingsDao from './storage/UserscriptSettingsDao';
-import OptionsController from '../../ui/controllers/options/OptionsController';
 import getMessage from './get_message';
 import I18nService from '../../localization/I18nService';
+import UserscriptOptionsController from './ui/UserscriptOptionsController';
 
-function main() {
-    const settingsDao = new UserscriptSettingsDao();
-    const optionsController = new OptionsController(settingsDao);
-    adguard.i18nService = new I18nService(getMessage);
-    optionsController.initialize();
-}
+adguard.i18nService = new I18nService(getMessage);
 
-const MAX_USERSCRIPT_WAITING_TIME = 1000 * 10 // 10 sec
-
-let pollUserscriptExecutionAndRunMain = setInterval(() => {
-    if (typeof GM_listValues === 'function') {
-        // Wait for GM_api exported to the global scope.
-        clearInterval(pollUserscriptExecutionAndRunMain);
-        clearTimeout(displayNotInstalledMessage);
-        main();
-    }
-});
-
-let displayNotInstalledMessage = setTimeout(() => {
-    clearInterval( pollUserscriptExecutionAndRunMain);
-    document.body.innerHTML = "Userscript is not installed.";
-}, MAX_USERSCRIPT_WAITING_TIME);
+const settingsDao = new UserscriptSettingsDao();
+const optionsController = new UserscriptOptionsController(settingsDao);
+optionsController.initialize();

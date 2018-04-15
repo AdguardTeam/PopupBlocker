@@ -5,7 +5,16 @@
  */
 {template .outer}
     <div class="{css settings}">
+        <div class="{css settings__in}">
+            /* This is where main contents will be inserted. */
+        </div>
     </div>
+{/template}
+
+/**
+ * Modal dialogs, to be used by users to input domain names
+ */
+{template .modal} 
     <div class="{css settings} {css settings-modal}">
         <div class="{css settings__in} {css settings__in--popup}">
             <div class="{css settings__close}"></div>
@@ -17,7 +26,6 @@
                 <input class="{css settings__submit}" type="submit" value="{msg desc="Add a site"}add_site{/msg}">
             </form>
         </div>
-        {call .footer}{/call}
     </div>
 {/template}
 
@@ -28,162 +36,59 @@
     {@param allowedOrigins: list<string>}
     {@param silencedOrigins: list<string>}
 
-    <div class="{css settings__in}">
-        <div class="{css settings__block}" data-for="0">
+    <div class="{css settings__block}" data-for="0">
+        <div class="{css settings__row}">
+            <div class="{css tooltip-container}">
+                <div class="{css settings__subtitle}">
+                    {msg desc="Allowed"}allowed{/msg}
+                </div>
+                <div data-tooltip="{msg desc="Popups will be allowed for domains listed here."}allowed_tooltip{/msg}" class="{css tooltip}"></div>
+            </div>
+            <div class="{css settings__control}">
+                <button class="{css settings__control-item}">
+                    {msg desc="Add"}add{/msg}
+                </button>
+            </div>
+            <div class="{css settings__row-empty}">
+                {msg desc="List of allowed sites is empty"}allowed_empty{/msg}
+            </div>
+        </div>
+
+        {foreach $allowedOrigin in $allowedOrigins}
             <div class="{css settings__row}">
-                <div class="{css tooltip-container}">
-                    <div class="{css settings__subtitle}">
-                        {msg desc="Allowed"}allowed{/msg}
-                    </div>
-                    <div data-tooltip="{msg desc="Popups will be allowed for domains listed here."}allowed_tooltip{/msg}" class="{css tooltip}"></div>
+                <div class="{css settings__name}">
+                    {$allowedOrigin}
                 </div>
-                <div class="{css settings__control}">
-                    <button class="{css settings__control-item}">
-                        {msg desc="Add"}add{/msg}
-                    </button>
-                </div>
-                <div class="{css settings__row-empty}">
-                    {msg desc="List of allowed sites is empty"}allowed_empty{/msg}
-                </div>
+                <button class="{css settings__del}"></button>
             </div>
+        {/foreach}
+    </div>
 
-            {foreach $allowedOrigin in $allowedOrigins}
-                <div class="{css settings__row}">
-                    <div class="{css settings__name}">
-                        {$allowedOrigin}
-                    </div>
-                    <button class="{css settings__del}"></button>
+    <div class="{css settings__block}" data-for="1">
+        <div class="{css settings__row}">
+            <div class="{css tooltip-container}">
+                <div class="{css settings__subtitle}">
+                    {msg desc="Silenced"}silenced{/msg}
                 </div>
-            {/foreach}
+                <div data-tooltip="{msg desc="Notifications for blocked popups will not be shown for domains listed here."}silenced_tooltip{/msg}" class="{css tooltip}"></div>
+            </div>
+            <div class="{css settings__control}">
+                <button class="{css settings__control-item}">
+                    {msg desc="Add"}add{/msg}
+                </button>
+            </div>
+            <div class="{css settings__row-empty}">
+                {msg desc="List of silenced sites is empty"}silenced_empty{/msg}
+            </div>
         </div>
 
-        
-        <div class="{css settings__block}" data-for="1">
+        {foreach $silencedOrigin in $silencedOrigins}
             <div class="{css settings__row}">
-                <div class="{css tooltip-container}">
-                    <div class="{css settings__subtitle}">
-                        {msg desc="Silenced"}silenced{/msg}
-                    </div>
-                    <div data-tooltip="{msg desc="Notifications for blocked popups will not be shown for domains listed here."}silenced_tooltip{/msg}" class="{css tooltip}"></div>
+                <div class="{css settings__name}">
+                    {$silencedOrigin}
                 </div>
-                <div class="{css settings__control}">
-                    <button class="{css settings__control-item}">
-                        {msg desc="Add"}add{/msg}
-                    </button>
-                </div>
-                <div class="{css settings__row-empty}">
-                    {msg desc="List of silenced sites is empty"}silenced_empty{/msg}
-                </div>
+                <button class="{css settings__del}"></button>
             </div>
-
-            {foreach $silencedOrigin in $silencedOrigins}
-                <div class="{css settings__row}">
-                    <div class="{css settings__name}">
-                        {$silencedOrigin}
-                    </div>
-                    <button class="{css settings__del}"></button>
-                </div>
-            {/foreach}
-        </div>
+        {/foreach}
     </div>
-{/template}
-
-/**
- * Footer template, to be visible on every page.
- */
-{template .footer}
-    <div class="{css footer}">
-        <div class="{css footer__in}">
-            <div class="{css footer__links-list}">
-                <a target="_blank" href="https://adguard.com/" class="{css footer__link}">
-                    © AdGuard.com
-                </a>
-                <a target="_blank" href="https://github.com/AdguardTeam/PopupBlocker" class="{css footer__link}">
-                    {msg desc="Homepage"}homepage{/msg}
-                </a>
-            </div>
-        </div>
-    </div>
-{/template}
-
-/**
- * Template for userscript options page, to be displayed when a userscript was not detected.
- */
-{template .noinstalled}
-    <div class="{css noinstalled}">
-        <div class="{css noinstalled__in}">
-            <div class="{css noinstalled__subtitle}">
-                {msg desc="AdGuard Popup Blocker userscript is not installed. Please see the instruction below."}noinst_subtitle{/msg}
-            </div>
-            <div class="{css noinstalled__list}">
-                <div class="{css noinstalled__list-title}">
-                    {msg desc="Step 1: Install a usrscript manager"}noinst_step_1{/msg}
-                </div>
-                <div class="{css noinstalled__list-subtitle}">
-                    {msg desc="First of all, to use a userscript you need a special program that runs userscript."}noinst_special_prog{/msg}
-                </div>
-                <div class="{css noinstalled__list-in}">
-                    <li class="{css noinstalled__list-item}">
-                        <a target="_blank" href="https://adguard.com/adguard-windows/overview.html" class="{css noinstalled__list-link}">
-                            AdGuard for Windows
-                        </a>
-                        {msg desc="(Recommended)"}noinst_rec{/msg}
-                    </li>
-                    <li class="{css noinstalled__list-item}">
-                        <a target="_blank" href="https://www.greasespot.net/" class="{css noinstalled__list-link}">
-                            Greasemonkey
-                        </a>
-                    </li>
-                    <li class="{css noinstalled__list-item}">
-                        <a target="_blank" href="https://violentmonkey.github.io/" class="{css noinstalled__list-link}">
-                            Violentmonkey
-                        </a>
-                    </li>
-                    <li class="{css noinstalled__list-item}">
-                        <a target="_blank" href="https://tampermonkey.net/" class="{Css noinstalled__list-link}">
-                            Tampermonkey
-                        </a>
-                    </li>
-                </div>
-                <div class="{css noinstalled__list-title}">
-                    {msg desc="Step 2: Userscript"}noinst_step_2{/msg}
-                </div>
-                <div class="{css noinstalled__list-subtitle}">
-                    {msg desc="If you installed AdGuard for Windows, you can ignore this step as the Popup Blocker userscript comes pre-installed."}noinst_ignore_if_ag{/msg}
-                </div>
-                <div class="{css noinstalled__list-in}">
-                    <li class="{css noinstalled__list-item}">
-                        Install from
-                        <a target="_blank" href="https://github.com/AdguardTeam/PopupBlocker" class="{css noinstalled__list-link}">
-                            Github
-                        </a>
-                    </li>
-                    <li class="{css noinstalled__list-item}">
-                        Install from
-                        <a target="_blank" href="https://greasyfork.org/scripts/33396-adguard-popup-blocker" class="{css noinstalled__list-link}">
-                            Greasyfork
-                        </a>
-                    </li>
-                    <li class="{css noinstalled__list-item}">
-                        Install from
-                        <a target="_blank" href="https://openuserjs.org/scripts/AdGuard/Adguard_Popup_Blocker" class="{css noinstalled__list-link}">
-                            Open UserJs
-                        </a>
-                    </li>
-                </div>
-                <div class="{css noinstalled__list-title}">
-                    {msg desc="Step 3: Refresh this page to get the userscript settings"}noinst_step_3{/msg}
-                </div>
-            </div>
-        </div>
-
-        {call .footer}{/call}
-    </div>
-{/template}
-
-/**
- * Common title markup
- */
-{template .title}
-    /* Just a stub.. */
 {/template}

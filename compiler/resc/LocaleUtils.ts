@@ -87,7 +87,7 @@ export default class LocaleUtils implements IResourceProvider {
         return <{[locale:string]:{[messageId:string]:{message:string}}}>out;
     }
 
-    private async getSettingsJSON() {
+    private async getUserscriptSettingsJSON() {
         const out = {};
         const [json, settingsKeys] = await Promise.all([LocaleUtils.translation.read(), LocaleUtils.settingsKeys.read()]);
         for (let locale in json) {
@@ -119,7 +119,7 @@ export default class LocaleUtils implements IResourceProvider {
             });
         } else if (this.options.isSettingsOnly) {
             resc.registerInlinedResource("USERSCRIPT_TRANSLATIONS", {
-                data: JSON.stringify(await this.getSettingsJSON()),
+                data: JSON.stringify(await this.getUserscriptSettingsJSON()),
                 path: 'userscript_settings_translations.json'
             });
         }

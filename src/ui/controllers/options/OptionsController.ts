@@ -17,7 +17,7 @@ const enum DomainIsRelevantFor {
 export default class OptionsController implements IOptionsController {
 
     constructor(
-        private settingsDao:ISettingsDao
+        protected settingsDao:ISettingsDao
     ) {
         // Decorate event handlers.
         this.handleContentClick  = trustedEventListener(this.handleContentClick, this);
@@ -31,32 +31,64 @@ export default class OptionsController implements IOptionsController {
         this.listenForChanges();
     }
 
-    private popupRoot:Element
-    private popupInput:HTMLInputElement
+    protected settingsRoot:Element
+    protected popupRoot:Element
+    protected popupInput:HTMLInputElement
 
-    private currentPopupIsFor:DomainIsRelevantFor
+    protected currentPopupIsFor:DomainIsRelevantFor
 
     /**
      * Render part of settings page, which does not change during settings data change.
      */
-    private renderOuter() {
+    protected renderOuter() {
         let template = popupblockerOptionsUI.outer();
         document.body.innerHTML = template;
 
         // Get references of elements.
         let roots = getByClsName(goog.getCssName('settings'));
+        this.settingsRoot = roots[0].firstElementChild; // <div class="settings__in">
 
-        this.popupRoot = roots[1];
+        // Attach event listeners.
+        this.settingsRoot.addEventListener('click', this.handleContentClick);
+    }
+
+    /**
+     * Render part of settings page.
+     * For extensions settings page, this is called with renderOuter;
+     * For userscript settings page, this is called when the userscript has detected.
+     */
+    protected renderInner() {
+        let template = popupblockerOptionsUI.modal();
+        document.body.insertAdjacentHTML('beforeend', template);
+
+        // Get references of elements.
+        this.popupRoot = document.body.lastElementChild;
         this.popupInput = <HTMLInputElement>getByClsName(goog.getCssName('settings__input'))[0];
-        
-        const settingsContentRoot = roots[0];
         const popupCloseBtn = getByClsName(goog.getCssName('settings__close'))[0];
         const popupSubmitBtn = <HTMLInputElement>getByClsName(goog.getCssName('settings__submit'))[0];
 
         // Attach event listeners.
-        settingsContentRoot.addEventListener('click', this.handleContentClick);
         popupCloseBtn.addEventListener('click', this.onPopupClose);
         popupSubmitBtn.addEventListener('click', this.onPopupSubmit);
+    }
+
+    /**
+     * Render part of settings html which displays modified settings data.
+     */
+    protected renderBody(data:AllOptions) {
+        if (data === null) { return; }
+        let whitelisted = data[0];
+        let silenced = data[1];
+        // let [whitelisted, silenced, whitelistedDests] = data;
+        let template = popupblockerOptionsUI.content({
+            allowedOrigins: whitelisted,
+            silencedOrigins: silenced,
+        });
+
+
+
+
+        this.settingsRoot.innerHTML = template;
     }
 
     private onPopupClose(evt) {
@@ -85,21 +117,6 @@ export default class OptionsController implements IOptionsController {
     }
     private closePopup() {
         this.popupRoot.classList.remove(goog.getCssName('settings-modal--show'));
-    }
-
-    /**
-     * Render part of settings html which displays modified settings data.
-     */
-    private renderBody(data:AllOptions) {
-        if (data === null) { return; }
-        let whitelisted = data[0];
-        let silenced = data[1];
-        // let [whitelisted, silenced, whitelistedDests] = data;
-        let template = popupblockerOptionsUI.content({
-            allowedOrigins: whitelisted,
-            silencedOrigins: silenced,
-        });
-        document.body.firstElementChild.innerHTML = template;
     }
 
     // Event handling delegator
@@ -157,6 +174,7 @@ export default class OptionsController implements IOptionsController {
 
     initialize() {
         this.renderOuter();
+        this.renderInner();
         this.settingsDao.enumerateOptions(this.renderBody);
     }
 }

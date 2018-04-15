@@ -25,6 +25,7 @@ export default class SoyBuilder implements IResourceProvider {
 
     public static alert = new SoyBuilder.Sauce('alert');
     public static options = new SoyBuilder.Sauce('options');
+    public static userscript_options = new SoyBuilder.Sauce('userscript_options');
     public static toast = new SoyBuilder.Sauce('toast');
 
     public static soyUtilsPath = 'node_modules/closure-tools-helper/third-party/closure-templates/soyutils.js';
@@ -87,8 +88,13 @@ export default class SoyBuilder implements IResourceProvider {
         if (!options.isSettingsOnly) {
             sauces.push(SoyBuilder.alert);
         }
+
         if (options.isExtension || options.isSettingsOnly) {
             sauces.push(SoyBuilder.options);
+        }
+
+        if (options.isSettingsOnly) {
+            sauces.push(SoyBuilder.userscript_options);
         }
         
         if (options.shouldMinify) {
