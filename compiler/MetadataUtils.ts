@@ -30,8 +30,8 @@ export default class MetadataUtils {
 
     private static channelDownloadUpdateURLMap = {
         [Channel.DEV]:      'https://AdguardTeam.github.io/PopupBlocker/',
-        [Channel.BETA]:     'https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.1/',
-        [Channel.RELEASE]:  'https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.1/'
+        [Channel.BETA]:     'https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.5/',
+        [Channel.RELEASE]:  'https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.5/'
     }
 
     private get downloadUpdateURL() {
@@ -97,7 +97,7 @@ export default class MetadataUtils {
 
         lines.push('// ==UserScript==');
 
-        insertTranslatableKeys('name', 'extension_name', this.locales.channelSuffix);
+        insertTranslatableKeys('name', 'userscript_name', this.locales.channelSuffix);
         insertKey('namespace',   'AdGuard');
         insertTranslatableKeys('description', 'extension_description');
         insertKey('version',      version);
