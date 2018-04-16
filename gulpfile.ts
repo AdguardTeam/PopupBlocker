@@ -321,8 +321,8 @@ export default class Builder {
 
     private static channelDownloadUpdateURLMap = {
         [Channel.DEV]:      'https://AdguardTeam.github.io/PopupBlocker/',
-        [Channel.BETA]:     'https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.1/',
-        [Channel.RELEASE]:  'https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.1/'
+        [Channel.BETA]:     'https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.2/',
+        [Channel.RELEASE]:  'https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.2/'
     }
 
     private get downloadUpdateURL() {
