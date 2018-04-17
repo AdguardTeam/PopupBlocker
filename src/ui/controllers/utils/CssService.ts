@@ -43,14 +43,14 @@ export default class CSSService {
     getAlertPreloadFontURLs() {
         let urls = this.getFontURLs();
         // Regular and Bold woff2
-        return [urls[3], urls[5]]
+        return [urls[1], urls[5]]
             .filter(CSSService.isNotDataURI); // There is no point of applying 'preload'
                                               // to data URIs. 
     }
     getToastPreloadFontURLs() {
         let urls = this.getFontURLs();
         // Regular woff2
-        return [urls[3]].filter(CSSService.isNotDataURI);
+        return [urls[1]].filter(CSSService.isNotDataURI);
     }
     getInlineFontCSS() {
         let urls = this.getFontURLs();
