@@ -221,7 +221,7 @@ gulp.task('i18n-down',  async () => {
         }, base);
         let response = await onesky.getFile(option);
         if (response) {
-            map[languageCode]= JSON.parse(response);
+            map[languageCode] = JSON.parse(response);
         }
     }));
 

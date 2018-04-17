@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "__MSG_extension_name__",
     "description": "__MSG_extension_description__",
-    "author": "Adguard Software Ltd",
+    "author": "AdGuard Software Ltd",
     "default_locale": "en",
     "icons": {
         "16": "/assets/16.png",

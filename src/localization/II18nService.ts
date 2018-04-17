@@ -2,7 +2,7 @@ export default interface II18nService {
     /**
      * Analogous to chrome.i18n.getMessage.
      */
-    $getMessage(nessageId:string):string
+    $getMessage(messageId:string):string
     /**
      * Analogous to goog.getMsg.
      * {@link https://github.com/google/closure-library/blob/master/closure/goog/base.js#L1782}

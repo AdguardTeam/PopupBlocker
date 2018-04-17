@@ -89,6 +89,7 @@ export default class PathUtils {
 
     private static targetManifestPathMap = {
         [BuildTarget.USERSCRIPT]:   'src/platform/userscript/meta.js',
+        [BuildTarget.CHROME]:       'src/platform/extension/chrome/manifest_override.json',
         [BuildTarget.EDGE]:         'src/platform/extension/edge/manifest_override.json'
     }
     public get manifestPath() {

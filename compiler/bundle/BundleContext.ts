@@ -1,5 +1,6 @@
 import typescript2 = require('rollup-plugin-typescript2');
 import BundleEntry from './BundleEntry';
+import { StringMap } from '../utils/types';
 
 /**
  * BundleContext encodes dependency information.

@@ -12,7 +12,6 @@ export interface Settings {
 }
 
 // CT ➜ PG
-export const CONTENT_PAGE_MAGIC = `pb_from_page_script`;
 export const enum DownwardMsgTypesEnum {
     SETTINGS_DELTA
 }
@@ -23,6 +22,7 @@ export interface SettingsDeltaMsg {
 export type DownwardMsgTypes = SettingsDeltaMsg
 
 // PG ➜ CT
+export const CONTENT_PAGE_MAGIC = `pb_from_page_script`;
 export const enum UpwardMsgTypesEnum {
     CREATE_ALERT
 }
