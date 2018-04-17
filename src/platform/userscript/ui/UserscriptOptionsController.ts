@@ -14,6 +14,9 @@ export default class UserscriptOptionsController extends OptionsController {
      */
     protected renderOuter() {
         super.renderOuter();
+        // Set a special className "userscript-options-page" to enable styles for userscript
+        // options page only.
+        document.body.classList.add(goog.getCssName('userscript-options-page'));
 
         // insert footer and title
         let titleTemplate = popupblockerUserscriptOptionsUI.title();
