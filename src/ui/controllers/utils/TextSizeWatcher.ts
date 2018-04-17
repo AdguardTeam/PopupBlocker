@@ -33,7 +33,7 @@ export default class TextSizeWatcher extends SingleEventEmitter {
         let content = document.createElement('div');
         let innerWrapper = this.innerWrapper = document.createElement('div');
         let innerContent = document.createElement('div');
-        wrapper.style.cssText = "positiion:absolute;overflow:hidden";
+        wrapper.style.cssText = "left:9999px;positiion:absolute;overflow:hidden";
         content.style.cssText = "position:relative;white-space:nowrap;font-family:serif";
         innerWrapper.style.cssText = "position:absolute;width:100%;height:100%;overflow:hidden";
 
