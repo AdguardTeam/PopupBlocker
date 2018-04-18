@@ -55,7 +55,7 @@ export default class OptionsController implements IOptionsController {
 
     /**
      * Render part of settings page.
-     * For extensions settings page, this is called with renderOuter;
+     * For extensions settings page, this is called immediately after renderOuter;
      * For userscript settings page, this is called when the userscript has detected.
      */
     protected renderInner() {
@@ -85,9 +85,6 @@ export default class OptionsController implements IOptionsController {
             allowedOrigins: whitelisted,
             silencedOrigins: silenced,
         });
-
-
-
 
         this.settingsRoot.innerHTML = template;
     }

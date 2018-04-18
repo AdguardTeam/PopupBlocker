@@ -4,14 +4,30 @@
  *  - the wrapper function (popupBlocker),
  *  - the function's arguments, which are used as a global variable throughout
  *    the page script.
- * 
+ *
  * @param PARENT_FRAME_KEY It is used for communication between a script in a page's
  * context and a script in its child frame's context.
- * @param CONTENT_SCRIPT_KEY It is used for communication between a content script
- * (for userscript, script in userscript host's sandboxed context) and the page's context.
+ * @param CONTENT_SCRIPT_KEY It is used for communication between a userscript and
+ * page script injected by the userscript.
  */
 declare function popupBlocker(window, PARENT_FRAME_KEY?:string, CONTENT_SCRIPT_KEY?:string):any;
+/**
+ * `window[PARENT_FRAME_KEY]` will be an array of objects passed from
+ * page_script instance of a parent frame to an instance of a child frame.
+ *
+ * [
+ *   proxyToReal,           // See proxy.ts
+ *   realToProxy,           // See proxy.ts
+ *   timeline,              // See timeline/index.ts
+ *   contentScriptApiFacade // See platform/extension/shared/page_script.ts
+ *                          // and platform/userscript/page_script.ts
+ * ]
+ */
 declare const PARENT_FRAME_KEY:string;
+/**
+ * `window[CONTENT_SCRIPT_KEY]` will be contentApiFacade created by content script and
+ * passed to page script.
+ */
 declare const CONTENT_SCRIPT_KEY:string;
 
 interface Window {
