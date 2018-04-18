@@ -1,6 +1,7 @@
 import ISettingsDao, { AllOptions, AllOptionsCallback } from "../../../storage/ISettingsDao";
 import { isUndef } from "../../../shared/instanceof";
 import IUserscriptSettingsDao from "./IUserscriptSettingsDao";
+import { DomainOptionEnum } from "../../../storage/storage_data_structure";
 
 export default class UserscriptSettingsDao implements IUserscriptSettingsDao {
 
@@ -33,7 +34,7 @@ export default class UserscriptSettingsDao implements IUserscriptSettingsDao {
     }
 
     getSourceOption(domain:string):DomainOptionEnum {
-        return GM_getValue(domain);
+        return GM_getValue(domain, DomainOptionEnum.NONE);
     }
 
     /**
@@ -125,8 +126,10 @@ class Ver1DataMigrator implements GM_Iterator {
             } else {
                 try {
                     // Domain settings
-                    if (JSON.stringify(value)['whitelisted'] === true) {
-                        this.whitelist.push(key);
+                    if (JSON.parse(value)['whitelisted'] === true) {
+                        if (this.whitelist.indexOf(key) === -1) {
+                            this.whitelist.push(key);
+                        }
                     }
                 } catch (e) { }
             }

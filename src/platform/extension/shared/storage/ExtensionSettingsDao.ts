@@ -5,6 +5,7 @@ import OptionsController from '../../../../ui/controllers/options/OptionsControl
 import { Settings } from '../message_types';
 import IExtensionSettingsDao, { DomainSettingsCallback } from './IExtensionSettingsDao';
 import * as log from '../../../../shared/log';
+import { DomainOptionEnum } from '../../../../storage/storage_data_structure';
 
 export default class ExtensionSettingsDao implements IExtensionSettingsDao {
 

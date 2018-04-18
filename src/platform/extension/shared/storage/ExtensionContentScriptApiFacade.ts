@@ -2,6 +2,7 @@ import IContentScriptApiFacade from "../../../../storage/IContentScriptApiFacade
 import { CONTENT_PAGE_MAGIC, DownwardMsgTypesEnum, DownwardMsgTypes, Settings, UpwardMsgTypesEnum, CreateAlertMsg } from '../message_types'
 import * as log from '../../../../shared/log';
 import { isUndef } from "../../../../shared/instanceof";
+import { DomainOptionEnum } from "../../../../storage/storage_data_structure";
 
 
 export default class ExtensionContentScriptApiFacade implements IContentScriptApiFacade {

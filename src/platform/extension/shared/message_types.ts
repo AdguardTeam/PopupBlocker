@@ -6,6 +6,8 @@
  * type safety and consistent property renaming.
  */
 
+import { DomainOptionEnum } from "../../../storage/storage_data_structure";
+
 export interface Settings {
     $whitelist:string[]
     domainOption:DomainOptionEnum

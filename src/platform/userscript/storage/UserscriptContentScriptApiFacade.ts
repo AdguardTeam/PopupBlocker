@@ -3,6 +3,7 @@ import * as log from '../../../shared/log';
 import { isUndef } from '../../../shared/instanceof';
 import IAlertController from "../../../ui/controllers/alert/IAlertController";
 import IUserscriptSettingsDao from "./IUserscriptSettingsDao";
+import { DomainOptionEnum } from "../../../storage/storage_data_structure";
 
 /**
  * Note: it should always request new data with GM_getValue, 

@@ -5,3 +5,4 @@ import './events/framework_workarounds';
 import './dom/HTMLIFrame';
 import './timeline/index';
 import './shared/url';
+import './platform/userscript/storage/UserscriptSettingsDao';

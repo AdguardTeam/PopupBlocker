@@ -1,3 +1,5 @@
+import { DomainOptionEnum } from "./storage_data_structure";
+
 export default interface ISettingsDao {
     /**
      * Modifies settings, and if a callback is provided, calls it.

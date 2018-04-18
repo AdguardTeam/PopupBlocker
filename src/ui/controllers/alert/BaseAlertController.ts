@@ -13,6 +13,7 @@ import adguard from '../../../content_script_namespace';
 import FrameInjector from "../utils/FrameInjector";
 import IFrameInjector from "../utils/IFrameInjector";
 import CSSService from "../utils/CssService";
+import { DomainOptionEnum } from "../../../storage/storage_data_structure";
 
 const px = 'px';
 

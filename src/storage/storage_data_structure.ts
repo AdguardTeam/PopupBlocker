@@ -6,14 +6,14 @@
 /**
  * @deprecated Storage type used in version <2.2.
  */
-interface DomainOption {
+export interface DomainOption {
     whitelisted:boolean
 }
 
 /**
  * Storage type used in >=2.2.
  */
-declare const enum DomainOptionEnum {
+export const enum DomainOptionEnum {
     NONE     = 0 << 0,
     SILENCED = 1 << 0
 }

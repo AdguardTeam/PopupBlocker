@@ -1,4 +1,5 @@
 import ISettingsDao from "../../../storage/ISettingsDao";
+import { DomainOptionEnum } from "../../../storage/storage_data_structure";
 
 /**
  * Provides some synchronous access methods
