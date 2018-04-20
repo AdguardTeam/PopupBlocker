@@ -29,14 +29,14 @@ export default class UserscriptContentScriptApiFacade implements IContentScriptA
         });
     }
 
-    public envIsFirefoxGreasemonkey = typeof InstallTrigger !== 'undefined' && document.currentScript;
+    public envIsFirefoxBrowserExt = typeof InstallTrigger !== 'undefined' && document.currentScript;
     /**
      * Methods are defined in privileged context, we need to expose it to the
      * page's context in order to use it in injected script.
      */
     expose():string {
         const BRIDGE_KEY = '__PB' + (Math.random() * 1e9 >>> 0) + '__';
-        if (this.envIsFirefoxGreasemonkey) {
+        if (this.envIsFirefoxBrowserExt) {
             this.originIsWhitelisted = this.originIsWhitelisted.bind(this);
             this.originIsSilenced = this.originIsSilenced.bind(this);
             this.showAlert = this.showAlert.bind(this);

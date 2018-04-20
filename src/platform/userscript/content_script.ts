@@ -24,7 +24,7 @@ const BRIDGE_KEY = csApiFacade.expose();
  * In Firefox, userscripts can't write properties of unsafeWindow, so we
  * create a <script> tag to run the script in the page's context.
  */
-if (csApiFacade.envIsFirefoxGreasemonkey) {
+if (csApiFacade.envIsFirefoxBrowserExt) {
     let script = document.createElement('script');
     let text = `(${popupBlocker.toString()})(this,!1,'${BRIDGE_KEY}')`;
     script.textContent = text;
