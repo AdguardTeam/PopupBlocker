@@ -6,12 +6,13 @@ import { Settings } from '../message_types';
 import IExtensionSettingsDao, { DomainSettingsCallback } from './IExtensionSettingsDao';
 import * as log from '../../../../shared/log';
 import { DomainOptionEnum } from '../../../../storage/storage_data_structure';
+import { getSelectorFromCurrentjQueryEventHandler } from '../../../../events/framework_workarounds';
+import Transaction from './transaction/Transaction';
+
 
 export default class ExtensionSettingsDao implements IExtensionSettingsDao {
 
     private static WHITELIST = 'whitelist';
-
-    private $storage = chrome.storage.local;
 
     private static itemsToOptions(items:stringmap<any>):AllOptions {
         let whitelisted = [];
@@ -29,62 +30,73 @@ export default class ExtensionSettingsDao implements IExtensionSettingsDao {
                 }
             }
         }
-
         whitelisted.sort();
         silenced.sort();
-
         return [whitelisted, silenced];
     }
 
     setSourceOption(domain:string, option:DomainOptionEnum, cb?:func):void {
         log.print('setting source option', option);
-        if (option === DomainOptionEnum.NONE) {
-            this.$storage.remove(domain, cb)
-        } else {
-            this.$storage.set({
+        let transaction = new Transaction(cb)
+            .setRegister({
                 [domain]: option
-            }, cb);
+            });
+
+        if (option === DomainOptionEnum.NONE) {
+            transaction
+                .removeData()
+                .done();
+        } else {
+            transaction
+                .setData()
+                .done();
         }
     }
     setWhitelist(domain:string, whitelisted:boolean|null, cb?:func):void {
         log.print('setting whitelist', whitelisted);
-        this.$storage.get([ExtensionSettingsDao.WHITELIST], (items) => {
-            let whitelist:string[] = items[ExtensionSettingsDao.WHITELIST] || [];
-            let prevWhitelistInd = whitelist.indexOf(domain);
-
-            if (prevWhitelistInd === -1 && whitelisted !== false) {
-                whitelist.push(domain);
-            } else if (prevWhitelistInd !== -1 && whitelisted !== true) {
-                whitelist.splice(prevWhitelistInd, 1);
-            } else {
-                if (!isUndef(cb)) { cb(); }
-                return;
-            }
-
-            this.$storage.set({
-                [ExtensionSettingsDao.WHITELIST]: whitelist
-            }, cb);
-        });
+        new Transaction(cb)
+            .setRegister({
+                [ExtensionSettingsDao.WHITELIST]: []
+            })
+            .getData()
+            .transformRegister((items) => {
+                let whitelist:string[] = items[ExtensionSettingsDao.WHITELIST];
+                // Include or exclude the provided domain according to the provided value
+                let prevWhitelistInd = whitelist.indexOf(domain);
+                if (prevWhitelistInd === -1 && whitelisted !== false) {
+                    whitelist.push(domain);
+                } else if (prevWhitelistInd !== -1 && whitelisted !== true) {
+                    whitelist.splice(prevWhitelistInd, 1);
+                } else {
+                    return {};
+                }
+                return {
+                    [ExtensionSettingsDao.WHITELIST]: whitelist
+                }
+            })
+            .setData()
+            .done();
     }
     enumerateOptions(cb:AllOptionsCallback):void {
-        this.$storage.get(null, (items) => {
-            cb(ExtensionSettingsDao.itemsToOptions(items));
-        });
+        new Transaction(cb)
+            .setRegister(null)
+            .getData()
+            .transformRegister(ExtensionSettingsDao.itemsToOptions)
+            .done();
     }
     getDomainOption(domain:string, cb:DomainSettingsCallback) {
-        this.$storage.get([ExtensionSettingsDao.WHITELIST, domain], (items) => {
-            let $whitelist = items[ExtensionSettingsDao.WHITELIST];
-            let domainOption = items[domain];
-
-            if (isUndef($whitelist)) {
-                $whitelist = [];
-            }
-            if (isUndef(domainOption)) {
-                domainOption = DomainOptionEnum.NONE;
-            }
-
-            cb({ $whitelist, domainOption });
-        });
+        new Transaction(cb)
+            .setRegister({
+                [ExtensionSettingsDao.WHITELIST]: [],
+                [domain]: DomainOptionEnum.NONE
+            })
+            .getData()
+            .transformRegister((items) => {
+                let $whitelist = items[ExtensionSettingsDao.WHITELIST];
+                let domainOption = items[domain];
+                return { $whitelist, domainOption };
+            })
+            .done();
     }
 
     onSettingsChange(cb:AllOptionsCallback) {
