@@ -6,7 +6,6 @@ import { Settings } from '../message_types';
 import IExtensionSettingsDao, { DomainSettingsCallback } from './IExtensionSettingsDao';
 import * as log from '../../../../shared/log';
 import { DomainOptionEnum } from '../../../../storage/storage_data_structure';
-import { getSelectorFromCurrentjQueryEventHandler } from '../../../../events/framework_workarounds';
 import Transaction from './transaction/Transaction';
 
 
