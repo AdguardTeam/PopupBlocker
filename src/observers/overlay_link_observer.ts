@@ -39,18 +39,17 @@ class OverlayAnchorObserver {
     private static THROTTLE_TIME = 50;
 
     private throttledCallback:MutationCallback = (mutations, observer) => {
+        if (!this.clicked) { return; }
         let time = getTime() - this.lastFired;
-        if (this.clicked) {
-            if (this.callbackTimer !== -1) {
-                return;
-            }
-            if (time > OverlayAnchorObserver.THROTTLE_TIME) {
+        if (this.callbackTimer !== -1) {
+            return;
+        }
+        if (time > OverlayAnchorObserver.THROTTLE_TIME) {
+            this.callback(mutations, observer);
+        } else {
+            this.callbackTimer = setTimeout(() => {
                 this.callback(mutations, observer);
-            } else {
-                this.callbackTimer = setTimeout(() => {
-                    this.callback(mutations, observer);
-                }, OverlayAnchorObserver.THROTTLE_TIME - time);
-            }
+            }, OverlayAnchorObserver.THROTTLE_TIME - time);
         }
     }
     private static readonly option:MutationObserverInit = {
