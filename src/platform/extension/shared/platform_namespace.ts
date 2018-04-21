@@ -2,4 +2,4 @@
  * Callback-based extension api namespace.
  */
 
-export default <typeof chrome>(window.chrome || window["browser"]);
+export default <typeof chrome>(typeof chrome === 'object' ? chrome : window["browser"])

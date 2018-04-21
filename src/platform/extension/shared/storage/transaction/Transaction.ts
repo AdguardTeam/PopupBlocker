@@ -10,7 +10,7 @@ export default class Transaction implements ITransaction {
     constructor(private cb?:func) {
         this.onStorageOperation = this.onStorageOperation.bind(this);
     }
-    private register:Dict;
+    private $register:Dict;
     private tasks:(TransactionTask|DictTransformer)[] = [];
     setRegister(dict:Dict) {
         return this.transformRegister(() => {
@@ -33,7 +33,7 @@ export default class Transaction implements ITransaction {
         this.tasks.push(TransactionTask.REMOVE);
         return this;
     }
-    done() {
+    commit() {
         // Start executing transaction
         this.executeTasks();
     }
@@ -43,24 +43,24 @@ export default class Transaction implements ITransaction {
         switch(type) {
             case 'undefined':
                 // End of tasks
-                this.endTransactionByInvokingCallback(this.register);
+                this.endTransactionByInvokingCallback(this.$register);
                 break;
             case 'function':
                 // Transform register tasks
-                this.register = (<DictTransformer>task)(this.register);
+                this.$register = (<DictTransformer>task)(this.$register);
                 this.executeTasks();
                 break;
             case 'number':
                 // Storage operation tasks
                 switch (task) {
                     case TransactionTask.GET:
-                        Transaction.localStorage.get(this.register, this.onStorageOperation);
+                        Transaction.localStorage.get(this.$register, this.onStorageOperation);
                         break;
                     case TransactionTask.SET:
-                        Transaction.localStorage.set(this.register, this.onStorageOperation);
+                        Transaction.localStorage.set(this.$register, this.onStorageOperation);
                         break;
                     case TransactionTask.REMOVE:
-                        Transaction.localStorage.remove(Object.keys(this.register), this.onStorageOperation);
+                        Transaction.localStorage.remove(Object.keys(this.$register), this.onStorageOperation);
                         break;
                 }
                 break;
@@ -72,7 +72,7 @@ export default class Transaction implements ITransaction {
             this.endTransactionByInvokingCallback();
             return;
         }
-        this.register = items;
+        this.$register = items;
         this.executeTasks();
     }
     private endTransactionByInvokingCallback(arg?) {

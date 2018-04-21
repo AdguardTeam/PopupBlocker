@@ -23,7 +23,9 @@ for (let i = 0, l = iconSizes.length; i < l; i++) {
 }
 
 chrome.browserAction.onClicked.addListener((tab) => {
-    chrome.tabs.sendMessage(tab.id, FromBGMsgTypesEnum.ICON_CLICKED);
+    chrome.tabs.sendMessage(tab.id, FromBGMsgTypesEnum.ICON_CLICKED, {
+        frameId: 0 // Send to top-frame only, requires chrome ver >=41
+    });
 });
 
 /**
@@ -97,7 +99,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 tabId
             }, checkLastError);
             chrome.browserAction.setTitle({
-                title: chrome.i18n.getMessage("ext_disabled", new URL(sender.tab.url).host),
+                title: chrome.i18n.getMessage("ext_disabled", new URL(sender.url).host),
                 tabId
             });
             break;

@@ -8,6 +8,7 @@ import IExtensionSettingsDao from './storage/IExtensionSettingsDao';
 import { isUndef } from '../../../shared/instanceof';
 
 const domain = location.host;
+const isTop = window === top;
 
 function linkPageScript (settingsDao:IExtensionSettingsDao, alertController:IAlertController) {
 
@@ -43,7 +44,7 @@ function linkPageScript (settingsDao:IExtensionSettingsDao, alertController:IAle
 
     function updateIcon(settings:Partial<Settings>) {
         // Send message from top frames only
-        if (top !== window) { return; }
+        if (!isTop) { return; }
 
         let whitelist = settings.$whitelist;
 
@@ -83,8 +84,9 @@ function linkBackgroundScript(settingsDao:IExtensionSettingsDao) {
     const onMessage = (message:FromBGMsgTypesEnum) => {
         switch (message) {
             case FromBGMsgTypesEnum.ICON_CLICKED:
+                if (!isTop) { return; }
                 settingsDao.setWhitelist(domain, null);
-            break;
+                break;
         }
     };
 

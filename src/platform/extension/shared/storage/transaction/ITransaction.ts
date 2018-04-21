@@ -30,5 +30,5 @@ export default interface ITransaction {
     /**
      * This method must be called at the end of transaction sequences.
      */
-    done():void
+    commit():void
 }

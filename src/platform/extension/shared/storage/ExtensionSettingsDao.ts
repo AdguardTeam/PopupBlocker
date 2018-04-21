@@ -7,36 +7,16 @@ import IExtensionSettingsDao, { DomainSettingsCallback } from './IExtensionSetti
 import * as log from '../../../../shared/log';
 import { DomainOptionEnum } from '../../../../storage/storage_data_structure';
 import Transaction from './transaction/Transaction';
+import ITransaction from './transaction/ITransaction';
 
 
 export default class ExtensionSettingsDao implements IExtensionSettingsDao {
 
     private static WHITELIST = 'whitelist';
 
-    private static itemsToOptions(items:stringmap<any>):AllOptions {
-        let whitelisted = [];
-        let silenced = [];
-
-        for (let key in items) {
-            if (items.hasOwnProperty(key)) {
-                if (key === ExtensionSettingsDao.WHITELIST) {
-                    whitelisted = items[key];
-                } else {
-                    let value = items[key];
-                    if ((value & DomainOptionEnum.SILENCED) !== 0) {
-                        silenced.push(key);
-                    }
-                }
-            }
-        }
-        whitelisted.sort();
-        silenced.sort();
-        return [whitelisted, silenced];
-    }
-
     setSourceOption(domain:string, option:DomainOptionEnum, cb?:func):void {
         log.print('setting source option', option);
-        let transaction = new Transaction(cb)
+        const transaction = new Transaction(cb)
             .setRegister({
                 [domain]: option
             });
@@ -44,11 +24,11 @@ export default class ExtensionSettingsDao implements IExtensionSettingsDao {
         if (option === DomainOptionEnum.NONE) {
             transaction
                 .removeData()
-                .done();
+                .commit();
         } else {
             transaction
                 .setData()
-                .done();
+                .commit();
         }
     }
     setWhitelist(domain:string, whitelisted:boolean|null, cb?:func):void {
@@ -74,14 +54,14 @@ export default class ExtensionSettingsDao implements IExtensionSettingsDao {
                 }
             })
             .setData()
-            .done();
+            .commit();
     }
     enumerateOptions(cb:AllOptionsCallback):void {
         new Transaction(cb)
             .setRegister(null)
             .getData()
-            .transformRegister(ExtensionSettingsDao.itemsToOptions)
-            .done();
+            .transformRegister(ExtensionSettingsDao.dictToAllOption)
+            .commit();
     }
     getDomainOption(domain:string, cb:DomainSettingsCallback) {
         new Transaction(cb)
@@ -95,7 +75,7 @@ export default class ExtensionSettingsDao implements IExtensionSettingsDao {
                 let domainOption = items[domain];
                 return { $whitelist, domainOption };
             })
-            .done();
+            .commit();
     }
 
     onSettingsChange(cb:AllOptionsCallback) {
@@ -123,6 +103,27 @@ export default class ExtensionSettingsDao implements IExtensionSettingsDao {
 
             cb({ $whitelist, domainOption });
         })
+    }
+
+    private static dictToAllOption(items:stringmap<any>):AllOptions {
+        let whitelisted = [];
+        let silenced = [];
+
+        for (let key in items) {
+            if (items.hasOwnProperty(key)) {
+                if (key === ExtensionSettingsDao.WHITELIST) {
+                    whitelisted = items[key];
+                } else {
+                    let value = items[key];
+                    if ((value & DomainOptionEnum.SILENCED) !== 0) {
+                        silenced.push(key);
+                    }
+                }
+            }
+        }
+        whitelisted.sort();
+        silenced.sort();
+        return [whitelisted, silenced];
     }
 
 }
