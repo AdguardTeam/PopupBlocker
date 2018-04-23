@@ -188,6 +188,16 @@ export default abstract class BaseAlertController implements IAlertController {
 
         // Render contents
         this.updateIframeContent();
+
+        // This is a workaround for issues on Edge and IE.
+        // It seems that right after our template is appended, element's offsetWidth and such
+        // are not fully realized. It is lesser for about 16 or 17 pixels then it should have been,
+        // and it causes a part of ui to be cropped from the left side.
+        // Maybe there is some asynchronous rendering going on. Maybe box-shadows.
+        // TODO: find an exact cause of it, and remove this
+        requestAnimationFrame(() => {
+            this.updateIframePosition();
+        });
     }
 
     private updateIframeContent() {
