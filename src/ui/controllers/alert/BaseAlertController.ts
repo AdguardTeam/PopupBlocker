@@ -188,6 +188,14 @@ export default abstract class BaseAlertController implements IAlertController {
 
         // Render contents
         this.updateIframeContent();
+
+        // This is a workaround for issues on Edge and IE.
+        // It seems that right after our template is appended, element's offsetLeft and such
+        // are not fully realized. Maybe there is some asynchronous rendering going on.
+        // TODO: find an exact cause of it, and remove this
+        requestAnimationFrame(() => {
+            this.updateIframePosition();
+        });
     }
 
     private updateIframeContent() {
