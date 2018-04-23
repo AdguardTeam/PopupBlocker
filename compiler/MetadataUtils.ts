@@ -89,10 +89,11 @@ export default class MetadataUtils {
         }
         function insertTranslatableKeys (metaKey:string, messageId:string, additional:string = ''):void {
             insertKey(metaKey, translation['en'][messageId].message + additional); // insert 'en' language at the first line.
-            for (let locale in translation) {
-                if (locale === 'en') continue;
+
+            LocaleUtils.forEachPhrase(translation, [messageId], (locale, messageid) => {
+                if (locale === 'en') return;
                 insertKey(metaKey + ':' + locale, translation[locale][messageId].message + additional);
-            }
+            });
         }
 
         lines.push('// ==UserScript==');

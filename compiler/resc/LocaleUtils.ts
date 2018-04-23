@@ -1,5 +1,6 @@
 import * as fsExtra from 'fs-extra';
 import * as fs from 'async-file';
+import log = require('fancy-log');
 import { posix as path } from 'path';
 
 import { IResourceProvider, ResourceManager } from './ResourceManager';
@@ -37,6 +38,29 @@ export default class LocaleUtils implements IResourceProvider {
         return "";
     }
 
+    public static forEachPhrase(translations:object, keys:string[], callback:(lang:string, key:string)=>void) {
+        let langs = Object.keys(translations);
+        for (let lang of langs) {
+            for (let key of keys) {
+                if (!(key in translations[lang])) {
+                    // A required phrase is missing in a lang translation.
+                    // If it is missing in 'en' as well, it is an error.
+                    if (!(key in translations['en'])) {
+                        throw new Error(`Required phrase ${key} is missing in translations.json`);
+                    } else {
+                        continue;
+                    }
+                }
+                try {
+                    callback(lang, key);
+                } catch (e) {
+                    log.error(`Error for lang: ${lang}, key: ${key}`);
+                    throw e;
+                }
+            }
+        }
+    }
+
     /**
      * We collapse 'message' property in the json object containing translations,
      * in order to have a shorter representation in the userscript source.
@@ -44,12 +68,12 @@ export default class LocaleUtils implements IResourceProvider {
     private async getUserscriptInlinableJSON() {
         const out = {};
         const [json, userscriptKeys] = await Promise.all([LocaleUtils.translation.read(), LocaleUtils.userscriptKeys.read()]);
-        for (let locale in json) {
-            out[locale] = {};
-            for (let key of userscriptKeys) {
-                out[locale][key] = json[locale][key].message;
-            }
-        }
+
+        LocaleUtils.forEachPhrase(json, userscriptKeys, (locale, key) => {
+            if (!out[locale]) { out[locale] = {}; }
+            out[locale][key] = json[locale][key].message;
+        });
+
         return <{[locale:string]:{[messageId:string]:string}}>out;
     }
 
@@ -64,38 +88,37 @@ export default class LocaleUtils implements IResourceProvider {
         const out = {};
         const [json, extensionKeys] = await Promise.all([LocaleUtils.translation.read(), LocaleUtils.extensionKeys.read()]);
 
-        for (let locale in json) {
-            out[locale] = {};
-            for (let key of extensionKeys) {
-                let message = json[locale][key].message;
-                // A workaround for chrome webstore bug.
-                // It has problems in recognizing i18n'd string in extension name.
-                if (key === LocaleUtils.EXTENSION_NAME) {
-                    message += this.channelSuffix;
-                }
-                // Replace dollar signs
-                message = message.replace(/\{\$/g, '\{$$$');
-                out[locale][key] = {
-                    message: message
-                };
-
-                if (json[locale][key].placeholders) {
-                    out[locale][key].placeholders = json[locale][key].placeholders;
-                }
+        LocaleUtils.forEachPhrase(json, extensionKeys, (locale, key) => {
+            if (!out[locale]) { out[locale] = {}; }
+            let message = json[locale][key].message;
+            // A workaround for chrome webstore bug.
+            // It has problems in recognizing i18n'd string in extension name.
+            if (key === LocaleUtils.EXTENSION_NAME) {
+                message += this.channelSuffix;
             }
-        }
+            // Replace dollar signs
+            message = message.replace(/\{\$/g, '\{$$$');
+            out[locale][key] = {
+                message: message
+            };
+            // Extension translations require 'placeholder' key as well
+            if (json[locale][key].placeholders) {
+                out[locale][key].placeholders = json[locale][key].placeholders;
+            }
+        });
+
         return <{[locale:string]:{[messageId:string]:{message:string}}}>out;
     }
 
     private async getUserscriptSettingsJSON() {
         const out = {};
         const [json, settingsKeys] = await Promise.all([LocaleUtils.translation.read(), LocaleUtils.settingsKeys.read()]);
-        for (let locale in json) {
-            out[locale] = {};
-            for (let key of settingsKeys) {
-                out[locale][key] = json[locale][key].message;
-            }
-        }
+
+        LocaleUtils.forEachPhrase(json, settingsKeys, (locale, key) => {
+            if (!out[locale]) { out[locale] = {}; }
+            out[locale][key] = json[locale][key].message;
+        });
+
         return <{[locale:string]:{[messageId:string]:string}}>out;
     }
 
