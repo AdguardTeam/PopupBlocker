@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 19 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 3</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0.76796875" y="0.980664063" width="18" height="15.8805176" rx="1.8"></rect>
+    </defs>
+    <g id="Artboard" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-20.000000, -184.000000)">
+        <g id="Group-3" transform="translate(20.000000, 184.000000)">
+            <g id="Rectangle">
+                <use fill-rule="evenodd" xlink:href="#path-1"></use>
+                <rect stroke="#979797" stroke-width="1.35" x="1.44296875" y="1.65566406" width="16.65" height="14.5305176" rx="1.8"></rect>
+            </g>
+            <polyline id="Line-3" stroke="#979797" stroke-width="1.35" stroke-linecap="square" points="1.62666016 13.0713379 5.22666016 9.47133789 8.17407227 12.1155273 12.929834 6.72827148 17.8679687 12.3330566"></polyline>
+        </g>
+    </g>
+</svg>

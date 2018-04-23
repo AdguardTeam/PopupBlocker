@@ -1,8 +1,8 @@
 import { timeline, position } from './timeline/index';
 import { TimelineEvent, TLEventType } from './timeline/event';
 import { isWindow, isLocation } from './shared/instanceof';
-import WeakMap from './weakmap';
-import adguard from './adguard';
+import WeakMap from './shared/WeakMap';
+import adguard from './page_script_namespace';
 // @ifndef NO_PROXY
 import { mockedWindowCollection } from './mock_window';
 // @endif
@@ -74,7 +74,7 @@ const isNativeFn = function (fn:Function):boolean {
 const proxyToReal = typeof PARENT_FRAME_KEY === 'string' ? window.parent[PARENT_FRAME_KEY][0] : new WeakMap();
 const realToProxy = typeof PARENT_FRAME_KEY === 'string' ? window.parent[PARENT_FRAME_KEY][1] : new WeakMap();
 
-export const expose = (key:PropertyKey) => { window[key] = [proxyToReal, realToProxy, timeline, adguard.storageProvider]; };
+export const expose = (key:PropertyKey) => { window[key] = [proxyToReal, realToProxy, timeline, adguard.contentScriptApiFacade]; };
 export const unexpose = (key:PropertyKey) => { delete window[key]; };
 
 export type ApplyHandler = (target:Function, _this:any, _arguments:IArguments|any[], context?:any) => any;

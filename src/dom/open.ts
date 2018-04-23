@@ -1,4 +1,4 @@
-import adguard from '../adguard';
+import adguard from '../page_script_namespace';
 import { ApplyHandler, makeObjectProxy, wrapMethod } from '../proxy';
 import { verifyEvent, retrieveEvent } from '../events/verify';
 import examineTarget from '../events/examine_target';
@@ -11,14 +11,14 @@ import mockWindow from '../mock_window';
 import onBlocked from '../on_blocked';
 
 const openVerifiedWindow:ApplyHandler = function(_open, _this, _arguments, context) {
-    if (adguard.storageProvider.originIsWhitelisted()) {
+    if (adguard.contentScriptApiFacade.originIsWhitelisted()) {
         return _open.apply(_this, _arguments);
     }
     let targetHref = _arguments[0];
     log.call('Called window.open with url ' + targetHref);
     const url = createUrl(targetHref);
     const destDomain = url[1];
-    if (adguard.storageProvider.destinationIsWhitelisted(destDomain)) {
+    if (adguard.contentScriptApiFacade.originIsWhitelisted(destDomain)) {
         log.print(`The domain ${destDomain} is in whitelist.`);
         return _open.apply(_this, _arguments);
     }

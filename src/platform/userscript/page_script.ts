@@ -1,10 +1,10 @@
-import adguard from '../../adguard';
+import adguard from '../../page_script_namespace';
 
 if (typeof CONTENT_SCRIPT_KEY !== 'undefined') {
-    adguard.storageProvider = window[CONTENT_SCRIPT_KEY];
+    adguard.contentScriptApiFacade = window[CONTENT_SCRIPT_KEY];
     delete window[CONTENT_SCRIPT_KEY];
 } else {
-    adguard.storageProvider = window.parent[PARENT_FRAME_KEY][3];
+    adguard.contentScriptApiFacade = window.parent[PARENT_FRAME_KEY][3];
 }
 
 import '../../messaging';

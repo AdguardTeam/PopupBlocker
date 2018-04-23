@@ -1,5 +1,5 @@
 import * as log from '../shared/log';
-import WeakMap from '../weakmap';
+import WeakMap from '../shared/WeakMap';
 import CurrentMouseEvent from './current_mouse_event';
 import { eventTargetIsRootNode, maybeOverlay } from './element_tests';
 import { getSelectorFromCurrentjQueryEventHandler, isReactInstancePresent, jsActionTarget, getCurrentJQueryTarget } from './framework_workarounds';

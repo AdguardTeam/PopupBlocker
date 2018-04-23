@@ -5,6 +5,10 @@ import getTime from '../shared/time';
 import { isAnchor } from '../shared/instanceof';
 import * as log from '../shared/log';
 
+/**
+ * Certain pop-up or pop-under scripts creates a transparent anchor covering the entire page
+ * on user action. This observer detects it and neutralizes it.
+ */
 class OverlayAnchorObserver {
     private observer:MutationObserver
     private lastFired:number = 0
@@ -32,25 +36,29 @@ class OverlayAnchorObserver {
     }
     private clicked:boolean = false
     private clickTimer:number
+    private static THROTTLE_TIME = 50;
+
     private throttledCallback:MutationCallback = (mutations, observer) => {
+        if (!this.clicked) { return; }
         let time = getTime() - this.lastFired;
-        if (this.clicked) {
-            if (this.callbackTimer !== -1) {
-                return;
-            }
-            if (time > 50) {
+        if (this.callbackTimer !== -1) {
+            return;
+        }
+        if (time > OverlayAnchorObserver.THROTTLE_TIME) {
+            this.callback(mutations, observer);
+        } else {
+            this.callbackTimer = setTimeout(() => {
                 this.callback(mutations, observer);
-            } else {
-                this.callbackTimer = setTimeout(() => {
-                    this.callback(mutations, observer);
-                }, 50 - time);
-            }
+            }, OverlayAnchorObserver.THROTTLE_TIME - time);
         }
     }
     private static readonly option:MutationObserverInit = {
         childList: true,
         subtree: true
     }
+
+    private static OBSERVE_DURATION_AFTER_CLICK = 200; // It react to overlay anchor creation
+                                                       // within 200 ms after each of user click
     constructor() {
         window.addEventListener('mousedown', (evt) => {
             if (evt.isTrusted) {
@@ -58,7 +66,7 @@ class OverlayAnchorObserver {
                 clearTimeout(this.clickTimer);
                 this.clickTimer = setTimeout(() => {
                     this.clicked = false;
-                }, 200);
+                }, OverlayAnchorObserver.OBSERVE_DURATION_AFTER_CLICK);
             }
         }, true);
         if (MO) {

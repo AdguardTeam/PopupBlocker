@@ -58,3 +58,5 @@ export const getSafeNonEmptyParent = (window:Window):Window => {
     if (!frame) { return null; }
     return frame;
 };
+
+export const shadowDomV1Support = 'attachShadow' in Element.prototype;

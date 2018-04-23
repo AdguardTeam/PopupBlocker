@@ -1,0 +1,131 @@
+{namespace popupblockerUserscriptOptionsUI}
+
+/**
+ *
+ */
+{template .title}
+    <div class="{css settings__title}">
+        {msg desc=""}
+            userscript_name
+        {/msg}
+    </div>
+{/template}
+
+/**
+ *
+ */
+{template .loading_subtitle}
+    <div class="{css settings__subtitle} {css settings__subtitle--margin}">
+        {msg desc="Please wait, detecting the Popup Blocker"}please_wait{/msg}
+    </div>
+{/template}
+
+/**
+ *
+ */
+{template .footer}
+    <div class="{css footer}">
+        <div class="{css footer__in}">
+            <div class="{css footer__links-list}">
+                <a target="_blank" href="https://adguard.com/" class="{css footer__link}">
+                    © AdGuard.com
+                </a>
+                <a target="_blank" href="https://github.com/AdguardTeam/PopupBlocker" class="{css footer__link}">
+                    {msg desc="Homepage"}homepage{/msg}
+                </a>
+            </div>
+        </div>
+    </div>
+{/template}
+
+/**
+ * Template for userscript options page, to be displayed when a userscript was not detected.
+ */
+{template .noinstalled}
+    <div class="{css settings__subtitle} {css settings__subtitle--margin}">
+        {msg desc="AdGuard Popup Blocker userscript is not installed. Please see the instruction below."}noinst_subtitle{/msg}
+    </div>
+    <div class="{css settings__list}">
+        <div class="{css settings__list-title}">
+            {msg desc="Step 1: Install a usrscript manager"}noinst_step_1{/msg}
+        </div>
+        <div class="{css settings__list-subtitle}">
+            {msg desc="First of all, to use a userscript you need a special program that runs userscript."}noinst_special_prog{/msg}
+        </div>
+        <div class="{css settings__list-in}">
+            <li class="{css settings__list-item}">
+                <a target="_blank" href="https://adguard.com/adguard-windows/overview.html" class="{css settings__list-link}">
+                    AdGuard for Windows
+                </a>
+                {sp}
+                {msg desc="(Recommended)"}noinst_rec{/msg}
+            </li>
+            <li class="{css settings__list-item}">
+                <a target="_blank" href="https://www.greasespot.net/" class="{css settings__list-link}">
+                    Greasemonkey
+                </a>
+            </li>
+            <li class="{css settings__list-item}">
+                <a target="_blank" href="https://violentmonkey.github.io/" class="{css settings__list-link}">
+                    Violentmonkey
+                </a>
+            </li>
+            <li class="{css settings__list-item}">
+                <a target="_blank" href="https://tampermonkey.net/" class="{css settings__list-link}">
+                    Tampermonkey
+                </a>
+            </li>
+        </div>
+        <div class="{css settings__list-title}">
+            {msg desc="Step 2: Userscript"}noinst_step_2{/msg}
+        </div>
+        <div class="{css settings__list-subtitle}">
+            {msg desc="If you installed AdGuard for Windows, you can ignore this step as the Popup Blocker userscript comes pre-installed."}noinst_ignore_if_ag{/msg}
+        </div>
+        <div class="{css settings__list-in}">
+            {call .noinstalled_install_from}
+                {param name}
+                    GitHub
+                {/param}
+                {param link}
+                    https://github.com/AdguardTeam/PopupBlocker
+                {/param}
+            {/call}
+            {call .noinstalled_install_from}
+                {param name}
+                    Greasyfork
+                {/param}
+                {param link}
+                    https://greasyfork.org/scripts/33396-adguard-popup-blocker
+                {/param}
+            {/call}
+            {call .noinstalled_install_from}
+                {param name}
+                    OpenUserJS
+                {/param}
+                {param link}
+                    https://openuserjs.org/scripts/AdGuard/Adguard_Popup_Blocker
+                {/param}
+            {/call}
+        </div>
+        <div class="{css settings__list-title}">
+            {msg desc="Step 3: Refresh this page to get the userscript settings"}noinst_step_3{/msg}
+        </div>
+    </div>
+{/template}
+
+/**
+ * A helper template to be used in noinstalled template.
+ */
+{template .noinstalled_install_from} 
+    {@param name:string}
+    {@param link:string}
+    <li class="{css settings__list-item}">
+        {{msg desc="Install from {$startLink}{$name}{$endLink}"}}
+            installFrom
+            <a target="_blank" href="{$link}" class="{css settings__list-link}">
+                {$name}
+            </a>
+        {/msg}
+    </li>
+{/template}

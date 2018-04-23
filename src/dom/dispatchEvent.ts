@@ -4,7 +4,7 @@ import examineTarget from '../events/examine_target';
 import { setBeforeunloadHandler } from './unload';
 import { isNode, isMouseEvent, isUIEvent, isClickEvent, isAnchor } from '../shared/instanceof';
 import { getTagName, targetsAreChainable } from '../shared/dom';
-import adguard from '../adguard';
+import adguard from '../page_script_namespace';
 import * as log from '../shared/log';
 import createUrl from '../shared/url';
 import onBlocked from '../on_blocked';
@@ -14,13 +14,13 @@ const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this:EventT
     if (isMouseEvent(evt) && isClickEvent(evt) && isNode(_this) && isAnchor(_this) && !evt.isTrusted) {
         log.call('It is a MouseEvent on an anchor tag.');
         log.print('dispatched event is:', evt);
-        if (adguard.storageProvider.originIsWhitelisted()) {
+        if (adguard.contentScriptApiFacade.originIsWhitelisted()) {
             return _dispatchEvent.call(_this, evt);
         }
         // Checks if an url is in a whitelist
         let url = createUrl(_this.href);
         let destDomain = url[1];
-        if (adguard.storageProvider.destinationIsWhitelisted(destDomain)) {
+        if (adguard.contentScriptApiFacade.originIsWhitelisted(destDomain)) {
             log.print(`The domain ${destDomain} is in whitelist.`);
             return _dispatchEvent.call(_this, evt);
         }

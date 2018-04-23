@@ -1,0 +1,41 @@
+.pin {
+    display: none;
+    width: 30px;
+    height: 30px;
+    position: fixed;
+    right: 8px;
+    cursor: pointer;
+    border-radius: 100%;
+    box-shadow: var(--grey-shadow);
+    background-color: var(--white-color);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transition: var(--t3) background-color;
+    padding: 0;
+
+    &:hover {
+        background-color: var(--green02);
+    }
+
+    &--show {
+        display: block;
+    }
+
+    &--shield {
+        width: 60px;
+        height: 60px;
+        background-size: 30px;
+        background-position: 50% 17px;
+        background-image: svg-load("icons/shield.svg");
+    }
+
+    &--win-hidden {
+        background-size: 16px 13px;
+        background-image: svg-load("icons/window.svg");
+    }
+
+    &--touch {
+        background-size: 13px 16px;
+        background-image: svg-load("icons/touch.svg");
+    }
+}

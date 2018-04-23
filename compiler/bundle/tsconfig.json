@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "lib": ["dom", "es6"],
+        "outDir": "../../build/tscc",
+        "module": "commonjs",
+        "types": ["filesystem"]
+    },
+    "include": [
+        "../../build_tsickle/**/*.ts"
+    ]
+}

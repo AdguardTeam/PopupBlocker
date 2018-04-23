@@ -1,0 +1,62 @@
+{namespace popupblockerUI}
+
+/**
+ * Common template for <head> node of alert and settings page.
+ */
+{template .head}
+    {@param cssText: string}
+    {@param preloadFonts: list<string>}
+    <!doctype html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        {foreach $href in $preloadFonts}
+            <link rel="preload" href="{$href}" as="font" crossorigin="anonymous">
+        {/foreach}
+        <style>{$cssText}</style>
+    </head>
+    </html>
+{/template}
+
+/**
+ * Template for alert <body>.
+ */
+{template .content}
+    {@param numPopup: number}
+    {@param origDomain: string}
+    {@param destUrl: string}
+    <div class="{css alert}">
+        <button class="{css alert__close}"></button>
+        <div class="{css alert__in}">
+            <div class="{css alert__ico} {css alert__ico--windows}"></div>
+            <div class="{css alert__text}">
+                {{msg desc="AdGuard prevented this website from opening {$numPopup} pop-up windows"}}popup_text{$numPopup}{/msg}
+            </div>
+        </div>
+        <div class="{css alert__btns}">
+            <select class="{css alert__select}" name="options">
+                <option value="0" disabled selected>
+                    {msg desc="Options"}options{/msg}
+                </option>
+                <option value="1">
+                   {{msg desc="Allow pop-ups for {$origDomain}"}}allow_from{$origDomain}{/msg}
+                </option>
+                <option value="2">
+                    {{msg desc="Don't show this message on {$origDomain}"}}silence_noti{$origDomain}{/msg}
+                </option>
+                <option value="3">
+                    {msg desc="Manage preferences..."}manage_pref{/msg}
+                </option>
+                <option value="4">
+                    {{msg desc="Show {$destUrl}"}}show_popup{$destUrl}{/msg}
+                </option>
+            </select>
+            <button class="{css alert__btn}">
+                {msg desc="Continue blocking"}continue_blocking{/msg}
+            </button>
+        </div>
+    </div>
+    <button class="{css pin} {css pin--win-hidden} {css pin--show}"></button>
+{/template}

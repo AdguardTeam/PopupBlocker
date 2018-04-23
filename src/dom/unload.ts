@@ -1,8 +1,8 @@
-import adguard from '../adguard';
+import adguard from '../page_script_namespace';
 import * as log from '../shared/log';
 
 const onbeforeunloadHandler = (evt:BeforeUnloadEvent) => {
-    const MSG = adguard.storageProvider.$getMessage('on_navigation_by_popunder');
+    const MSG = adguard.contentScriptApiFacade.$getMessage('on_navigation_by_popunder');
     evt.returnValue = MSG;
     return MSG;
 };

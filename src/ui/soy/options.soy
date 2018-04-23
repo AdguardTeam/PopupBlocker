@@ -1,0 +1,94 @@
+{namespace popupblockerOptionsUI}
+
+/**
+ * Content of <body>
+ */
+{template .outer}
+    <div class="{css settings}">
+        <div class="{css settings__in}">
+            /* This is where main contents will be inserted. */
+        </div>
+    </div>
+{/template}
+
+/**
+ * Modal dialogs, to be used by users to input domain names
+ */
+{template .modal} 
+    <div class="{css settings} {css settings-modal}">
+        <div class="{css settings__in} {css settings__in--popup}">
+            <div class="{css settings__close}"></div>
+            <div class="{css settings__title}">
+                {msg desc="Add a site"}add_site{/msg}
+            </div>
+            <form action="#">
+                <input class="{css settings__input}" type="text" placeholder="{msg desc="Enter site name"}site_input_ph{/msg}">
+                <input class="{css settings__submit}" type="submit" value="{msg desc="Add a site"}add_site{/msg}">
+            </form>
+        </div>
+    </div>
+{/template}
+
+/**
+ * Settings page template.
+ */
+{template .content}
+    {@param allowedOrigins: list<string>}
+    {@param silencedOrigins: list<string>}
+
+    <div class="{css settings__block}" data-for="0">
+        <div class="{css settings__row}">
+            <div class="{css tooltip-container}">
+                <div class="{css settings__subtitle}">
+                    {msg desc="Allowed"}allowed{/msg}
+                </div>
+                <div data-tooltip="{msg desc="Popups will be allowed for domains listed here."}allowed_tooltip{/msg}" class="{css tooltip}"></div>
+            </div>
+            <div class="{css settings__control}">
+                <button class="{css settings__control-item}">
+                    {msg desc="Add"}add{/msg}
+                </button>
+            </div>
+            <div class="{css settings__row-empty}">
+                {msg desc="List of allowed sites is empty"}allowed_empty{/msg}
+            </div>
+        </div>
+
+        {foreach $allowedOrigin in $allowedOrigins}
+            <div class="{css settings__row}">
+                <div class="{css settings__name}">
+                    {$allowedOrigin}
+                </div>
+                <button class="{css settings__del}"></button>
+            </div>
+        {/foreach}
+    </div>
+
+    <div class="{css settings__block}" data-for="1">
+        <div class="{css settings__row}">
+            <div class="{css tooltip-container}">
+                <div class="{css settings__subtitle}">
+                    {msg desc="Silenced"}silenced{/msg}
+                </div>
+                <div data-tooltip="{msg desc="Notifications for blocked popups will not be shown for domains listed here."}silenced_tooltip{/msg}" class="{css tooltip}"></div>
+            </div>
+            <div class="{css settings__control}">
+                <button class="{css settings__control-item}">
+                    {msg desc="Add"}add{/msg}
+                </button>
+            </div>
+            <div class="{css settings__row-empty}">
+                {msg desc="List of silenced sites is empty"}silenced_empty{/msg}
+            </div>
+        </div>
+
+        {foreach $silencedOrigin in $silencedOrigins}
+            <div class="{css settings__row}">
+                <div class="{css settings__name}">
+                    {$silencedOrigin}
+                </div>
+                <button class="{css settings__del}"></button>
+            </div>
+        {/foreach}
+    </div>
+{/template}

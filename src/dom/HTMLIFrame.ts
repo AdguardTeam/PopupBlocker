@@ -13,7 +13,7 @@
 import { expose, unexpose, ApplyHandler, makeObjectProxy, wrapAccessor } from '../proxy';
 import * as log from '../shared/log';
 import { isEmptyUrl } from '../shared/dom';
-import WeakMap from '../weakmap';
+import WeakMap from '../shared/WeakMap';
 
 const processed = new WeakMap();
 // @ifdef DEBUG

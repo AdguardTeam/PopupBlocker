@@ -23,16 +23,6 @@
             window['key'] = {};
         </script>
 
-        <script id="localization_test_phrases">
-            var RESOURCE_USERSCRIPT_TRANSLATIONS = {
-                "en": {
-                    'phrase1': 'a{{2}}b{{1}}c{{0}}',
-                    'phrase2': 'd{{1}}e{{0}}f',
-                    'phrase3': 'g${key1}{{2}}h{{0}}${key2}i{{1}}'
-                }
-            };
-        </script>
-
         <script src="third_party/bluebird-3.5.0.min.js"></script>
         <script>
             var BlueBird = Promise.noConflict();
@@ -49,23 +39,7 @@
         <script>
             mocha.run();
         </script>
-                
-        <div id="translateTestRoot" style="display:none">
-            <!--i18n:phrase1-->
-            <div id='0'>
-                <div id='0-0'></div>
-                <!--i18n:phrase2-->
-                <div id='0-1'></div>
-                <div id='0-2'></div>
-            </div>
-            <div id='1'></div>
-            <div id='2'></div>
-            <!--i18n:phrase3-->
-            <div id='3'></div>
-            <div id='4'></div>
-            <div id='5'></div>
-        </div>
-
+        
         <div id="JQueryTestRoot" style="display:none"></div>
     </body>
 </html>

@@ -3,7 +3,7 @@ import aboutBlank from './before/about-blank';
 import navigatePopupToItself from './after/navigate-popup-to-itself';
 import { TimelineEvent, TLEventType } from './event';
 import getTime from '../shared/time';
-import WeakMap from '../weakmap';
+import WeakMap from '../shared/WeakMap';
 import * as log from '../shared/log';
 
 export type condition = (index:number, events:TimelineEvent[][], event?:TimelineEvent) => boolean|never;
