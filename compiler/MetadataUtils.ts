@@ -98,7 +98,7 @@ export default class MetadataUtils {
 
         lines.push('// ==UserScript==');
 
-        insertTranslatableKeys('name', 'userscript_name', this.locales.channelSuffix);
+        insertTranslatableKeys('name', 'extension_name', this.locales.channelSuffix);
         insertKey('namespace',   'AdGuard');
         insertTranslatableKeys('description', 'extension_description');
         insertKey('version',      version);
