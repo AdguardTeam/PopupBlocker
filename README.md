@@ -33,6 +33,10 @@ Popup Blocker is being developed by the same team that develops AdGuard, and AdG
 
 On the other hand, Popup Blocker is an independent project, you can use it with any other userscript manager like Greasemonkey, Tampermonkey or Violentmonkey. Make sure one of them is installed in your browser to be able to use the Popup Blocker (just enter the script URL into the address bar, it will be automatically detected by the manager).
 
+## Options page
+
+From userscript version 2.5.0 and higher, you can manage a list of whitelisted domains and silenced domain on a dedicated [options page](https://adguardteam.github.io/PopupBlocker/options.html).
+
 ## Reporting a bug
 
 To report a bug, go to [this page](https://github.com/AdguardTeam/PopupBlocker/issues) and create a new issue.
