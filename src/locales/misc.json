@@ -33,7 +33,7 @@
         }
     },
     "ext_disabled_default": {
-        "message": "Popup Blocker cannot run on this domain",
+        "message": "Popup Blocker is disabled for this domain",
         "platform": "extension"
     },
     "settings_saved": {
