@@ -249,11 +249,6 @@ export default class MetadataUtils {
             'https://*.twitch.tv/*',
             'https://tinder.com/*',
             '*://*.yahoo.com/*'
-        ],
-        "exclude_globs": [
-            // https://*.google.tld/*
-            'https://*.google.??.??/*',
-            'https://*.google.???/*',
         ]
     }
 
