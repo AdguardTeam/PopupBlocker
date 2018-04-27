@@ -6,6 +6,7 @@ import { trustedEventListener, getByClsName } from "../../ui_utils";
 import IOptionsController from "./IOptionsController";
 import adguard from '../../../content_script_namespace';
 import * as log from '../../../shared/log';
+import { closest } from '../../../shared/dom';
 import popupblockerOptionsUI from 'goog:popupblockerOptionsUI'
 import { DomainOptionEnum } from "../../../storage/storage_data_structure";
 
@@ -112,6 +113,7 @@ export default class OptionsController implements IOptionsController {
     private showPopup(isFor:DomainIsRelevantFor) {
         this.currentPopupIsFor = isFor;
         this.popupRoot.classList.add(goog.getCssName('settings-modal--show'));
+        this.popupInput.focus();
     }
     private closePopup() {
         this.popupRoot.classList.remove(goog.getCssName('settings-modal--show'));
@@ -161,7 +163,7 @@ export default class OptionsController implements IOptionsController {
     private static isForAttrName = 'data-for';
     private static isForSelector = `[${OptionsController.isForAttrName}]`
     private static controlElementIsFor(elem:Element):DomainIsRelevantFor {
-        let blockEl = elem.closest(OptionsController.isForSelector);
+        let blockEl = closest(elem, OptionsController.isForSelector);
         return parseInt(blockEl.getAttribute(OptionsController.isForAttrName));
     }
 

@@ -12,10 +12,12 @@
         "platform": ["extension"]
     },
     "on_navigation_by_popunder": {
-        "message": "This transition to the new page is likely to be caused by a pop-under. Do you wish to continue?"
+        "message": "This transition to the new page is likely to be caused by a pop-under. Do you wish to continue?",
+        "platform": ["userscript", "extension"]
     },
     "aborted_popunder_execution": {
-        "message": "PopupBlocker aborted a script execution to prevent background redirect"
+        "message": "PopupBlocker aborted a script execution to prevent background redirect",
+        "platform": ["userscript", "extension"]
     },
     "ext_enabled": {
         "message": "Popup Blocker is on duty",
