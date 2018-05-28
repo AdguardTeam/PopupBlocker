@@ -1,3 +1,6 @@
+/// <reference path="../../../../node_modules/@types/mocha/index.d.ts"/>
+/// <reference path="../../../../node_modules/@types/chai/index.d.ts"/>
+
 import UserscriptSettingsDao from '../../../../src/platform/userscript/storage/UserscriptSettingsDao';
 import { DomainOptionEnum } from '../../../../src/storage/storage_data_structure';
 

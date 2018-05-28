@@ -1,25 +1,27 @@
 import adguard from '../page_script_namespace';
-import { ApplyHandler, wrapMethod } from '../proxy';
+import { ApplyHandler } from '../proxy/IProxyService';
+import ILoggedProxyService from '../proxy/ILoggedProxyService';
 import { retrieveEvent, verifyEvent, verifyCurrentEvent } from '../events/verify';
 import examineTarget from '../events/examine_target';
 import { getTagName } from '../shared/dom';
 import * as log from '../shared/log';
 import createUrl from '../shared/url';
 import onBlocked from '../on_blocked';
+import { isAnchor } from '../shared/instanceof';
 
-const clickVerified:ApplyHandler = function(_click, _this, _arguments, context) {
-    if (getTagName(_this) === 'A') {
+const clickVerified:ApplyHandler<HTMLElement,void> = function(execContext, _arguments) {
+    const _this = execContext.thisArg;
+    if (isAnchor(_this)) {
         log.print('click() was called on an anchor tag', _this);
         if (adguard.contentScriptApiFacade.originIsWhitelisted()) {
-            return _click.call(_this);
+            return execContext.invokeTarget(_arguments);
         }
         // Checks if an url is in a whitelist
         let url = createUrl(_this.href);
         let destDomain = url[1];
         if (adguard.contentScriptApiFacade.originIsWhitelisted(destDomain)) {
             log.print(`The domain ${destDomain} is in whitelist.`);
-            _click.call(_this);
-            return;
+            return execContext.invokeTarget(_arguments);
         }
         let currentEvent = retrieveEvent();
         if (!verifyEvent(currentEvent)) {
@@ -28,7 +30,10 @@ const clickVerified:ApplyHandler = function(_click, _this, _arguments, context) 
             return;
         }
     }
-    _click.call(_this);
+    return execContext.invokeTarget(_arguments);
 };
 
-wrapMethod(HTMLElement.prototype, 'click', log.connect(clickVerified, 'Verifying click'));
+export function wrapClick(window:Window, proxyService:ILoggedProxyService) {
+    proxyService.wrapMethod(window.HTMLElement.prototype, 'click', log.connect(clickVerified, 'Verifying click'));
+}
+

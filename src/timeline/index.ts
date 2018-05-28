@@ -101,8 +101,7 @@ export default class Timeline {
     // @endif
 }
 
-export const timeline:Timeline = typeof PARENT_FRAME_KEY === 'string' ? window.parent[PARENT_FRAME_KEY][2] : new Timeline();
-export const position:number = typeof PARENT_FRAME_KEY === 'string' ? timeline.onNewFrame(window) : 0;
+export const timeline:Timeline = new Timeline();
 
 // These are called from the outside of the code, so we have to make sure that call structures of those are not modified.
 // It is removed in minified builds, see the gulpfile.

@@ -28,6 +28,9 @@ export default class UserscriptContentScriptApiFacade implements IContentScriptA
             this.alertController.createAlert(orig_domain, popup_url);
         });
     }
+    getInstanceID():string{
+        return this.settingsDao.getInstanceID();
+    }
 
     public envIsFirefoxBrowserExt = typeof InstallTrigger !== 'undefined' && document.currentScript;
     /**

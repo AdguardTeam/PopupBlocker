@@ -1,7 +1,7 @@
-import { ApplyHandler, ApplyOption, wrapMethod } from '../proxy';
+import { ApplyHandler } from '../proxy/IProxyService';
+import ILoggedProxyService, { ApplyOption } from '../proxy/ILoggedProxyService';
 import { retrieveEvent, verifyEvent, verifyCurrentEvent } from '../events/verify';
 import examineTarget from '../events/examine_target';
-import { setBeforeunloadHandler } from './unload';
 import { isNode, isMouseEvent, isUIEvent, isClickEvent, isAnchor } from '../shared/instanceof';
 import { getTagName, targetsAreChainable } from '../shared/dom';
 import adguard from '../page_script_namespace';
@@ -9,20 +9,22 @@ import * as log from '../shared/log';
 import createUrl from '../shared/url';
 import onBlocked from '../on_blocked';
 
-const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this:EventTarget, _arguments, context) {
+
+const dispatchVerifiedEvent:ApplyHandler<EventTarget,boolean> = function(execContext, _arguments) {
+    const _this = execContext.thisArg;
     let evt:Event = _arguments[0];
     if (isMouseEvent(evt) && isClickEvent(evt) && isNode(_this) && isAnchor(_this) && !evt.isTrusted) {
         log.call('It is a MouseEvent on an anchor tag.');
         log.print('dispatched event is:', evt);
         if (adguard.contentScriptApiFacade.originIsWhitelisted()) {
-            return _dispatchEvent.call(_this, evt);
+            return execContext.invokeTarget(_arguments);
         }
         // Checks if an url is in a whitelist
         let url = createUrl(_this.href);
         let destDomain = url[1];
         if (adguard.contentScriptApiFacade.originIsWhitelisted(destDomain)) {
             log.print(`The domain ${destDomain} is in whitelist.`);
-            return _dispatchEvent.call(_this, evt);
+            return execContext.invokeTarget(_arguments);
         }
         let currentEvent = retrieveEvent();
         if (!verifyEvent(currentEvent)) {
@@ -46,12 +48,15 @@ const dispatchVerifiedEvent:ApplyHandler = function(_dispatchEvent, _this:EventT
         log.print("It passed the test");
         log.callEnd();
     }
-    return _dispatchEvent.call(_this, evt);
+    return execContext.invokeTarget(_arguments);
 };
 
-const logUIEventOnly:ApplyOption = (target, _this, _arguments) => {
-    return isUIEvent(_this);
+const logUIEventOnly:ApplyOption<EventTarget> = (target, _this, _arguments) => {
+    let evt = _arguments[0];
+    return isUIEvent(evt);
 };
 
-const eventTarget = window.EventTarget || window.Node;
-wrapMethod(eventTarget.prototype, 'dispatchEvent', dispatchVerifiedEvent, logUIEventOnly);
+export function wrapDispatchEvent(window:Window, proxyService:ILoggedProxyService) {
+    const eventTargetCtor = window.EventTarget || window.Node;
+    proxyService.wrapMethod(eventTargetCtor, 'dispatchEvent', dispatchVerifiedEvent, logUIEventOnly);
+}

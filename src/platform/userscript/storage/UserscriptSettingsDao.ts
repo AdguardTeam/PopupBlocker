@@ -2,6 +2,7 @@ import ISettingsDao, { AllOptions, AllOptionsCallback } from "../../../storage/I
 import { isUndef } from "../../../shared/instanceof";
 import IUserscriptSettingsDao from "./IUserscriptSettingsDao";
 import { DomainOptionEnum } from "../../../storage/storage_data_structure";
+import { getRandomStr } from "../../../shared/random";
 
 export default class UserscriptSettingsDao implements IUserscriptSettingsDao {
 
@@ -94,6 +95,15 @@ export default class UserscriptSettingsDao implements IUserscriptSettingsDao {
     }
     onSettingsChange(cb:AllOptionsCallback) {
         this.settingsChangeListeners.push(cb);
+    }
+    private static INSTANCE_ID_KEY = '#id';
+    getInstanceID():string {
+        let instanceID = GM_getValue(UserscriptSettingsDao.INSTANCE_ID_KEY);
+        if (isUndef(instanceID)) {
+            instanceID = getRandomStr();
+            GM_setValue(UserscriptSettingsDao.INSTANCE_ID_KEY, instanceID);
+        }
+        return instanceID;
     }
 }
 

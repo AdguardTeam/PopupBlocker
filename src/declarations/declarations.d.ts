@@ -62,6 +62,8 @@ interface Window {
     Function:typeof Function
     Reflect:typeof Reflect
     MessageEvent:typeof MessageEvent
+    Document:typeof Document
+    msCrypto?:Crypto
 }
 
 

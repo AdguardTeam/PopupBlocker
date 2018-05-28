@@ -7,4 +7,5 @@ import { DomainOptionEnum } from "../../../storage/storage_data_structure";
 export default interface IUserscriptSettingsDao extends ISettingsDao {
     getIsWhitelisted(domain:string):boolean
     getSourceOption(domain:string):DomainOptionEnum
+    getInstanceID():string
 }

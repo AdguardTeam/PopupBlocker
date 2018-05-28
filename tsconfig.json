@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "es2017",
         "lib": ["dom", "es6", "es2016"],
-        "types": ["filesystem", "mocha", "chai"]
+        "types": ["filesystem"]
     },
     "include": [
         "src/**/*.ts",
