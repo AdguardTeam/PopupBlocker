@@ -20,6 +20,7 @@ RESOURCE_PAGE_SCRIPT;
 
 const BRIDGE_KEY = csApiFacade.expose();
 
+const win = typeof unsafeWindow !== 'undefined' ? unsafeWindow.window : window;
 /**
  * In Firefox, userscripts can't write properties of unsafeWindow, so we
  * create a <script> tag to run the script in the page's context.
@@ -32,7 +33,6 @@ if (csApiFacade.envIsFirefoxBrowserExt) {
     el.appendChild(script);
     el.removeChild(script);
 } else {
-    let win = typeof unsafeWindow !== 'undefined' ? unsafeWindow.window : window;
     popupBlocker(win, BRIDGE_KEY);
 }
 
@@ -44,9 +44,9 @@ function isOptionsPage() {
 }
 
 if (isOptionsPage()) {
-    unsafeWindow["GM_getValue"] = exportFunction(GM_getValue, unsafeWindow);
-    unsafeWindow["GM_setValue"] = exportFunction(GM_setValue, unsafeWindow);
-    unsafeWindow["GM_listValues"] = exportFunction(GM_listValues, unsafeWindow);
+    win["GM_getValue"] = exportFunction(GM_getValue, unsafeWindow);
+    win["GM_setValue"] = exportFunction(GM_setValue, unsafeWindow);
+    win["GM_listValues"] = exportFunction(GM_listValues, unsafeWindow);
 }
 
 declare var RESOURCE_PAGE_SCRIPT;

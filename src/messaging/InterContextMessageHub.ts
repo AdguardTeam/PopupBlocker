@@ -17,7 +17,7 @@ export default class InterContextMessageHub implements IInterContextMessageHub {
     public isTop:boolean
     private framePortMap:IWeakMap<Window, FrameData>
     private typeHandlerMap:IMessageHandler<any>[] = [];
-    private static readonly MAGIC = 'fpb_handshake';
+    private static readonly MAGIC = 'pb_handshake';
     private parentPort:MessagePort
 
     constructor(window:Window, parentInstance?:IInterContextMessageHub) {
