@@ -15,13 +15,19 @@ export default class LoggedFunctionWrapper implements ILoggedProxyService, Proxy
         private timeline:Timeline,
         public framePosition:number
     ) { }
-    private makeLoggedFunctionWrapper<T,R>(orig:(this:T,...args)=>R, type:TLEventType, name:PropertyKey, applyHandler?:ApplyHandler<T,R>, option?:ApplyOption<T>):(this:T,...args)=>R {
+    private makeLoggedFunctionWrapper<T,R>(
+        orig:(this:T,...args)=>R,
+        type:TLEventType,
+        name:PropertyKey,
+        applyHandler:ApplyHandler<T,R> = ProxyService.defaultApplyHandler,
+        option?:ApplyOption<T>
+    ):(this:T,...args)=>R {
         return ProxyService.makeSafeFunctionWrapper<T,R>(orig, (execCtxt, _arguments) => {
             let context = {};
-            let _this = execCtxt.thisArg;
-            if (typeof option == 'undefined' || (<ApplyOption<T>>option)(orig, _this, _arguments)) {
+            let thisArg = execCtxt.thisArg;
+            if (typeof option == 'undefined' || (<ApplyOption<T>>option)(orig, thisArg, _arguments)) {
                 let data = {
-                    this: _this,
+                    this: thisArg,
                     arguments: _arguments,
                     context: context
                 };
@@ -95,7 +101,7 @@ export default class LoggedFunctionWrapper implements ILoggedProxyService, Proxy
         return reflectNamespace.reflectSet(target, prop, value, _receiver);
     }
     makeObjectProxy<T extends object>(obj:T):T {
-        if (!ProxyCtor || obj === null || typeof obj !== 'object') { return obj; }
+        if (!ProxyService.use_proxy || obj === null || typeof obj !== 'object') { return obj; }
         let proxy = ProxyService.realToProxy.get(obj);
         if (proxy) { return proxy; }
         proxy = new ProxyCtor(obj, this);

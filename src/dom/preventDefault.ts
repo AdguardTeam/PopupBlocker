@@ -1,6 +1,6 @@
 import { retrieveEvent, verifyEvent } from '../events/verify';
 import { isMouseEvent } from '../shared/instanceof';
-import * as log from '../shared/log';
+import * as log from '../shared/debug';
 import { ApplyHandler } from '../proxy/IProxyService';
 import ILoggedProxyService from '../proxy/ILoggedProxyService';
 

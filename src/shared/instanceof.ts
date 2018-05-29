@@ -33,11 +33,11 @@ export function isHTMLElement(el:Element):el is HTMLElement {
 };
 
 export function isAnchor(el:Node):el is HTMLAnchorElement {
-    return getTagName(el) == 'A';
+    return getTagName(el) === 'A';
 };
 
 export function isIFrame(node:Node):node is HTMLIFrameElement {
-    return node.nodeName === 'IFRAME';
+    return getTagName(node) === 'IFRAME';
 }
 
 /**/

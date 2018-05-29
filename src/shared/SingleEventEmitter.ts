@@ -26,10 +26,10 @@ export default class SingleEventEmitter {
     constructor(
         private eventName:string
     ) { }
-    protected install(target:EventTarget) {
+    protected $install(target:EventTarget) {
         target.addEventListener(this.eventName, this);
     }
-    protected uninstall(target:EventTarget) {
+    protected $uninstall(target:EventTarget) {
         target.removeEventListener(this.eventName, this);
     }
 }

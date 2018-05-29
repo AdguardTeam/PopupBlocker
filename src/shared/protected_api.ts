@@ -31,6 +31,9 @@ if (ProxyCtor) {
     reflectNamespace.reflectApply = Reflect.apply;
 }
 export const MO = window.MutationObserver || window.WebKitMutationObserver
+export const MessageChannelCtor = window.MessageChannel;
+export const getContentWindow = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow').get;
+export const getContentDocument = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentDocument').get;
 export const captureStackTrace = Error.captureStackTrace;
 export const noop = () => {};
 

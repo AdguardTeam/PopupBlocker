@@ -1,10 +1,10 @@
 import IChildContextInjector from "./IChildContextInjector";
 import IProxyService, { IWrappedExecutionContext } from './IProxyService';
 import * as TypeGuards from '../shared/instanceof';
-import * as debug from '../shared/log';
+import * as debug from '../shared/debug';
 import { ABOUT_PROTOCOL, isSameOrigin } from '../shared/url';
 import WeakMap from '../shared/WeakMap';
-import { getOwnPropertyDescriptor, defineProperty, MO, functionBind } from "../shared/protected_api";
+import { getOwnPropertyDescriptor, defineProperty, MO, functionBind, getContentWindow, getContentDocument } from "../shared/protected_api";
 
 export default class ChildContextInjector implements IChildContextInjector {
     /**
@@ -12,8 +12,6 @@ export default class ChildContextInjector implements IChildContextInjector {
      * If an iframe's contentDocument is not available, it is mapped to `null`.
      */
     private frameToDocument:IWeakMap<HTMLIFrameElement, Document>
-    private getContentWindow:(this:HTMLIFrameElement)=>Window
-    private getContentDocument:(this:HTMLIFrameElement)=>Document
     private callbacks:func[] = [];
     constructor(
         private $window:Window,
@@ -24,9 +22,6 @@ export default class ChildContextInjector implements IChildContextInjector {
         this.processChildOnContentAccess = functionBind.call(this.processChildOnContentAccess, this);
         // Initialize
         const iframePType = $window.HTMLIFrameElement.prototype;
-        this.getContentWindow = getOwnPropertyDescriptor(iframePType, 'contentWindow').get;
-        this.getContentDocument = getOwnPropertyDescriptor(iframePType, 'contentDocument').get;
-
         this.frameToDocument = new WeakMap();
         proxyService.wrapAccessor(iframePType, 'contentWindow', this.processChildOnContentAccess);
         proxyService.wrapAccessor(iframePType, 'contentDocument', this.processChildOnContentAccess);
@@ -70,7 +65,7 @@ export default class ChildContextInjector implements IChildContextInjector {
         debug.print("ChildContextInjector: attaching an event listener to a first met frame");
         iframe.addEventListener('load', this.onFrameLoad);
         try {
-            let contentWin:Window = this.getContentWindow.call(iframe);
+            let contentWin:Window = getContentWindow.call(iframe);
             if (contentWin.location.protocol === ABOUT_PROTOCOL) {
                 debug.print("ChildContextInjector: new child context encountered.", iframe.outerHTML);
                 this.frameToDocument.set(iframe, contentWin.document);
@@ -122,7 +117,7 @@ export default class ChildContextInjector implements IChildContextInjector {
     private onFrameLoad(evt:Event) {
         const iframe = <HTMLIFrameElement>evt.target;
         try {
-            let document:Document = this.getContentDocument.call(iframe);
+            let document:Document = getContentDocument.call(iframe);
             // If a loaded document has empty location, and it is different from the previous document,
             // We execute the callback again.
             if (document.location.protocol === ABOUT_PROTOCOL && this.frameToDocument.get(iframe) !== document) {

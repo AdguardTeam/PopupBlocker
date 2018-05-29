@@ -10,20 +10,7 @@
  * @param CONTENT_SCRIPT_KEY It is used for communication between a userscript and
  * page script injected by the userscript.
  */
-declare function popupBlocker(window, PARENT_FRAME_KEY?:string, CONTENT_SCRIPT_KEY?:string):any;
-/**
- * `window[PARENT_FRAME_KEY]` will be an array of objects passed from
- * page_script instance of a parent frame to an instance of a child frame.
- *
- * [
- *   proxyToReal,           // See proxy.ts
- *   realToProxy,           // See proxy.ts
- *   timeline,              // See timeline/index.ts
- *   contentScriptApiFacade // See platform/extension/shared/page_script.ts
- *                          // and platform/userscript/page_script.ts
- * ]
- */
-declare const PARENT_FRAME_KEY:string;
+declare function popupBlocker(window, CONTENT_SCRIPT_KEY?:string):any;
 /**
  * `window[CONTENT_SCRIPT_KEY]` will be contentApiFacade created by content script and
  * passed to page script.
@@ -64,6 +51,7 @@ interface Window {
     MessageEvent:typeof MessageEvent
     Document:typeof Document
     msCrypto?:Crypto
+    MessageChannel:typeof MessageChannel
 }
 
 

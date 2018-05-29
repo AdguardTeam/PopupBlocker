@@ -4,7 +4,7 @@ import ILoggedProxyService from '../proxy/ILoggedProxyService';
 import { retrieveEvent, verifyEvent, verifyCurrentEvent } from '../events/verify';
 import examineTarget from '../events/examine_target';
 import { getTagName } from '../shared/dom';
-import * as log from '../shared/log';
+import * as log from '../shared/debug';
 import createUrl from '../shared/url';
 import onBlocked from '../on_blocked';
 import { isAnchor } from '../shared/instanceof';
@@ -26,7 +26,7 @@ const clickVerified:ApplyHandler<HTMLElement,void> = function(execContext, _argu
         let currentEvent = retrieveEvent();
         if (!verifyEvent(currentEvent)) {
             log.print('It did not pass the test, not clicking element');
-            onBlocked(url[2], false, currentEvent);
+            onBlocked(url[2], currentEvent);
             return;
         }
     }

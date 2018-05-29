@@ -14,11 +14,11 @@ import {
     captureStackTrace
 } from '../shared/protected_api'
 import { IWrappedExecutionContext, ApplyHandler } from './IProxyService';
-import * as debug from '../shared/log';
+import * as debug from '../shared/debug';
 
-let supported = false;
+export let use_proxy = false;
 // @ifndef NO_PROXY
-supported = typeof ProxyCtor !== 'undefined';
+use_proxy = typeof ProxyCtor !== 'undefined';
 // @endif
 /**
  * Why not use Proxy on production version?
@@ -146,7 +146,7 @@ const reflectWithUnproxiedThis:RawApplyHandler<Function,any> = (target, _this, _
 export const invokeWithUnproxiedThis:RawApplyHandler<Function,any> = (target, _this, _arguments) => {
     let unproxied = proxyToReal.get(_this);
     if (typeof unproxied == 'undefined') { unproxied = _this; }
-    return supported ? _reflect(target, unproxied, _arguments) : target.apply(unproxied, _arguments);
+    return use_proxy ? _reflect(target, unproxied, _arguments) : target.apply(unproxied, _arguments);
 };
 
 /**
@@ -163,7 +163,7 @@ export function makeFunctionWrapper<T,R>(orig:(this:T,...args)=>R, applyHandler:
     let wrapped;
     let proxy = realToProxy.get(orig);
     if (proxy) { return proxy; }
-    if (supported) {
+    if (use_proxy) {
         wrapped = new ProxyCtor(orig, { apply: applyHandler });
     } else {
         wrapped = function() { return applyHandler(orig, this, arguments); };
@@ -206,7 +206,7 @@ function _wrapAccessor(obj, prop:string, getterApplyHandler?:RawApplyHandler<Fun
 
 export function $apply(window:Window) {
     const functionPrototype = window.Function.prototype;
-    if (supported) {
+    if (use_proxy) {
         _wrapMethod(functionPrototype, 'bind', applyWithUnproxiedThis);
         _wrapMethod(functionPrototype, 'apply', applyWithUnproxiedThis);
         _wrapMethod(functionPrototype, 'call', applyWithUnproxiedThis);
@@ -266,7 +266,7 @@ class WrappedExecutionContext<T,R> implements IWrappedExecutionContext<T,R> {
     }
 }
 
-const defaultApplyHandler = <T,R>(ctxt:IWrappedExecutionContext<T,R>, args:IArguments):R => {
+export const defaultApplyHandler = <T,R>(ctxt:IWrappedExecutionContext<T,R>, args:IArguments):R => {
     return ctxt.invokeTarget(args);
 }
 

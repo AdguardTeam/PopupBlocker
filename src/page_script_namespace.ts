@@ -3,9 +3,11 @@
  */
 
 import IContentScriptApiFacade from "./storage/IContentScriptApiFacade";
+import IInterContextMessageHub from "./messaging/IInterContextMessageHub";
 
 interface IAdguard {
     contentScriptApiFacade?:IContentScriptApiFacade
+    messageHub?:IInterContextMessageHub
 }
 
 let adguard:IAdguard = {};

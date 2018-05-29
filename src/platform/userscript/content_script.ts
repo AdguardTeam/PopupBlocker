@@ -26,14 +26,14 @@ const BRIDGE_KEY = csApiFacade.expose();
  */
 if (csApiFacade.envIsFirefoxBrowserExt) {
     let script = document.createElement('script');
-    let text = `(${popupBlocker.toString()})(this,!1,'${BRIDGE_KEY}')`;
+    let text = `(${popupBlocker.toString()})(this,'${BRIDGE_KEY}')`;
     script.textContent = text;
     let el = document.body || document.head || document.documentElement;
     el.appendChild(script);
     el.removeChild(script);
 } else {
     let win = typeof unsafeWindow !== 'undefined' ? unsafeWindow.window : window;
-    popupBlocker(win, undefined, BRIDGE_KEY);
+    popupBlocker(win, BRIDGE_KEY);
 }
 
 /**

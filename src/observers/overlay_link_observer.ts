@@ -3,7 +3,7 @@ import { maybeOverlay } from '../events/element_tests';
 import { preventPointerEvent } from '../events/examine_target';
 import getTime from '../shared/time';
 import { isAnchor } from '../shared/instanceof';
-import * as log from '../shared/log';
+import * as log from '../shared/debug';
 
 /**
  * Certain pop-up or pop-under scripts creates a transparent anchor covering the entire page

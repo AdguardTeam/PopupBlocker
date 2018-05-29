@@ -1,5 +1,4 @@
 import adguard from '../../page_script_namespace';
-import '../../messaging';
 import '../../observers/overlay_link_observer';
 import main from '../../main';
 

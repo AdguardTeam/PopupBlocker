@@ -2,7 +2,7 @@ import { condition } from '../index';
 import { TimelineEvent, TLEventType } from '../event';
 import { ABOUT_PROTOCOL } from '../../shared/dom';
 import getTime from '../../shared/time';
-import * as log from '../../shared/log';
+import * as log from '../../shared/debug';
 
 const createOpen:condition = (index, events) => {
     log.print('index:', index);

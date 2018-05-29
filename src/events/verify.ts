@@ -1,4 +1,4 @@
-import * as log from '../shared/log';
+import * as log from '../shared/debug';
 import WeakMap from '../shared/WeakMap';
 import CurrentMouseEvent from './current_mouse_event';
 import { eventTargetIsRootNode, maybeOverlay } from './element_tests';

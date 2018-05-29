@@ -58,8 +58,8 @@ export default class TextSizeWatcher extends SingleEventEmitter {
         TextSizeWatcher.scrollElementToBottomRightCorner(wrapper);
         TextSizeWatcher.scrollElementToBottomRightCorner(innerContent);
 
-        this.install(wrapper);
-        this.install(innerWrapper);        
+        this.$install(wrapper);
+        this.$install(innerWrapper);        
     }
 
     private static scrollElementToBottomRightCorner(el:HTMLElement) {
@@ -68,7 +68,7 @@ export default class TextSizeWatcher extends SingleEventEmitter {
         el.scrollTop = scrollHeight - clientHeight;
     }
     $destroy() {
-        this.uninstall(this.wrapper);
-        this.uninstall(this.innerWrapper);
+        this.$uninstall(this.wrapper);
+        this.$uninstall(this.innerWrapper);
     }
 }

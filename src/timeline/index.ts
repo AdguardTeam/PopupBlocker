@@ -4,7 +4,7 @@ import navigatePopupToItself from './after/navigate-popup-to-itself';
 import { TimelineEvent, TLEventType } from './event';
 import getTime from '../shared/time';
 import WeakMap from '../shared/WeakMap';
-import * as log from '../shared/log';
+import * as log from '../shared/debug';
 
 export type condition = (index:number, events:TimelineEvent[][], event?:TimelineEvent) => boolean|never;
 
@@ -14,14 +14,8 @@ const afterTest = [navigatePopupToItself];
 const EVENT_RETENTION_LENGTH = 5000;
 
 export default class Timeline {
-    private events:TimelineEvent[][];
-    private isRecording:boolean;
-    constructor() {
-        this.events = [[]];
-        this.isRecording = false;
-        // Registers a unique event when it is first created.
-        this.registerEvent(new TimelineEvent(TLEventType.CREATE, undefined, window), 0);
-    }
+    private events:TimelineEvent[][] = [];
+    private isRecording:boolean = false;
     /**
      * When an event is registered, it performs some checks by calling functions of type `condition`
      * which accepts an existing events as a first argument, and an incoming event as a second argument.

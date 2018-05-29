@@ -4,7 +4,7 @@ import examineTarget from '../events/examine_target';
 import { isGtmSimulatedAnchorClick } from '../events/framework_workarounds';
 import { timeline } from '../timeline/index';
 import { TLEventType, TimelineEvent } from '../timeline/event';
-import * as log from '../shared/log';
+import * as log from '../shared/debug';
 import createUrl from '../shared/url';
 import mockWindow from '../mock_window';
 import onBlocked from '../on_blocked';
@@ -46,7 +46,7 @@ export function wrapOpen(window:Window, proxyService:ILoggedProxyService) {
             return win;
         }
 
-        onBlocked(url[2], false, currentEvent);
+        onBlocked(url[2], currentEvent);
         
         log.print('mock a window object');
         // Return a mock window object, in order to ensure that the page's own script does not accidentally throw TypeErrors.

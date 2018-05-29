@@ -5,7 +5,7 @@ import { isUndef, isElement } from "../../../shared/instanceof";
 import { trustedEventListener, getByClsName } from "../../ui_utils";
 import IOptionsController from "./IOptionsController";
 import adguard from '../../../content_script_namespace';
-import * as log from '../../../shared/log';
+import * as log from '../../../shared/debug';
 import { closest } from '../../../shared/dom';
 import popupblockerOptionsUI from 'goog:popupblockerOptionsUI'
 import { DomainOptionEnum } from "../../../storage/storage_data_structure";

@@ -1,7 +1,7 @@
 import chrome from './platform_namespace';
 import { CONTENT_PAGE_MAGIC, DownwardMsgTypesEnum, UpwardMsgTypesEnum, UpwardMsgTypes, SettingsDeltaMsg, Settings, BGMsgTypesEnum, FromBGMsgTypesEnum } from "./message_types";
 import IAlertController from "../../../ui/controllers/alert/IAlertController";
-import * as log from '../../../shared/log';
+import * as log from '../../../shared/debug';
 import II18nService from '../../../localization/II18nService';
 import adguard from '../../../content_script_namespace';
 import IExtensionSettingsDao from './storage/IExtensionSettingsDao';
@@ -112,5 +112,5 @@ export default function main(i18nService:II18nService, settingsDao:IExtensionSet
         "VAR_BEFOREUNLOAD", i18nService.$getMessage('on_navigation_by_popunder')
     );
 
-    runScript(`(${PAGE_SCRIPT})(window,void 0);`);
+    runScript(`(${PAGE_SCRIPT})(window);`);
 }

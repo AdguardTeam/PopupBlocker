@@ -5,7 +5,7 @@ import examineTarget from '../events/examine_target';
 import { isNode, isMouseEvent, isUIEvent, isClickEvent, isAnchor } from '../shared/instanceof';
 import { getTagName, targetsAreChainable } from '../shared/dom';
 import adguard from '../page_script_namespace';
-import * as log from '../shared/log';
+import * as log from '../shared/debug';
 import createUrl from '../shared/url';
 import onBlocked from '../on_blocked';
 
@@ -39,7 +39,7 @@ const dispatchVerifiedEvent:ApplyHandler<EventTarget,boolean> = function(execCon
             let currentTarget = currentEvent.target;
             if (!isNode(currentTarget) || !isNode(_this) || !targetsAreChainable(currentTarget, _this)) {
                 log.print('It did not pass the test, not dispatching event');
-                onBlocked(url[2], false, currentEvent);
+                onBlocked(url[2], currentEvent);
                 log.callEnd();
                 return false;
             }
@@ -58,5 +58,5 @@ const logUIEventOnly:ApplyOption<EventTarget> = (target, _this, _arguments) => {
 
 export function wrapDispatchEvent(window:Window, proxyService:ILoggedProxyService) {
     const eventTargetCtor = window.EventTarget || window.Node;
-    proxyService.wrapMethod(eventTargetCtor, 'dispatchEvent', dispatchVerifiedEvent, logUIEventOnly);
+    proxyService.wrapMethod(eventTargetCtor.prototype, 'dispatchEvent', dispatchVerifiedEvent, logUIEventOnly);
 }
