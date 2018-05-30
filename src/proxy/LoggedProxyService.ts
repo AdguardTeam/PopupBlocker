@@ -55,6 +55,11 @@ export default class LoggedFunctionWrapper implements ILoggedProxyService, Proxy
             });
         }
     }
+    /**
+     * Below methods are used only for `makeObjectProxy` method. For builds with `NO_PROXY`, they
+     * are not used by any other code, so it is stripped out in those builds.
+     */
+    // @ifndef NO_PROXY
     get(target, prop:PropertyKey, receiver) {
         let _receiver = ProxyService.proxyToReal.get(receiver) || receiver;
         this.timeline.registerEvent(
@@ -100,6 +105,7 @@ export default class LoggedFunctionWrapper implements ILoggedProxyService, Proxy
         );
         return reflectNamespace.reflectSet(target, prop, value, _receiver);
     }
+    // @endif
     makeObjectProxy<T extends object>(obj:T):T {
         if (!ProxyService.use_proxy || obj === null || typeof obj !== 'object') { return obj; }
         let proxy = ProxyService.realToProxy.get(obj);
