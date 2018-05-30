@@ -10,6 +10,11 @@ interface FrameData {
     locationObject:Location
 }
 
+interface MsgData {
+    $type:number,
+    $data
+}
+
 export default class InterContextMessageHub implements IInterContextMessageHub {
     public supported:boolean
     public hostWindow:Window
@@ -87,8 +92,8 @@ export default class InterContextMessageHub implements IInterContextMessageHub {
         });
     }
     private onMessage(evt:MessageEvent) {
-        let data = evt.data;
-        this.triggerHandlers(data.type, data.data, evt.source);
+        let data:MsgData = evt.data;
+        this.triggerHandlers(data.$type, data.$data, evt.source);
     }
     private triggerHandlers<T>(type:number, data:T, source:Window) {
         let messageHandler = this.typeHandlerMap[type];
@@ -115,9 +120,9 @@ export default class InterContextMessageHub implements IInterContextMessageHub {
         let frameData = this.framePortMap.get(target);
         if (!frameData) { return; }
         let port = frameData.messagePort;
-        let msgData = {
-            type: type,
-            data: data
+        let msgData:MsgData = {
+            $type: type,
+            $data: data
         };
         debug.print('MesageHub: sending a message to a port');
         port.postMessage(msgData, transferList);

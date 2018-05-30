@@ -5,8 +5,6 @@
  *  - the function's arguments, which are used as a global variable throughout
  *    the page script.
  *
- * @param PARENT_FRAME_KEY It is used for communication between a script in a page's
- * context and a script in its child frame's context.
  * @param CONTENT_SCRIPT_KEY It is used for communication between a userscript and
  * page script injected by the userscript.
  */

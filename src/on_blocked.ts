@@ -2,6 +2,7 @@ import adguard from './page_script_namespace';
 import pdfObjObserver from './observers/pdf_object_observer';
 import examineTarget from './events/examine_target';
 import IInterContextMessageHub, { IMessageHandler } from './messaging/IInterContextMessageHub';
+import { MessageTypes } from './messaging/MessageTypes';
 
 export default function onBlocked(popup_url:string, currentEvent:Event) {
     if (!adguard.contentScriptApiFacade.originIsSilenced()) {
@@ -25,7 +26,7 @@ export function installAlertMessageTransferrer(messageHub:IInterContextMessageHu
             adguard.contentScriptApiFacade.showAlert(data.orig_domain, data.popup_url);
         }
     } : new FrameAlertMessageHandler(messageHub);
-    messageHub.on<IAlertData>(0, handler);
+    messageHub.on<IAlertData>(MessageTypes.SHOW_NOTIFICATION, handler);
 }
 
 class FrameAlertMessageHandler implements IMessageHandler<IAlertData> {
@@ -33,6 +34,6 @@ class FrameAlertMessageHandler implements IMessageHandler<IAlertData> {
         private messageHub:IInterContextMessageHub
     ) { }
     handleMessage(data:IAlertData, source?:Window) {
-        this.messageHub.trigger<IAlertData>(0, data, this.messageHub.parent);
+        this.messageHub.trigger<IAlertData>(MessageTypes.SHOW_NOTIFICATION, data, this.messageHub.parent);
     }
 }

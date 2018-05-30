@@ -3,7 +3,7 @@ import ILoggedProxyService, { ApplyOption } from './ILoggedProxyService'
 import * as ProxyService from './ProxyService';
 import Timeline from "../timeline/index";
 import { TLEventType, TimelineEvent } from "../timeline/event";
-import { defineProperty, ProxyCtor, reflectNamespace } from "../shared/protected_api";
+import { defineProperty, ProxyCtor, reflectNamespace, getOwnPropertyDescriptor } from "../shared/protected_api";
 import { isWindow, isLocation } from '../shared/instanceof';
 
 // @ifndef NO_PROXY
@@ -42,7 +42,7 @@ export default class LoggedFunctionWrapper implements ILoggedProxyService, Proxy
         }
     }
     wrapAccessor<T,R>(obj, prop:string, getterApplyHandler?:ApplyHandler<T,R>, setterApplyHandler?:ApplyHandler<T,R>, option?:ApplyOption<T>):void {
-        const desc = Object.getOwnPropertyDescriptor(obj, prop);
+        const desc = getOwnPropertyDescriptor(obj, prop);
         if (desc && desc.get && desc.configurable) {
             var getter = this.makeLoggedFunctionWrapper(desc.get, TLEventType.GET, prop, getterApplyHandler, option);
             var setter;

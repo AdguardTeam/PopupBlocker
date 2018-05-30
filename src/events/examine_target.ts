@@ -7,6 +7,7 @@ import * as log from '../shared/debug';
 import adguard from '../page_script_namespace';
 import IInterContextMessageHub, { IMessageHandler } from '../messaging/IInterContextMessageHub';
 import { getContentWindow } from '../shared/protected_api';
+import { MessageTypes } from '../messaging/MessageTypes';
 
 /**
  * Some popup scripts adds transparent overlays on each of page's links
@@ -170,7 +171,7 @@ let mainFrameMessagHandler:DispatchMouseEventMessageHandler;
 
 export function installDispatchMouseEventMessageTransferrer(messageHub:IInterContextMessageHub) {
     const handler = new DispatchMouseEventMessageHandler(messageHub);
-    messageHub.on<initMouseEventArgs>(1, handler);
+    messageHub.on<initMouseEventArgs>(MessageTypes.DISPATCH_MOUSE_EVENT, handler);
     if (messageHub === adguard.messageHub) {
         mainFrameMessagHandler = handler;
     }
@@ -189,7 +190,7 @@ class DispatchMouseEventMessageHandler implements IMessageHandler<initMouseEvent
             args[7] -= rect.left;
             args[8] -= rect.top;
             args[3] = null; // Window object cannot be cloned
-            this.hub.trigger<initMouseEventArgs>(1, args, getContentWindow.call(target));
+            this.hub.trigger<initMouseEventArgs>(MessageTypes.DISPATCH_MOUSE_EVENT, args, getContentWindow.call(target));
         } else {
             this.performClickOnTarget(<HTMLElement>target);
         }

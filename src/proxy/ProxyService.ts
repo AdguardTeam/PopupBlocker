@@ -176,10 +176,10 @@ export function makeFunctionWrapper<T,R>(orig:(this:T,...args)=>R, applyHandler:
 }
 
 function copyProperty(orig, wrapped, prop:PropertyKey) {
-    let desc = Object.getOwnPropertyDescriptor(orig, prop);
+    let desc = getOwnPropertyDescriptor(orig, prop);
     if (desc && desc.configurable) {
         desc.value = orig[prop];
-        Object.defineProperty(wrapped, prop, desc);
+        defineProperty(wrapped, prop, desc);
     }
 }
 
