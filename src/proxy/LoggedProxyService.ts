@@ -10,7 +10,11 @@ import { isWindow, isLocation } from '../shared/instanceof';
 import { mockedWindowCollection } from '../mock_window';
 // @endif
 
-export default class LoggedFunctionWrapper implements ILoggedProxyService, ProxyHandler<any> {
+// Below is prefered than writing:
+//    class LoggedProxyService implements ILoggedProxyService, ProxyHandler<any>
+// https://github.com/ag-grid/ag-grid/issues/1708#issuecomment-312780483
+export default interface LoggedProxyService extends ProxyHandler<any> { }
+export default class LoggedProxyService implements ILoggedProxyService {
     constructor(
         private timeline:Timeline,
         public framePosition:number
