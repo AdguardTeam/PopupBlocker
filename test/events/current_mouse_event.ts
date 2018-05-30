@@ -1,3 +1,6 @@
+/// <reference path="../../node_modules/@types/mocha/index.d.ts"/>
+/// <reference path="../../node_modules/@types/chai/index.d.ts"/>
+
 import CurrentMouseEvent from '../../src/events/current_mouse_event';
 
 const currentEvent = (new CurrentMouseEvent()).getCurrentMouseEvent;

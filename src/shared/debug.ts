@@ -88,3 +88,12 @@ export function connect<T extends (...args)=>any>(fn:T, message:string, cond?:(t
     return fn;
     // @endif
 }
+
+export function throwMessage(thrown:any, code:number):never {
+    // @ifdef DEBUG
+    throw thrown;
+    // @endif
+    // @ifndef DEBUG
+    throw code;
+    // @endif
+}

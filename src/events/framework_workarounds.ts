@@ -6,11 +6,11 @@
  * Such workarounds are not very robust, hence 'attempt', but it will still provide huge benefit to users.
  */
 
-import { wrapMethod, defaultApplyHandler, ApplyHandler } from '../proxy';
 import { closest, targetsAreChainable } from '../shared/dom';
 import { isElement, isMouseEvent, isNode, isWindow, isUndef, isClickEvent, isTouchEvent } from '../shared/instanceof';
 import WeakMap from '../shared/WeakMap';
-
+import { ApplyHandler, IWrappedExecutionContext } from '../proxy/IProxyService';
+import * as ProxyService from '../proxy/ProxyService';
 const _data = '_data', originalEvent = 'originalEvent', selector = 'selector';
 /**
  * A function to retrieve target selectors from jQuery event delegation mechanism.
@@ -108,7 +108,7 @@ export class JQueryEventStack {
     private eventStack:(Event|JQueryEvent)[] = [];
 
     private isNativeEvent(event:Event|JQueryEvent):event is Event {
-        return !event[this.jQuery.expando];
+        return event && typeof event === 'object' && !event[this.jQuery.expando];
     }
     private getRelatedJQueryEvent(event:Event):JQueryEvent {
         return this.eventMap.get(event);
@@ -118,11 +118,11 @@ export class JQueryEventStack {
      * It is used in jQuery to call event handlers attached via $(..).on and such,
      * in case of native events and $(..).trigger().
      */
-    private dispatchApplyHandler:ApplyHandler = (orig, __this, _arguments) => {
+    private dispatchApplyHandler:ApplyHandler<any,any> = (ctxt, _arguments) => {
         let event:Event|JQueryEvent = _arguments[0];
         this.eventStack.push(event);
         try {
-            return defaultApplyHandler(orig, __this, _arguments);
+            return ctxt.invokeTarget(_arguments);
         } finally {
             // Make sure that the eventStack is cleared up even if a dispatching fails.
             this.eventStack.pop();
@@ -131,9 +131,9 @@ export class JQueryEventStack {
     /**
      * Wraps jQuery.event.fix
      */
-    private fixApplyHandler:ApplyHandler = (orig, __this, _arguments) => {
+    private fixApplyHandler:ApplyHandler<any,any> = (ctxt, _arguments) => {
         let event:Event|JQueryEvent = _arguments[0];
-        let ret:JQueryEvent = defaultApplyHandler(orig, __this, _arguments);
+        let ret:JQueryEvent = ctxt.invokeTarget(_arguments);
         if (this.isNativeEvent(event)) {
             if ((isMouseEvent(event) && isClickEvent(event)) || isTouchEvent(event)) {
                 this.eventMap.set(<Event>event, ret);
@@ -141,9 +141,9 @@ export class JQueryEventStack {
         }
         return ret;
     }
-    private static noConflictApplyHandler(orig:Function, __this, _arguments:any[]|IArguments) {
+    private static noConflictApplyHandler(ctxt:IWrappedExecutionContext<any,void>,_arguments:IArguments) {
         let deep = _arguments[0];
-        let ret = defaultApplyHandler(orig, __this, _arguments);
+        ctxt.invokeTarget(_arguments);
         if (deep === true) {
             // Patch another jQuery instance exposed to window.jQuery.
             JQueryEventStack.attemptPatch();
@@ -152,9 +152,9 @@ export class JQueryEventStack {
 
     private wrap():this {
         let jQuery = this.jQuery;
-        wrapMethod(jQuery.event, 'dispatch', this.dispatchApplyHandler, false);
-        wrapMethod(jQuery.event, 'fix', this.fixApplyHandler, false);
-        wrapMethod(jQuery, 'noConflict', JQueryEventStack.noConflictApplyHandler, false);
+        ProxyService.wrapMethod(jQuery.event, 'dispatch', this.dispatchApplyHandler);
+        ProxyService.wrapMethod(jQuery.event, 'fix', this.fixApplyHandler);
+        ProxyService.wrapMethod(jQuery, 'noConflict', JQueryEventStack.noConflictApplyHandler);
         return this;
     }
 

@@ -60,7 +60,7 @@ export default class FrameInjector extends SingleEventEmitter implements IFrameI
             // Workaround for https://github.com/AdguardTeam/PopupBlocker/issues/67
             iframe.src = `javascript:document.write('<script>document.domain="${document.domain}";</script>');document.close();`;
         }
-        this.install(iframe);
+        this.$install(iframe);
         FrameInjector.instances.push(this);
     }
 

@@ -1,9 +1,10 @@
-import { wrapMethod, wrapAccessor } from './proxy';
+import { getOwnPropertyDescriptor, defineProperty } from './shared/protected_api';
+import ILoggedProxyService from './proxy/ILoggedProxyService';
 
 const mockObject = (orig:Object, mocked?:Object):Object => {
     mocked = mocked || <Object>{};
     for (let prop in orig) {
-        let desc = Object.getOwnPropertyDescriptor(orig, prop);
+        let desc = getOwnPropertyDescriptor(orig, prop);
         if (desc) {
             switch(typeof desc.value) {
                 case 'undefined':
@@ -20,14 +21,14 @@ const mockObject = (orig:Object, mocked?:Object):Object => {
     return mocked;
 };
 
-const hrefDesc = Object.getOwnPropertyDescriptor(HTMLAnchorElement.prototype, 'href');
+const hrefDesc = getOwnPropertyDescriptor(HTMLAnchorElement.prototype, 'href');
 
 // @ifndef NO_PROXY
 import WeakMap from './shared/WeakMap';
 export const mockedWindowCollection = new WeakMap();
 // @endif
 
-const mockWindow = (href, name) => {
+const mockWindow = (href, name, proxyService:ILoggedProxyService) => {
     let win:any, doc:any;
     win = mockObject(window);
     mockObject(Window.prototype, win);
@@ -42,17 +43,18 @@ const mockWindow = (href, name) => {
     doc['writeln'] = function(){}
     doc['close'] = function(){};
 
-    let loc = mockLocation(href);
+    let loc = mockLocation(href, proxyService);
     const locDesc = {
         get: function() { return loc; },
-        set: function() {}
+        set: function() {},
+        configurable: true
     };
-    Object.defineProperty(win, _location, locDesc);
-    Object.defineProperty(doc, _location, locDesc);
+    defineProperty(win, _location, locDesc);
+    defineProperty(doc, _location, locDesc);
 
     // @ifndef DEBUG
-    wrapAccessor(win, _location);
-    wrapAccessor(doc, _location);
+    proxyService.wrapAccessor(win, _location);
+    proxyService.wrapAccessor(doc, _location);
     // @endif
 
     // @ifndef NO_PROXY
@@ -63,15 +65,15 @@ const mockWindow = (href, name) => {
 
 import { createLocation } from './shared/url';
 
-const mockLocation = (href:string) => {
+
+const mockLocation = (href:string, proxyService:ILoggedProxyService) => {
     const a = createLocation(href);
     a[_assign] = a[_replace] = hrefDesc.set;
-    Object.defineProperty(a, _href, hrefDesc);
-
+    defineProperty(a, _href, hrefDesc);
     // @ifndef DEBUG
-    wrapMethod(a, _assign);
-    wrapMethod(a, _replace);
-    wrapAccessor(a, _href);
+    proxyService.wrapMethod(a, _assign);
+    proxyService.wrapMethod(a, _replace);
+    proxyService.wrapAccessor(a, _href);
     // @endif
     return a;
 }

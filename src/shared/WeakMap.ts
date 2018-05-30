@@ -1,4 +1,4 @@
-import * as log from './log';
+import * as log from './debug';
 
 /**
  * A polyfill for the WeakMap that covers only the most basic usage.

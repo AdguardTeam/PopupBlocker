@@ -42,17 +42,40 @@ export const convertToString = (href:any):string => {
     return href;
 };
 
+export const ABOUT_PROTOCOL  = 'about:';
+
+const urlCtorSupport = typeof URL === 'function';
+
 /**
  * Creates an object that implements properties of Location api.
  */
-export const createLocation = (href:string):HTMLAnchorElement => {
+export const createLocation = urlCtorSupport ? (href:string) => {
+    return new URL(href);
+} : (href:string):URL => {
     let anchor = document.createElement('a');
     anchor.href = href;
     // https://gist.github.com/disnet/289f113e368f1bfb06f3
     if (anchor.host == "") {
         anchor.href = anchor.href;
     }
-    return anchor;
+    return <any>anchor;
 };
+
+/**
+ * Determines whether 2 contexts A and B are in the same origin.
+ * @param url_A absolute or relative url of the context A
+ * @param location_B location object of the context B
+ * @param domain_B `document.domain` of the context B
+ */
+export function isSameOrigin (url_A:string, location_B:Location, domain_B:string):boolean {
+    const location_A = createLocation(url_A);
+    if (location_A.protocol === 'javascript:' || location_A.href === 'about:blank') {
+        return true;
+    }
+    if (location_A.protocol === 'data:') {
+        return false;
+    }
+    return location_A.hostname === domain_B && location_A.port === location_B.port && location_A.protocol === location_B.protocol;
+}
 
 export default createUrl;

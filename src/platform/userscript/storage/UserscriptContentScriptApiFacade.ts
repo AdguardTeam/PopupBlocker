@@ -1,5 +1,5 @@
 import IContentScriptApiFacade from "../../../storage/IContentScriptApiFacade";
-import * as log from '../../../shared/log';
+import * as log from '../../../shared/debug';
 import { isUndef } from '../../../shared/instanceof';
 import IAlertController from "../../../ui/controllers/alert/IAlertController";
 import IUserscriptSettingsDao from "./IUserscriptSettingsDao";
@@ -27,6 +27,9 @@ export default class UserscriptContentScriptApiFacade implements IContentScriptA
         setTimeout(() => {
             this.alertController.createAlert(orig_domain, popup_url);
         });
+    }
+    getInstanceID():string{
+        return this.settingsDao.getInstanceID();
     }
 
     public envIsFirefoxBrowserExt = typeof InstallTrigger !== 'undefined' && document.currentScript;

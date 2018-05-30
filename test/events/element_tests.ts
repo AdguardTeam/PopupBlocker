@@ -1,3 +1,6 @@
+/// <reference path="../../node_modules/@types/mocha/index.d.ts"/>
+/// <reference path="../../node_modules/@types/chai/index.d.ts"/>
+
 import { maybeOverlay } from '../../src/events/element_tests';
 
 const expect = chai.expect;

@@ -6,6 +6,7 @@ import chrome from './platform_namespace';
 import { BGMsgTypesEnum, FromBGMsgTypesEnum } from './message_types';
 import { shadowDomV1Support } from '../../../shared/dom';
 import { isUndef } from '../../../shared/instanceof';
+import { getRandomStr } from '../../../shared/random';
 
 /**
  * Set extension icon, and make it clickable.
@@ -47,11 +48,7 @@ chrome.browserAction.onClicked.addListener((tab) => {
  */
 if (shadowDomV1Support) {
 
-    var accessKey = (function() {
-        let buffer = new Uint8Array(16);
-        crypto.getRandomValues(buffer);
-        return btoa(String.fromCharCode.apply(null, buffer));
-    })();
+    var accessKey = getRandomStr();
 
     const reHttp = /^http/;
 

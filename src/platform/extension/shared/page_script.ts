@@ -1,24 +1,16 @@
-/**
- * @fileoverview Entry point for the page script.
- */
-
 import adguard from '../../../page_script_namespace';
-import ExtensionContentScriptApiFacade from './storage/ExtensionContentScriptApiFacade';
-
-if (typeof PARENT_FRAME_KEY === 'undefined') {
-    adguard.contentScriptApiFacade = new ExtensionContentScriptApiFacade();
-} else {
-    adguard.contentScriptApiFacade = window.parent[PARENT_FRAME_KEY][3];
-}
-
-import '../../../messaging';
-import '../../../dom/open';
-import '../../../dom/click';
-import '../../../dom/dispatchEvent';
-import '../../../dom/HTMLIFrame';
-import '../../../dom/HTMLObject';
-import '../../../dom/removeChild';
-import '../../../dom/unload';
-import '../../../dom/write';
-import '../../../dom/preventDefault';
 import '../../../observers/overlay_link_observer';
+import ExtensionContentScriptApiFacade from './storage/ExtensionContentScriptApiFacade';
+import main from '../../../main';
+
+adguard.contentScriptApiFacade = new ExtensionContentScriptApiFacade();
+
+/**
+ * This key should be changed on each release.
+ * We can't use a key stored in user's storage, as there is no way to synchronously retrieve .such values.
+ * Unlike userscripts, content scripts are guaranteed to be executed before website's scripts, so websites
+ * can't set this flag before we read it.
+ */
+const GLOBAL_KEY = 'c4d38f5c-9a7f-49c1-8eae-95768d33617d'
+
+main(window, GLOBAL_KEY);

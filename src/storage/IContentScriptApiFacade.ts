@@ -13,6 +13,9 @@ export default interface IContentScriptApiFacade {
     originIsSilenced():boolean
 
     showAlert(orig_domain:string, popup_url:string):void
+
+    getInstanceID?():string
+
     $getMessage(messageId:string):string
     domain:string
 }

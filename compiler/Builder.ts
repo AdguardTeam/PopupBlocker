@@ -127,7 +127,7 @@ export default class Builder {
     private buildTimer:NodeJS.Timer;
 
     private wrapPageScript(pageScriptRaw:string):string {
-        return `function popupBlocker(window,PARENT_FRAME_KEY,CONTENT_SCRIPT_KEY){${pageScriptRaw}}`;
+        return `function popupBlocker(window,CONTENT_SCRIPT_KEY){${pageScriptRaw}}`;
     }
 
     private async buildExtension(bundles:StringMap<Reservoir>, manifest:string) {

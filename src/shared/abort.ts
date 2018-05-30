@@ -11,7 +11,7 @@
  */
 
 import adguard from '../page_script_namespace';
-import { closeAllGroup } from './log';
+import { closeAllGroup } from './debug';
 
 let MAGIC:string;
 

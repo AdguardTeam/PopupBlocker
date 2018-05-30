@@ -10,12 +10,12 @@ import MO from './mutation_observer';
 import getTime from '../shared/time';
 import { isElement } from '../shared/instanceof';
 import { getSafeNonEmptyParent } from '../shared/dom';
-import * as log from '../shared/log';
+import * as log from '../shared/debug';
 
 class PdfObjectObserver {
     private observer:MutationObserver
     private lastActivated:number = 0
-    private static readonly OBSERVE_TIME = 200;
+    private static readonly OBSERVE_TIME = 500;
     private static readonly pdfObjectSelector = 'object[data^="data:application/pdf"]';
     private static readonly option:MutationObserverInit = {
         childList: true,
@@ -54,15 +54,13 @@ class PdfObjectObserver {
     }
     $start():void {
         if (this.observer && this.lastActivated === 0) {
-            const frame = getSafeNonEmptyParent(window);
-            if (frame) {
-                const docEl = frame.document.documentElement;
-                this.observer.observe(docEl, PdfObjectObserver.option);
-                log.print('MO started at ' + getTime());
-                this.lastActivated = getTime();
-            }
+            const docEl = document.documentElement;
+            this.observer.observe(docEl, PdfObjectObserver.option);
+            log.print('MO started at ' + getTime());
+            this.lastActivated = getTime();
         }
         setTimeout(() => {
+            log.print('MO stopped at ' + getTime());
             this.stop();
         }, PdfObjectObserver.OBSERVE_TIME);
     }

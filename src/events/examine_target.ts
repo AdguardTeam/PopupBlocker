@@ -1,10 +1,13 @@
 import { setBeforeunloadHandler } from '../dom/unload';
 import { hasDefaultHandler, maskStyleTest, maskContentTest, maybeOverlay } from './element_tests';
-import { isMouseEvent, isTouchEvent, isElement, isHTMLElement } from '../shared/instanceof';
+import { isMouseEvent, isTouchEvent, isElement, isHTMLElement, isIFrame } from '../shared/instanceof';
 import { getTagName } from '../shared/dom';
-import { dispatchMouseEvent, initMouseEventArgs } from '../messaging';
 import abort from '../shared/abort';
-import * as log from '../shared/log';
+import * as log from '../shared/debug';
+import adguard from '../page_script_namespace';
+import IInterContextMessageHub, { IMessageHandler } from '../messaging/IInterContextMessageHub';
+import { getContentWindow } from '../shared/protected_api';
+import { MessageTypes } from '../messaging/MessageTypes';
 
 /**
  * Some popup scripts adds transparent overlays on each of page's links
@@ -149,8 +152,8 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
         log.print("Detected a mask");
         preventPointerEvent(target);
         while (i-- > 0) { preventPointerEvent(candidates[i]); }
-        let args = initMouseEventArgs.map((prop) => currentEvent[prop]);
-        dispatchMouseEvent(<initMouseEventArgs><any>args, candidate);
+        let args = <initMouseEventArgs><any>initMouseEventArgs.map((prop) => currentEvent[prop]);
+        mainFrameMessagHandler.dispatchMouseEventOnTarget(args, candidate);
     }
 };
 
@@ -163,3 +166,70 @@ export const preventPointerEvent = (el:Element):void => {
 var important = 'important';
 
 export default log.connect(examineTarget, 'Examining Target');
+
+let mainFrameMessagHandler:DispatchMouseEventMessageHandler;
+
+export function installDispatchMouseEventMessageTransferrer(messageHub:IInterContextMessageHub) {
+    const handler = new DispatchMouseEventMessageHandler(messageHub);
+    messageHub.on<initMouseEventArgs>(MessageTypes.DISPATCH_MOUSE_EVENT, handler);
+    if (messageHub === adguard.messageHub) {
+        mainFrameMessagHandler = handler;
+    }
+}
+
+class DispatchMouseEventMessageHandler implements IMessageHandler<initMouseEventArgs> {
+    handleMessage(initMouseEventArgs:initMouseEventArgs, source?:Window):void {
+        const clientX = initMouseEventArgs[7];
+        const clientY = initMouseEventArgs[8];
+        const target = this.hub.hostWindow.document.elementFromPoint(clientX, clientY);
+        this.dispatchMouseEventOnTarget(initMouseEventArgs, target);
+    }
+    dispatchMouseEventOnTarget(args:initMouseEventArgs, target:Element) {
+        if (isIFrame(target)) {
+            let rect = target.getBoundingClientRect();
+            args[7] -= rect.left;
+            args[8] -= rect.top;
+            args[3] = null; // Window object cannot be cloned
+            this.hub.trigger<initMouseEventArgs>(MessageTypes.DISPATCH_MOUSE_EVENT, args, getContentWindow.call(target));
+        } else {
+            this.performClickOnTarget(<HTMLElement>target);
+        }
+    }
+    private pressed = false;
+    private performClickOnTarget(target:HTMLElement) {
+        // The purpose of this is to prevent triggering click for both `mousedown` and `click`,
+        // or `mousedown` and `mouseup`.
+        if (this.pressed) { return; }
+        this.pressed = true;
+        setTimeout(() => {
+            this.pressed = false;
+        }, 100);
+        // Using click(). Manually dispatching a cloned event may not trigger an intended behavior.
+        // For example, when a cloned mousedown event is dispatched to a target and a real mouseup
+        // event is dispatched to the target, it won't cause a `click` event.
+        target.click();
+    }
+    constructor(
+        private hub:IInterContextMessageHub
+    ) { }
+}
+
+const initMouseEventArgs = 'type,canBubble,cancelable,view,detail,screenX,screenY,clientX,clientY,ctrlKey,altKey,shiftKey,metaKey,button,relatedTarget'.split(',');
+
+interface initMouseEventArgs {
+    0:string,       // type
+    1:boolean,      // canBubble
+    2:boolean,      // cancelable
+    3:Window,       // view
+    4:number,       // detail
+    5:number,       // screenX
+    6:number,       // screenY
+    7:number,       // clientX
+    8:number,       // clientY
+    9:boolean,      // ctrlKey
+    10:boolean,     // altKey
+    11:boolean,     // shiftKey
+    12:boolean,     // metaKey
+    13:number,      // button
+    14:EventTarget  // relatedTarget
+}

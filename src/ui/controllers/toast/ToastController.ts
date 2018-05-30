@@ -4,7 +4,7 @@ import popupblockerUI from 'goog:popupblockerUI';
 import popupblockerNotificationUI from 'goog:popupblockerNotificationUI';
 import soydata_VERY_UNSAFE from 'goog:soydata.VERY_UNSAFE';
 import { isUndef } from '../../../shared/instanceof';
-import * as log from '../../../shared/log';
+import * as log from '../../../shared/debug';
 import IFrameInjector from '../utils/IFrameInjector';
 import FrameInjector from '../utils/FrameInjector';
 import { bind, concatStyle } from '../../ui_utils';

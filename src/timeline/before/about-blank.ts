@@ -2,7 +2,7 @@ import { condition } from '../index';
 import { TimelineEvent, TLEventType } from '../event';
 import getTime from '../../shared/time';
 import { isEmptyUrl } from '../../shared/dom';
-import * as log from '../../shared/log';
+import * as log from '../../shared/debug';
 import { convertToString } from '../../shared/url';
 
 const aboutBlank:condition = (index, events) => {

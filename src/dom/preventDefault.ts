@@ -1,9 +1,11 @@
-import { ApplyHandler, wrapMethod } from '../proxy';
 import { retrieveEvent, verifyEvent } from '../events/verify';
 import { isMouseEvent } from '../shared/instanceof';
-import * as log from '../shared/log';
+import * as log from '../shared/debug';
+import { ApplyHandler } from '../proxy/IProxyService';
+import ILoggedProxyService from '../proxy/ILoggedProxyService';
 
-const allowVerifiedCall:ApplyHandler = (_orig, _this) => {
+const allowVerifiedCall:ApplyHandler<Event,void> = (execContext, _arguments) => {
+    const _this = execContext.thisArg;
     const currentEvent = retrieveEvent();
     if (isMouseEvent(_this)) {
         if (_this === currentEvent) {
@@ -13,11 +15,13 @@ const allowVerifiedCall:ApplyHandler = (_orig, _this) => {
             }
         }
     }
-    return _orig.call(_this);
+    return execContext.invokeTarget(_arguments);
 };
 
-// @ifdef DEBUG
-wrapMethod(Event.prototype, 'preventDefault', log.connect(allowVerifiedCall, 'Performing verification on preventDefault..', function() {
-    return isMouseEvent(arguments[1]);
-}));
-// @endif
+export function wrapPreventDefault(window:Window, proxyService:ILoggedProxyService) {
+    // @ifdef DEBUG 
+    proxyService.wrapMethod(window.Event.prototype, 'preventDefault', log.connect(allowVerifiedCall, 'Performing verification on preventDefault..', function() {
+        return isMouseEvent(arguments[1]);
+    }));
+    // @endif
+}

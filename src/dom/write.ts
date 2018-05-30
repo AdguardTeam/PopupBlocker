@@ -1,6 +1,12 @@
-import { wrapMethod } from '../proxy';
+import ILoggedProxyService from "../proxy/ILoggedProxyService";
 
-// @ifdef DEBUG
-wrapMethod(Document.prototype, 'write');
-wrapMethod(Document.prototype, 'writeIn');
-// @endif
+/**
+ * DEV channel only
+ */
+export function wrapDocumentWrite(window:Window, proxyService:ILoggedProxyService) {
+    // @ifdef DEBUG
+    const documentPrototype = window.Document.prototype;
+    proxyService.wrapMethod(documentPrototype, 'write');
+    proxyService.wrapMethod(documentPrototype, 'writeIn');
+    // @endif
+}

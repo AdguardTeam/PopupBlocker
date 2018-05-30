@@ -4,7 +4,7 @@ import { isUndef } from '../../../../shared/instanceof';
 import OptionsController from '../../../../ui/controllers/options/OptionsController';
 import { Settings } from '../message_types';
 import IExtensionSettingsDao, { DomainSettingsCallback } from './IExtensionSettingsDao';
-import * as log from '../../../../shared/log';
+import * as log from '../../../../shared/debug';
 import { DomainOptionEnum } from '../../../../storage/storage_data_structure';
 import Transaction from './transaction/Transaction';
 import ITransaction from './transaction/ITransaction';

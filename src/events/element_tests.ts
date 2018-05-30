@@ -1,6 +1,6 @@
 import { isNode, isHTMLElement, isWindow } from '../shared/instanceof';
 import { getTagName } from '../shared/dom';
-import * as log from '../shared/log';
+import * as log from '../shared/debug';
 
 export const hasDefaultHandler = (el:Element):boolean => {
     const name = getTagName(el);
@@ -48,14 +48,13 @@ export const maskContentTest = (el:Element):boolean => {
  */
 export function maybeOverlay(el:Element):boolean {
     if (!isHTMLElement(el)) { return false; } // not an HTMLElement instance
-    log.call('maybeOverlay test');
-    let w = window.innerWidth, h = window.innerHeight;
+    const view = el.ownerDocument.defaultView;
+    const w = view.innerWidth, h = view.innerHeight;
     if (el.offsetLeft << 4 < w && (w - el.offsetWidth) << 3 < w
-        && el.offsetTop << 4 < h && (h - el.offsetHeight) << 3 < w) {
+        && el.offsetTop << 4 < h && (h - el.offsetHeight) << 3 < h) {
         return maskStyleTest(el);
     }
     // ToDo: the element may have been modified in the event handler.
     // We may still test it using the inline style attribute.
-    log.callEnd();
     return false;
 }

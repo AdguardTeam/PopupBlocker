@@ -1,3 +1,6 @@
+/// <reference path="../../node_modules/@types/mocha/index.d.ts"/>
+/// <reference path="../../node_modules/@types/chai/index.d.ts"/>
+
 import { retrieveEvent, verifyEvent } from '../../src/events/verify';
 
 const expect = chai.expect;

@@ -2,7 +2,7 @@ import { condition } from '../index';
 import { TimelineEvent, TLEventType } from '../event';
 import abort from '../../shared/abort';
 import { isWindow, isLocation } from '../../shared/instanceof';
-import * as log from '../../shared/log';
+import * as log from '../../shared/debug';
 
 const navigatePopupToItself:condition = (index, events, incoming) => {
     let $type = incoming.$type;
