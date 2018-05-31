@@ -4,4 +4,4 @@ import main from '../../main';
 
 adguard.contentScriptApiFacade = window[CONTENT_SCRIPT_KEY];
 const instanceID = adguard.contentScriptApiFacade.getInstanceID();
-main(unsafeWindow.window, instanceID);
+main(window, instanceID);
