@@ -11,6 +11,7 @@ import { isElement, isMouseEvent, isNode, isWindow, isUndef, isClickEvent, isTou
 import WeakMap from '../shared/WeakMap';
 import { ApplyHandler, IWrappedExecutionContext } from '../proxy/IProxyService';
 import * as ProxyService from '../proxy/ProxyService';
+import { defineProperty, hasOwnProperty, objectKeys } from '../shared/protected_api';
 const _data = '_data', originalEvent = 'originalEvent', selector = 'selector';
 /**
  * A function to retrieve target selectors from jQuery event delegation mechanism.
@@ -285,9 +286,13 @@ const HOOK_PROPERTY_NAME = '__REACT_DEVTOOLS_GLOBAL_HOOK__';
 
 let accessedReactInternals = false;
 
-if (!Object.prototype.hasOwnProperty.call(window, HOOK_PROPERTY_NAME)) {
-    let tempValue = {}; // to be used as window.__REACT_DEVTOOLS_GLOBAL_HOOK__
-    Object.defineProperty(tempValue, 'isDisabled', {
+if (!hasOwnProperty.call(window, HOOK_PROPERTY_NAME)) {
+    let tempValue = {
+        // Create a dummy function for preact compatibility
+        // https://github.com/AdguardTeam/PopupBlocker/issues/119
+        inject: function() { }
+    }; // to be used as window.__REACT_DEVTOOLS_GLOBAL_HOOK__
+    defineProperty(tempValue, 'isDisabled', {
         get: function() {
             accessedReactInternals = true;
             // Signals that a devtools is disabled, to minimize possible breakages.
@@ -296,7 +301,7 @@ if (!Object.prototype.hasOwnProperty.call(window, HOOK_PROPERTY_NAME)) {
         },
         set: function() { }
     });
-    Object.defineProperty(window, HOOK_PROPERTY_NAME, {
+    defineProperty(window, HOOK_PROPERTY_NAME, {
         get: function() {
             if (isInOfficialDevtoolsScript()) {
                 return undefined; // So that it re-defines the property
@@ -318,7 +323,7 @@ export function isReactInstancePresent():boolean {
     if (typeof hook !== 'object') { return false; }
     let _renderers = hook["_renderers"];
     if (typeof _renderers !== 'object' || _renderers === null) { return false; }
-    if (Object.keys(_renderers).length === 0) { return false; }
+    if (objectKeys(_renderers).length === 0) { return false; }
     return true;
 }
 
