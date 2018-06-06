@@ -3,6 +3,7 @@ export const getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
 export const getPrototypeOf = Object.getPrototypeOf;
 export const create = Object.create;
 export const getOwnPropertyNames = Object.getOwnPropertyNames;
+export const objectKeys = Object.keys;
 export const hasOwnProperty = Object.prototype.hasOwnProperty;
 export const toString = Object.prototype.toString;
 export const functionApply = Function.prototype.apply;
