@@ -25,9 +25,9 @@ const px = 'px';
  * dictated in the CSS such as the width of the alert, but we instead read it from
  * `HTMLElement.offset***` api to reduce coupling with CSS.
  */
-const PIN_TOP = 50;
-const PIN_RIGHT = 50;
-const ALERT_TOP_REL_PIN = -37;
+const PIN_TOP = 5;
+const PIN_RIGHT = 5;
+const ALERT_TOP_REL_PIN = 0;
 const ALERT_RIGHT_REL_PIN = 50;
 /**
  * Specified in styles as box-shadow: 0 0 10px 3px
