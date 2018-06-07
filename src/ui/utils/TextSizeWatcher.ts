@@ -3,8 +3,8 @@
  * The logic is exactly the same as one described in http://smnh.me/web-font-loading-detection-without-timers/
  */
 
-import SingleEventEmitter from "../../../shared/SingleEventEmitter";
-import { getSafeDocument } from "./get_safe_document";
+import SingleEventEmitter from "../../shared/SingleEventEmitter";
+import { getSafeDocument } from "./ui_utils";
 
 const px = 'px';
 

@@ -1,15 +1,16 @@
-/// <reference path="../../../../node_modules/closure-library.ts/closure-library.d.ts/all.d.ts"/>
+/// <reference path="../../../node_modules/closure-library.ts/closure-library.d.ts/all.d.ts"/>
 
 import popupblockerUI from 'goog:popupblockerUI';
 import popupblockerNotificationUI from 'goog:popupblockerNotificationUI';
 import soydata_VERY_UNSAFE from 'goog:soydata.VERY_UNSAFE';
-import { isUndef } from '../../../shared/instanceof';
-import * as log from '../../../shared/debug';
+import { isUndef } from '../../shared/instanceof';
+import * as log from '../../shared/debug';
 import IFrameInjector from '../utils/IFrameInjector';
 import FrameInjector from '../utils/FrameInjector';
-import { bind, concatStyle } from '../../ui_utils';
+import { concatStyle } from '../utils/ui_utils';
 import CSSService from '../utils/CssService';
 import TextSizeWatcher from '../utils/TextSizeWatcher';
+import { functionBind } from '../../shared/protected_api';
 
 const px = 'px';
 
@@ -25,8 +26,8 @@ export default class ToastController {
         private cssService:CSSService,
         private defaultDuration?:number
     ) {
-        this.updateIframePosition = bind.call(this.updateIframePosition, this);
-        this.updateIframePositionOnLoad = bind.call(this.updateIframePositionOnLoad, this);
+        this.updateIframePosition = functionBind.call(this.updateIframePosition, this);
+        this.updateIframePositionOnLoad = functionBind.call(this.updateIframePositionOnLoad, this);
     }
 
     private state:ToastState = ToastState.NONE;

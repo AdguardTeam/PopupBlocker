@@ -1,6 +1,6 @@
 import chrome from './platform_namespace';
 import { CONTENT_PAGE_MAGIC, DownwardMsgTypesEnum, UpwardMsgTypesEnum, UpwardMsgTypes, SettingsDeltaMsg, Settings, BGMsgTypesEnum, FromBGMsgTypesEnum } from "./message_types";
-import IAlertController from "../../../ui/controllers/alert/IAlertController";
+import IAlertController from "../../../ui/alert/IAlertController";
 import * as log from '../../../shared/debug';
 import II18nService from '../../../localization/II18nService';
 import adguard from '../../../content_script_namespace';

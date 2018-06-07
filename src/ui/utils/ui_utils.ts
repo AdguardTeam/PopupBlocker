@@ -1,4 +1,4 @@
-export const bind = Function.prototype.bind;
+import { isUndef } from "../../shared/instanceof";
 
 export function trustedEventListener(listener:(evt?:UIEvent)=>void, __this:object):(evt?:UIEvent)=>void {
     return (evt:UIEvent) => {
@@ -21,4 +21,12 @@ export function concatStyle(style:string[], important:boolean):string {
         cssText += ';';
     }
     return cssText;
+}
+
+let safeDoc:HTMLDocument
+export function getSafeDocument():HTMLDocument {
+    if (isUndef(safeDoc)) {
+        safeDoc = document.implementation.createHTMLDocument('');
+    }
+    return safeDoc;
 }

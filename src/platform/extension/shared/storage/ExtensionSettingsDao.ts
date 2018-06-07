@@ -1,7 +1,7 @@
 import chrome from '../platform_namespace';
 import { AllOptions, AllOptionsCallback } from '../../../../storage/ISettingsDao';
 import { isUndef } from '../../../../shared/instanceof';
-import OptionsController from '../../../../ui/controllers/options/OptionsController';
+import OptionsController from '../../../../ui/options/OptionsController';
 import { Settings } from '../message_types';
 import IExtensionSettingsDao, { DomainSettingsCallback } from './IExtensionSettingsDao';
 import * as log from '../../../../shared/debug';
