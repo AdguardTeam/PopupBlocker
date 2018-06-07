@@ -45,7 +45,7 @@ export default class AlertController implements IAlertController {
      * Dependent classes
      */
     private toastController:ToastController;
-    private view:IAlertView;
+    private alertView:IAlertView;
 
     constructor(
         private cssService:CSSService,
@@ -77,23 +77,23 @@ export default class AlertController implements IAlertController {
      * State transition handlers
      */
     private $expand() {
-        this.view.expand();
+        this.alertView.$expand();
         this.$state = AlertStates.EXPANDED;
         // Schedules auto-collapse.
         this.scheduleTransition(this.$collapse, AlertController.STATE_TRANSITION_TIMEOUT);
         this.remainingAfterMouseLeave = null;
     }
     private $collapse() {
-        this.view.collapse();
+        this.alertView.$collapse();
         this.$state = AlertStates.COLLAPSED;
         // Schedules auto-destroy.
         this.scheduleTransition(this.$destroy, AlertController.STATE_TRANSITION_TIMEOUT);
         this.remainingAfterMouseLeave = null;
     }
     private $destroy() {
-        if (this.view) {
-            this.view.destroy();
-            this.view = null;
+        if (this.alertView) {
+            this.alertView.$destroy();
+            this.alertView = null;
         }
         this.$state = AlertStates.NONE;
         this.scheduleTransition();
@@ -109,12 +109,12 @@ export default class AlertController implements IAlertController {
             ++domainToPopupCount[origDomain];
 
         // Initialize view when necessary
-        if (!this.view) {
-            this.view = new AlertView(this.cssService, this);
+        if (!this.alertView) {
+            this.alertView = new AlertView(this.cssService, this);
         }
 
         let alertData = this.currentAlertData = { origDomain, destUrl };
-        this.view.render(numPopup, origDomain, destUrl, () => {
+        this.alertView.render(numPopup, origDomain, destUrl, () => {
             this.renderedAlertData = alertData;
         });
 

@@ -35,7 +35,7 @@ On the other hand, Popup Blocker is an independent project, you can use it with 
 
 ## Options page
 
-From userscript version 2.5.0 and higher, you can manage a list of whitelisted domains and silenced domain on a dedicated [options page](https://adguardteam.github.io/PopupBlocker/options.html).
+From userscript version 2.5.0 and higher, you can manage a list of whitelisted domains and silenced domain on a dedicated [options page](https://popupblocker.adguard.com/options.html).
 
 ## Reporting a bug
 

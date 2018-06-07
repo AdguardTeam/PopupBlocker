@@ -30,7 +30,7 @@ export default class ToastController {
         this.updateIframePositionOnLoad = functionBind.call(this.updateIframePositionOnLoad, this);
     }
 
-    private state:ToastState = ToastState.NONE;
+    private $state:ToastState = ToastState.NONE;
     private stateTransitionTimer:number
     private currentDuration:number
     private toastEl:Element
@@ -56,7 +56,7 @@ export default class ToastController {
         this.currentDuration = duration || this.defaultDuration;
 
         // Dismiss existing toast, if there was any.
-        let prevState = this.state;
+        let prevState = this.$state;
         this.dismissCurrentNotification();
 
         // Attach toast Element
@@ -146,7 +146,7 @@ export default class ToastController {
                 this.stateTransitionTimer = undefined;
                 break;
         }
-        this.state = state;
+        this.$state = state;
     }
 
 }

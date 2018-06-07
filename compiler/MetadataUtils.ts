@@ -328,7 +328,7 @@ export default class MetadataUtils {
         insertKey('downloadURL', `${this.downloadUpdateURL}popupblocker.user.js`);
         insertKey('updateURL',   `${this.downloadUpdateURL}popupblocker.meta.js`);
         insertKey('supportURL',  `https://github.com/AdguardTeam/PopupBlocker/issues`);
-        insertKey('homepageURL', `https://github.com/AdguardTeam/PopupBlocker`);
+        insertKey('homepageURL', `https://popupblocker.adguard.com/`);
         insertKey('match',       'http://*/*');
         insertKey('match',       'https://*/*');
         insertKey('grant',       'GM_getValue');

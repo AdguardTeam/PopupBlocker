@@ -45,7 +45,9 @@ if (csApiFacade.envIsFirefoxBrowserExt) {
  * Expose GM_api on options page.
  */
 function isOptionsPage() {
-    return location.href === 'https://adguardteam.github.io/PopupBlocker/options.html';
+    let { href } = location;
+    return href === 'https://adguardteam.github.io/PopupBlocker/options.html' ||
+        href === 'https://popupblocker.adguard.com/options.html';
 }
 
 if (isOptionsPage()) {

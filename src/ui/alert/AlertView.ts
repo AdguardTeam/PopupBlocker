@@ -169,12 +169,12 @@ export default class AlertView implements IAlertView {
         }
         this.updatePosition();
     }
-    expand() {
+    $expand() {
         this.alertRoot.classList.add(goog.getCssName('alert--show'));
         this.collapsed = false;
         this.updatePosition();
     }
-    collapse() {
+    $collapse() {
         this.alertRoot.classList.remove(goog.getCssName('alert--show'));
         this.collapsed = true;
         this.updatePosition();
@@ -199,7 +199,7 @@ export default class AlertView implements IAlertView {
         iframeStyle.right = IFRAME_RIGHT + px;
         iframeStyle.top = (this.collapsed ? IFRAME_TOP_COLLAPSED : IFRAME_TOP_EXPANDED) + px;
     }
-    destroy() {
+    $destroy() {
         this.frameInjector.$destroy();
         this.frameInjector = null;
     }
