@@ -58,6 +58,10 @@ export function isUndef(obj:any):obj is undefined {
     return typeof obj === 'undefined';
 };
 
+export function isNumber(obj:any):obj is number {
+    return typeof obj === 'number';
+}
+
 /**/
 
 export function isClickEvent(evt:MouseEvent):boolean {

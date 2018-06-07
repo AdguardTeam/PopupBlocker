@@ -1,4 +1,4 @@
-import { isUndef } from "../../../shared/instanceof";
+import { isUndef } from "../../shared/instanceof";
 
 /**
  * @fileoverview Provides various CSS in JS string
