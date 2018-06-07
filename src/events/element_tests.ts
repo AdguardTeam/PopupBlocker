@@ -25,13 +25,19 @@ export const eventTargetIsRootNode = (el:EventTarget):boolean => {
     return false;
 };
 
-export const maskStyleTest = (el:Element):boolean => {
-    const style = getComputedStyle(el);
-    const position = style.getPropertyValue('position');
-    const zIndex = style.getPropertyValue('z-index');
+export function maskStyleTest (el:Element):boolean {
+    const docEl = document.documentElement
+    do {
+        if (maybeArtificialStackingContextRoot(el)) {
+            return true;
+        }
+    } while (el = el.parentElement)
+
+
+    const { position, zIndex } = getComputedStyle(el);
     // Theoretically, opacity css property can be used to make masks as well
     // but hasn't encountered such usage in the wild, so not including it.
-    if (position !== 'static' && parseInt(zIndex, 10) > 1000) { return true; }
+    if (position !== 'static' && parseInt(zIndex) > 1000) { return true; }
     return false;
 };
 
@@ -40,6 +46,23 @@ export const maskContentTest = (el:Element):boolean => {
     if (textContent && textContent.trim().length) { return false; }
     return el.getElementsByTagName('img').length === 0;
 };
+
+/**
+ * Detects a common stacking context root pattern.
+ * Stacking context root: https://philipwalton.com/articles/what-no-one-told-you-about-z-index/
+ */
+function maybeArtificialStackingContextRoot(el:Element):boolean {
+    const { zIndex, position, opacity } = getComputedStyle(el);
+    if (
+        (position !== 'static' && zIndex !== 'auto') ||
+        parseFloat(opacity) < 1
+    ) {
+        if (parseInt(zIndex) > 1000) {
+            return true;
+        }
+    }
+    return false;
+}
 
 /**
  * Detects common overlay pattern.
