@@ -48,11 +48,11 @@ You can help us with translating Popup Blocker into other languages! Our project
 ## Development build
 
 Built automatically on every new commit:
-https://AdguardTeam.github.io/PopupBlocker/popupblocker.user.js
+https://popupblocker.adguard.com/popupblocker.user.js
 
 Development builds have logging enabled and overrides significantly more browser apis to introspect behavior of popup/popunder script. It is not suitable for normal usage.
 
-Unit test for dev build is [here](https://AdguardTeam.github.io/PopupBlocker/test/).
+Unit test for dev build is [here](https://popupblocker.adguard.com/test/).
 
 ## How to build
 

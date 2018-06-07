@@ -253,7 +253,7 @@ export default class MetadataUtils {
     }
 
     private static channelDownloadUpdateURLMap = {
-        [Channel.DEV]:      'https://AdguardTeam.github.io/PopupBlocker/',
+        [Channel.DEV]:      'https://popupblocker.adguard.com/',
         [Channel.BETA]:     'https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.5/',
         [Channel.RELEASE]:  'https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.5/'
     }
