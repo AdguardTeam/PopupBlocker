@@ -253,7 +253,7 @@ export default class MetadataUtils {
     }
 
     private static channelDownloadUpdateURLMap = {
-        [Channel.DEV]:      'https://AdguardTeam.github.io/PopupBlocker/',
+        [Channel.DEV]:      'https://popupblocker.adguard.com/',
         [Channel.BETA]:     'https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.5/',
         [Channel.RELEASE]:  'https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.5/'
     }
@@ -328,7 +328,7 @@ export default class MetadataUtils {
         insertKey('downloadURL', `${this.downloadUpdateURL}popupblocker.user.js`);
         insertKey('updateURL',   `${this.downloadUpdateURL}popupblocker.meta.js`);
         insertKey('supportURL',  `https://github.com/AdguardTeam/PopupBlocker/issues`);
-        insertKey('homepageURL', `https://github.com/AdguardTeam/PopupBlocker`);
+        insertKey('homepageURL', `https://popupblocker.adguard.com/`);
         insertKey('match',       'http://*/*');
         insertKey('match',       'https://*/*');
         insertKey('grant',       'GM_getValue');

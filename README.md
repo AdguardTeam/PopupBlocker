@@ -35,7 +35,7 @@ On the other hand, Popup Blocker is an independent project, you can use it with 
 
 ## Options page
 
-From userscript version 2.5.0 and higher, you can manage a list of whitelisted domains and silenced domain on a dedicated [options page](https://adguardteam.github.io/PopupBlocker/options.html).
+From userscript version 2.5.0 and higher, you can manage a list of whitelisted domains and silenced domain on a dedicated [options page](https://popupblocker.adguard.com/options.html).
 
 ## Reporting a bug
 
@@ -48,11 +48,11 @@ You can help us with translating Popup Blocker into other languages! Our project
 ## Development build
 
 Built automatically on every new commit:
-https://AdguardTeam.github.io/PopupBlocker/popupblocker.user.js
+https://popupblocker.adguard.com/popupblocker.user.js
 
 Development builds have logging enabled and overrides significantly more browser apis to introspect behavior of popup/popunder script. It is not suitable for normal usage.
 
-Unit test for dev build is [here](https://AdguardTeam.github.io/PopupBlocker/test/).
+Unit test for dev build is [here](https://popupblocker.adguard.com/test/).
 
 ## How to build
 
