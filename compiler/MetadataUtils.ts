@@ -352,7 +352,7 @@ export default class MetadataUtils {
         insertKey('grant',       'GM_listValues');
         insertKey('grant',       'GM_getResourceURL');
         insertKey('grant',       'unsafeWindow');
-        insertKey('icon',        './assets/128.png');
+        insertKey('icon',        this.getResourceUrl('./assets/128.png'));
 
         for (let resource of MetadataUtils.resources) {
             // We always set resource name to be identical with its path
