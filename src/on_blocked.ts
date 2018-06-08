@@ -6,7 +6,7 @@ import { MessageTypes } from './messaging/MessageTypes';
 
 export default function onBlocked(popup_url:string, currentEvent:Event) {
     if (!adguard.contentScriptApiFacade.originIsSilenced()) {
-        adguard.messageHub.trigger<IAlertData>(0, {
+        adguard.messageHub.trigger<IAlertData>(MessageTypes.SHOW_NOTIFICATION, {
             orig_domain: adguard.contentScriptApiFacade.domain,
             popup_url
         }, adguard.messageHub.parent);
