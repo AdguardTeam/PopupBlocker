@@ -3,7 +3,7 @@
  */
 
 import chrome from './platform_namespace';
-import OptionsController from "../../../ui/controllers/options/OptionsController";
+import OptionsController from "../../../ui/options/OptionsController";
 import ExtensionSettingsDao from "./storage/ExtensionSettingsDao";
 import I18nService from '../../../localization/I18nService';
 import adguard from '../../../content_script_namespace';

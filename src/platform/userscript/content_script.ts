@@ -1,15 +1,20 @@
 import I18nService from '../../localization/I18nService';
-import UserscriptAlertController from './ui/UserscriptAlertController';
+import AlertController from '../../ui/alert/AlertController';
 import UserscriptSettingsDao from './storage/UserscriptSettingsDao';
 import UserscriptContentScriptApiFacade from './storage/UserscriptContentScriptApiFacade';
 import adguard from '../../content_script_namespace';
 import getMessage from './get_message';
-import CSSService from '../../ui/controllers/utils/CssService';
+import CSSService from '../../ui/utils/CssService';
 
 const i18nService       = new I18nService(getMessage);
 const settingsDao       = new UserscriptSettingsDao();
 const cssService        = new CSSService(GM_getResourceURL);
-const alertController   = new UserscriptAlertController(settingsDao, cssService);
+const alertController   = new AlertController(cssService, settingsDao, () => {
+    window.open(
+        'https://adguardteam.github.io/PopupBlocker/options.html',
+        '__popupBlocker_options_page__'
+    );
+});
 const csApiFacade       = new UserscriptContentScriptApiFacade(settingsDao, alertController, getMessage);
 
 adguard.i18nService = i18nService;
@@ -40,7 +45,9 @@ if (csApiFacade.envIsFirefoxBrowserExt) {
  * Expose GM_api on options page.
  */
 function isOptionsPage() {
-    return location.href === 'https://adguardteam.github.io/PopupBlocker/options.html';
+    let { href } = location;
+    return href === 'https://adguardteam.github.io/PopupBlocker/options.html' ||
+        href === 'https://popupblocker.adguard.com/options.html';
 }
 
 if (isOptionsPage()) {

@@ -1,4 +1,4 @@
-import OptionsController from "../../../ui/controllers/options/OptionsController";
+import OptionsController from "../../../ui/options/OptionsController";
 import popupblockerOptionsUI from 'goog:popupblockerOptionsUI';
 import popupblockerUserscriptOptionsUI from "goog:popupblockerUserscriptOptionsUI";
 import { AllOptions } from "../../../storage/ISettingsDao";

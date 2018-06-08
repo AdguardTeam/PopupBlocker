@@ -1,9 +1,8 @@
-import { shadowDomV1Support } from '../../../shared/dom';
-import { concatStyle } from '../../ui_utils';
+import { shadowDomV1Support } from '../../shared/dom';
+import { concatStyle, getSafeDocument } from './ui_utils';
 import IFrameInjector from './IFrameInjector';
-import { isUndef } from '../../../shared/instanceof';
-import { getSafeDocument } from './get_safe_document';
-import SingleEventEmitter from '../../../shared/SingleEventEmitter';
+import { isUndef } from '../../shared/instanceof';
+import SingleEventEmitter from '../../shared/SingleEventEmitter';
 
 /**
  * It is a common practice for us to inject UI elements to page's DOM.

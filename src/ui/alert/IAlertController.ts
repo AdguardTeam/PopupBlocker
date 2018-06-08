@@ -29,4 +29,13 @@
 
 export default interface IAlertController {
     createAlert(origDomain:string, destUrl:string):void
+
+    onClose():void
+    onPinClick():void
+    onContinueBlocking():void
+    onOptionChange(evt:Event):void
+
+    onMouseEnter():void
+    onMouseLeave():void
+    onUserInteraction():void
 }

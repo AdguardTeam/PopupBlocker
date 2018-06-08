@@ -290,7 +290,7 @@ if (!hasOwnProperty.call(window, HOOK_PROPERTY_NAME)) {
     let tempValue = {
         // Create a dummy function for preact compatibility
         // https://github.com/AdguardTeam/PopupBlocker/issues/119
-        inject: function() { }
+        "inject": function() { }
     }; // to be used as window.__REACT_DEVTOOLS_GLOBAL_HOOK__
     defineProperty(tempValue, 'isDisabled', {
         get: function() {

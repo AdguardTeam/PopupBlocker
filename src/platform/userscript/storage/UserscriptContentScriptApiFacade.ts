@@ -1,7 +1,7 @@
 import IContentScriptApiFacade from "../../../storage/IContentScriptApiFacade";
 import * as log from '../../../shared/debug';
 import { isUndef } from '../../../shared/instanceof';
-import IAlertController from "../../../ui/controllers/alert/IAlertController";
+import IAlertController from "../../../ui/alert/IAlertController";
 import IUserscriptSettingsDao from "./IUserscriptSettingsDao";
 import { DomainOptionEnum } from "../../../storage/storage_data_structure";
 
