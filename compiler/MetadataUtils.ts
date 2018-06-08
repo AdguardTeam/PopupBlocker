@@ -274,8 +274,15 @@ export default class MetadataUtils {
 
     private getResourceUrl(relativeUrl:string) {
         if (this.options.useAdGuardDomainForResources) {
-            let absoluteUrl = new url.URL(relativeUrl, this.downloadUpdateURL);
-            return absoluteUrl.href;
+            // e.g.
+            // https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/assets/2.5.2/fonts/semibold/OpenSans-Semibold.woff2
+            return url.resolve(
+                url.resolve(
+                    this.downloadUpdateURL,
+                    `../assets/${require('../package.json').version}/`
+                ),
+                relativeUrl.replace(/^\.\/assets\//, '')
+            );
         }
         return relativeUrl;
     }

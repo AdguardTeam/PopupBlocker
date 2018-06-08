@@ -70,8 +70,6 @@ for (let target in BuildTarget) {
 gulp.task('build', () => {
     let args = minimist(process.argv.slice(2));
 
-    console.log(JSON.stringify(args));
-
     let target:BuildTarget = args["target"] || args["t"];
     let channel:Channel = args["channel"] || args["c"];
     let overrideShouldMinify:boolean = (() => {
