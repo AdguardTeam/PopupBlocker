@@ -328,9 +328,9 @@ export default class MetadataUtils {
         function insertTranslatableKeys (metaKey:string, messageId:string, additional:string = ''):void {
             insertKey(metaKey, translation['en'][messageId].message + additional); // insert 'en' language at the first line.
 
-            LocaleUtils.forEachPhrase(translation, [messageId], (locale, messageid) => {
+            LocaleUtils.forEachPhrase(translation, [messageId], (locale, messageId, msgObj, fallbacked) => {
                 if (locale === 'en') return;
-                insertKey(metaKey + ':' + locale, translation[locale][messageId].message + additional);
+                insertKey(metaKey + ':' + locale, msgObj.message + additional);
             });
         }
 
@@ -352,7 +352,7 @@ export default class MetadataUtils {
         insertKey('grant',       'GM_listValues');
         insertKey('grant',       'GM_getResourceURL');
         insertKey('grant',       'unsafeWindow');
-        insertKey('icon',        './assets/128.png');
+        insertKey('icon',        this.getResourceUrl('./assets/128.png'));
 
         for (let resource of MetadataUtils.resources) {
             // We always set resource name to be identical with its path
