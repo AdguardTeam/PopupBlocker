@@ -36,6 +36,7 @@ export const MessageChannelCtor = window.MessageChannel;
 export const setTimeout = window.setTimeout.bind(window);
 export const getContentWindow = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow').get;
 export const getContentDocument = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentDocument').get;
+export const getMessageSource = getOwnPropertyDescriptor(MessageEvent.prototype, 'source').get;
 export const captureStackTrace = Error.captureStackTrace;
 export const noop = () => {};
 
