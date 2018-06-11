@@ -7,6 +7,14 @@ import { IResourceProvider, ResourceManager } from './ResourceManager';
 import { BuildOption, Channel } from '../BuildOption';
 import PathUtils from '../PathUtils';
 
+
+interface MessageObject {
+    message:string,
+    placeholders?: {
+        [key:string]:string
+    }
+}
+
 export default class LocaleUtils implements IResourceProvider {
 
     private static JSONFile = class JSONFile<T> {
@@ -38,21 +46,25 @@ export default class LocaleUtils implements IResourceProvider {
         return "";
     }
 
-    public static forEachPhrase(translations:object, keys:string[], callback:(lang:string, key:string)=>void) {
+    /**
+     * Iterates over languages and translated keys; skips if a translation is not provided.
+     */
+    public static forEachPhrase(translations:object, keys:string[], callback:(lang:string, key:string, messageObject:MessageObject, fallbacked:boolean)=>void) {
         let langs = Object.keys(translations);
         for (let lang of langs) {
             for (let key of keys) {
-                if (!(key in translations[lang])) {
-                    // A required phrase is missing in a lang translation.
-                    // If it is missing in 'en' as well, it is an error.
-                    if (!(key in translations['en'])) {
-                        throw new Error(`Required phrase ${key} is missing in translations.json`);
-                    } else {
-                        continue;
-                    }
-                }
                 try {
-                    callback(lang, key);
+                    if (!(key in translations[lang])) {
+                        // A required phrase is missing in a lang translation.
+                        // If it is missing in 'en' as well, it is an error.
+                        if (!(key in translations['en'])) {
+                            throw new Error(`Required phrase ${key} is missing in translations.json`);
+                        } else {
+                            callback(lang, key, translations['en'][key], true);
+                        }
+                    } else {
+                        callback(lang, key, translations[lang][key], false);
+                    }
                 } catch (e) {
                     log.error(`Error for lang: ${lang}, key: ${key}`);
                     throw e;
@@ -69,9 +81,10 @@ export default class LocaleUtils implements IResourceProvider {
         const out = {};
         const [json, userscriptKeys] = await Promise.all([LocaleUtils.translation.read(), LocaleUtils.userscriptKeys.read()]);
 
-        LocaleUtils.forEachPhrase(json, userscriptKeys, (locale, key) => {
+        LocaleUtils.forEachPhrase(json, userscriptKeys, (locale, key, msgObj, fallbacked) => {
+            if (fallbacked) { return; }
             if (!out[locale]) { out[locale] = {}; }
-            out[locale][key] = json[locale][key].message;
+            out[locale][key] = msgObj.message;
         });
 
         return <{[locale:string]:{[messageId:string]:string}}>out;
@@ -88,9 +101,15 @@ export default class LocaleUtils implements IResourceProvider {
         const out = {};
         const [json, extensionKeys] = await Promise.all([LocaleUtils.translation.read(), LocaleUtils.extensionKeys.read()]);
 
-        LocaleUtils.forEachPhrase(json, extensionKeys, (locale, key) => {
+        LocaleUtils.forEachPhrase(json, extensionKeys, (locale, key, msgObj, fallbacked) => {
+            if (fallbacked) {
+                // Certain translations are required by extension publishers.
+                if (key !== LocaleUtils.EXTENSION_NAME) {
+                    return;
+                }            
+            }
             if (!out[locale]) { out[locale] = {}; }
-            let message = json[locale][key].message;
+            let message = msgObj.message;
             // A workaround for chrome webstore bug.
             // It has problems in recognizing i18n'd string in extension name.
             if (key === LocaleUtils.EXTENSION_NAME) {
@@ -102,8 +121,8 @@ export default class LocaleUtils implements IResourceProvider {
                 message: message
             };
             // Extension translations require 'placeholder' key as well
-            if (json[locale][key].placeholders) {
-                out[locale][key].placeholders = json[locale][key].placeholders;
+            if (msgObj.placeholders) {
+                out[locale][key].placeholders = msgObj.placeholders;
             }
         });
 
@@ -114,9 +133,10 @@ export default class LocaleUtils implements IResourceProvider {
         const out = {};
         const [json, settingsKeys] = await Promise.all([LocaleUtils.translation.read(), LocaleUtils.settingsKeys.read()]);
 
-        LocaleUtils.forEachPhrase(json, settingsKeys, (locale, key) => {
+        LocaleUtils.forEachPhrase(json, settingsKeys, (locale, key, msgObj, fallbacked) => {
+            if (fallbacked) { return; }
             if (!out[locale]) { out[locale] = {}; }
-            out[locale][key] = json[locale][key].message;
+            out[locale][key] = msgObj.message;
         });
 
         return <{[locale:string]:{[messageId:string]:string}}>out;
