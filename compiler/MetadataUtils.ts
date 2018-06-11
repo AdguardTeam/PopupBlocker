@@ -1,4 +1,5 @@
 import fs = require('async-file');
+import url = require('url');
 import * as fsExtra from 'fs-extra';
 import mergeOpts = require('merge-options');
 
@@ -271,6 +272,21 @@ export default class MetadataUtils {
         './assets/fonts/semibold/OpenSans-Semibold.woff2'
     ]
 
+    private getResourceUrl(relativeUrl:string) {
+        if (this.options.useAdGuardDomainForResources) {
+            // e.g.
+            // https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/assets/2.5.2/fonts/semibold/OpenSans-Semibold.woff2
+            return url.resolve(
+                url.resolve(
+                    this.downloadUpdateURL,
+                    `../assets/${require('../package.json').version}/`
+                ),
+                relativeUrl.replace(/^\.\/assets\//, '')
+            );
+        }
+        return relativeUrl;
+    }
+
     /**
      * Read version from package.json.
      */
@@ -312,9 +328,9 @@ export default class MetadataUtils {
         function insertTranslatableKeys (metaKey:string, messageId:string, additional:string = ''):void {
             insertKey(metaKey, translation['en'][messageId].message + additional); // insert 'en' language at the first line.
 
-            LocaleUtils.forEachPhrase(translation, [messageId], (locale, messageid) => {
+            LocaleUtils.forEachPhrase(translation, [messageId], (locale, messageId, msgObj, fallbacked) => {
                 if (locale === 'en') return;
-                insertKey(metaKey + ':' + locale, translation[locale][messageId].message + additional);
+                insertKey(metaKey + ':' + locale, msgObj.message + additional);
             });
         }
 
@@ -336,13 +352,13 @@ export default class MetadataUtils {
         insertKey('grant',       'GM_listValues');
         insertKey('grant',       'GM_getResourceURL');
         insertKey('grant',       'unsafeWindow');
-        insertKey('icon',        './assets/128.png');
+        insertKey('icon',        this.getResourceUrl('./assets/128.png'));
 
         for (let resource of MetadataUtils.resources) {
             // We always set resource name to be identical with its path
             // for interoperability with extensions.
             // This is not optimal and we may change in future.
-            insertKey('resource', `${resource} ${resource}`);
+            insertKey('resource', `${resource} ${this.getResourceUrl(resource)}`);
         }
         insertKey('run-at',      'document-start');
 

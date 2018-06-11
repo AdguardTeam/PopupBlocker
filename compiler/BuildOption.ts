@@ -24,7 +24,8 @@ export class BuildOption {
         public target:BuildTarget,
         public channel:Channel,
         public preprocessContext:IPreprocessContext,
-        public overrideShouldMinify?:boolean
+        public overrideShouldMinify?:boolean,
+        public useAdGuardDomainForResources?:boolean
     ) { }
     get shouldMinify() {
         if (typeof this.overrideShouldMinify !== 'undefined') {

@@ -3,6 +3,7 @@ import * as fs from 'async-file';
 import * as fsExtra from 'fs-extra';
 
 import log = require('fancy-log');
+import minimist = require('minimist');
 
 import gulp = require('gulp');
 import insert = require('gulp-insert');
@@ -64,6 +65,34 @@ for (let target in BuildTarget) {
         gulp.task(taskName + '-unminified', new Builder(option_unminified).build);
     }
 }
+
+// Define gulp tasks: build -t=chrome -c=beta --minify --use_adg_domain
+gulp.task('build', () => {
+    let args = minimist(process.argv.slice(2));
+
+    let target:BuildTarget = args["target"] || args["t"];
+    let channel:Channel = args["channel"] || args["c"];
+    let overrideShouldMinify:boolean = (() => {
+        if ("minify" in args) {
+            return !!args["minify"];
+        }
+        if ("m" in args) {
+            return !! args["m"];
+        }
+    })();
+    let useAdGuardDomainForResources:boolean = args["use_adg_domain"];
+
+    let option = new BuildOption(   
+        target,
+        channel,
+        channel === Channel.DEV ? devPreprocessCtxt : preprocessCtxt,
+        overrideShouldMinify,
+        useAdGuardDomainForResources
+    );
+
+    return new Builder(option).build()
+})
+
 
 /******************************************************************************************************/
 

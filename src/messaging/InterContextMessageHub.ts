@@ -3,7 +3,7 @@ import { isEmptyUrl } from '../shared/dom'
 import * as TypeGuards from '../shared/instanceof'
 import * as debug from '../shared/debug'
 import { nativeWeakMapSupport } from '../shared/WeakMap';
-import { MessageChannelCtor } from '../shared/protected_api';
+import { MessageChannelCtor, getMessageSource } from '../shared/protected_api';
 
 interface FrameData {
     messagePort:MessagePort,
@@ -56,7 +56,7 @@ export default class InterContextMessageHub implements IInterContextMessageHub {
             // `MAGIC` indicates that this message is sent by the popupblocker from the child frame.
             return;
         }
-        let source = evt.source;
+        let source = getMessageSource.call(evt);
         // From now on, propagation of event must be stopped.
         receivePort: {
             if (TypeGuards.isUndef(source)) {
@@ -93,7 +93,7 @@ export default class InterContextMessageHub implements IInterContextMessageHub {
     }
     private onMessage(evt:MessageEvent) {
         let data:MsgData = evt.data;
-        this.triggerHandlers(data.$type, data.$data, evt.source);
+        this.triggerHandlers(data.$type, data.$data, getMessageSource.call(evt));
     }
     private triggerHandlers<T>(type:number, data:T, source:Window) {
         let messageHandler = this.typeHandlerMap[type];

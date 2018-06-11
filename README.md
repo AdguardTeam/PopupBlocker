@@ -67,10 +67,18 @@ yarn install
 
 To build, run:
 ```
-$ gulp <channel>-<target>
+$ gulp <channel>-<target>[-[un]minified]
+```
+or in a minimist style:
+```
+gulp build --channel=<channel> --target=<target> --minify=(boolean) --use_adg_domain
 ```
 Available channels are: `dev`, `beta`, `release`
 Available targets are: `userscript`, `chrome`, `webext`
+
+`minify` option will override default minification settings for `channel`.
+
+`use_adg_domain` option will make userscript builds to use urls in `adguard.com` domain as urls of `@resource` meta tags.
 
 Developement builds are not minified, and will print logs into the browser console.
 

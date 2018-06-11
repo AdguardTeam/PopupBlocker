@@ -44,14 +44,11 @@ export const convertToString = (href:any):string => {
 
 export const ABOUT_PROTOCOL  = 'about:';
 
-const urlCtorSupport = typeof URL === 'function';
-
 /**
  * Creates an object that implements properties of Location api.
+ * It resolves the provided href within a context of a current browsing context.
  */
-export const createLocation = urlCtorSupport ? (href:string) => {
-    return new URL(href);
-} : (href:string):URL => {
+export const createLocation = (href:string):URL => {
     let anchor = document.createElement('a');
     anchor.href = href;
     // https://gist.github.com/disnet/289f113e368f1bfb06f3
