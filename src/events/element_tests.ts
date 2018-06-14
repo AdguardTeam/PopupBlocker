@@ -25,44 +25,11 @@ export const eventTargetIsRootNode = (el:EventTarget):boolean => {
     return false;
 };
 
-export function maskStyleTest (el:Element):boolean {
-    const docEl = document.documentElement
-    do {
-        if (maybeArtificialStackingContextRoot(el)) {
-            return true;
-        }
-    } while (el = el.parentElement)
-
-
-    const { position, zIndex } = getComputedStyle(el);
-    // Theoretically, opacity css property can be used to make masks as well
-    // but hasn't encountered such usage in the wild, so not including it.
-    if (position !== 'static' && parseInt(zIndex) > 1000) { return true; }
-    return false;
-};
-
 export const maskContentTest = (el:Element):boolean => {
     let textContent = el.textContent;
     if (textContent && textContent.trim().length) { return false; }
     return el.getElementsByTagName('img').length === 0;
 };
-
-/**
- * Detects a common stacking context root pattern.
- * Stacking context root: https://philipwalton.com/articles/what-no-one-told-you-about-z-index/
- */
-function maybeArtificialStackingContextRoot(el:Element):boolean {
-    const { zIndex, position, opacity } = getComputedStyle(el);
-    if (
-        (position !== 'static' && zIndex !== 'auto') ||
-        parseFloat(opacity) < 1
-    ) {
-        if (parseInt(zIndex) > 1000) {
-            return true;
-        }
-    }
-    return false;
-}
 
 /**
  * Detects common overlay pattern.
@@ -75,9 +42,27 @@ export function maybeOverlay(el:Element):boolean {
     const w = view.innerWidth, h = view.innerHeight;
     if (el.offsetLeft << 4 < w && (w - el.offsetWidth) << 3 < w
         && el.offsetTop << 4 < h && (h - el.offsetHeight) << 3 < h) {
-        return maskStyleTest(el);
+        return isArtificialStackingContextRoot(el) || isArtificialStackingContextRoot(el.parentElement);
     }
     // ToDo: the element may have been modified in the event handler.
     // We may still test it using the inline style attribute.
+    return false;
+}
+
+/**
+ * Detects a common stacking context root pattern.
+ * Stacking context root: https://philipwalton.com/articles/what-no-one-told-you-about-z-index/
+ * https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
+ */
+export function isArtificialStackingContextRoot(el:Element) {
+    const { zIndex, position, opacity } = getComputedStyle(el);
+    if (
+        (position !== 'static' && zIndex !== 'auto') ||
+        parseFloat(opacity) < 1
+    ) {
+        if (parseInt(zIndex) > 1000) {
+            return true;
+        }
+    }
     return false;
 }
