@@ -2,7 +2,7 @@ import * as log from '../shared/debug';
 import WeakMap from '../shared/WeakMap';
 import CurrentMouseEvent from './current_mouse_event';
 import { eventTargetIsRootNode, maybeOverlay } from './element_tests';
-import { getSelectorFromCurrentjQueryEventHandler, isReactInstancePresent, jsActionTarget, getCurrentJQueryTarget } from './framework_workarounds';
+import { isReactInstancePresent, jsActionTarget, getCurrentJQueryTarget } from './framework_workarounds';
 import { isNode, isElement, isMouseEvent, isTouchEvent, isClickEvent } from '../shared/instanceof';
 import { matches, getTagName } from '../shared/dom';
 

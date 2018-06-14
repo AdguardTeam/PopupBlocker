@@ -12,44 +12,6 @@ import WeakMap from '../shared/WeakMap';
 import { ApplyHandler, IWrappedExecutionContext } from '../proxy/IProxyService';
 import * as ProxyService from '../proxy/ProxyService';
 import { defineProperty, hasOwnProperty, objectKeys } from '../shared/protected_api';
-const _data = '_data', originalEvent = 'originalEvent', selector = 'selector';
-/**
- * A function to retrieve target selectors from jQuery event delegation mechanism.
- * When an event handler is bound with jQuery like this:
- * `$('html').on('click', '.open-newtab', function(evt) { ... })`
- * inside of the event handler function, `evt.currentTarget` will be `document.documentElement`.
- * When this function is called with `evt`, it will return `'.open-newtab'`, and from this we know that
- * the event handler is not supposed to be called when user clicks anywhere.
- *
- * It makes use of an undocumented static method `_data` of `jQuery`. It has existed for a long time
- * and not likely to be removed in a near future according to https://github.com/jquery/jquery/issues/2583.
- * @param event
- */
-export function getSelectorFromCurrentjQueryEventHandler(event:Event):string|undefined {
-    let jQuery:JQueryStatic = window['jQuery'] || window['$'];
-    if (!jQuery || !jQuery[_data]) { return; }
-    let current = event.currentTarget;
-    let type = event.type;
-    let eventsData = jQuery[_data](current, 'events');
-    if (!eventsData) { return; }
-    let registeredHandlers = eventsData[type];
-    if (!registeredHandlers) { return; }
-    let handlerObj;
-    for (let i = 0, l = registeredHandlers.length; i < l; i++) {
-        if (handlerObj = registeredHandlers[i]) {
-            let handler = handlerObj.handler;
-            try {
-                // Using Function.arguments, so it may not work on handlers that are nested in call stack
-                let args = handler.arguments;
-                if (args !== null && args[0] && args[0].originalEvent === event) {
-                    return handlerObj[selector];
-                }
-            } catch(e) {
-                continue;
-            }
-        }
-    }
-}
 
 /**
  * The above was not enough for many cases, mostly because event handlers can be attached in
@@ -174,7 +136,7 @@ export class JQueryEventStack {
 
         // The root event must be of related to provided event.
         let root = this.getRelatedJQueryEvent(event);
-        if (eventStack[0] !== event && eventStack[0] !== root) { return; }
+        if (eventStack.indexOf(event) === -1 && eventStack.indexOf(root) === -1) { return; }
 
         /********************************************************************************************
            
