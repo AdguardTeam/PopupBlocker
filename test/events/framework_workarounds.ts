@@ -118,6 +118,20 @@ describe('JQueryEventStack', async function() {
                     $('#JQueryTestRoot').click();
                 });
 
+                it(`works in a nested dispatch task ${jQuery.version}`, function(done) {
+                    let count = 0;
+                    $(document).one('click', '#JQueryTestRoot', function(evt) {
+                        $(document).one('click', '#JQueryTestRoot', function(evt) {
+                            let expected = JQueryTestRoot;
+                            let got = JQueryEventStack.getCurrentJQueryTarget(<MouseEvent>window.event);
+                            expect(got).to.equal(expected);
+                            done();
+                        });
+                        let target = evt.target;
+                        target.click();
+                    })
+                })
+
                 after(function() {
                     $.noConflict(true); // Expose the previously-loaded jQuery to the global scope 
                                         // for the next test. 
