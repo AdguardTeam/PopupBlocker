@@ -1,5 +1,5 @@
 import { setBeforeunloadHandler } from '../dom/unload';
-import { hasDefaultHandler, maskContentTest, maybeOverlay, isArtificialStackingContextRoot } from './element_tests';
+import { hasDefaultHandler, maskContentTest, maybeOverlay, isArtificialStackingContextRoot, numsAreClose, rectAlmostCoversView } from './element_tests';
 import { isMouseEvent, isTouchEvent, isElement, isHTMLElement, isIFrame } from '../shared/instanceof';
 import { matches, closest, getTagName } from '../shared/dom';
 import abort from '../shared/abort';
@@ -21,34 +21,34 @@ const getEventPath = (function() {
  * Some popup scripts adds transparent overlays on each of page's links which disappears only when
  * popups are opened. To restore the expected behavior, we need to detect if the event is 'masked'
  * by artificial layers and redirect it to the correct element.
- 
+
  * examineTarget function examines target and performs operations that are sensitive to the
  * inspected information.
- * 
+ *
  *  - Neutralizes masks
  *  - Dispatch mouse event to shadowed targets if there were masks
  *  - Set beforeunload event handler if target won't trigger navigation
  *  - If "real intended target" is an anchor, having href identical to the "popup url", abort.
  *
- * bubbling 
- *    ^ 
- *    |                                                                   T(needsRecovery, not maskLike)
+ * bubbling
+ *    ^
+ *    |                                                                   Goal(needsRecovery, not maskLike)
  *    |
- *    |      ⋮ 
+ *    |      ⋮
  *    |    el_02                                  ⋮
  *    |    el_01            el_11     el_a1
  *    |   (target = el_00)  el_10  …  el_a0 el_a+10 (=el_a1)
  *                          --------------------------------------------------> ElementsFromPoint
- * 
- *  When an element T was found, it should neutralize all maskLikes met during the search.
- * 
- *  [needsRecovery] IFRAME, A, INPUT, BUTTON, AREA, 
- *         has either of: onclick, onmousedown, onmouseup attributes 
+ *
+ *  When an element Goal was found, it should neutralize all maskLikes met during the search.
+ *
+ *  [needsRecovery] IFRAME, A, INPUT, BUTTON, AREA,
+ *         has either of: onclick, onmousedown, onmouseup attributes
  *  [maskLike] Let R be the closest stacking context of E.
  *         If R has very high z-index, and E is very empty.
  *         every element between E and R must be invisible or barely be contained in E.
  *         E almost covers T.
- * 
+ *
  * @todo We may need to prevent `preventDefault` in touch events
  */
 const examineTarget = elementsFromPoint ? (currentEvent:Event, popupHref:string):void => {
@@ -86,14 +86,18 @@ const examineTarget = elementsFromPoint ? (currentEvent:Event, popupHref:string)
 
     const potentialMaskData:{maskRoot:Element, mask:Element}[] = [];
 
-    let candidate:Element;
+    let candidate:Element = target;
     let result:IExamineSingleCandidateResult;
+
+    if (candidate !== candidates[0]) {
+        log.print('target has modified within event handlers');
+    }
 
     /**
      * @return true if found a goal; false if we should stop iterating over candidates
      * undefined otherwise;
      */
-    const onExamineResult = (result:IExamineSingleCandidateResult) => {
+    const subroutine_forSingleCandidate = () => {
         if (result.hasDefaultEventHandler) {
             if (!result.maskRoot) {
                 // this is the candidate. do things with this
@@ -117,24 +121,25 @@ const examineTarget = elementsFromPoint ? (currentEvent:Event, popupHref:string)
         }
     }
 
-    iterateUntilFindTargetThatNeedsRecovery: {
+    subroutine_iterateUntilGoal: {
+        // Un-rolling first iteration, to use `event.path` when supported.
         if (getEventPath) {
-            // If event.path is supported, use it
+            candidate = target;
             result = examineEventPath(getEventPath.call(currentEvent));
-            let flag = onExamineResult(result);
+            let flag = subroutine_forSingleCandidate();
             if (flag === true) {
-                break iterateUntilFindTargetThatNeedsRecovery;
+                break subroutine_iterateUntilGoal;
             } else if (flag === false) {
                 return;
             }
         }
 
         for (let i = getEventPath && candidates[0] === target ? 1 : 0, l = candidates.length; i < l; i++) {
-            candidate = candidates[0];
+            candidate = candidates[i];
             result = examineBubblingPath(candidate);
-            let flag = onExamineResult(result);
+            let flag = subroutine_forSingleCandidate();
             if (flag === true) {
-                break iterateUntilFindTargetThatNeedsRecovery;
+                break subroutine_iterateUntilGoal;
             } else if (flag === false) {
                 return;
             }
@@ -147,32 +152,36 @@ const examineTarget = elementsFromPoint ? (currentEvent:Event, popupHref:string)
         abort();
     }
 
-    // We first check that those masks are real 'Msks'. 
-    
-    const checkMaskData = () => {
+    // We first check that those masks are real masks.
+    let subroutine_checkMaskData_returnValueBuffer:boolean = true;
+    subroutine_checkMaskData: {
+        const { innerWidth: w, innerHeight: h } = originDocument.defaultView;
+
         let candidateRect = candidate.getBoundingClientRect();<HTMLElement>candidate;
         for (let maskData of potentialMaskData) {
             if (!maskContentTest(maskData.mask)) {
-                return false;
+                subroutine_checkMaskData_returnValueBuffer = false;
+                break subroutine_checkMaskData;
             }
-            let maskRect = candidate.getBoundingClientRect();
+            const { left, right, top, bottom } = candidate.getBoundingClientRect();
             if (
-                valuesAreClose(candidateRect.top, maskRect.top, 1) && 
-                valuesAreClose(candidateRect.left, maskRect.left, 1) && 
-                valuesAreClose(candidateRect.bottom, maskRect.bottom, 1) &&
-                valuesAreClose(candidateRect.right, maskRect.right, 1)
+                (
+                    numsAreClose(candidateRect.top, top, 1) &&
+                    numsAreClose(candidateRect.left, left, 1) &&
+                    numsAreClose(candidateRect.bottom, bottom, 1) &&
+                    numsAreClose(candidateRect.right, right, 1)
+                ) || rectAlmostCoversView(candidateRect, w, h)
             ) {
                 // All good
             } else {
-                // Not good
-                return false;
+                subroutine_checkMaskData_returnValueBuffer = false;
+                break subroutine_checkMaskData;
             }
         }
         // All good
-        return true;
-    };
+    }
 
-    if (checkMaskData()) {
+    if (subroutine_checkMaskData_returnValueBuffer) {
         // Neutralize masks
         for (let maskData of potentialMaskData) {
             preventPointerEvent(maskData.maskRoot);
@@ -199,7 +208,7 @@ function examineEventPath(path:EventTarget[]):IExamineSingleCandidateResult {
     for (let i = 0, l = path.length; i < l; i++) {
         let el = path[i];
         if (!isElement(el)) { break; }
-        if (!info.hasDefaultEventHandler) {
+        if (!info || !info.hasDefaultEventHandler) {
             info = getDefaultEventHandlerTarget(el);
         }
         if (!hasArtificialStackingContextRoot && isArtificialStackingContextRoot(el)) {
@@ -221,7 +230,7 @@ function examineBubblingPath(el:Element):IExamineSingleCandidateResult {
     let root = el;
     while (el) {
         if (!isElement(el)) { break; }
-        if (!info.hasDefaultEventHandler) {
+        if (!info || !info.hasDefaultEventHandler) {
             info = getDefaultEventHandlerTarget(el);
         }
         if (!hasArtificialStackingContextRoot && isArtificialStackingContextRoot(el)) {
@@ -249,7 +258,6 @@ function getDefaultEventHandlerTarget(el:Element):DefaultEventHandlerInfo {
     }
     return { hasDefaultEventHandler, defaultEventHandlerTarget };
 }
-
 
 export const preventPointerEvent = (el:Element):void => {
     if (!isHTMLElement(el)) { return; }
@@ -326,7 +334,4 @@ interface initMouseEventArgs {
     12:boolean,     // metaKey
     13:number,      // button
     14:EventTarget  // relatedTarget
-}
-function valuesAreClose (x:number, y: number, threshold:number) {
-    return (((x - y) / threshold) | 0) === 0;
 }
