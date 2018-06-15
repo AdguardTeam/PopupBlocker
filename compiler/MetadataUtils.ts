@@ -26,7 +26,10 @@ export default class MetadataUtils {
         '*://*.yandex.tld/*',
         'https://*.twitch.tv/*',
         'https://tinder.com/*',
-        '*://*.yahoo.com/*'
+        '*://*.yahoo.com/*',
+        '*://chat.chatovod.ru/*',
+        '*://vc.ru/*',
+        '*://tjournal.ru/*'
     ];
 
     private static extension_exclusions = {
@@ -249,7 +252,10 @@ export default class MetadataUtils {
             // yandex end
             'https://*.twitch.tv/*',
             'https://tinder.com/*',
-            '*://*.yahoo.com/*'
+            '*://*.yahoo.com/*',
+            '*://chat.chatovod.ru/*',
+            '*://vc.ru/*',
+            '*://tjournal.ru/*'
         ]
     }
 
