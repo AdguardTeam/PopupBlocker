@@ -27,7 +27,9 @@ export default class MetadataUtils {
         'https://*.twitch.tv/*',
         'https://tinder.com/*',
         '*://*.yahoo.com/*',
-        '*://chat.chatovod.ru/*'
+        '*://chat.chatovod.ru/*',
+        '*://vc.ru/*',
+        '*://tjournal.ru/*'
     ];
 
     private static extension_exclusions = {
@@ -251,7 +253,9 @@ export default class MetadataUtils {
             'https://*.twitch.tv/*',
             'https://tinder.com/*',
             '*://*.yahoo.com/*',
-            '*://chat.chatovod.ru/*'
+            '*://chat.chatovod.ru/*',
+            '*://vc.ru/*',
+            '*://tjournal.ru/*'
         ]
     }
 
