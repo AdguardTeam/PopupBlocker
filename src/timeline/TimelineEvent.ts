@@ -10,7 +10,7 @@ export const enum TLEventType {
 export interface TLEventData<C=void> {
     thisOrReceiver:any,
     arguments?:IArguments|any[],
-    context?:C
+    externalContext?:C
 }
 
 export class TimelineEvent<C> {

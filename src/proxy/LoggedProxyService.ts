@@ -34,7 +34,7 @@ export default class LoggedProxyService implements ILoggedProxyService {
                 data = {
                     thisOrReceiver: thisArg,
                     arguments: _arguments,
-                    context: context
+                    externalContext: context
                 };
             }
             // Must register the event to a timeline after invoking the applyHandler.

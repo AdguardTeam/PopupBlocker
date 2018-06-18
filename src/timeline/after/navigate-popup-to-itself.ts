@@ -5,6 +5,12 @@ import { isWindow, isLocation } from '../../shared/instanceof';
 import * as log from '../../shared/debug';
 import { PopupContext } from '../../dom/open';
 
+/**
+ * If a popup/popunder script tries to navigate a popup window to a target a link on which
+ * a user has clicked within an interval specified by this constant, it will abort script execution.
+ */
+const NAVIGATION_TIMING_THRESOLD = 200;
+
 const navigatePopupToItself:condition = (index, events, incoming) => {
     let $type = incoming.$type;
     let $name = incoming.$name;
@@ -35,11 +41,11 @@ const navigatePopupToItself:condition = (index, events, incoming) => {
         let l = currentFrameRecords.length;
         while (l--) {
             let evt = currentFrameRecords[l];
-            if (incoming.$timeStamp - evt.$timeStamp > 200) {
+            if (incoming.$timeStamp - evt.$timeStamp > NAVIGATION_TIMING_THRESOLD) {
                 // Do not lookup too old event
                 break;
             }
-            let context:PopupContext = evt.$data.context; // supposedly
+            let context:PopupContext = evt.$data.externalContext; // supposedly
             if (
                 context && context.mocked &&
                 context.defaultEventHandlerTarget === newLocation
