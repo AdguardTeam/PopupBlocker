@@ -212,6 +212,7 @@ export default class Builder {
                 .pipe(gulp.dest('.'))
         ));
         tasks.push(fsExtra.copy(this.paths.optionsPagePath, this.paths.outputPath + '/options.html'));
+        tasks.push(fsExtra.copy(path.resolve(this.paths.optionsPagePath, '../index.html'), this.paths.outputPath + '/index.html'));
         tasks.push(fsExtra.copy(PathUtils.assetsPath, this.paths.assetOutputPath));
 
         await Promise.all(tasks);
