@@ -1,8 +1,8 @@
 import { ApplyHandler } from "./IProxyService";
 import ILoggedProxyService, { ApplyOption } from './ILoggedProxyService'
 import * as ProxyService from './ProxyService';
-import Timeline from "../timeline/index";
-import { TLEventType, TimelineEvent } from "../timeline/event";
+import Timeline from "../timeline/Timeline";
+import { TLEventType, TimelineEvent, TLEventData } from "../timeline/TimelineEvent";
 import { defineProperty, ProxyCtor, reflectNamespace, getOwnPropertyDescriptor } from "../shared/protected_api";
 import { isWindow, isLocation } from '../shared/instanceof';
 
@@ -19,38 +19,41 @@ export default class LoggedProxyService implements ILoggedProxyService {
         private timeline:Timeline,
         public framePosition:number
     ) { }
-    private makeLoggedFunctionWrapper<T,R>(
+    private makeLoggedFunctionWrapper<T,R,C>(
         orig:(this:T,...args)=>R,
         type:TLEventType,
         name:PropertyKey,
-        applyHandler:ApplyHandler<T,R> = ProxyService.defaultApplyHandler,
+        applyHandler:ApplyHandler<T,R,C> = ProxyService.defaultApplyHandler,
         option?:ApplyOption<T>
     ):(this:T,...args)=>R {
         return ProxyService.makeSafeFunctionWrapper<T,R>(orig, (execCtxt, _arguments) => {
-            let context = {};
+            let context = <C>{};
             let thisArg = execCtxt.thisArg;
+            let data:TLEventData<C>;
             if (typeof option == 'undefined' || (<ApplyOption<T>>option)(orig, thisArg, _arguments)) {
-                let data = {
-                    this: thisArg,
+                data = {
+                    thisOrReceiver: thisArg,
                     arguments: _arguments,
-                    context: context
+                    externalContext: context
                 };
-                this.timeline.registerEvent(new TimelineEvent(type, name, data), this.framePosition);
             }
-            return applyHandler(execCtxt, _arguments, context);
+            // Must register the event to a timeline after invoking the applyHandler.
+            let ret = applyHandler(execCtxt, _arguments, context);
+            data && this.timeline.registerEvent(new TimelineEvent(type, name, data), this.framePosition);
+            return ret;
         });
     }
-    wrapMethod<T,R>(obj, prop:string, applyHandler?:ApplyHandler<T,R>, option?:ApplyOption<T>) {
+    wrapMethod<T,R,C=never>(obj, prop:string, applyHandler?:ApplyHandler<T,R,C>, option?:ApplyOption<T>) {
         if (obj.hasOwnProperty(prop)) {
-            obj[prop] = this.makeLoggedFunctionWrapper(obj[prop], TLEventType.APPLY, prop, applyHandler, option);
+            obj[prop] = this.makeLoggedFunctionWrapper<T,R,C>(obj[prop], TLEventType.APPLY, prop, applyHandler, option);
         }
     }
-    wrapAccessor<T,R>(obj, prop:string, getterApplyHandler?:ApplyHandler<T,R>, setterApplyHandler?:ApplyHandler<T,R>, option?:ApplyOption<T>):void {
+    wrapAccessor<T,R,C=never>(obj, prop:string, getterApplyHandler?:ApplyHandler<T,R,C>, setterApplyHandler?:ApplyHandler<T,R>, option?:ApplyOption<T>):void {
         const desc = getOwnPropertyDescriptor(obj, prop);
         if (desc && desc.get && desc.configurable) {
             var getter = this.makeLoggedFunctionWrapper(desc.get, TLEventType.GET, prop, getterApplyHandler, option);
             var setter;
-            if (desc.set) { setter = this.makeLoggedFunctionWrapper<T,void>(desc.set, TLEventType.SET, prop, setterApplyHandler, option); }
+            if (desc.set) { setter = this.makeLoggedFunctionWrapper<T,void,C>(desc.set, TLEventType.SET, prop, setterApplyHandler, option); }
             defineProperty(obj, prop, {
                 get: getter,
                 set: setter,
@@ -66,8 +69,9 @@ export default class LoggedProxyService implements ILoggedProxyService {
     // @ifndef NO_PROXY
     get(target, prop:PropertyKey, receiver) {
         let _receiver = ProxyService.proxyToReal.get(receiver) || receiver;
+        let data:TLEventData = { thisOrReceiver: _receiver };
         this.timeline.registerEvent(
-            new TimelineEvent(TLEventType.GET, prop, _receiver),
+            new TimelineEvent(TLEventType.GET, prop, data),
             this.framePosition
         );
         var value = reflectNamespace.reflectGet(target, prop, _receiver);
@@ -99,8 +103,8 @@ export default class LoggedProxyService implements ILoggedProxyService {
     }
     set(target, prop:PropertyKey, value, receiver) {
         let _receiver = ProxyService.proxyToReal.get(receiver) || receiver;
-        let data = {
-            this: _receiver,
+        let data:TLEventData = {
+            thisOrReceiver: _receiver,
             arguments: [value]
         };
         this.timeline.registerEvent(

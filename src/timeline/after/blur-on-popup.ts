@@ -1,5 +1,5 @@
-import { condition } from '../index';
-import { TimelineEvent, TLEventType } from '../event';
+import { condition } from '../Timeline';
+import { TimelineEvent, TLEventType } from '../TimelineEvent';
 import * as log from '../../shared/debug';
 
 const blurOnPopup:condition = (index, events, incoming) => {
@@ -9,12 +9,12 @@ const blurOnPopup:condition = (index, events, incoming) => {
         while (l-- > 0) {
             let frameEvents = events[l];
             let k = frameEvents.length;
-            let evt;
+            let evt:TimelineEvent<any>;
             while (k-- > 0) {
                 evt = frameEvents[l];
-                    if (evt.data === incoming.$data && incoming.$timeStamp - evt.timeStamp < 10) {
+                    if (evt.$data === incoming.$data && incoming.$timeStamp - evt.$timeStamp < 10) {
                     log.print('blur called quickly');
-                    evt.data.close();
+                    (<any>evt.$data).close();
                     log.callEnd();
                     return false;
                 }

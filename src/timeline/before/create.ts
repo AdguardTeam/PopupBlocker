@@ -1,13 +1,19 @@
-import { condition } from '../index';
-import { TimelineEvent, TLEventType } from '../event';
+import { condition } from '../Timeline';
+import { TimelineEvent, TLEventType } from '../TimelineEvent';
 import { ABOUT_PROTOCOL } from '../../shared/dom';
 import getTime from '../../shared/time';
 import * as log from '../../shared/debug';
 
+/**
+ * If an empty iframe which does not have an associacted http request tries to open a popup
+ * within a time specified by this constant, it will be blocked.
+ */
+const TIME_MINIMUM_BEFORE_POPUP = 200;
+
 const createOpen:condition = (index, events) => {
     log.print('index:', index);
     let evt = events[index][0];
-    if (evt.$type == TLEventType.CREATE && getTime() - evt.$timeStamp < 200) {
+    if (evt.$type == TLEventType.CREATE && getTime() - evt.$timeStamp < TIME_MINIMUM_BEFORE_POPUP) {
         log.print(`time difference is less than a threshold`);
         /**
          * A test here is meant to block attempts to call window.open from iframes which
@@ -30,7 +36,7 @@ const createOpen:condition = (index, events) => {
          * Therefore, we take advantage of `performance.timing` api to determine whether the
          * empty iframe has an associated HTTP request.
          */
-        let browsingContext = <Window>evt.$data;
+        let browsingContext = <Window>evt.$data.thisOrReceiver;
         log.print(`testing context is: `, browsingContext);
         let isSameOriginChildContext = browsingContext.frameElement !== null;
         if (isSameOriginChildContext) {

@@ -16,5 +16,5 @@ export interface IWrappedExecutionContext<T,R> {
     invokeTarget(args:IArguments, thisArg?:T):R
 }
 
-export type ApplyHandler<T,R> = (ctxt:IWrappedExecutionContext<T,R>, _arguments:IArguments, externalContext?:any) => R;
+export type ApplyHandler<T,R,C=never> = (ctxt:IWrappedExecutionContext<T,R>, _arguments:IArguments, externalContext?:C) => R;
 

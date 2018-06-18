@@ -1,8 +1,8 @@
 /// <reference path="../../node_modules/@types/mocha/index.d.ts"/>
 /// <reference path="../../node_modules/@types/chai/index.d.ts"/>
 
-import { timeline } from '../../src/timeline/index';
-import { TLEventType } from '../../src/timeline/event';
+import { timeline } from '../../src/timeline/Timeline';
+import { TLEventType } from '../../src/timeline/TimelineEvent';
 
 const expect = chai.expect;
 describe('Timeline', function() {

@@ -25,16 +25,6 @@ export const eventTargetIsRootNode = (el:EventTarget):boolean => {
     return false;
 };
 
-export const maskStyleTest = (el:Element):boolean => {
-    const style = getComputedStyle(el);
-    const position = style.getPropertyValue('position');
-    const zIndex = style.getPropertyValue('z-index');
-    // Theoretically, opacity css property can be used to make masks as well
-    // but hasn't encountered such usage in the wild, so not including it.
-    if (position !== 'static' && parseInt(zIndex, 10) > 1000) { return true; }
-    return false;
-};
-
 export const maskContentTest = (el:Element):boolean => {
     let textContent = el.textContent;
     if (textContent && textContent.trim().length) { return false; }
@@ -50,11 +40,52 @@ export function maybeOverlay(el:Element):boolean {
     if (!isHTMLElement(el)) { return false; } // not an HTMLElement instance
     const view = el.ownerDocument.defaultView;
     const w = view.innerWidth, h = view.innerHeight;
-    if (el.offsetLeft << 4 < w && (w - el.offsetWidth) << 3 < w
-        && el.offsetTop << 4 < h && (h - el.offsetHeight) << 3 < h) {
-        return maskStyleTest(el);
+    const {left, right, top, bottom } = el.getBoundingClientRect();
+
+    if (rectAlmostCoversView(el.getBoundingClientRect(), w, h)) {
+        // Find artificial stacking context root
+        do {
+            if (isArtificialStackingContextRoot(el)) {
+                return true;
+            }
+        } while (el = el.parentElement)
     }
     // ToDo: the element may have been modified in the event handler.
     // We may still test it using the inline style attribute.
     return false;
+}
+
+/**
+ * Detects a common stacking context root pattern.
+ * Stacking context root: https://philipwalton.com/articles/what-no-one-told-you-about-z-index/
+ * https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
+ */
+export function isArtificialStackingContextRoot(el:Element) {
+    const { zIndex, position, opacity } = getComputedStyle(el);
+    if (
+        (position !== 'static' && zIndex !== 'auto') ||
+        parseFloat(opacity) < 1
+    ) {
+        if (parseInt(zIndex) > 1000) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+export function numsAreClose(x:number, y: number, threshold:number) {
+    return (((x - y) / threshold) | 0) === 0;
+}
+
+/**
+ * @param w view.innerWidth
+ * @param h view.innerHeight
+ */
+export function rectAlmostCoversView(rect:ClientRect, w:number, h:number) {
+    const { left, right, top, bottom } = rect;
+    return numsAreClose(left, 0, w >> 4) &&
+        numsAreClose(right, w, w >> 4) &&
+        numsAreClose(top, 0, h >> 4) &&
+        numsAreClose(bottom, h, h >> 4);
 }

@@ -1,23 +1,58 @@
 import { setBeforeunloadHandler } from '../dom/unload';
-import { hasDefaultHandler, maskStyleTest, maskContentTest, maybeOverlay } from './element_tests';
+import { hasDefaultHandler, maskContentTest, maybeOverlay, isArtificialStackingContextRoot, numsAreClose, rectAlmostCoversView } from './element_tests';
 import { isMouseEvent, isTouchEvent, isElement, isHTMLElement, isIFrame } from '../shared/instanceof';
-import { getTagName } from '../shared/dom';
+import { matches, closest, getTagName } from '../shared/dom';
 import abort from '../shared/abort';
 import * as log from '../shared/debug';
 import adguard from '../page_script_namespace';
 import IInterContextMessageHub, { IMessageHandler } from '../messaging/IInterContextMessageHub';
-import { getContentWindow } from '../shared/protected_api';
+import { getContentWindow, getOwnPropertyDescriptor } from '../shared/protected_api';
 import { MessageTypes } from '../messaging/MessageTypes';
+import { PopupContext } from '../dom/open';
+
+const elementsFromPoint = document.elementsFromPoint || document.msElementsFromPoint;
+
+const getEventPath = (function() {
+    const eventPType = Event.prototype;
+    let pathDesc = getOwnPropertyDescriptor(eventPType, 'path');
+    return pathDesc ? pathDesc.get : eventPType.composedPath;
+})();
 
 /**
- * Some popup scripts adds transparent overlays on each of page's links
- * which disappears only when popups are opened.
- * To restore the expected behavior, we need to detect if the event is 'masked' by artificial layers
- * and redirect it to the correct element.
- * It will return true if no mask was detected and we should throw to abort script execution.
- * ToDo: we may need to prevent `preventDefault` in touch events
+ * Some popup scripts adds transparent overlays on each of page's links which disappears only when
+ * popups are opened. To restore the expected behavior, we need to detect if the event is 'masked'
+ * by artificial layers and redirect it to the correct element.
+
+ * examineTarget function examines target and performs operations that are sensitive to the
+ * inspected information.
+ *
+ *  - Neutralizes masks
+ *  - Dispatch mouse event to shadowed targets if there was at least one mask above it
+ *  - Set beforeunload event handler if target won't trigger navigation
+ *  - If "real intended target" is an anchor, having href identical to the "popup url", abort.
+ *
+ * bubbling
+ *    ^
+ *    |                                                                   Goal(needsRecovery, not maskLike)
+ *    |
+ *    |      ⋮
+ *    |    el_02                                  ⋮
+ *    |    el_01            el_11     el_a1
+ *    |   (target = el_00)  el_10  …  el_a0 el_a+10 (=el_a1)
+ *                          --------------------------------------------------> ElementsFromPoint
+ *
+ *  When an element Goal was found, it should neutralize all maskLikes met during the search.
+ *
+ *  [needsRecovery] IFRAME, A, INPUT, BUTTON, AREA,
+ *         has either of: onclick, onmousedown, onmouseup attributes
+ *  [maskLike] Let R be the closest stacking context of E.
+ *         If R has very high z-index, and E is very empty.
+ *         every element between E and R must be invisible or barely be contained in E.
+ *         E almost covers T.
+ *
+ * @todo We may need to prevent `preventDefault` in touch events
  */
-const examineTarget = (currentEvent:Event, targetHref:string):void => {
+const examineTarget = elementsFromPoint ? (currentEvent:Event, popupHref:string, popupContext?:PopupContext):void => {
     log.print('Event is:', currentEvent);
     if (!currentEvent.isTrusted) { return; }
     let target:EventTarget;
@@ -46,116 +81,192 @@ const examineTarget = (currentEvent:Event, targetHref:string):void => {
      * otherwise the result can be platform-dependent.
      */
     const originDocument = (<MouseEvent|TouchEvent>currentEvent).view.document;
-    let candidates:Element[]|NodeListOf<Element>;
-    if (originDocument.elementsFromPoint) {
-        candidates = originDocument.elementsFromPoint(x, y)
-    } else if (originDocument.msElementsFromPoint) {
-        candidates = originDocument.msElementsFromPoint(x, y);
-    } else {
-        log.print("elementsFromPoint api is missing, exiting..");
-        return;
-    }
-
+    let candidates:Element[]|NodeListOf<Element> = elementsFromPoint.call(originDocument, x, y);
     if (!candidates) { return; }
     log.print('ElementsFromPoint:', candidates);
 
-    // Use Event#deepPath API
-    let path:EventTarget[]|undefined;
-    if ('path' in currentEvent) {
-        path = currentEvent.path;
-    } else if ('composedPath' in currentEvent) {
-        path = currentEvent.composedPath!();
+    const potentialMaskData:{maskRoot:Element, mask:Element}[] = [];
+
+    let candidate:Element = target;
+    let result:IExamineSingleCandidateResult;
+
+    if (candidate !== candidates[0]) {
+        log.print('target has modified within event handlers');
     }
 
     /**
-     * This is a heuristic. I won't try to make it robust by following specs for now.
-     * ToDo: make the logic more modular and clear.
-     * https://drafts.csswg.org/cssom-view/#dom-document-elementsfrompoint
-     * https://philipwalton.com/articles/what-no-one-told-you-about-z-index/
+     * @return true if found a goal; false if we should stop iterating over candidates
+     * undefined otherwise;
      */
-    let candidate:Element;
-    let i = 0;
-    let j = 0;
-    let l = candidates.length;
-    let parent:Element|null;
-    let check:boolean = false;
-    if (candidates[0] !== target) {
-        log.print('A target has changed in an event listener');
-        i = -1;
-    }
-
-    // Unrolling first iteration
-    candidate = parent = target;
-    while (parent) {
-        if (hasDefaultHandler(parent)) {
-            check = true;
-            break;
-        }
-        if (maskStyleTest(parent)) { break; }
-        if (path) {
-            if (!isElement(path[++j])) { parent = null; }
-            else { parent = <Element>path[j]; }
-        } else { parent = parent.parentElement; }
-    }
-
-    if (check) {
-        // Parent has a default event handler.
-        if (parent && getTagName(parent) === 'A') {
-            // Can't set beforeunload handler here; it may prevent legal navigations.
-            if ((<HTMLAnchorElement>parent).href === targetHref) {
-                log.print("Throwing, because the target url is an href of an eventTarget or its ancestor");
-                abort();
+    const subroutine_forSingleCandidate = () => {
+        if (result.hasDefaultEventHandler) {
+            if (!result.maskRoot) {
+                // this is the candidate. do things with this
+                return true;
             }
-            if (maybeOverlay(parent)) {
-                // We should check elements behind this if there is a real target.
-                log.print("current target looks like an overlay");
-                check = false;
-                preventPointerEvent(parent);
-            }
+            // Otherwise, we do maskContentTest and prevent pointer event
+            preventPointerEvent(candidate);
         } else {
-            return;
-        }
-    }
-
-    if (location.href === targetHref) {
-        log.print("Throwing, because the target url is the same as the current url");
-        abort();
-    }
-
-    if (!parent || !maskContentTest(candidate)) {
-        setBeforeunloadHandler();
-        return;
-    }
-
-
-    if (!check) {
-        iterate_candidates: while (i < l - 1) {
-            if (candidate.parentElement === (candidate = candidates[++i])) { continue; }
-            parent = candidate;
-            while (parent) {
-                if (hasDefaultHandler(parent)) {
-                    check = true;
-                    break iterate_candidates;
-                }
-                if (maskStyleTest(parent)) { break; }
-                parent = parent.parentElement;
+            if (result.maskRoot) {
+                // Put this to a list of potential mask elements.
+                potentialMaskData.push({
+                    maskRoot: result.maskRoot,
+                    mask: candidate
+                });
+            } else {
+                // Not a needsRecovery, nor a mask,
+                // It means we need to quit this
+                setBeforeunloadHandler();
+                return false;
             }
-            if (maskContentTest(candidate)) {
-                // found a mask-looking element
-                continue;
-            } else { break; }
         }
     }
 
-    // Performs mask neutralization and event delivery
-    if (check) {
-        log.print("Detected a mask");
-        preventPointerEvent(target);
-        while (i-- > 0) { preventPointerEvent(candidates[i]); }
+    subroutine_iterateUntilGoal: {
+        // Un-rolling first iteration, to use `event.path` when supported.
+        if (getEventPath) {
+            candidate = target;
+            result = examineEventPath(getEventPath.call(currentEvent));
+            let flag = subroutine_forSingleCandidate();
+            if (flag === true) {
+                break subroutine_iterateUntilGoal;
+            } else if (flag === false) {
+                return;
+            }
+        }
+
+        for (let i = getEventPath && candidates[0] === target ? 1 : 0, l = candidates.length; i < l; i++) {
+            candidate = candidates[i];
+            result = examineBubblingPath(candidate);
+            let flag = subroutine_forSingleCandidate();
+            if (flag === true) {
+                break subroutine_iterateUntilGoal;
+            } else if (flag === false) {
+                return;
+            }
+        }
+    }
+
+    // We have a defaultEventHandler, and a several masklikes above it.
+    let defaultEventHandlerTarget = result.defaultEventHandlerTarget;
+    if (defaultEventHandlerTarget) {
+        popupContext.defaultEventHandlerTarget = defaultEventHandlerTarget;
+        if (popupHref === defaultEventHandlerTarget) {
+            log.print("Throwing, because the target url is an href of an eventTarget or its ancestor");
+            abort();
+        }
+    }
+
+    // We first check that those masks are real masks.
+    let subroutine_checkMaskData_returnValueBuffer:boolean = true;
+    subroutine_checkMaskData: {
+        if (potentialMaskData.length === 0) {
+            subroutine_checkMaskData_returnValueBuffer = false;
+            break subroutine_checkMaskData;
+        }
+        const { innerWidth: w, innerHeight: h } = originDocument.defaultView;
+
+        let candidateRect = candidate.getBoundingClientRect();<HTMLElement>candidate;
+        for (let maskData of potentialMaskData) {
+            if (!maskContentTest(maskData.mask)) {
+                subroutine_checkMaskData_returnValueBuffer = false;
+                break subroutine_checkMaskData;
+            }
+            const { left, right, top, bottom } = candidate.getBoundingClientRect();
+            if (
+                (
+                    numsAreClose(candidateRect.top, top, 1) &&
+                    numsAreClose(candidateRect.left, left, 1) &&
+                    numsAreClose(candidateRect.bottom, bottom, 1) &&
+                    numsAreClose(candidateRect.right, right, 1)
+                ) || rectAlmostCoversView(candidateRect, w, h)
+            ) {
+                // All good
+            } else {
+                subroutine_checkMaskData_returnValueBuffer = false;
+                break subroutine_checkMaskData;
+            }
+        }
+        // All good
+    }
+
+    if (subroutine_checkMaskData_returnValueBuffer) {
+        // Neutralize masks
+        for (let maskData of potentialMaskData) {
+            preventPointerEvent(maskData.maskRoot);
+        }
         let args = <initMouseEventArgs><any>initMouseEventArgs.map((prop) => currentEvent[prop]);
         mainFrameMessagHandler.dispatchMouseEventOnTarget(args, candidate);
     }
-};
+} : () => {};
+
+interface DefaultEventHandlerInfo {
+    hasDefaultEventHandler?:boolean
+    defaultEventHandlerTarget?:string
+}
+
+interface IExamineSingleCandidateResult extends DefaultEventHandlerInfo {
+    maskRoot?:Element
+}
+
+// This can be made less repetitive by using generator functions, but since we have to support IE..
+function examineEventPath(path:EventTarget[]):IExamineSingleCandidateResult {
+    let maskRoot:Element;
+    let hasArtificialStackingContextRoot = false;
+    let info:IExamineSingleCandidateResult;
+    for (let i = 0, l = path.length; i < l; i++) {
+        let el = path[i];
+        if (!isElement(el)) { break; }
+        if (!info || !info.hasDefaultEventHandler) {
+            info = getDefaultEventHandlerTarget(el);
+        }
+        if (!hasArtificialStackingContextRoot && isArtificialStackingContextRoot(el)) {
+            hasArtificialStackingContextRoot = true;
+            if (maskContentTest(<Element>path[0])) {
+                maskRoot = el;
+            }
+        }
+    }
+    info.maskRoot = maskRoot;
+    return info;
+}
+
+function examineBubblingPath(el:Element):IExamineSingleCandidateResult {
+    let maskRoot:Element;
+    let hasArtificialStackingContextRoot = false;
+
+    let info:IExamineSingleCandidateResult
+    let root = el;
+    while (el) {
+        if (!isElement(el)) { break; }
+        if (!info || !info.hasDefaultEventHandler) {
+            info = getDefaultEventHandlerTarget(el);
+        }
+        if (!hasArtificialStackingContextRoot && isArtificialStackingContextRoot(el)) {
+            hasArtificialStackingContextRoot = true;
+            if (maskContentTest(root)) {
+                maskRoot = el;
+            }
+        }
+        el = el.parentElement;
+    }
+    info.maskRoot = maskRoot;
+    return info;
+}
+
+function getDefaultEventHandlerTarget(el:Element):DefaultEventHandlerInfo {
+    let hasDefaultEventHandler = false;
+    let defaultEventHandlerTarget = null;
+    let target = closest(el, 'iframe,input,a,area,button,[onclick],[onmousedown],[onmouseup]');
+    if (target) {
+        hasDefaultEventHandler = true;
+        let tagName = getTagName(target);
+        if (tagName === 'A' || tagName === 'AREA')   {
+            defaultEventHandlerTarget = (<HTMLAnchorElement|HTMLAreaElement>target).href;
+        }
+    }
+    return { hasDefaultEventHandler, defaultEventHandlerTarget };
+}
 
 export const preventPointerEvent = (el:Element):void => {
     if (!isHTMLElement(el)) { return; }

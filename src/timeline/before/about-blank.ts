@@ -1,9 +1,10 @@
-import { condition } from '../index';
-import { TimelineEvent, TLEventType } from '../event';
+import { condition } from '../Timeline';
+import { TimelineEvent, TLEventType } from '../TimelineEvent';
 import getTime from '../../shared/time';
 import { isEmptyUrl } from '../../shared/dom';
 import * as log from '../../shared/debug';
 import { convertToString } from '../../shared/url';
+import { PopupContext } from '../../dom/open';
 
 const aboutBlank:condition = (index, events) => {
     // if there is a blocked popup within 100 ms, do not allow opening popup with url about:blank.
@@ -20,7 +21,7 @@ const aboutBlank:condition = (index, events) => {
                 let event = frameEvents[k];
                 if (now - event.$timeStamp > 200) { break; }
                 if (event.$name === 'open' && event.$type === TLEventType.APPLY) {
-                    if (event.$data.context['mocked']) {
+                    if ((<PopupContext>event.$data.externalContext).mocked) {
                         return false;
                     }
                 }

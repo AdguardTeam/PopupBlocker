@@ -217,9 +217,9 @@ export function $apply(window:Window) {
     _wrapMethod(functionPrototype, 'toSource', invokeWithUnproxiedThis);
 }
 
-class ProxyServiceExternalError {
+export class ProxyServiceExternalError {
     constructor(
-        public original:Error
+        public original:any
     ) {  }
 }
 
@@ -259,7 +259,13 @@ class WrappedExecutionContext<T,R> implements IWrappedExecutionContext<T,R> {
             // Errors thrown from target functions are re-thrown.
             if (captureStackTrace) {
                 // When possible, strip out inner functions from stack trace
-                captureStackTrace(e, this.wrapper);
+                try {
+                    captureStackTrace(e, this.wrapper);
+                } catch(e) {
+                    // `e` thrown from this.orig may not be an instance of error
+                    // and in such caes captureStackTrace will throw.
+                }
+                
             }
             throw new ProxyServiceExternalError(e);
         }

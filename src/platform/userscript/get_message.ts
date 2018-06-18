@@ -48,7 +48,9 @@ export default (messageId:string):string => {
     if (!message) {
         message = translations[defaultLocale][messageId];
         // @ifdef DEBUG
-        throw messageId + ' not localized';
+        if (!message) {
+            throw messageId + ' not localized';
+        }
         // @endif
     }   
     return message;
