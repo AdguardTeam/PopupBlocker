@@ -186,6 +186,7 @@ gulp.task('travis', ['travis-builds', 'build-test-es5'], async () => {
 
     await Promise.all([
         fs.writeFile('build/.nojekyll', ''),
+        fs.writeFile('build/CNAME', 'popupblocker.adguard.com'),
         ...moveTasks.map(gulpTask => toPromise(gulpTask))
     ]);
 
