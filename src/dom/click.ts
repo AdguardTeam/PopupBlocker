@@ -1,9 +1,7 @@
 import adguard from '../page_script_namespace';
 import { ApplyHandler } from '../proxy/IProxyService';
 import ILoggedProxyService from '../proxy/ILoggedProxyService';
-import { retrieveEvent, verifyEvent, verifyCurrentEvent } from '../events/verify';
-import examineTarget from '../events/examine_target';
-import { getTagName } from '../shared/dom';
+import { retrieveEvent, verifyEvent } from '../events/verify';
 import * as log from '../shared/debug';
 import createUrl from '../shared/url';
 import onBlocked from '../on_blocked';

@@ -150,7 +150,9 @@ const examineTarget = elementsFromPoint ? (currentEvent:Event, popupHref:string,
     // We have a defaultEventHandler, and a several masklikes above it.
     let defaultEventHandlerTarget = result.defaultEventHandlerTarget;
     if (defaultEventHandlerTarget) {
-        popupContext.defaultEventHandlerTarget = defaultEventHandlerTarget;
+        if (popupContext) {
+            popupContext.defaultEventHandlerTarget = defaultEventHandlerTarget;
+        }
         if (popupHref === defaultEventHandlerTarget) {
             log.print("Throwing, because the target url is an href of an eventTarget or its ancestor");
             abort();

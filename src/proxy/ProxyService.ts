@@ -263,7 +263,7 @@ class WrappedExecutionContext<T,R> implements IWrappedExecutionContext<T,R> {
                     captureStackTrace(e, this.wrapper);
                 } catch(e) {
                     // `e` thrown from this.orig may not be an instance of error
-                    // and in such caes captureStackTrace will throw.
+                    // and in such cases captureStackTrace will throw.
                 }
                 
             }
@@ -283,17 +283,21 @@ export function makeSafeFunctionWrapper<T,R>(orig:(this:T,...args)=>R, applyHand
         try {
             return applyHandler(context, _arguments);
         } catch (error)  {
+            if (reportIfInternalError(error, orig)) {
+                // error is an external error; re-throws it.
+                throw error.original;
+            }
+            // error is an internal error - this is caused by our code, which should be fixed.
             if (!context.originalInvoked) {
-                reportIfInternalError(error, orig); // e cannot be an external error.
+                // Try to make up the original call, in order to preserve the contract.
                 try {
                     return context.invokeTarget(_arguments);
-                } catch (e) {
-                    error = e;
+                } catch (error) {
+                    if (reportIfInternalError(error, orig)) {
+                        // Re-throws an external error.
+                        throw error.original;
+                    }
                 }
-            }
-            if (reportIfInternalError(error, orig)) {
-                // Re-throws an external error.
-                throw error.original;
             }
         }
     }

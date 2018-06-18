@@ -1,9 +1,8 @@
 import { ApplyHandler } from '../proxy/IProxyService';
 import ILoggedProxyService, { ApplyOption } from '../proxy/ILoggedProxyService';
-import { retrieveEvent, verifyEvent, verifyCurrentEvent } from '../events/verify';
-import examineTarget from '../events/examine_target';
+import { retrieveEvent, verifyEvent } from '../events/verify';
 import { isNode, isMouseEvent, isUIEvent, isClickEvent, isAnchor } from '../shared/instanceof';
-import { getTagName, targetsAreChainable } from '../shared/dom';
+import { targetsAreChainable } from '../shared/dom';
 import adguard from '../page_script_namespace';
 import * as log from '../shared/debug';
 import createUrl from '../shared/url';

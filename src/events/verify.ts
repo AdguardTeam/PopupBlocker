@@ -127,7 +127,3 @@ export const verifyEvent = log.connect((event?:Event):boolean => {
     }
     return true;
 }, 'Verifying event', function() { return arguments[0] });
-
-export function verifyCurrentEvent():boolean {
-    return verifyEvent(retrieveEvent());
-}
