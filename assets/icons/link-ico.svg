@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 13 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 6</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Artboard-Copy-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-43.000000, -659.000000)">
+        <g id="Group-8" transform="translate(38.000000, 558.890625)" stroke="#4D9C5B">
+            <g id="Group-6" transform="translate(5.000000, 100.726562)">
+                <g id="Group-5">
+                    <path d="M10.9384766,7.27326889 L5.53874283,1.87353516 L1.95076497,1.87353516 C1.17892366,1.87353516 0.553222656,2.49923616 0.553222656,3.27107747 L0.553222656,10.8612467 C0.553222656,11.6330881 1.17892366,12.2587891 1.95076497,12.2587891 L9.54093424,12.2587891 C10.3127756,12.2587891 10.9384766,11.6330881 10.9384766,10.8612467 L10.9384766,7.27326889 Z" id="Rectangle"></path>
+                    <polyline id="Line-3" stroke-linecap="square" points="8.11035156 0.670166016 12.1103516 0.670166016 12.1103516 4.67016602"></polyline>
+                    <path d="M11.5522461,1.30834961 L5.96875,6.68847656" id="Line-2" stroke-linecap="round"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

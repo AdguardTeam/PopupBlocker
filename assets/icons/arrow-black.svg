@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="11px" height="7px" viewBox="0 0 11 7" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>Triangle</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Artboard-Copy-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-485.000000, -121.000000)">
+        <polyline id="Triangle" stroke="#1D1D1D" stroke-width="1.5" transform="translate(490.490234, 124.125020) rotate(-180.000000) translate(-490.490234, -124.125020) " points="486.007812 126.640664 490.490234 121.609375 490.490234 121.609375 494.972656 126.640664"></polyline>
+    </g>
+</svg>
