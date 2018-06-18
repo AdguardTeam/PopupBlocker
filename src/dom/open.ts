@@ -2,8 +2,8 @@ import adguard from '../page_script_namespace';
 import { verifyEvent, retrieveEvent } from '../events/verify';
 import examineTarget from '../events/examine_target';
 import { isGtmSimulatedAnchorClick } from '../events/framework_workarounds';
-import { timeline } from '../timeline/index';
-import { TLEventType, TimelineEvent } from '../timeline/event';
+import { timeline } from '../timeline/Timeline';
+import { TLEventType, TimelineEvent } from '../timeline/TimelineEvent';
 import * as log from '../shared/debug';
 import createUrl from '../shared/url';
 import mockWindow from '../mock_window';
@@ -11,9 +11,13 @@ import onBlocked from '../on_blocked';
 import { ApplyHandler } from '../proxy/IProxyService';
 import ILoggedProxyService from '../proxy/ILoggedProxyService';
 
+export interface PopupContext {
+    mocked?:boolean,
+    defaultEventHandlerTarget?:string
+}
 
 export function wrapOpen(window:Window, proxyService:ILoggedProxyService) {
-    const openVerifiedWindow:ApplyHandler<Window,Window> = (execContext, _arguments, externalContext) => {
+    const openVerifiedWindow:ApplyHandler<Window,Window,PopupContext> = (execContext, _arguments, externalContext) => {
         if (adguard.contentScriptApiFacade.originIsWhitelisted()) {
             return execContext.invokeTarget(_arguments);
         }
@@ -46,18 +50,17 @@ export function wrapOpen(window:Window, proxyService:ILoggedProxyService) {
             return win;
         }
 
-        onBlocked(url[2], currentEvent);
-        
+        externalContext.mocked = true;
+        onBlocked(url[2], currentEvent, externalContext);
         log.print('mock a window object');
         // Return a mock window object, in order to ensure that the page's own script does not accidentally throw TypeErrors.
         win = mockWindow(_arguments[0], _arguments[1], proxyService);
         win = proxyService.makeObjectProxy(win);
-        externalContext['mocked'] = true;
         log.callEnd();
         return win;
     };
     
-    proxyService.wrapMethod(window, 'open', openVerifiedWindow);
-    proxyService.wrapMethod(window.Window.prototype, 'open', openVerifiedWindow); // for IE
+    proxyService.wrapMethod<Window,Window,PopupContext>(window, 'open', openVerifiedWindow);
+    proxyService.wrapMethod<Window,Window,PopupContext>(window.Window.prototype, 'open', openVerifiedWindow); // for IE
 }
 

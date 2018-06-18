@@ -39,6 +39,7 @@ export default class Bundler {
         const bundles = sourceStream
             .pipe(rollup(this.ctxt.getRollupOptions()))
             .pipe(insert.transform(this.rescMgr.inline))
+            .pipe(insert.transform(Bundler.removeCcExport))
             .pipe(hydra(this.ctxt.bundleFilter));
         // Create reservoirs
         let out:StringMap<Reservoir> = {};

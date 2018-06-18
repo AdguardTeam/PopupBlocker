@@ -1,6 +1,6 @@
 import * as ProxyService from './proxy/ProxyService';
 import LoggedProxyService from './proxy/LoggedProxyService';
-import { timeline } from './timeline/index';
+import { timeline } from './timeline/Timeline';
 import { wrapOpen } from './dom/open';
 import { wrapClick } from './dom/click';
 import { wrapDispatchEvent } from './dom/dispatchEvent';

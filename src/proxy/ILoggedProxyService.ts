@@ -11,11 +11,11 @@ export default interface ILoggedProxyService extends IProxyService {
      * @param option When provided, a boolean value returned from this function will be used
      * to determine whether a call event has to be reported to `Timeline` or not.
      */
-    wrapMethod<T,R>(obj, prop:string, applyHandler?:ApplyHandler<T,R>, option?:ApplyOption<T>):void
+    wrapMethod<T,R,C=never>(obj, prop:string, applyHandler?:ApplyHandler<T,R>, option?:ApplyOption<T>):void
     /**
      * @param option Same as `wrapMethod`.
      */
-    wrapAccessor<T,R>(obj, prop:string, getterApplyHandler?:ApplyHandler<T,R>, setterApplyHandler?:ApplyHandler<T,R>, option?:ApplyOption<T>):void
+    wrapAccessor<T,R,C=never>(obj, prop:string, getterApplyHandler?:ApplyHandler<T,R>, setterApplyHandler?:ApplyHandler<T,R>, option?:ApplyOption<T>):void
     /**
      * `framePosition` is used in reporting events to `Timeline` to indicate on which frame
      * the event belongs to.

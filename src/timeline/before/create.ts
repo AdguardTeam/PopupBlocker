@@ -1,5 +1,5 @@
-import { condition } from '../index';
-import { TimelineEvent, TLEventType } from '../event';
+import { condition } from '../Timeline';
+import { TimelineEvent, TLEventType } from '../TimelineEvent';
 import { ABOUT_PROTOCOL } from '../../shared/dom';
 import getTime from '../../shared/time';
 import * as log from '../../shared/debug';
@@ -30,7 +30,7 @@ const createOpen:condition = (index, events) => {
          * Therefore, we take advantage of `performance.timing` api to determine whether the
          * empty iframe has an associated HTTP request.
          */
-        let browsingContext = <Window>evt.$data;
+        let browsingContext = <Window>evt.$data.thisOrReceiver;
         log.print(`testing context is: `, browsingContext);
         let isSameOriginChildContext = browsingContext.frameElement !== null;
         if (isSameOriginChildContext) {

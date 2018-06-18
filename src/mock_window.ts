@@ -52,7 +52,7 @@ const mockWindow = (href, name, proxyService:ILoggedProxyService) => {
     defineProperty(win, _location, locDesc);
     defineProperty(doc, _location, locDesc);
 
-    // @ifndef DEBUG
+    // @ifdef NO_PROXY
     proxyService.wrapAccessor(win, _location);
     proxyService.wrapAccessor(doc, _location);
     // @endif
@@ -70,7 +70,7 @@ const mockLocation = (href:string, proxyService:ILoggedProxyService) => {
     const a = createLocation(href);
     a[_assign] = a[_replace] = hrefDesc.set;
     defineProperty(a, _href, hrefDesc);
-    // @ifndef DEBUG
+    // @ifdef NO_PROXY
     proxyService.wrapMethod(a, _assign);
     proxyService.wrapMethod(a, _replace);
     proxyService.wrapAccessor(a, _href);

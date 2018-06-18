@@ -3,8 +3,9 @@ import pdfObjObserver from './observers/pdf_object_observer';
 import examineTarget from './events/examine_target';
 import IInterContextMessageHub, { IMessageHandler } from './messaging/IInterContextMessageHub';
 import { MessageTypes } from './messaging/MessageTypes';
+import { PopupContext } from './dom/open';
 
-export default function onBlocked(popup_url:string, currentEvent:Event) {
+export default function onBlocked(popup_url:string, currentEvent:Event, popupContext?:PopupContext) {
     if (!adguard.contentScriptApiFacade.originIsSilenced()) {
         adguard.messageHub.trigger<IAlertData>(MessageTypes.SHOW_NOTIFICATION, {
             orig_domain: adguard.contentScriptApiFacade.domain,
@@ -12,7 +13,7 @@ export default function onBlocked(popup_url:string, currentEvent:Event) {
         }, adguard.messageHub.parent);
     } // Otherwise, we silently block popups
     pdfObjObserver.$start();
-    if (currentEvent) { examineTarget(currentEvent, popup_url); }
+    if (currentEvent) { examineTarget(currentEvent, popup_url, popupContext); }
 }
 
 interface IAlertData {

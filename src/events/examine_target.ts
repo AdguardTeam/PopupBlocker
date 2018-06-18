@@ -8,6 +8,7 @@ import adguard from '../page_script_namespace';
 import IInterContextMessageHub, { IMessageHandler } from '../messaging/IInterContextMessageHub';
 import { getContentWindow, getOwnPropertyDescriptor } from '../shared/protected_api';
 import { MessageTypes } from '../messaging/MessageTypes';
+import { PopupContext } from '../dom/open';
 
 const elementsFromPoint = document.elementsFromPoint || document.msElementsFromPoint;
 
@@ -26,7 +27,7 @@ const getEventPath = (function() {
  * inspected information.
  *
  *  - Neutralizes masks
- *  - Dispatch mouse event to shadowed targets if there were masks
+ *  - Dispatch mouse event to shadowed targets if there was at least one mask above it
  *  - Set beforeunload event handler if target won't trigger navigation
  *  - If "real intended target" is an anchor, having href identical to the "popup url", abort.
  *
@@ -51,7 +52,7 @@ const getEventPath = (function() {
  *
  * @todo We may need to prevent `preventDefault` in touch events
  */
-const examineTarget = elementsFromPoint ? (currentEvent:Event, popupHref:string):void => {
+const examineTarget = elementsFromPoint ? (currentEvent:Event, popupHref:string, popupContext?:PopupContext):void => {
     log.print('Event is:', currentEvent);
     if (!currentEvent.isTrusted) { return; }
     let target:EventTarget;
@@ -147,14 +148,22 @@ const examineTarget = elementsFromPoint ? (currentEvent:Event, popupHref:string)
     }
 
     // We have a defaultEventHandler, and a several masklikes above it.
-    if (popupHref === result.defaultEventHandlerTarget) {
-        log.print("Throwing, because the target url is an href of an eventTarget or its ancestor");
-        abort();
+    let defaultEventHandlerTarget = result.defaultEventHandlerTarget;
+    if (defaultEventHandlerTarget) {
+        popupContext.defaultEventHandlerTarget = defaultEventHandlerTarget;
+        if (popupHref === defaultEventHandlerTarget) {
+            log.print("Throwing, because the target url is an href of an eventTarget or its ancestor");
+            abort();
+        }
     }
 
     // We first check that those masks are real masks.
     let subroutine_checkMaskData_returnValueBuffer:boolean = true;
     subroutine_checkMaskData: {
+        if (potentialMaskData.length === 0) {
+            subroutine_checkMaskData_returnValueBuffer = false;
+            break subroutine_checkMaskData;
+        }
         const { innerWidth: w, innerHeight: h } = originDocument.defaultView;
 
         let candidateRect = candidate.getBoundingClientRect();<HTMLElement>candidate;

@@ -11,6 +11,7 @@
  */
 
 import adguard from '../page_script_namespace';
+import { ProxyServiceExternalError } from '../proxy/ProxyService';
 import { closeAllGroup } from './debug';
 
 let MAGIC:string;
@@ -19,5 +20,5 @@ export default function abort():never {
     closeAllGroup();
     MAGIC = Math.random().toString(36).substr(7);
     console.warn(adguard.contentScriptApiFacade.$getMessage('aborted_popunder_execution'));
-    throw MAGIC;
+    throw new ProxyServiceExternalError(MAGIC);
 }
