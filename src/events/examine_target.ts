@@ -169,7 +169,8 @@ const examineTarget = elementsFromPoint ? (currentEvent:Event, popupHref:string,
         const { innerWidth: w, innerHeight: h } = originDocument.defaultView;
 
         let candidateRect = candidate.getBoundingClientRect();<HTMLElement>candidate;
-        for (let maskData of potentialMaskData) {
+        for (let i = 0, l = potentialMaskData.length; i < l; i++) {
+            let maskData = potentialMaskData[i];
             if (!maskContentTest(maskData.mask)) {
                 subroutine_checkMaskData_returnValueBuffer = false;
                 break subroutine_checkMaskData;
@@ -194,7 +195,8 @@ const examineTarget = elementsFromPoint ? (currentEvent:Event, popupHref:string,
 
     if (subroutine_checkMaskData_returnValueBuffer) {
         // Neutralize masks
-        for (let maskData of potentialMaskData) {
+        for (let i = 0, l = potentialMaskData.length; i < l; i++) {
+            let maskData = potentialMaskData[i];
             preventPointerEvent(maskData.maskRoot);
         }
         let args = <initMouseEventArgs><any>initMouseEventArgs.map((prop) => currentEvent[prop]);
