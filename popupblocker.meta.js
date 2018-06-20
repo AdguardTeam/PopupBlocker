@@ -58,7 +58,7 @@
 // @description:es-ES Bloquea elementos emergentes en sitios web
 // @description:de Blockiert Anzeige-Pop-ups auf Webseiten
 // @description:it Blocca gli annunci di popup nelle pagine internet
-// @version 2.5.3
+// @version 2.5.4
 // @license LGPL-3.0; https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE
 // @downloadURL https://popupblocker.adguard.com/popupblocker.user.js
 // @updateURL https://popupblocker.adguard.com/popupblocker.meta.js

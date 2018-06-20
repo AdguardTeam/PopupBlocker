@@ -58,7 +58,7 @@
 // @description:es-ES Bloquea elementos emergentes en sitios web
 // @description:de Blockiert Anzeige-Pop-ups auf Webseiten
 // @description:it Blocca gli annunci di popup nelle pagine internet
-// @version 2.5.3
+// @version 2.5.4
 // @license LGPL-3.0; https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE
 // @downloadURL https://popupblocker.adguard.com/popupblocker.user.js
 // @updateURL https://popupblocker.adguard.com/popupblocker.meta.js
@@ -4326,6 +4326,7 @@ var getRandomStr = crypto ? function () {
     };
 })();
 
+var XHR = window.XMLHttpRequest;
 var UserscriptSettingsDao = /** @class */ (function () {
     function UserscriptSettingsDao() {
         this.settingsChangeListeners = [];
@@ -4341,6 +4342,7 @@ var UserscriptSettingsDao = /** @class */ (function () {
     };
     UserscriptSettingsDao.prototype.setSourceOption = function (domain, option, cb) {
         GM_setValue(domain, option);
+        this.flushPageCache();
         if (!isUndef(cb)) {
             cb();
         }
@@ -4373,6 +4375,7 @@ var UserscriptSettingsDao = /** @class */ (function () {
             return;
         }
         GM_setValue(UserscriptSettingsDao.WHITELIST, whitelist.join(','));
+        this.flushPageCache();
         if (!isUndef(cb)) {
             cb();
         }
@@ -4406,8 +4409,21 @@ var UserscriptSettingsDao = /** @class */ (function () {
         if (isUndef(instanceID)) {
             instanceID = getRandomStr();
             GM_setValue(UserscriptSettingsDao.INSTANCE_ID_KEY, instanceID);
+            this.flushPageCache();
         }
         return instanceID;
+    };
+    /**
+     * Force flush the current page cache.
+     * This is an ugly solution for https://github.com/AdguardTeam/PopupBlocker/issues/131
+     */
+    UserscriptSettingsDao.prototype.flushPageCache = function () {
+        var xhr = new XHR();
+        xhr.open('GET', window.location.href, true);
+        xhr.setRequestHeader('Pragma', 'no-cache');
+        xhr.setRequestHeader('Expires', '-1');
+        xhr.setRequestHeader('Cache-Control', 'no-cache');
+        xhr.send();
     };
     /**
      * The version number of the data scheme that this implemenation uses.
@@ -4642,7 +4658,7 @@ var i18nService = new I18nService(getMessage);
 var settingsDao = new UserscriptSettingsDao();
 var cssService = new CSSService(GM_getResourceURL);
 var alertController = new AlertController(cssService, settingsDao, function () {
-    window.open('https://adguardteam.github.io/PopupBlocker/options.html', '__popupBlocker_options_page__');
+    window.open('https://popupblocker.adguard.com/options.html', '__popupBlocker_options_page__');
 });
 var csApiFacade = new UserscriptContentScriptApiFacade(settingsDao, alertController, getMessage);
 adguard.i18nService = i18nService;

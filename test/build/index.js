@@ -1591,6 +1591,7 @@ var getRandomStr = crypto ? function () {
     };
 })();
 
+var XHR = window.XMLHttpRequest;
 var UserscriptSettingsDao = /** @class */ (function () {
     function UserscriptSettingsDao() {
         this.settingsChangeListeners = [];
@@ -1606,6 +1607,7 @@ var UserscriptSettingsDao = /** @class */ (function () {
     };
     UserscriptSettingsDao.prototype.setSourceOption = function (domain, option, cb) {
         GM_setValue(domain, option);
+        this.flushPageCache();
         if (!isUndef(cb)) {
             cb();
         }
@@ -1638,6 +1640,7 @@ var UserscriptSettingsDao = /** @class */ (function () {
             return;
         }
         GM_setValue(UserscriptSettingsDao.WHITELIST, whitelist.join(','));
+        this.flushPageCache();
         if (!isUndef(cb)) {
             cb();
         }
@@ -1671,8 +1674,21 @@ var UserscriptSettingsDao = /** @class */ (function () {
         if (isUndef(instanceID)) {
             instanceID = getRandomStr();
             GM_setValue(UserscriptSettingsDao.INSTANCE_ID_KEY, instanceID);
+            this.flushPageCache();
         }
         return instanceID;
+    };
+    /**
+     * Force flush the current page cache.
+     * This is an ugly solution for https://github.com/AdguardTeam/PopupBlocker/issues/131
+     */
+    UserscriptSettingsDao.prototype.flushPageCache = function () {
+        var xhr = new XHR();
+        xhr.open('GET', window.location.href, true);
+        xhr.setRequestHeader('Pragma', 'no-cache');
+        xhr.setRequestHeader('Expires', '-1');
+        xhr.setRequestHeader('Cache-Control', 'no-cache');
+        xhr.send();
     };
     /**
      * The version number of the data scheme that this implemenation uses.
