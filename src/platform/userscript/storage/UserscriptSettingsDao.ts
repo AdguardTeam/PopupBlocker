@@ -4,6 +4,8 @@ import IUserscriptSettingsDao from "./IUserscriptSettingsDao";
 import { DomainOptionEnum } from "../../../storage/storage_data_structure";
 import { getRandomStr } from "../../../shared/random";
 
+const XHR = window.XMLHttpRequest;
+
 export default class UserscriptSettingsDao implements IUserscriptSettingsDao {
 
     /**
@@ -30,6 +32,7 @@ export default class UserscriptSettingsDao implements IUserscriptSettingsDao {
 
     setSourceOption(domain:string, option:DomainOptionEnum, cb?:func):void {
         GM_setValue(domain, option);
+        this.flushPageCache();
         if (!isUndef(cb)) { cb(); }
         this.fireListeners();
     }
@@ -64,6 +67,7 @@ export default class UserscriptSettingsDao implements IUserscriptSettingsDao {
         }
 
         GM_setValue(UserscriptSettingsDao.WHITELIST, whitelist.join(','));
+        this.flushPageCache();
         if (!isUndef(cb)) { cb(); }
         this.fireListeners();
     }
@@ -102,8 +106,24 @@ export default class UserscriptSettingsDao implements IUserscriptSettingsDao {
         if (isUndef(instanceID)) {
             instanceID = getRandomStr();
             GM_setValue(UserscriptSettingsDao.INSTANCE_ID_KEY, instanceID);
+            this.flushPageCache();
         }
         return instanceID;
+    }
+
+    /**
+     * Force flush the current page cache.
+     * This is an ugly solution for https://github.com/AdguardTeam/PopupBlocker/issues/131
+     */
+    private flushPageCache():void {
+        let xhr = new XHR();
+        xhr.open('GET', window.location.href, true);
+
+        xhr.setRequestHeader('Pragma', 'no-cache');
+        xhr.setRequestHeader('Expires', '-1');
+        xhr.setRequestHeader('Cache-Control', 'no-cache');
+
+        xhr.send();
     }
 }
 

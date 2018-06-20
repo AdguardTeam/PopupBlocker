@@ -50,6 +50,7 @@ interface Window {
     Document:typeof Document
     msCrypto?:Crypto
     MessageChannel:typeof MessageChannel
+    XMLHttpRequest: typeof XMLHttpRequest
 }
 
 
