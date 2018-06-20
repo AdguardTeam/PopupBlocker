@@ -11,7 +11,7 @@ const settingsDao       = new UserscriptSettingsDao();
 const cssService        = new CSSService(GM_getResourceURL);
 const alertController   = new AlertController(cssService, settingsDao, () => {
     window.open(
-        'https://adguardteam.github.io/PopupBlocker/options.html',
+        'https://popupblocker.adguard.com/options.html',
         '__popupBlocker_options_page__'
     );
 });
