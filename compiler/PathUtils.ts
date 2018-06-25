@@ -1,14 +1,15 @@
 import { posix as path } from 'path';
 import { BuildOption, BuildTarget } from './BuildOption';
 import BundleEntry from './bundle/BundleEntry';
+import * as fsExtra from 'fs-extra';
 
 export default class PathUtils {
 
-    public static sourceDir     = 'src';
-    public static outputDir     = 'build';
+    public static sourceDir = 'src';
+    public static outputDir = 'build';
 
-    public static tsickleDir    = 'build_tsickle';
-    public static tsccDir       = 'tscc';
+    public static tsickleDir = 'build_tsickle';
+    public static tsccDir = 'tscc';
 
     public static tsicklePath = PathUtils.tsickleDir;
 
@@ -19,45 +20,45 @@ export default class PathUtils {
     }
 
     private static targetPageScriptEntryMap = {
-        [BuildTarget.USERSCRIPT]:   'platform/userscript/page_script.ts',
-        [BuildTarget.CHROME]:       'platform/extension/shared/page_script.ts',
-        [BuildTarget.FIREFOX]:      'platform/extension/shared/page_script.ts',
-        [BuildTarget.EDGE]:         'platform/extension/shared/page_script.ts'
+        [BuildTarget.USERSCRIPT]: 'platform/userscript/page_script.ts',
+        [BuildTarget.CHROME]: 'platform/extension/shared/page_script.ts',
+        [BuildTarget.FIREFOX]: 'platform/extension/shared/page_script.ts',
+        [BuildTarget.EDGE]: 'platform/extension/shared/page_script.ts'
     }
 
     public pageScriptEntry = new BundleEntry("page_script", PathUtils.targetPageScriptEntryMap, this.options);
 
     private static targetContentScriptEntryMap = {
-        [BuildTarget.USERSCRIPT]:   'platform/userscript/content_script.ts',
-        [BuildTarget.CHROME]:       'platform/extension/shared/content_script.ts',
-        [BuildTarget.FIREFOX]:      'platform/extension/shared/content_script.ts',
-        [BuildTarget.EDGE]:         'platform/extension/edge/content_script.ts'
+        [BuildTarget.USERSCRIPT]: 'platform/userscript/content_script.ts',
+        [BuildTarget.CHROME]: 'platform/extension/shared/content_script.ts',
+        [BuildTarget.FIREFOX]: 'platform/extension/shared/content_script.ts',
+        [BuildTarget.EDGE]: 'platform/extension/edge/content_script.ts'
     }
 
     public contentScriptEntry = new BundleEntry("content_script", PathUtils.targetContentScriptEntryMap, this.options);
 
     private static targetBackgroundScriptEntryMap = {
-        [BuildTarget.CHROME]:       'platform/extension/shared/background_script.ts',
-        [BuildTarget.FIREFOX]:      'platform/extension/shared/background_script.ts',
-        [BuildTarget.EDGE]:         'platform/extension/shared/background_script.ts',
+        [BuildTarget.CHROME]: 'platform/extension/shared/background_script.ts',
+        [BuildTarget.FIREFOX]: 'platform/extension/shared/background_script.ts',
+        [BuildTarget.EDGE]: 'platform/extension/shared/background_script.ts',
     }
 
     public backgroundScriptEntry = new BundleEntry("background_script", PathUtils.targetBackgroundScriptEntryMap, this.options);
 
     private static targetCommonScriptMap = {
-        [BuildTarget.USERSCRIPT]:   'platform/userscript/common.ts',
-        [BuildTarget.CHROME]:       'platform/extension/shared/common.ts',
-        [BuildTarget.FIREFOX]:      'platform/extension/shared/common.ts',
-        [BuildTarget.EDGE]:         'platform/extension/shared/common.ts'
+        [BuildTarget.USERSCRIPT]: 'platform/userscript/common.ts',
+        [BuildTarget.CHROME]: 'platform/extension/shared/common.ts',
+        [BuildTarget.FIREFOX]: 'platform/extension/shared/common.ts',
+        [BuildTarget.EDGE]: 'platform/extension/shared/common.ts'
     }
 
     public commonEntry = new BundleEntry("common", PathUtils.targetCommonScriptMap, this.options);
 
     private static targetOptionsMap = {
         [BuildTarget.USERSCRIPT_SETTINGS]: 'platform/userscript/options.ts',
-        [BuildTarget.CHROME]:       'platform/extension/shared/options.ts',
-        [BuildTarget.FIREFOX]:      'platform/extension/shared/options.ts',
-        [BuildTarget.EDGE]:         'platform/extension/shared/options.ts'
+        [BuildTarget.CHROME]: 'platform/extension/shared/options.ts',
+        [BuildTarget.FIREFOX]: 'platform/extension/shared/options.ts',
+        [BuildTarget.EDGE]: 'platform/extension/shared/options.ts'
     }
 
     public optionsEntry = new BundleEntry("options", PathUtils.targetOptionsMap, this.options);
@@ -69,17 +70,30 @@ export default class PathUtils {
         );
     }
 
-    public static i18nRoot               = 'src/locales';
+    /**
+     * A helper method for writing a json file to the output
+     * 
+     * @param path A path to an output file
+     * @param json JSON to write
+     * @returns {Promise} resulting promise
+     */
+    public static writeJson(path: string, json: any): Promise<any> {
+        return fsExtra.writeJSON(path, json, {
+            "spaces": 4
+        });
+    }
+
+    public static i18nRoot = 'src/locales';
     public static i18nMiscSourceJSONPath = path.join(PathUtils.i18nRoot, 'misc.json');
-    public static i18nSourceJSONPath     = path.join(PathUtils.i18nRoot, 'source.json');
-    public static i18nJSONPath           = path.join(PathUtils.i18nRoot, 'translations.json');
+    public static i18nSourceJSONPath = path.join(PathUtils.i18nRoot, 'source.json');
+    public static i18nJSONPath = path.join(PathUtils.i18nRoot, 'translations.json');
     public static i18nUserscriptKeysPath = path.join(PathUtils.i18nRoot, 'userscript_keys.json');
-    public static i18nExtensionKeysPath  = path.join(PathUtils.i18nRoot, 'extension_keys.json');
-    public static i18nSettingsKeysPath   = path.join(PathUtils.i18nRoot, 'userscript_settings_keys.json');
+    public static i18nExtensionKeysPath = path.join(PathUtils.i18nRoot, 'extension_keys.json');
+    public static i18nSettingsKeysPath = path.join(PathUtils.i18nRoot, 'userscript_settings_keys.json');
 
-    public static assetsPath            = 'src/assets'
+    public static assetsPath = 'src/assets'
 
-    public static postCssPath           = 'src/ui/pcss/';
+    public static postCssPath = 'src/ui/pcss/';
 
     public get assetOutputPath() {
         return path.join(this.outputPath, 'assets', '');
@@ -88,9 +102,9 @@ export default class PathUtils {
     public static commonExtensionManifestPath = 'src/platform/extension/shared/manifest.json';
 
     private static targetManifestPathMap = {
-        [BuildTarget.USERSCRIPT]:   'src/platform/userscript/meta.js',
-        [BuildTarget.CHROME]:       'src/platform/extension/chrome/manifest_override.json',
-        [BuildTarget.EDGE]:         'src/platform/extension/edge/manifest_override.json'
+        [BuildTarget.USERSCRIPT]: 'src/platform/userscript/meta.js',
+        [BuildTarget.CHROME]: 'src/platform/extension/chrome/manifest_override.json',
+        [BuildTarget.EDGE]: 'src/platform/extension/edge/manifest_override.json'
     }
     public get manifestPath() {
         return PathUtils.targetManifestPathMap[this.options.target];
@@ -108,7 +122,6 @@ export default class PathUtils {
     }
 
     constructor(
-        private options:BuildOption
+        private options: BuildOption
     ) { }
-
 }

@@ -1,4 +1,3 @@
-import path = require('path');
 import * as fs from 'async-file';
 import * as fsExtra from 'fs-extra';
 
@@ -14,8 +13,6 @@ import uglify = require('gulp-uglify');
 import runSequence = require('run-sequence');
 
 import xml2js = require('xml2js');
-
-import InlineResource = require('inline-resource-literal');
 
 import typescript = require('@alexlur/rollup-plugin-typescript');
 import typescript2 = require('rollup-plugin-typescript2');
@@ -214,7 +211,6 @@ gulp.task('watch', () => {
 // I18n Tasks
 
 import onesky = require('onesky-utils');
-import { spawn } from 'child_process';
 import SoyBuilder from './compiler/resc/SoyBuilder';
 
 gulp.task('i18n-up', async () => {
@@ -240,20 +236,22 @@ gulp.task('i18n-up', async () => {
 
 gulp.task('i18n-down',  async () => {
     const base = require('./config/.key.js');
-    const languages = JSON.parse(await onesky.getLanguages(base)).data;
+    const languages = require('./src/locales/languages.js');
     const map = {};
-    await Promise.all(languages.map(async (lang) => {
-        let languageCode = lang.code;
+
+    for (let i = 0; i < languages.length; i++) {
+        let languageCode = languages[i];
         let option = Object.assign({
             language: languageCode,
             fileName: 'en.json' // Do not change this,
                                 // this is a filename used in onesky
         }, base);
+        log.info('Downloading translation for ' + languageCode);
         let response = await onesky.getFile(option);
         if (response) {
             map[languageCode] = JSON.parse(response);
         }
-    }));
+    }
 
     // Remove duplicates. As I remember, previously Onesky didn't fill missing
     // translations with translations of default language (en),
@@ -271,7 +269,7 @@ gulp.task('i18n-down',  async () => {
         }
     }
 
-    await fsExtra.writeJSON(PathUtils.i18nJSONPath, map);
+    await PathUtils.writeJson(PathUtils.i18nJSONPath, map);
 });
 
 
@@ -364,7 +362,7 @@ gulp.task('i18n-extract', async () => {
     const misc = await fsExtra.readJSON(PathUtils.i18nMiscSourceJSONPath);
     const translation = Object.assign({}, merged, misc);
 
-    writeTasks.push(fsExtra.writeJSON(PathUtils.i18nSourceJSONPath, translation));
+    writeTasks.push(PathUtils.writeJson(PathUtils.i18nSourceJSONPath, translation));
 
     // Write userscript_keys.json
     // Userscript-keys contain certain keys from misc and
@@ -403,9 +401,9 @@ gulp.task('i18n-extract', async () => {
         settingsKeys.push(key);
     }
 
-    writeTasks.push(fsExtra.writeJSON(PathUtils.i18nUserscriptKeysPath, userscriptKeys));
-    writeTasks.push(fsExtra.writeJSON(PathUtils.i18nExtensionKeysPath, extensionKeys));
-    writeTasks.push(fsExtra.writeJSON(PathUtils.i18nSettingsKeysPath, settingsKeys));
+    writeTasks.push(PathUtils.writeJson(PathUtils.i18nUserscriptKeysPath, userscriptKeys));
+    writeTasks.push(PathUtils.writeJson(PathUtils.i18nExtensionKeysPath, extensionKeys));
+    writeTasks.push(PathUtils.writeJson(PathUtils.i18nSettingsKeysPath, settingsKeys));
 
     await Promise.all(writeTasks);
 });

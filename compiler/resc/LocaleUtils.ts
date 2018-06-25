@@ -148,7 +148,7 @@ export default class LocaleUtils implements IResourceProvider {
         return Promise.all(Object.keys(json).map(async (locale) => {
             let localeNextPath = path.join(localePath, locale);
             await fsExtra.mkdirp(localeNextPath);
-            await fsExtra.writeJSON(path.join(localeNextPath, 'messages.json'), json[locale]);
+            await PathUtils.writeJson(path.join(localeNextPath, 'messages.json'), json[locale]);
         }));
     }
 
