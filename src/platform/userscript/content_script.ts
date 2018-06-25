@@ -52,12 +52,12 @@ function isOptionsPage() {
 
 if (isOptionsPage()) {
     // Export GM functions (used by the Dao layer)
-    win["GM_getValue"] = exportFunction(GM_getValue, unsafeWindow);
-    win["GM_setValue"] = exportFunction(GM_setValue, unsafeWindow);
-    win["GM_listValues"] = exportFunction(GM_listValues, unsafeWindow);
+    win['GM_getValue'] = exportFunction(GM_getValue, unsafeWindow);
+    win['GM_setValue'] = exportFunction(GM_setValue, unsafeWindow);
+    win['GM_listValues'] = exportFunction(GM_listValues, unsafeWindow);
     
     // Export AdguardSettings so that it was used by getMessage on the options page
-    unsafeWindow["AdguardSettings"] = AdguardSettings;
+    unsafeWindow['AdguardSettings'] = AdguardSettings;
 }
 
 declare var RESOURCE_PAGE_SCRIPT;
