@@ -28,7 +28,7 @@
 // @description:ja Webページでポップアップ広告をブロックします。
 // @description:zh-CN 拦截网页弹窗广告
 // @description:pl Blokuje wyskakujące okienka z reklamami na stronach internetowych
-// @version 2.5.5
+// @version 2.5.6
 // @license LGPL-3.0; https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE
 // @downloadURL https://popupblocker.adguard.com/popupblocker.user.js
 // @updateURL https://popupblocker.adguard.com/popupblocker.meta.js

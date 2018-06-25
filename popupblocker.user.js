@@ -28,7 +28,7 @@
 // @description:ja Webページでポップアップ広告をブロックします。
 // @description:zh-CN 拦截网页弹窗广告
 // @description:pl Blokuje wyskakujące okienka z reklamami na stronach internetowych
-// @version 2.5.5
+// @version 2.5.6
 // @license LGPL-3.0; https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE
 // @downloadURL https://popupblocker.adguard.com/popupblocker.user.js
 // @updateURL https://popupblocker.adguard.com/popupblocker.meta.js
@@ -7309,9 +7309,12 @@ function isOptionsPage() {
         href === 'https://popupblocker.adguard.com/options.html';
 }
 if (isOptionsPage()) {
-    win["GM_getValue"] = exportFunction(GM_getValue, unsafeWindow);
-    win["GM_setValue"] = exportFunction(GM_setValue, unsafeWindow);
-    win["GM_listValues"] = exportFunction(GM_listValues, unsafeWindow);
+    // Export GM functions (used by the Dao layer)
+    win['GM_getValue'] = exportFunction(GM_getValue, unsafeWindow);
+    win['GM_setValue'] = exportFunction(GM_setValue, unsafeWindow);
+    win['GM_listValues'] = exportFunction(GM_listValues, unsafeWindow);
+    // Export AdguardSettings so that it was used by getMessage on the options page
+    unsafeWindow['AdguardSettings'] = AdguardSettings;
 }
 
 }());
