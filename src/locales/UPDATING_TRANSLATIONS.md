@@ -9,3 +9,5 @@ Most phrases are contained in `soy` files. Other phrases used, such as userscrip
 `userscript_excluded.json` file contains phrases that are not needed in userscript. It is automatically updated via `gulp i18n-extract`.
 
 `translations.json` file contains translations from onesky. To update it, run `gulp i18n-down`.
+
+`languages.js` file contains a list of languages we support in the Popup Blocker. It needs to be updated once more languages are fully translated on [OneSky](https://adguard.oneskyapp.com/collaboration/project?id=124184).

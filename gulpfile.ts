@@ -236,20 +236,22 @@ gulp.task('i18n-up', async () => {
 
 gulp.task('i18n-down',  async () => {
     const base = require('./config/.key.js');
-    const languages = JSON.parse(await onesky.getLanguages(base)).data;
+    const languages = require('./src/locales/languages.js');
     const map = {};
-    await Promise.all(languages.map(async (lang) => {
-        let languageCode = lang.code;
+
+    for (let i = 0; i < languages.length; i++) {
+        let languageCode = languages[i];
         let option = Object.assign({
             language: languageCode,
             fileName: 'en.json' // Do not change this,
                                 // this is a filename used in onesky
         }, base);
+        log.info('Downloading translation for ' + languageCode);
         let response = await onesky.getFile(option);
         if (response) {
             map[languageCode] = JSON.parse(response);
         }
-    }));
+    }
 
     // Remove duplicates. As I remember, previously Onesky didn't fill missing
     // translations with translations of default language (en),
