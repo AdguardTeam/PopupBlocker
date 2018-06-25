@@ -267,7 +267,7 @@ gulp.task('i18n-down',  async () => {
         }
     }
 
-    await fsExtra.writeJSON(PathUtils.i18nJSONPath, map, PathUtils.jsonFileProperties);
+    await PathUtils.writeJson(PathUtils.i18nJSONPath, map);
 });
 
 
@@ -360,7 +360,7 @@ gulp.task('i18n-extract', async () => {
     const misc = await fsExtra.readJSON(PathUtils.i18nMiscSourceJSONPath);
     const translation = Object.assign({}, merged, misc);
 
-    writeTasks.push(fsExtra.writeJSON(PathUtils.i18nSourceJSONPath, translation, PathUtils.jsonFileProperties));
+    writeTasks.push(PathUtils.writeJson(PathUtils.i18nSourceJSONPath, translation));
 
     // Write userscript_keys.json
     // Userscript-keys contain certain keys from misc and
@@ -399,9 +399,9 @@ gulp.task('i18n-extract', async () => {
         settingsKeys.push(key);
     }
 
-    writeTasks.push(fsExtra.writeJSON(PathUtils.i18nUserscriptKeysPath, userscriptKeys, PathUtils.jsonFileProperties));
-    writeTasks.push(fsExtra.writeJSON(PathUtils.i18nExtensionKeysPath, extensionKeys, PathUtils.jsonFileProperties));
-    writeTasks.push(fsExtra.writeJSON(PathUtils.i18nSettingsKeysPath, settingsKeys, PathUtils.jsonFileProperties));
+    writeTasks.push(PathUtils.writeJson(PathUtils.i18nUserscriptKeysPath, userscriptKeys));
+    writeTasks.push(PathUtils.writeJson(PathUtils.i18nExtensionKeysPath, extensionKeys));
+    writeTasks.push(PathUtils.writeJson(PathUtils.i18nSettingsKeysPath, settingsKeys));
 
     await Promise.all(writeTasks);
 });
