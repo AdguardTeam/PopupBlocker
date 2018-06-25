@@ -1,1 +1,23 @@
-["userscript_name","on_navigation_by_popunder","aborted_popunder_execution","settings_saved","site_input_ph","add_site","add","allowed_empty","allowed","silenced_empty","silenced","allowed_tooltip","silenced_tooltip","installFrom","noinst_step_3","noinst_ignore_if_ag","noinst_rec","please_wait","noinst_special_prog","noinst_subtitle","homepage","noinst_step_1","noinst_step_2"]
+[
+    "userscript_name",
+    "settings_saved",
+    "site_input_ph",
+    "add_site",
+    "add",
+    "allowed_empty",
+    "allowed",
+    "silenced_empty",
+    "silenced",
+    "allowed_tooltip",
+    "silenced_tooltip",
+    "installFrom",
+    "noinst_step_3",
+    "noinst_ignore_if_ag",
+    "noinst_rec",
+    "please_wait",
+    "noinst_special_prog",
+    "noinst_subtitle",
+    "homepage",
+    "noinst_step_1",
+    "noinst_step_2"
+]

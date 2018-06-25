@@ -76,6 +76,13 @@ export default class PathUtils {
     public static i18nUserscriptKeysPath = path.join(PathUtils.i18nRoot, 'userscript_keys.json');
     public static i18nExtensionKeysPath  = path.join(PathUtils.i18nRoot, 'extension_keys.json');
     public static i18nSettingsKeysPath   = path.join(PathUtils.i18nRoot, 'userscript_settings_keys.json');
+    /**
+     * writeJSON properties
+     * https://github.com/jprichardson/node-fs-extra/blob/HEAD/docs/writeJson.md
+     */
+    public static jsonFileProperties = {
+        "spaces": 4
+    };
 
     public static assetsPath            = 'src/assets'
 

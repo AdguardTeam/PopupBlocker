@@ -1,4 +1,3 @@
-import path = require('path');
 import * as fs from 'async-file';
 import * as fsExtra from 'fs-extra';
 
@@ -14,8 +13,6 @@ import uglify = require('gulp-uglify');
 import runSequence = require('run-sequence');
 
 import xml2js = require('xml2js');
-
-import InlineResource = require('inline-resource-literal');
 
 import typescript = require('@alexlur/rollup-plugin-typescript');
 import typescript2 = require('rollup-plugin-typescript2');
@@ -214,7 +211,6 @@ gulp.task('watch', () => {
 // I18n Tasks
 
 import onesky = require('onesky-utils');
-import { spawn } from 'child_process';
 import SoyBuilder from './compiler/resc/SoyBuilder';
 
 gulp.task('i18n-up', async () => {
@@ -271,7 +267,7 @@ gulp.task('i18n-down',  async () => {
         }
     }
 
-    await fsExtra.writeJSON(PathUtils.i18nJSONPath, map);
+    await fsExtra.writeJSON(PathUtils.i18nJSONPath, map, PathUtils.jsonFileProperties);
 });
 
 
@@ -364,7 +360,7 @@ gulp.task('i18n-extract', async () => {
     const misc = await fsExtra.readJSON(PathUtils.i18nMiscSourceJSONPath);
     const translation = Object.assign({}, merged, misc);
 
-    writeTasks.push(fsExtra.writeJSON(PathUtils.i18nSourceJSONPath, translation));
+    writeTasks.push(fsExtra.writeJSON(PathUtils.i18nSourceJSONPath, translation, PathUtils.jsonFileProperties));
 
     // Write userscript_keys.json
     // Userscript-keys contain certain keys from misc and
@@ -403,9 +399,9 @@ gulp.task('i18n-extract', async () => {
         settingsKeys.push(key);
     }
 
-    writeTasks.push(fsExtra.writeJSON(PathUtils.i18nUserscriptKeysPath, userscriptKeys));
-    writeTasks.push(fsExtra.writeJSON(PathUtils.i18nExtensionKeysPath, extensionKeys));
-    writeTasks.push(fsExtra.writeJSON(PathUtils.i18nSettingsKeysPath, settingsKeys));
+    writeTasks.push(fsExtra.writeJSON(PathUtils.i18nUserscriptKeysPath, userscriptKeys, PathUtils.jsonFileProperties));
+    writeTasks.push(fsExtra.writeJSON(PathUtils.i18nExtensionKeysPath, extensionKeys, PathUtils.jsonFileProperties));
+    writeTasks.push(fsExtra.writeJSON(PathUtils.i18nSettingsKeysPath, settingsKeys, PathUtils.jsonFileProperties));
 
     await Promise.all(writeTasks);
 });

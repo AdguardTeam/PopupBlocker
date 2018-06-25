@@ -1,1 +1,13 @@
-["userscript_name","on_navigation_by_popunder","aborted_popunder_execution","settings_saved","show_popup","continue_blocking","allow_from","manage_pref","popup_text","options","silence_noti"]
+[
+    "userscript_name",
+    "on_navigation_by_popunder",
+    "aborted_popunder_execution",
+    "settings_saved",
+    "show_popup",
+    "continue_blocking",
+    "allow_from",
+    "manage_pref",
+    "popup_text",
+    "options",
+    "silence_noti"
+]
