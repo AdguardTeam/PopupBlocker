@@ -617,9 +617,9 @@ closure-library.ts@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/closure-library.ts/-/closure-library.ts-1.0.0.tgz#6156bc3456cc8f7e8a59dcc27bc0df1c659c53e9"
 
-"closure-tools-helper@https://github.com/seanl-adg/closure-tools-helper.git#1.0.5":
+"closure-tools-helper@https://github.com/AdguardTeam/closure-tools-helper.git":
   version "1.0.4"
-  resolved "https://github.com/seanl-adg/closure-tools-helper.git#c1bcc70a308043adb1d15688ead9f07199b375d6"
+  resolved "https://github.com/AdguardTeam/closure-tools-helper.git#f7d0360e2450312ba1bfc107c5d7a2c03d6257c7"
   dependencies:
     closure-library.ts "^1.0.0"
     esprima "^4.0.0"
