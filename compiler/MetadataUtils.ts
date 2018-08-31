@@ -29,7 +29,11 @@ export default class MetadataUtils {
         '*://*.yahoo.com/*',
         '*://chat.chatovod.ru/*',
         '*://vc.ru/*',
-        '*://tjournal.ru/*'
+        '*://tjournal.ru/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/94
+        '*://amanice.ru/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/109
+        '*://ka-union.ru/*',
     ];
 
     private static extension_exclusions = {
@@ -255,7 +259,11 @@ export default class MetadataUtils {
             '*://*.yahoo.com/*',
             '*://chat.chatovod.ru/*',
             '*://vc.ru/*',
-            '*://tjournal.ru/*'
+            '*://tjournal.ru/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/94
+            '*://amanice.ru/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/109
+            '*://ka-union.ru/*',
         ]
     }
 
