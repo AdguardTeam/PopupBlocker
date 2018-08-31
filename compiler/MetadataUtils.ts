@@ -268,9 +268,9 @@ export default class MetadataUtils {
     }
 
     private static channelDownloadUpdateURLMap = {
-        [Channel.DEV]:      'https://popupblocker.adguard.com/',
-        [Channel.BETA]:     'https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.5/',
-        [Channel.RELEASE]:  'https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.5/'
+        [Channel.DEV]: 'https://popupblocker.adguard.com/',
+        [Channel.BETA]: 'https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.5/',
+        [Channel.RELEASE]: 'https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.5/'
     }
 
     private get downloadUpdateURL() {
@@ -286,17 +286,11 @@ export default class MetadataUtils {
         './assets/fonts/semibold/OpenSans-Semibold.woff2'
     ]
 
-    private getResourceUrl(relativeUrl:string) {
+    private getResourceUrl(relativeUrl: string) {
         if (this.options.useAdGuardDomainForResources) {
             // e.g.
-            // https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/assets/2.5.2/fonts/semibold/OpenSans-Semibold.woff2
-            return url.resolve(
-                url.resolve(
-                    this.downloadUpdateURL,
-                    `../assets/${require('../package.json').version}/`
-                ),
-                relativeUrl.replace(/^\.\/assets\//, '')
-            );
+            // https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/assets/2.5/fonts/bold/OpenSans-Bold.woff
+            return url.resolve(this.downloadUpdateURL, relativeUrl);
         }
         return relativeUrl;
     }
@@ -308,7 +302,7 @@ export default class MetadataUtils {
         return (await fsExtra.readJSON('package.json'))["version"];
     }
 
-    async getExtensionManifestJSON():Promise<string> {
+    async getExtensionManifestJSON(): Promise<string> {
         const [baseManifest, manifestOverride] = await Promise.all([
             fs.readFile(PathUtils.commonExtensionManifestPath),
             this.paths.manifestPath ?
@@ -335,11 +329,11 @@ export default class MetadataUtils {
         const translation = await LocaleUtils.translation.read();
         const version = await MetadataUtils.getVersion();
 
-        const lines:string[] = [];
-        function insertKey(key:string, value:string) {
+        const lines: string[] = [];
+        function insertKey(key: string, value: string) {
             lines.push(`// @${key} ${value}`);
         }
-        function insertTranslatableKeys (metaKey:string, messageId:string, additional:string = ''):void {
+        function insertTranslatableKeys(metaKey: string, messageId: string, additional: string = ''): void {
             insertKey(metaKey, translation['en'][messageId].message + additional); // insert 'en' language at the first line.
 
             LocaleUtils.forEachPhrase(translation, [messageId], (locale, messageId, msgObj, fallbacked) => {
@@ -351,22 +345,22 @@ export default class MetadataUtils {
         lines.push('// ==UserScript==');
 
         insertTranslatableKeys('name', 'userscript_name', this.locales.channelSuffix);
-        insertKey('namespace',   'AdGuard');
+        insertKey('namespace', 'AdGuard');
         insertTranslatableKeys('description', 'extension_description');
-        insertKey('version',      version);
-        insertKey('license',     `LGPL-3.0; https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE`);
+        insertKey('version', version);
+        insertKey('license', `LGPL-3.0; https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE`);
         insertKey('downloadURL', `${this.downloadUpdateURL}popupblocker.user.js`);
-        insertKey('updateURL',   `${this.downloadUpdateURL}popupblocker.meta.js`);
-        insertKey('supportURL',  `https://github.com/AdguardTeam/PopupBlocker/issues`);
+        insertKey('updateURL', `${this.downloadUpdateURL}popupblocker.meta.js`);
+        insertKey('supportURL', `https://github.com/AdguardTeam/PopupBlocker/issues`);
         insertKey('homepageURL', `https://popupblocker.adguard.com/`);
-        insertKey('match',       'http://*/*');
-        insertKey('match',       'https://*/*');
-        insertKey('grant',       'GM_getValue');
-        insertKey('grant',       'GM_setValue');
-        insertKey('grant',       'GM_listValues');
-        insertKey('grant',       'GM_getResourceURL');
-        insertKey('grant',       'unsafeWindow');
-        insertKey('icon',        this.getResourceUrl('./assets/128.png'));
+        insertKey('match', 'http://*/*');
+        insertKey('match', 'https://*/*');
+        insertKey('grant', 'GM_getValue');
+        insertKey('grant', 'GM_setValue');
+        insertKey('grant', 'GM_listValues');
+        insertKey('grant', 'GM_getResourceURL');
+        insertKey('grant', 'unsafeWindow');
+        insertKey('icon', this.getResourceUrl('./assets/128.png'));
 
         for (let resource of MetadataUtils.resources) {
             // We always set resource name to be identical with its path
@@ -374,9 +368,9 @@ export default class MetadataUtils {
             // This is not optimal and we may change in future.
             insertKey('resource', `${resource} ${this.getResourceUrl(resource)}`);
         }
-        insertKey('run-at',      'document-start');
+        insertKey('run-at', 'document-start');
 
-        if (this.options.channel === Channel.RELEASE) {
+        if (this.options.channel === Channel.RELEASE || this.options.channel === Channel.BETA) {
             // Apply default whitelists to the release channel only.
             for (let exclusion of MetadataUtils.userscript_exclusions) {
                 insertKey('exclude', exclusion);
@@ -390,9 +384,9 @@ export default class MetadataUtils {
     }
 
     constructor(
-        private options:BuildOption,
-        private paths:PathUtils,
-        private locales:LocaleUtils
+        private options: BuildOption,
+        private paths: PathUtils,
+        private locales: LocaleUtils
     ) { }
 
     async getMetadata() {
