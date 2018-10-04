@@ -73,8 +73,9 @@ or in a minimist style:
 ```
 gulp build --channel=<channel> --target=<target> --minify=(boolean) --use_adg_domain
 ```
-Available channels are: `dev`, `beta`, `release`
-Available targets are: `userscript`, `chrome`, `webext`
+Available channels are: `dev`, `beta`, `release`.
+Available targets are: `userscript`, `chrome`, `webext`, `userscript-settings`.
+Use `userscript-settings` option to build an `options.js` file only.
 
 `minify` option will override default minification settings for `channel`.
 
@@ -84,6 +85,18 @@ Developement builds are not minified, and will print logs into the browser conso
 
 Beta and release builds will be minified and have all logging codes stripped out.
 For minified builds, ensure that you have Java installed and have necessary environment variables.
+
+## How to debug the options page
+Build using the `userscript-settings` option, go to the build folder via `cd` command, then run local server:
+```
+python -m SimpleHTTPServer
+```
+Open http://localhost:8000/options.html
+
+If you use the other address or port, you have to modify the `src/platform/userscript/content_script.ts` file with you address and port.
+After that, ensure, that userscript (for example, in AG) contains this address and port too.
+
+To see the options page, ensure, that AG is run and filters your debug page.
 
 ## How to test
 
