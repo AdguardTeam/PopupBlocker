@@ -23,9 +23,9 @@ Other scripts on the page can not detect that Popup Blocker is being used, other
 		
 ## Installation
 
-Current release version (2.5.7): https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.5/popupblocker.user.js
+Current release version (2.5.8): https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.5/popupblocker.user.js
 
-Curent beta version (2.5.7): https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.5/popupblocker.user.js
+Curent beta version (2.5.8): https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.5/popupblocker.user.js
 
 All versions: https://github.com/AdguardTeam/PopupBlocker/releases
 
