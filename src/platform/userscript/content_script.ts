@@ -6,16 +6,16 @@ import adguard from '../../content_script_namespace';
 import getMessage from './get_message';
 import CSSService from '../../ui/utils/CssService';
 
-const i18nService       = new I18nService(getMessage);
-const settingsDao       = new UserscriptSettingsDao();
-const cssService        = new CSSService(GM_getResourceURL);
-const alertController   = new AlertController(cssService, settingsDao, () => {
+const i18nService = new I18nService(getMessage);
+const settingsDao = new UserscriptSettingsDao();
+const cssService = new CSSService(GM_getResourceURL);
+const alertController = new AlertController(cssService, settingsDao, () => {
     window.open(
         'https://popupblocker.adguard.com/options.html',
         '__popupBlocker_options_page__'
     );
 });
-const csApiFacade       = new UserscriptContentScriptApiFacade(settingsDao, alertController, getMessage);
+const csApiFacade = new UserscriptContentScriptApiFacade(settingsDao, alertController, getMessage);
 
 adguard.i18nService = i18nService;
 
@@ -47,15 +47,19 @@ if (csApiFacade.envIsFirefoxBrowserExt) {
 function isOptionsPage() {
     let { href } = location;
     return href === 'https://adguardteam.github.io/PopupBlocker/options.html' ||
-        href === 'https://popupblocker.adguard.com/options.html';
+        href === 'https://popupblocker.adguard.com/options.html' ||
+        href === 'http://localhost:8000/options.html'; // For debug purposes.
 }
 
 if (isOptionsPage()) {
+
+    document.title = i18nService.$getMessage('userscript_name') || 'Adguard Popup Blocker';
+
     // Export GM functions (used by the Dao layer)
     win['GM_getValue'] = exportFunction(GM_getValue, unsafeWindow);
     win['GM_setValue'] = exportFunction(GM_setValue, unsafeWindow);
     win['GM_listValues'] = exportFunction(GM_listValues, unsafeWindow);
-    
+
     // Export AdguardSettings so that it was used by getMessage on the options page
     unsafeWindow['AdguardSettings'] = AdguardSettings;
 }
