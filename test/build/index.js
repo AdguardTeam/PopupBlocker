@@ -158,11 +158,15 @@ var matches = Element.prototype.matches || Element.prototype.msMatchesSelector;
 var closest = 'closest' in Element.prototype ? function (el, selector) {
     return el.closest(selector);
 } : function (el, selector) {
-    for (var parent_1 = el; parent_1; parent_1 = parent_1.parentElement) {
+    while (el) {
         if (matches.call(el, selector)) {
             return el;
         }
+        else {
+            el = el.parentElement;
+        }
     }
+    return null;
 };
 /**
  * This serves as a whitelist on various checks where we block re-triggering of events.

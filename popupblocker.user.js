@@ -28,7 +28,7 @@
 // @description:ja Webページでポップアップ広告をブロックします。
 // @description:zh-CN 拦截网页弹窗广告
 // @description:pl Blokuje wyskakujące okienka z reklamami na stronach internetowych
-// @version 2.5.6
+// @version 2.5.8
 // @license LGPL-3.0; https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE
 // @downloadURL https://popupblocker.adguard.com/popupblocker.user.js
 // @updateURL https://popupblocker.adguard.com/popupblocker.meta.js
@@ -4647,11 +4647,15 @@ var matches = Element.prototype.matches || Element.prototype.msMatchesSelector;
 var closest = 'closest' in Element.prototype ? function (el, selector) {
     return el.closest(selector);
 } : function (el, selector) {
-    for (var parent_1 = el; parent_1; parent_1 = parent_1.parentElement) {
+    while (el) {
         if (matches.call(el, selector)) {
             return el;
         }
+        else {
+            el = el.parentElement;
+        }
     }
+    return null;
 };
 /**
  * This serves as a whitelist on various checks where we block re-triggering of events.
@@ -7306,9 +7310,11 @@ else {
 function isOptionsPage() {
     var href = location.href;
     return href === 'https://adguardteam.github.io/PopupBlocker/options.html' ||
-        href === 'https://popupblocker.adguard.com/options.html';
+        href === 'https://popupblocker.adguard.com/options.html' ||
+        href === 'http://localhost:8000/options.html'; // For debug purposes.
 }
 if (isOptionsPage()) {
+    document.title = i18nService.$getMessage('userscript_name') || 'Adguard Popup Blocker';
     // Export GM functions (used by the Dao layer)
     win['GM_getValue'] = exportFunction(GM_getValue, unsafeWindow);
     win['GM_setValue'] = exportFunction(GM_setValue, unsafeWindow);
