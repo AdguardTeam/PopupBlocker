@@ -93,10 +93,10 @@ python -m SimpleHTTPServer
 ```
 Open http://localhost:8000/options.html
 
-If you use the other address or port, you have to modify the `src/platform/userscript/content_script.ts` file with your address and port.
+If you use other address or port, you have to modify the `src/platform/userscript/content_script.ts` file with your address and port.
 After that, ensure, that userscript (for example, in AG) contains this address and port too.
 
-To see the options page, ensure, that AG is run and filters your debug page.
+To see the options page, ensure, that AG filters your debug page.
 
 ## How to test
 
