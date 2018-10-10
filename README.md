@@ -23,9 +23,9 @@ Other scripts on the page can not detect that Popup Blocker is being used, other
 		
 ## Installation
 
-Current release version (2.5.8): https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.5/popupblocker.user.js
+Current release version (2.5.9): https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.5/popupblocker.user.js
 
-Curent beta version (2.5.8): https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.5/popupblocker.user.js
+Curent beta version (2.5.9): https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.5/popupblocker.user.js
 
 All versions: https://github.com/AdguardTeam/PopupBlocker/releases
 
@@ -93,10 +93,10 @@ python -m SimpleHTTPServer
 ```
 Open http://localhost:8000/options.html
 
-If you use the other address or port, you have to modify the `src/platform/userscript/content_script.ts` file with you address and port.
+If you use other address or port, you have to modify the `src/platform/userscript/content_script.ts` file with your address and port.
 After that, ensure, that userscript (for example, in AG) contains this address and port too.
 
-To see the options page, ensure, that AG is run and filters your debug page.
+To see the options page, ensure, that AG filters your debug page.
 
 ## How to test
 

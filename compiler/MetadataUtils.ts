@@ -38,6 +38,8 @@ export default class MetadataUtils {
         '*://*.ssgdfm.com/*',
         // https://github.com/AdguardTeam/CoreLibs/issues/490
         '*://*.brainpop.com/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/149
+        '*://*.taobao.com/*',
     ];
 
     private static extension_exclusions = {
@@ -268,6 +270,12 @@ export default class MetadataUtils {
             '*://amanice.ru/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/109
             '*://ka-union.ru/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/144
+            '*://*.ssgdfm.com/*',
+            // https://github.com/AdguardTeam/CoreLibs/issues/490
+            '*://*.brainpop.com/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/149
+            '*://*.taobao.com/*',
         ]
     }
 
