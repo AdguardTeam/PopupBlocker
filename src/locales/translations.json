@@ -1931,6 +1931,153 @@
             "message": "PopupBlocker anulował wykonanie skryptu by przeciwdziałać przekierowaniu w tle"
         }
     },
+    "pt-BR": {
+        "allow_from": {
+            "message": "Permitir pop-ups em {$origDomain}"
+        },
+        "continue_blocking": {
+            "message": "Continuar bloqueando"
+        },
+        "show_popup": {
+            "message": "Mostrar {$destUrl}"
+        },
+        "manage_pref": {
+            "message": "Gerenciar preferências..."
+        },
+        "popup_text": {
+            "message": "O AdGuard impediu este site de abrir {$numPopup} pop-ups"
+        },
+        "options": {
+            "message": "Opções"
+        },
+        "silence_noti": {
+            "message": "Não mostrar essa mensagem no {$origDomain}"
+        },
+        "site_input_ph": {
+            "message": "Digite o nome do site"
+        },
+        "add_site": {
+            "message": "Adicionar um site"
+        },
+        "add": {
+            "message": "Adicionar"
+        },
+        "allowed_empty": {
+            "message": "Lista de exceções está vazia"
+        },
+        "allowed": {
+            "message": "Exceções"
+        },
+        "silenced_empty": {
+            "message": "Lista de sites com notificações silenciadas está vazia"
+        },
+        "silenced": {
+            "message": "Silenciado"
+        },
+        "allowed_tooltip": {
+            "message": "Os pop-ups serão permitidos para sites listados aqui."
+        },
+        "silenced_tooltip": {
+            "message": "As notificações para pop-ups bloqueados não serão mostrados para sites listados aqui."
+        },
+        "installFrom": {
+            "message": "Instale da {$startLink}{$name}{$endLink}"
+        },
+        "noinst_step_3": {
+            "message": "Etapa 3: Atualize esta página para obter as configurações de script de usuário"
+        },
+        "noinst_ignore_if_ag": {
+            "message": "Se você instalou o AdGuard para Windows, você pode ignorar esta etapa, porque o script de usuário do Bloqueador de Pop-ups já vem pré-instalado."
+        },
+        "noinst_rec": {
+            "message": "(Recomendado)"
+        },
+        "please_wait": {
+            "message": "Por favor, aguarde enquanto detectamos o Bloqueador de Pop-ups"
+        },
+        "noinst_special_prog": {
+            "message": "Primeiro de tudo, para usar um script de usuário você precisa de um programa ou uma extensão especial para executá-los."
+        },
+        "noinst_subtitle": {
+            "message": "O script de usuário do Bloqueador de Pop-ups do AdGuard não está instalado. Por favor, siga as instruções abaixo."
+        },
+        "noinst_step_1": {
+            "message": "Etapa 1: Instale um gerenciador de script de usuário"
+        },
+        "homepage": {
+            "message": "Página Inicial"
+        },
+        "noinst_step_2": {
+            "message": "Etapa 2: Script de Usuário"
+        },
+        "extension_name": {
+            "description": "Esse nome é usado para extensões do navegador.",
+            "platform": [
+                "extensão"
+            ],
+            "message": "Bloqueador de Pop-ups por AdGuard"
+        },
+        "userscript_name": {
+            "description": "Esse nome é usado para scripts de usuário.",
+            "patform": [
+                "script de usuário",
+                "config_scriptdeusuario"
+            ],
+            "message": "AdGuard Bloqueador de Pop-ups"
+        },
+        "extension_description": {
+            "platform": [
+                "extensão"
+            ],
+            "message": "Bloqueia anúncios pop-ups dentro dos sites"
+        },
+        "ext_enabled": {
+            "message": "Bloqueador de Pop-ups está de plantão",
+            "platform": [
+                "extensão"
+            ]
+        },
+        "ext_disabled": {
+            "message": "Bloqueador de Pop-ups está desativado para $DOMAIN$",
+            "platform": "extensão",
+            "placeholders": {
+                "domain": {
+                    "content": "$1"
+                }
+            }
+        },
+        "ext_disabled_default": {
+            "message": "O bloqueador de pop-ups não pode ser executado neste domínio.",
+            "platform": "extensão"
+        },
+        "settings_saved": {
+            "message": "Configurações salvas"
+        },
+        "popup_text_full": {
+            "message": "Bloqueou uma tentativa de abrir um pop-up de {{0_url}}"
+        },
+        "popup_allow_dest": {
+            "message": "Sempre permitir ${domain}"
+        },
+        "popup_allow_dest_conf": {
+            "message": "Permitir que todos os pop-ups que levam ${domain}?"
+        },
+        "popup_allow_origin": {
+            "message": "Permitir todos os pop-ups neste site"
+        },
+        "popup_allow_origin_conf": {
+            "message": "Permitir todos os pop-ups de origem ${parent}?"
+        },
+        "popup_text_min": {
+            "message": "Bloqueado"
+        },
+        "on_navigation_by_popunder": {
+            "message": "Essa transição para a nova página provavelmente será causada por um pop-under. Você deseja continuar?"
+        },
+        "aborted_popunder_execution": {
+            "message": "O bloqueador de pop-ups interrompeu uma execução de script para evitar um redirecionamento em segundo plano"
+        }
+    },
     "pt-PT": {
         "allow_from": {
             "message": "Permitir popups em {$origDomain}"

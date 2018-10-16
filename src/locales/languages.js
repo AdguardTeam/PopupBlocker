@@ -15,6 +15,7 @@ module.exports = [
     'ja',
     'no',
     'pl',
+    'pt-BR',
     'pt-PT',
     'ru',
     'sl-SI',
