@@ -1,19 +1,26 @@
 /**
- * A list of languages t
+ * A list of languages
  */
 module.exports = [
-    'en',
-    'fr',
-    'de',
-    'es',
     'ar',
-    'it',
-    'ru',
-    'pt-BR',
-    'zh-TW',
+    'cs',
     'da',
-    'tr',
+    'de',
+    'en',
+    'es',
+    'fa',
+    'fr',
+    'id',
+    'it',
     'ja',
+    'no',
+    'pl',
+    'pt-BR',
+    'pt-PT',
+    'ru',
+    'sl-SI',
+    'tr',
+    'uk',
     'zh-CN',
-    'pl'
+    'zh-TW'
 ];
