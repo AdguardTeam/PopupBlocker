@@ -1931,7 +1931,7 @@
             "message": "PopupBlocker anulował wykonanie skryptu by przeciwdziałać przekierowaniu w tle"
         }
     },
-    "pt-BR": {
+    "pt": {
         "allow_from": {
             "message": "Permitir pop-ups em {$origDomain}"
         },
@@ -2078,7 +2078,7 @@
             "message": "O bloqueador de pop-ups interrompeu uma execução de script para evitar um redirecionamento em segundo plano"
         }
     },
-    "pt-PT": {
+    "pt-pt": {
         "allow_from": {
             "message": "Permitir popups em {$origDomain}"
         },
@@ -2828,7 +2828,7 @@
             "message": "PopupBlocker перервав виконання скрипта, щоб запобігти фоновому перенаправленню"
         }
     },
-    "zh-CN": {
+    "zh": {
         "allow_from": {
             "message": "允许 {$origDomain} 弹窗"
         },
@@ -2978,7 +2978,7 @@
             "message": "PopupBlocker 已中止脚本执行以防止后台重新定向"
         }
     },
-    "zh-TW": {
+    "zh-tw": {
         "allow_from": {
             "message": "允許於 {$origDomain} 上之彈出式視窗"
         },
