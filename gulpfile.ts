@@ -251,10 +251,6 @@ gulp.task('i18n-down', async () => {
             substituteCode = 'pt-BR';
         } else if (languageCode === 'sl') {
             substituteCode = 'sl-SI';
-        } else if (languageCode === 'zh-TW') {
-            languageCode = 'zh-tw';
-        } else if (languageCode === 'pt-PT') {
-            languageCode = 'pt-pt';
         }
 
         let option = Object.assign({

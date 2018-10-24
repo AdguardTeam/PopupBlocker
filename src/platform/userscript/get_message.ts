@@ -10,7 +10,7 @@ const translations = RESOURCE_USERSCRIPT_TRANSLATIONS;
  * AdGuard for Windows noramlizes locales like this.
  */
 function normalizeLocale(locale: string): string {
-    return locale.toLowerCase().replace('_', '-');
+    return locale.replace('_', '-');
 }
 
 const supportedLocales = Object.keys(translations).map(locale => normalizeLocale(locale));

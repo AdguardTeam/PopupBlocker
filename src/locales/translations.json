@@ -2078,7 +2078,7 @@
             "message": "O bloqueador de pop-ups interrompeu uma execução de script para evitar um redirecionamento em segundo plano"
         }
     },
-    "pt-pt": {
+    "pt-PT": {
         "allow_from": {
             "message": "Permitir popups em {$origDomain}"
         },
@@ -2978,7 +2978,7 @@
             "message": "PopupBlocker 已中止脚本执行以防止后台重新定向"
         }
     },
-    "zh-tw": {
+    "zh-TW": {
         "allow_from": {
             "message": "允許於 {$origDomain} 上之彈出式視窗"
         },

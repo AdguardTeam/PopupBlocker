@@ -16,11 +16,11 @@ module.exports = [
     'no',
     'pl',
     'pt',
-    'pt-pt',
+    'pt-PT',
     'ru',
     'sl',
     'tr',
     'uk',
     'zh',
-    'zh-tw'
+    'zh-TW'
 ];
