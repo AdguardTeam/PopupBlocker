@@ -2,23 +2,23 @@
  * @fileoverview A custom getMessage implementation for userscripts.
  */
 
-declare var RESOURCE_USERSCRIPT_TRANSLATIONS:stringmap<stringmap<string>>;
- 
+declare var RESOURCE_USERSCRIPT_TRANSLATIONS: stringmap<stringmap<string>>;
+
 const translations = RESOURCE_USERSCRIPT_TRANSLATIONS;
 
 /**
  * AdGuard for Windows noramlizes locales like this.
  */
-function normalizeLocale(locale:string):string {
-    return locale.toLowerCase().replace('_', '-');
-} 
+function normalizeLocale(locale: string): string {
+    return locale.replace('_', '-');
+}
 
 const supportedLocales = Object.keys(translations).map(locale => normalizeLocale(locale));
 
 const defaultLocale = 'en';
 let currentLocale = null;
 
-function setLocaleIfSupported(locale:string):boolean {
+function setLocaleIfSupported(locale: string): boolean {
     if (supportedLocales.indexOf(locale) !== -1) {
         currentLocale = locale;
         return true;
@@ -43,7 +43,7 @@ function setLocale() {
 
 setLocale();
 
-export default (messageId:string):string => {
+export default (messageId: string): string => {
     let message = translations[currentLocale][messageId];
     if (!message) {
         message = translations[defaultLocale][messageId];
@@ -52,6 +52,6 @@ export default (messageId:string):string => {
             throw messageId + ' not localized';
         }
         // @endif
-    }   
+    }
     return message;
 };

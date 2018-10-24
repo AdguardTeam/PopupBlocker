@@ -67,19 +67,19 @@ for (let target in BuildTarget) {
 gulp.task('build', () => {
     let args = minimist(process.argv.slice(2));
 
-    let target:BuildTarget = args["target"] || args["t"];
-    let channel:Channel = args["channel"] || args["c"];
-    let overrideShouldMinify:boolean = (() => {
+    let target: BuildTarget = args["target"] || args["t"];
+    let channel: Channel = args["channel"] || args["c"];
+    let overrideShouldMinify: boolean = (() => {
         if ("minify" in args) {
             return !!args["minify"];
         }
         if ("m" in args) {
-            return !! args["m"];
+            return !!args["m"];
         }
     })();
-    let useAdGuardDomainForResources:boolean = args["use_adg_domain"];
+    let useAdGuardDomainForResources: boolean = args["use_adg_domain"];
 
-    let option = new BuildOption(   
+    let option = new BuildOption(
         target,
         channel,
         channel === Channel.DEV ? devPreprocessCtxt : preprocessCtxt,
@@ -150,7 +150,7 @@ function testBuilderFactory(tsconfigOverride?) {
             }))
             .pipe(rollup({
                 entry: 'test/index.ts',
-                plugins: [ plugin ],
+                plugins: [plugin],
                 format: 'iife',
                 strict: false
             }))
@@ -234,17 +234,29 @@ gulp.task('i18n-up', async () => {
     }
 });
 
-gulp.task('i18n-down',  async () => {
+gulp.task('i18n-down', async () => {
     const base = require('./config/.key.js');
     const languages = require('./src/locales/languages.js');
     const map = {};
 
     for (let i = 0; i < languages.length; i++) {
+
         let languageCode = languages[i];
+        let substituteCode = languageCode;
+
+        // OneSky has a little bit different codes
+        if (languageCode === 'zh') {
+            substituteCode = 'zh-CN';
+        } else if (languageCode === 'pt') {
+            substituteCode = 'pt-BR';
+        } else if (languageCode === 'sl') {
+            substituteCode = 'sl-SI';
+        }
+
         let option = Object.assign({
-            language: languageCode,
+            language: substituteCode,
             fileName: 'en.json' // Do not change this,
-                                // this is a filename used in onesky
+            // this is a filename used in onesky
         }, base);
         log.info('Downloading translation for ' + languageCode);
         let response = await onesky.getFile(option);
@@ -265,7 +277,7 @@ gulp.task('i18n-down',  async () => {
                 JSON.stringify(map['en'][phrase])
             ) {
                 delete langPhrases[phrase];
-            }   
+            }
         }
     }
 
@@ -279,10 +291,10 @@ gulp.task('i18n-down',  async () => {
  * Note that we use a custom format that includes original phrase in descriptions.
  * @todo make this robust
  */
-async function xliffToJson(xliffContent:string) {
+async function xliffToJson(xliffContent: string) {
     const xmlParser = new xml2js.Parser();
 
-    const json:any = await (new Promise((resolve, reject) => {
+    const json: any = await (new Promise((resolve, reject) => {
         xmlParser.parseString(xliffContent, (err, data) => {
             if (err) {
                 reject(err);
@@ -291,7 +303,7 @@ async function xliffToJson(xliffContent:string) {
         })
     }));
 
-    const error:()=>never = () => {
+    const error: () => never = () => {
         console.log(JSON.stringify(transUnit));
         throw new Error('Invalid data, check soy sources');
     }
@@ -349,7 +361,7 @@ gulp.task('i18n-extract', async () => {
         for (let key in map) {
             if (merged[key]) { // If phrase already exists
                 if (merged[key].message !== map[key].message) // and have different translations
-                throw new Error(`Phrase name collision for ${key}`);
+                    throw new Error(`Phrase name collision for ${key}`);
             } else {
                 merged[key] = map[key];
             }

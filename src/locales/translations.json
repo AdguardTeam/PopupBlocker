@@ -1931,7 +1931,7 @@
             "message": "PopupBlocker anulował wykonanie skryptu by przeciwdziałać przekierowaniu w tle"
         }
     },
-    "pt-BR": {
+    "pt": {
         "allow_from": {
             "message": "Permitir pop-ups em {$origDomain}"
         },
@@ -2378,7 +2378,7 @@
             "message": "Блокировщик всплывающей рекламы прервал исполнение скрипта, чтобы предотвратить фоновую переадресацию"
         }
     },
-    "sl-SI": {
+    "sl": {
         "allow_from": {
             "message": "Dovoli pojavna okna na {$origDomain}"
         },
@@ -2828,7 +2828,7 @@
             "message": "PopupBlocker перервав виконання скрипта, щоб запобігти фоновому перенаправленню"
         }
     },
-    "zh-CN": {
+    "zh": {
         "allow_from": {
             "message": "允许 {$origDomain} 弹窗"
         },

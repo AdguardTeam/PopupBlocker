@@ -15,12 +15,12 @@ module.exports = [
     'ja',
     'no',
     'pl',
-    'pt-BR',
+    'pt',
     'pt-PT',
     'ru',
-    'sl-SI',
+    'sl',
     'tr',
     'uk',
-    'zh-CN',
+    'zh',
     'zh-TW'
 ];
