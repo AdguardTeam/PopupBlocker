@@ -12,13 +12,13 @@
 // @name:ja AdGuard ポップアップブロッカー (Dev)
 // @name:no AdGuards popup-blokkerer (Dev)
 // @name:pl Bloker wyskakujących okienek przez AdGuard (Dev)
-// @name:pt-BR AdGuard Bloqueador de Pop-ups (Dev)
+// @name:pt AdGuard Bloqueador de Pop-ups (Dev)
 // @name:pt-PT AdGuard Popup Blocker (Dev)
 // @name:ru Блокировщик всплывающей рекламы от AdGuard (Dev)
-// @name:sl-SI AdGuard Blokirnik pojavnih oken (Dev)
+// @name:sl AdGuard Blokirnik pojavnih oken (Dev)
 // @name:tr AdGuard Popup Blocker (Dev)
 // @name:uk Блокувальник спливаючої реклами AdGuard (Dev)
-// @name:zh-CN AdGuard 弹窗拦截器 (Dev)
+// @name:zh AdGuard 弹窗拦截器 (Dev)
 // @name:zh-TW AdGuard 彈出式視窗封鎖器 (Dev)
 // @namespace AdGuard
 // @description Blocks popup ads on web pages
@@ -34,15 +34,15 @@
 // @description:ja Webページでポップアップ広告をブロックします。
 // @description:no Blokker popup-annonser på nettsider
 // @description:pl Blokuje wyskakujące okienka z reklamami na stronach internetowych
-// @description:pt-BR Bloqueia anúncios pop-ups dentro dos sites
+// @description:pt Bloqueia anúncios pop-ups dentro dos sites
 // @description:pt-PT Bloqueia anúncios popup em páginas da web.
 // @description:ru Блокирует всплывающую рекламу на страницах
-// @description:sl-SI Blokira pojavne oglase na spletnih straneh
+// @description:sl Blokira pojavne oglase na spletnih straneh
 // @description:tr Web sayfalarında açılan pencere reklamları engeller
 // @description:uk Блокує спливаючу рекламу на веб-сторінках
-// @description:zh-CN 拦截网页弹窗广告
+// @description:zh 拦截网页弹窗广告
 // @description:zh-TW 封鎖於網頁上之彈出式視窗廣告
-// @version 2.5.10
+// @version 2.5.11
 // @license LGPL-3.0; https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE
 // @downloadURL https://popupblocker.adguard.com/popupblocker.user.js
 // @updateURL https://popupblocker.adguard.com/popupblocker.meta.js
