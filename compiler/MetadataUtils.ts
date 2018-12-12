@@ -12,7 +12,7 @@ export default class MetadataUtils {
     private static userscript_exclusions = [
         'https://www.linkedin.com/*',
         'https://*.facebook.com/*',
-        'https://*.google.tld/*',
+        'https://*.google.com/*',
         'https://*.youtube.com/*',
         '*://disqus.com/embed/*',
         'https://vk.com/*',
@@ -40,6 +40,12 @@ export default class MetadataUtils {
         '*://*.brainpop.com/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/149
         '*://*.taobao.com/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/151
+        '*://*.ksl.com/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/152
+        '*://*.t-online.de/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/154
+        '*://boards.4channel.org/*',
     ];
 
     private static extension_exclusions = {
@@ -276,6 +282,12 @@ export default class MetadataUtils {
             '*://*.brainpop.com/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/149
             '*://*.taobao.com/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/151
+            '*://*.ksl.com/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/152
+            '*://*.t-online.de/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/154
+            '*://boards.4channel.org/*',
         ]
     }
 
