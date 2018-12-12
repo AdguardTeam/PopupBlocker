@@ -42,7 +42,7 @@
 // @description:uk Блокує спливаючу рекламу на веб-сторінках
 // @description:zh 拦截网页弹窗广告
 // @description:zh-TW 封鎖於網頁上之彈出式視窗廣告
-// @version 2.5.11
+// @version 2.5.12
 // @license LGPL-3.0; https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE
 // @downloadURL https://popupblocker.adguard.com/popupblocker.user.js
 // @updateURL https://popupblocker.adguard.com/popupblocker.meta.js
