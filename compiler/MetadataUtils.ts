@@ -47,7 +47,14 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/PopupBlocker/issues/154
         '*://boards.4channel.org/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/170
-        '*://*.washingtonpost.com/*',
+        "*://*.washingtonpost.com/*",
+        // https://github.com/AdguardTeam/PopupBlocker/issues/157
+        "*://*.tv.kakao.com/*",
+        "*://*.play-tv.kakao.com/*",
+        // https://github.com/AdguardTeam/PopupBlocker/issues/165
+        "*://*.discounttire.com/*",
+        // https://github.com/AdguardTeam/PopupBlocker/issues/169
+        "*://*.mail.ukr.net/*"
     ];
 
     private static extension_exclusions = {
@@ -290,6 +297,15 @@ export default class MetadataUtils {
             '*://*.t-online.de/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/154
             '*://boards.4channel.org/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/170
+            "*://*.washingtonpost.com/*",
+            // https://github.com/AdguardTeam/PopupBlocker/issues/157
+            "*://*.tv.kakao.com/*",
+            "*://*.play-tv.kakao.com/*",
+            // https://github.com/AdguardTeam/PopupBlocker/issues/165
+            "*://*.discounttire.com/*",
+            // https://github.com/AdguardTeam/PopupBlocker/issues/169
+            "*://*.mail.ukr.net/*"            
         ]
     }
 
