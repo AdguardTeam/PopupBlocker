@@ -46,6 +46,8 @@ export default class MetadataUtils {
         '*://*.t-online.de/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/154
         '*://boards.4channel.org/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/170
+        '*://*.washingtonpost.com/*',
     ];
 
     private static extension_exclusions = {
