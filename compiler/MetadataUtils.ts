@@ -54,7 +54,9 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/PopupBlocker/issues/165
         "*://*.discounttire.com/*",
         // https://github.com/AdguardTeam/PopupBlocker/issues/169
-        "*://*.mail.ukr.net/*"
+        "*://*.mail.ukr.net/*",
+        // https://github.com/AdguardTeam/PopupBlocker/issues/166 
+        "*://*.sahadan.com/*"    
     ];
 
     private static extension_exclusions = {
@@ -305,7 +307,9 @@ export default class MetadataUtils {
             // https://github.com/AdguardTeam/PopupBlocker/issues/165
             "*://*.discounttire.com/*",
             // https://github.com/AdguardTeam/PopupBlocker/issues/169
-            "*://*.mail.ukr.net/*"            
+            "*://*.mail.ukr.net/*",
+            // https://github.com/AdguardTeam/PopupBlocker/issues/166 
+            "*://*.sahadan.com/*"     
         ]
     }
 
