@@ -315,8 +315,8 @@ export default class MetadataUtils {
 
     private static channelDownloadUpdateURLMap = {
         [Channel.DEV]: 'https://AdguardTeam.github.io/PopupBlocker/',
-        [Channel.BETA]: 'https://userscripts.adtidy.org/beta/adguard-popupblocker/2.5/',
-        [Channel.RELEASE]: 'https://userscripts.adtidy.org/release/adguard-popupblocker/2.5/'
+        [Channel.BETA]: 'https://userscripts.adtidy.org/beta/popup-blocker/2.5/',
+        [Channel.RELEASE]: 'https://userscripts.adtidy.org/release/popup-blocker/2.5/'
     }
 
     private get downloadUpdateURL() {
