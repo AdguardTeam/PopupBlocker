@@ -55,8 +55,8 @@ export default class MetadataUtils {
         "*://*.discounttire.com/*",
         // https://github.com/AdguardTeam/PopupBlocker/issues/169
         "*://*.mail.ukr.net/*",
-        // https://github.com/AdguardTeam/PopupBlocker/issues/166 
-        "*://*.sahadan.com/*"    
+        // https://github.com/AdguardTeam/PopupBlocker/issues/166
+        "*://*.sahadan.com/*"
     ];
 
     private static extension_exclusions = {
@@ -308,15 +308,15 @@ export default class MetadataUtils {
             "*://*.discounttire.com/*",
             // https://github.com/AdguardTeam/PopupBlocker/issues/169
             "*://*.mail.ukr.net/*",
-            // https://github.com/AdguardTeam/PopupBlocker/issues/166 
-            "*://*.sahadan.com/*"     
+            // https://github.com/AdguardTeam/PopupBlocker/issues/166
+            "*://*.sahadan.com/*"
         ]
     }
 
     private static channelDownloadUpdateURLMap = {
-        [Channel.DEV]: 'https://popupblocker.adguard.com/',
-        [Channel.BETA]: 'https://cdn.adguard.com/public/Userscripts/Beta/AdguardPopupBlocker/2.5/',
-        [Channel.RELEASE]: 'https://cdn.adguard.com/public/Userscripts/AdguardPopupBlocker/2.5/'
+        [Channel.DEV]: 'https://AdguardTeam.github.io/PopupBlocker/',
+        [Channel.BETA]: 'https://userscripts.adtidy.org/beta/adguard-popupblocker/2.5/',
+        [Channel.RELEASE]: 'https://userscripts.adtidy.org/release/adguard-popupblocker/2.5/'
     }
 
     private get downloadUpdateURL() {

@@ -164,10 +164,10 @@ gulp.task('build-test-es5', testBuilderFactory({ compilerOptions: { target: "es5
 
 
 gulp.task('travis-builds', (done) => {
-    runSequence('dev-userscript', 'release-userscript-settings', done);
+    gulp.series('dev-userscript', 'release-userscript-settings')(done);
 });
 
-gulp.task('travis', ['travis-builds', 'build-test-es5'], async () => {
+gulp.task('travis', gulp.series('travis-builds', 'build-test-es5', async () => {
     const moveTasks = [
         gulp.src('build/userscript/**/*')
             .pipe(gulp.dest(PathUtils.outputDir)),
@@ -191,7 +191,7 @@ gulp.task('travis', ['travis-builds', 'build-test-es5'], async () => {
         fsExtra.remove('build/userscript'),
         fsExtra.remove('build/userscript-settings')
     ]);
-});
+}));
 
 gulp.task('clean', Builder.clean);
 
