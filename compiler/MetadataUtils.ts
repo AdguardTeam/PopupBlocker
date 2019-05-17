@@ -391,7 +391,7 @@ export default class MetadataUtils {
         lines.push('// ==UserScript==');
 
         insertTranslatableKeys('name', 'userscript_name', this.locales.channelSuffix);
-        insertKey('namespace', 'AdGuard');
+        insertKey('namespace', 'adguard');
         insertTranslatableKeys('description', 'extension_description');
         insertKey('version', version);
         insertKey('license', `LGPL-3.0; https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE`);
