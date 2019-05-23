@@ -39,7 +39,7 @@
     "gulp-run": "^1.7.1",
     "gulp-uglify": "^3.0.0",
     "inline-resource-literal": "^1.0.2",
-    "merge-options": "^1.0.0",
+    "merge-options": "^1.0.1",
     "merge-stream": "^1.0.1",
     "minimist": "^1.2.0",
     "mocha": "^4.0.1",
