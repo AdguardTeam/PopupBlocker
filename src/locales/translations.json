@@ -1,7 +1,7 @@
 {
     "ar": {
         "allow_from": {
-            "message": "{$origDomain}السماح بالنوافذ المنبثقة لـ"
+            "message": "{$origDomain}السماح بالنوافذ المنبثقة على"
         },
         "continue_blocking": {
             "message": "متابعة الحظر"
@@ -13,7 +13,7 @@
             "message": "...أداره التفضيلات"
         },
         "popup_text": {
-            "message": "النوافذالمنبثقة{$numPopup} منع ادجوارد موقع الويب هذا من فتح"
+            "message": "النوافذالمنبثقة{$numPopup} منع ادجارد موقع الويب هذا من فتح"
         },
         "options": {
             "message": "الخيارات"
@@ -31,31 +31,31 @@
             "message": "إضافة"
         },
         "allowed_empty": {
-            "message": "قائمه المواقع المسموح بها فارغه"
+            "message": "قائمه الاستثناءات فارعة"
         },
         "allowed": {
-            "message": "المسموح بها"
+            "message": "الاستثناءات "
         },
         "silenced_empty": {
-            "message": "قائمه المواقع الصامتة فارغه"
+            "message": "قائمة المواقع التي تحتوي على إشعارات صامتة فارغة"
         },
         "silenced": {
             "message": "صامت"
         },
         "allowed_tooltip": {
-            "message": "سيتم السماح بالنوافذ المنبثقة للنطاقات المدرجة هنا"
+            "message": "سيتم السماح بالنوافذ المنبثقة على المواقع المدرجة هنا"
         },
         "silenced_tooltip": {
-            "message": "لن يتم عرض إشعارات النوافذ المنبثقة الممنوعة للنطاقات المدرجة هنا"
+            "message": "لن يتم عرض إشعارات النوافذ المنبثقة الممنوعة على مواقع الويب المدرجة هنا"
         },
         "installFrom": {
             "message": "{$startLink}{$name}{$endLink}التثبيت من"
         },
         "noinst_step_3": {
-            "message": "usercriptالخطوة3: قم بتحديث هذه الصفحة للحصول على إعدادات"
+            "message": "usercript الخطوة 3 قم بتحديث هذه الصفحة للوصول إلى إعدادات"
         },
         "noinst_ignore_if_ag": {
-            "message": "إذا قمت بتثبيت ادجوارد للويندوز فيمكنك تجاهل هذه الخطوة حيث يأتي سكربت مانع النوافذ المنبثقة مثبتًا مسبقًا"
+            "message": "إذا كان لديك برنامج ادجوارد مثبتًا على الويندوز ، فيمكنك تجاهل هذه الخطوة حيث يأتي مانع النوافذ المنبثقة مثبتة مسبقًا"
         },
         "noinst_rec": {
             "message": "(موصى به)"
@@ -64,7 +64,7 @@
             "message": "يرجى الانتظار للكشف عن مانع ظهور النوافذ المنبثقة"
         },
         "noinst_special_prog": {
-            "message": "أولا وقبل كل شيء، لاستخدام يوزر سكربت تحتاج إلى برنامج خاص يقوم بتشغيل يوزر سكربيت"
+            "message": "أولاً وقبل كل شيء لاستخدام البرامج النصية للمستخدم تحتاج إلى برنامج خاص أو ملحق يمكن تشغيل البرامج النصية للمستخدم"
         },
         "noinst_subtitle": {
             "message": "لم يتم تثبيت يوزر سكربت ادجوارد مانع النوافذ المنبثقة  يرجى الاطلاع على التعليمات أدناه"
@@ -91,7 +91,7 @@
                 "يوزر سكربت",
                 "إعدادات يوزر سكربت"
             ],
-            "message": "AdGuard Popup Blocker"
+            "message": "مانع النوافذ المنبثقة AdGuard"
         },
         "extension_description": {
             "platform": [
@@ -122,22 +122,22 @@
             "message": "الإعدادات المحفوظة"
         },
         "popup_text_full": {
-            "message": "تم حظر محاولة فتح نافذة منبثقة {{0_url}}"
+            "message": "نافذة منبثقة{{0_url}}منعت محاولة لفتح"
         },
         "popup_allow_dest": {
-            "message": "السماح دائما  {${domain}}"
+            "message": "${domain}السماح دائما"
         },
         "popup_allow_dest_conf": {
-            "message": "السماح لجميع النوافذ المنبثقة المؤدية إلى${domain}؟"
+            "message": "${domain}?السماح لجميع النوافذ المنبثقة التي تؤدي إلى"
         },
         "popup_allow_origin": {
             "message": "السماح لجميع النوافذ المنبثقة علي هذا الموقع"
         },
         "popup_allow_origin_conf": {
-            "message": "السماح بكافة الإطارات المنبثقة الناشئة عن${parent}؟"
+            "message": "${parent}السماح بكافة الإطارات المنبثقة الناشئة عن"
         },
         "popup_text_min": {
-            "message": "منع"
+            "message": "حظر"
         },
         "popup_expand_min": {
             "message": "الإطار المنبثق"
@@ -146,7 +146,7 @@
             "message": "من المحتمل ان يكون هذا الانتقال إلى الصفحة الجديدة ناتجا عن الإطار المنبثق. هل ترغب في المتابعة ؟"
         },
         "aborted_popunder_execution": {
-            "message": "تم إحباط البرنامج النصي لمنع أعاده توجيه الخلفية"
+            "message": "مانع النوافذ المنبثقة احبط تنفيذ برنامج نصي لمنع أعاده توجيه الخلفية"
         }
     },
     "cs": {
@@ -748,7 +748,7 @@
     },
     "es": {
         "allow_from": {
-            "message": "Permitir ventanas emergentes para {$origDomain}"
+            "message": "Permitir ventanas emergentes en {$origDomain}"
         },
         "continue_blocking": {
             "message": "Continuar bloqueando\n"
@@ -760,7 +760,7 @@
             "message": "Administrar preferencias..."
         },
         "popup_text": {
-            "message": "AdGuard ha impedido abrir {$numPopup}  las ventanas emergentes en este sitio web"
+            "message": "AdGuard impidió que este sitio web abriera {$numPopup} ventanas emergentes"
         },
         "options": {
             "message": "Opciones"
@@ -769,7 +769,7 @@
             "message": "No mostrar este mensaje en {$origDomain}"
         },
         "site_input_ph": {
-            "message": "Introduzca nombre del sitio"
+            "message": "Ingrese el nombre del sitio"
         },
         "add_site": {
             "message": "Añadir un sitio"
@@ -778,7 +778,7 @@
             "message": "Añadir"
         },
         "allowed_empty": {
-            "message": "La lista de sitios permitidos está vacía"
+            "message": "La lista de excepciones está vacía"
         },
         "allowed": {
             "message": "Excepciones"
@@ -790,10 +790,10 @@
             "message": "Silenciado"
         },
         "allowed_tooltip": {
-            "message": "Ventanas emergentes estarán permitidas para los dominios enumerados aquí."
+            "message": "Las ventanas emergentes estarán permitidas en los sitios web enumerados aquí."
         },
         "silenced_tooltip": {
-            "message": "Notificaciones para ventanas emergentes bloqueadas no se mostrarán para los sitios enumerados aquí."
+            "message": "Las notificaciones de ventanas emergentes bloqueadas no se mostrarán en los sitios web enumerados aquí."
         },
         "installFrom": {
             "message": "Instalar desde {$startLink}{$name}{$endLink}"
@@ -802,10 +802,10 @@
             "message": "Paso 3: Recargue esta página para obtener los ajustes de userscript"
         },
         "noinst_ignore_if_ag": {
-            "message": "Si ha instalado AdGuard para Windows, puede ignorar este paso porque el userscript Bloqueador de popup viene preinstalado."
+            "message": "Si tiene instalado AdGuard para Windows, puede ignorar este paso ya que el bloqueador de ventanas emergentes viene preinstalado."
         },
         "noinst_rec": {
-            "message": "(Recomendado)"
+            "message": "(recomendado)"
         },
         "please_wait": {
             "message": "Por favor espere, detectando el Bloqueador de popup"
@@ -820,7 +820,7 @@
             "message": "Paso 1: Instale el gestor de userscript"
         },
         "homepage": {
-            "message": "Página web"
+            "message": "Página de inicio"
         },
         "noinst_step_2": {
             "message": "Paso 2: Userscript"
@@ -1516,7 +1516,7 @@
             "message": "許可済みサイトのリストは空です"
         },
         "allowed": {
-            "message": "許可済み"
+            "message": "例外"
         },
         "silenced_empty": {
             "message": "消音済みサイトのリストは空です"
@@ -2383,7 +2383,7 @@
             "message": "Dovoli pojavna okna na {$origDomain}"
         },
         "continue_blocking": {
-            "message": "Nadaljuj z blokado"
+            "message": "Nadaljuj z blokiranjem"
         },
         "show_popup": {
             "message": " Prikaži {$destUrl}"
@@ -2392,7 +2392,7 @@
             "message": "Upravljaj nastavitve..."
         },
         "popup_text": {
-            "message": "AdGuard je tej spletni strani preprečil odpiranje  {$numPopup} pojavnih oken"
+            "message": "AdGuard je tej spletni strani preprečil odpiranje {$numPopup} pojavnih oken"
         },
         "options": {
             "message": "Možnosti"
@@ -2422,7 +2422,7 @@
             "message": "Utišane strani"
         },
         "allowed_tooltip": {
-            "message": "Na spletnih straneh, ki so tukaj prikazane, bodo dovoljena pojavna okna."
+            "message": "Na spletnih straneh, ki so na tem seznamu, bodo dovoljena pojavna okna."
         },
         "silenced_tooltip": {
             "message": "Blokirana pojavna obvestila spletnih strani, ki so na tem seznamu, ne bodo prikazana."
@@ -2560,13 +2560,13 @@
             "message": "Ekle"
         },
         "allowed_empty": {
-            "message": "İzin verilen siteler listesi boş"
+            "message": "Hariç tutulanlar listesi boş"
         },
         "allowed": {
-            "message": "İzin verildi"
+            "message": "Hariç tutulanlar"
         },
         "silenced_empty": {
-            "message": "Sessize alınan siteler listesi boş"
+            "message": "Bildirimleri sessize alınmış olan sitelerin listesi boş"
         },
         "silenced": {
             "message": "Sessize alınmış"
@@ -2575,7 +2575,7 @@
             "message": "Burada listelenen siteler için açılır pencerelere izin verilir"
         },
         "silenced_tooltip": {
-            "message": "Açılır pencerelerin engellenme uyarısı burada listelenen sitelerde gösterilmez."
+            "message": "Engellenmiş açılır pencerelerin bildirimleri, burada listelenen sitelerde gösterilmez."
         },
         "installFrom": {
             "message": "{$startLink}{$name}{$endLink} dan yükle"
@@ -2593,7 +2593,7 @@
             "message": "Lütfen bekleyin, Açılır Pencere Engelleyici tespit ediliyor"
         },
         "noinst_special_prog": {
-            "message": "Her şeyden önce, bir kullanıcı betiği kullanmak için kullanıcı betiklerini çalıştıran özel bir programa ihtiyacınız var."
+            "message": "Her şeyden önce, bir kullanıcı betiği kullanabilmek için kullanıcı betiklerini çalıştıran özel bir programa ya da eklentiye ihtiyacınız var."
         },
         "noinst_subtitle": {
             "message": "AdGuard Açılır Pencere Engelleyicisi kullanıcı betiği yüklü değil. Lütfen aşağıdaki yönergeleri inceleyin."
@@ -2620,7 +2620,7 @@
                 "kullanıcı betiği",
                 "kullanıcı betiği ayarları"
             ],
-            "message": "AdGuard Popup Blocker"
+            "message": "AdGuard Popup Blocker eklentisi"
         },
         "extension_description": {
             "platform": [
@@ -2989,10 +2989,10 @@
             "message": "顯示 {$destUrl}"
         },
         "manage_pref": {
-            "message": "管理偏好..."
+            "message": "管理偏好設定..."
         },
         "popup_text": {
-            "message": "AdGuard阻止該網站展現 {$numPopup} 彈出式視窗"
+            "message": "AdGuard 已防止該網站展現 {$numPopup} 彈出式視窗"
         },
         "options": {
             "message": "選項"
@@ -3031,31 +3031,31 @@
             "message": "從 {$startLink}{$name}{$endLink} 安裝"
         },
         "noinst_step_3": {
-            "message": "步驟3：重新整理該頁面以開始使用者腳本設定"
+            "message": "步驟 3：重新整理該頁面以開始使用者腳本設定"
         },
         "noinst_ignore_if_ag": {
-            "message": "如果您有已安裝的AdGuard for Windows，您可忽略此步驟，因為彈出式視窗封鎖器使用者腳本變為被預安裝。"
+            "message": "如果您有已安裝的 AdGuard for Windows，您可忽略該步驟，因為彈出式視窗封鎖器使用者腳本變為已預安裝的。"
         },
         "noinst_rec": {
-            "message": "（已建議）"
+            "message": "（被建議的）"
         },
         "please_wait": {
             "message": "請等待，偵測到彈出式視窗封鎖器"
         },
         "noinst_special_prog": {
-            "message": "首先，為使用一個使用者腳本，您需要可執行腳本的特殊程式或擴充功能。"
+            "message": "首先，為使用一個使用者腳本，您需要可執行腳本之專門的程式或擴充功能。"
         },
         "noinst_subtitle": {
-            "message": "AdGuard彈出式視窗封鎖器使用者腳本未被安裝。請參閱下面的說明。"
+            "message": "AdGuard 彈出式視窗封鎖器使用者腳本未被安裝。請查看下面的用法說明。"
         },
         "noinst_step_1": {
-            "message": "步驟1：安裝使用者腳本管理器"
+            "message": "步驟 1：安裝使用者腳本管理器"
         },
         "homepage": {
             "message": "首頁"
         },
         "noinst_step_2": {
-            "message": "步驟2：使用者腳本"
+            "message": "步驟 2：使用者腳本"
         },
         "extension_name": {
             "description": "該名稱被用於瀏覽器擴充功能。",
@@ -3085,7 +3085,7 @@
             ]
         },
         "ext_disabled": {
-            "message": "對於 $DOMAIN$ ，彈出式視窗封鎖器被禁用",
+            "message": "對於 $DOMAIN$，彈出式視窗封鎖器被禁用",
             "platform": "擴充功能",
             "placeholders": {
                 "domain": {
@@ -3094,26 +3094,26 @@
             }
         },
         "ext_disabled_default": {
-            "message": "彈出式視窗封鎖器不可於此網域上執行",
+            "message": "彈出式視窗封鎖器不可於該網域上執行",
             "platform": "擴充功能"
         },
         "settings_saved": {
-            "message": "已儲存之設定"
+            "message": "設定被儲存"
         },
         "popup_text_full": {
-            "message": "封鎖打開 {{0_url}} 彈出式視窗的企圖"
+            "message": "已封鎖打開 {{0_url}} 彈出式視窗的企圖"
         },
         "popup_allow_dest": {
             "message": "總是允許 ${domain}"
         },
         "popup_allow_dest_conf": {
-            "message": "允許所有的通向 ${domain} 之彈出式視窗？"
+            "message": "允許所有的通向 ${domain} 之彈出式視窗嗎？"
         },
         "popup_allow_origin": {
-            "message": "允許於此網站上之所有的彈出式視窗"
+            "message": "允許於該網站上之所有的彈出式視窗"
         },
         "popup_allow_origin_conf": {
-            "message": "允許所有的來自 ${parent} 之彈出式視窗？"
+            "message": "允許所有的來自 ${parent} 之彈出式視窗嗎？"
         },
         "popup_text_min": {
             "message": "已封鎖"
@@ -3125,7 +3125,7 @@
             "message": "此至新的頁面之轉換很可能是由一個背彈式視窗引起。您想要繼續嗎？"
         },
         "aborted_popunder_execution": {
-            "message": "彈出式視窗封鎖器中止腳本執行以防止背景重定向"
+            "message": "彈出式視窗封鎖器中止腳本執行以防止背景重新導向"
         }
     }
 }
