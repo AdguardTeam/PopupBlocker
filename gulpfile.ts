@@ -245,11 +245,7 @@ gulp.task('i18n-down', async () => {
         let substituteCode = languageCode;
 
         // OneSky has a little bit different codes
-        if (languageCode === 'zh') {
-            substituteCode = 'zh-CN';
-        } else if (languageCode === 'pt') {
-            substituteCode = 'pt-BR';
-        } else if (languageCode === 'sl') {
+        if (languageCode === 'sl') {
             substituteCode = 'sl-SI';
         }
 
