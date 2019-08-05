@@ -29,6 +29,27 @@ const getQueryString = (lang, file) => {
 };
 
 /**
+ * Iterates over translation object and removes keys with empty values
+ * @param {Object} data translation
+ */
+const removeEmptyStrings = (data) => {
+    const result = {};
+    Object.entries(data).forEach(([key, value]) => {
+        if (typeof value === 'string') {
+            if (value !== '') {
+                result[key] = value;
+            }
+        } else if (typeof value === 'object') {
+            // eslint-disable-next-line dot-notation
+            if (value['message'] !== '') {
+                result[key] = value;
+            }
+        }
+    });
+    return result;
+};
+
+/**
  * Build form data for uploading tranlation
  * @param {string} file crowdin file name
  */
@@ -63,28 +84,28 @@ function saveFile(filePath, content) {
 /**
  * Entry point for downloading translations
  */
-function download() {
+async function download() {
     const translations = {};
 
-    LOCALES.forEach((lang) => {
+    for (lang of LOCALES) {
         if (lang === BASE_LOCALE) {
-            continue
-        };
-        CROWDIN_FILES.forEach(async (file) => {
+            continue;
+        }
+
+        for (file of CROWDIN_FILES) {
             try {
                 const { data } = await axios.get(getDownloadlURL(lang, file));
                 translations[lang] = data;
-
             } catch (e) {
                 console.log(getDownloadlURL(lang, file));
                 console.log(e);
             }
-        });
+        }
+    }
 
-        const filePath = path.resolve(LOCALES_DIR, 'translations.json');
-        saveFile(filePath, data);
-        console.log('translations.json updated');
-    });
+    const filePath = path.resolve(LOCALES_DIR, 'translations.json');
+    saveFile(filePath, translations);
+    console.log('File "translations.json" was successfully updated');
 }
 
 /**
