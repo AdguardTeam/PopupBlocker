@@ -63,7 +63,7 @@
         "message": "Please wait, detecting the Popup Blocker"
     },
     "noinst_special_prog": {
-        "message": "First of all, to use a userscript you need a special program or extension that runs userscript."
+        "message": "First of all, to use a userscript you need a special program or extension that runs userscripts."
     },
     "noinst_subtitle": {
         "message": "AdGuard Popup Blocker userscript is not installed. Please see the instruction below."
