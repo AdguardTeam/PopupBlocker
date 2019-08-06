@@ -1,6 +1,5 @@
 [
     "extension_name",
-    "userscript_name",
     "extension_description",
     "on_navigation_by_popunder",
     "aborted_popunder_execution",

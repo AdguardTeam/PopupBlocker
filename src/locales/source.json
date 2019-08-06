@@ -85,7 +85,7 @@
     },
     "userscript_name": {
         "message": "AdGuard Popup Blocker",
-        "patform": [
+        "platform": [
             "userscript",
             "userscript_settings"
         ]

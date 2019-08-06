@@ -73,6 +73,32 @@ const getFormData = (file) => {
 const getDownloadlURL = (lang, file) => BASE_DOWNLOAD_URL + getQueryString(lang, file);
 
 /**
+ * Replaces object to array with values by passed key in message object
+ * 
+ * WHY WE USE IT?
+ * Crowdin transforms output and replaces arrays to objects,
+ * these transformations can cause the errors in application.
+ * 
+ * @param {string} key member of message object
+ * @param {Object} data translation for specific locale
+ */
+const replaceObjectToArray = (key, data) => {
+    const result = {};
+    Object.entries(data).forEach(([message, value]) => {
+        if (typeof value[key] === 'object') {
+            result[message] = {
+                ...value,
+                [key]: Object.values(value[key])
+            }
+        } else {
+            result[message] = value;
+        }
+    })
+
+    return result;
+}
+
+/**
  * Save file by path with passed content
  * @param {string} filePath path to file
  * @param {any} content
@@ -91,7 +117,8 @@ async function download() {
         for (file of CROWDIN_FILES) {
             try {
                 const { data } = await axios.get(getDownloadlURL(lang, file));
-                translations[lang] = data;
+                const formatted = replaceObjectToArray('platform', data);
+                translations[lang] = formatted;
             } catch (e) {
                 console.log(getDownloadlURL(lang, file));
                 console.log(e);

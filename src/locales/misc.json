@@ -5,7 +5,7 @@
     },
     "userscript_name": {
         "message": "AdGuard Popup Blocker",
-        "patform": ["userscript", "userscript_settings"]
+        "platform": ["userscript", "userscript_settings"]
     },
     "extension_description": {
         "message": "Blocks popup ads on web pages",
