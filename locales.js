@@ -54,7 +54,7 @@ const removeEmptyStrings = (data) => {
  * @param {string} file crowdin file name
  */
 const getFormData = (file) => {
-    const pathToBaseFile = path.resolve(LOCALES_DIR, BASE_LOCALE, file);
+    const pathToBaseFile = path.resolve(LOCALES_DIR, file);
     const body = new FormData();
 
     body.append('format', 'json');
@@ -88,10 +88,6 @@ async function download() {
     const translations = {};
 
     for (lang of LOCALES) {
-        if (lang === BASE_LOCALE) {
-            continue;
-        }
-
         for (file of CROWDIN_FILES) {
             try {
                 const { data } = await axios.get(getDownloadlURL(lang, file));
