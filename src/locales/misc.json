@@ -16,7 +16,7 @@
         "platform": ["userscript", "extension"]
     },
     "aborted_popunder_execution": {
-        "message": "PopupBlocker aborted a script execution to prevent background redirect",
+        "message": "Popup Blocker aborted a script execution to prevent background redirect",
         "platform": ["userscript", "extension"]
     },
     "ext_enabled": {
