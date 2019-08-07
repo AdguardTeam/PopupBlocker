@@ -52,7 +52,7 @@
             "message": "{$startLink}{$name}{$endLink}التثبيت من"
         },
         "noinst_step_3": {
-            "message": "usercript الخطوة 3 قم بتحديث هذه الصفحة للوصول إلى إعدادات"
+            "message": "الخطوة 3: قم بتحديث هذه الصفحة للوصول إلى إعدادات userscript"
         },
         "noinst_ignore_if_ag": {
             "message": "إذا كان لديك برنامج ادجوارد مثبتًا على الويندوز ، فيمكنك تجاهل هذه الخطوة حيث يأتي مانع النوافذ المنبثقة مثبتة مسبقًا"
@@ -64,7 +64,7 @@
             "message": "يرجى الانتظار للكشف عن مانع ظهور النوافذ المنبثقة"
         },
         "noinst_special_prog": {
-            "message": "أولاً وقبل كل شيء لاستخدام البرامج النصية للمستخدم تحتاج إلى برنامج خاص أو ملحق يمكن تشغيل البرامج النصية للمستخدم"
+            "message": "أولاً وقبل كل شيء, لاستخدام userscript تحتاج إلى برنامج خاص أو ملحق الذي يستطيع تشغيل userscript."
         },
         "noinst_subtitle": {
             "message": "لم يتم تثبيت يوزر سكربت ادجوارد مانع النوافذ المنبثقة  يرجى الاطلاع على التعليمات أدناه"
@@ -105,7 +105,7 @@
             ]
         },
         "aborted_popunder_execution": {
-            "message": "مانع النوافذ المنبثقة احبط تنفيذ برنامج نصي لمنع أعاده توجيه الخلفية",
+            "message": "مانع النوافذ المنبثقة احبط تنفيذ script لمنع أعاده توجيه الخلفية",
             "platform": [
                 "userscript",
                 "extension"
@@ -450,7 +450,7 @@
             "message": "Von {$startLink}{$name}{$endLink} installieren"
         },
         "noinst_step_3": {
-            "message": "Schritt 3: Aktualisieren Sie diese Seite, um zu den Benutzerskript-Einstellungen zu übergehen."
+            "message": "Schritt 3: Aktualisieren Sie diese Seite, um zu den Benutzerskript-Einstellungen zu übergehen"
         },
         "noinst_ignore_if_ag": {
             "message": "Wenn Sie AdGuard für Windows installiert haben, können Sie diesen Schritt ignorieren, da das Benutzerskript für den Pop-up-Blocker bereits vorinstalliert ist."
@@ -466,6 +466,9 @@
         },
         "noinst_subtitle": {
             "message": "AdGuard Pop-up-Blocker Benutzerskript ist nicht installiert. Bitte beachten Sie die folgende Anleitung."
+        },
+        "homepage": {
+            "message": "Startseite"
         },
         "noinst_step_1": {
             "message": "Schritt 1: Installieren Sie einen Benutzerskript-Manager"
@@ -594,7 +597,7 @@
             "message": "Please wait, detecting the Popup Blocker"
         },
         "noinst_special_prog": {
-            "message": "First of all, to use a userscript you need a special program or extension that can run userscripts."
+            "message": "First of all, to use a userscript you need a special program or extension that runs userscripts."
         },
         "noinst_subtitle": {
             "message": "AdGuard Popup Blocker userscript is not installed. Please see the instruction below."
@@ -717,7 +720,7 @@
             "message": "Instalar desde {$startLink}{$name}{$endLink}"
         },
         "noinst_step_3": {
-            "message": "Paso 3: Recargue esta página para obtener los ajustes de userscript"
+            "message": "Paso 3: Actualice esta página para acceder a la configuración del userscript"
         },
         "noinst_ignore_if_ag": {
             "message": "Si tiene instalado AdGuard para Windows, puede ignorar este paso ya que el bloqueador de ventanas emergentes viene preinstalado."
@@ -729,7 +732,7 @@
             "message": "Por favor espere, detectando el Bloqueador de popup"
         },
         "noinst_special_prog": {
-            "message": "Primero para usar userscript se necesita un programa especial que lo ejecuta."
+            "message": "En primer lugar, para usar un userscript necesita un programa especial que ejecute el userscript."
         },
         "noinst_subtitle": {
             "message": "Bloqueador de popup de AdGuard no es instalado. Por favor, vea el manual abajo."
@@ -770,7 +773,7 @@
             ]
         },
         "aborted_popunder_execution": {
-            "message": " Bloqueador de popup canceló  la ejecución del script para evitar una redirección de segundo plano",
+            "message": "Popup Blocker canceló la ejecución de un script para evitar la redirección en segundo plano",
             "platform": [
                 "userscript",
                 "extension"
@@ -980,9 +983,6 @@
         "installFrom": {
             "message": "Installer de {$startLink}{$name}{$endLink}"
         },
-        "noinst_step_3": {
-            "message": "Étape 3: renouvelez la page pour accéder aux paramètres du script utilisateur"
-        },
         "noinst_ignore_if_ag": {
             "message": "Si vous avez installé AdGuard pour Windows auparavant, vous pouvez passer cette étape car le script utilisateur Bloqueur de fenêtres pop-up y est déjà pré-installé."
         },
@@ -991,9 +991,6 @@
         },
         "please_wait": {
             "message": "Veuillez patienter, recherche de bloqueur des fenêtres pop-up en cours"
-        },
-        "noinst_special_prog": {
-            "message": "À l'essentiel pour vous servied'un script utilisateur vous avez besoin d'un programme spécial ou extension qui fonctionne sur ces types de script."
         },
         "noinst_subtitle": {
             "message": "Le script utilisateur bloqueur de fenêtres pop-up n'est pas installé. Veuillez consulter le manuel ci-dessous."
@@ -1028,13 +1025,6 @@
         },
         "on_navigation_by_popunder": {
             "message": "Cette transition vers la nouvelle page est susceptible d'être causée par un pop-under. Désirez-vous continuer?",
-            "platform": [
-                "userscript",
-                "extension"
-            ]
-        },
-        "aborted_popunder_execution": {
-            "message": "Le Bloqueur de fenêtres pop-up a interrompu l'exécution d'un script pour éviter la redirection au fond d'écran",
             "platform": [
                 "userscript",
                 "extension"
@@ -1115,9 +1105,6 @@
         "installFrom": {
             "message": "Pasang dari {$startLink}{$name}{$endLink}"
         },
-        "noinst_step_3": {
-            "message": "Langkah 3: Segarkan halaman ini untuk masuk ke pengaturan userscript"
-        },
         "noinst_ignore_if_ag": {
             "message": "Jika Anda telah memasang AdGuard untuk Windows, Anda dapat mengabaikan langkah ini karena Pemblokir Popup sudah terpasang."
         },
@@ -1126,9 +1113,6 @@
         },
         "please_wait": {
             "message": "Mohon tunggu, mendeteksi Pemblokir Popup"
-        },
-        "noinst_special_prog": {
-            "message": "Pertama-tama, untuk menggunakan userscript Anda memerlukan program atau ekstensi khusus yang dapat menjalankan userscript."
         },
         "noinst_subtitle": {
             "message": "Userscript Pemblokir Popup AdGuard belum terpasang. Silakan lihat instruksi di bawah ini."
@@ -1156,13 +1140,6 @@
         },
         "on_navigation_by_popunder": {
             "message": "Transisi ke laman baru ini kemungkinan disebabkan oleh sebuah pop-up. Apakah Anda ingin melanjutkan?",
-            "platform": [
-                "userscript",
-                "extension"
-            ]
-        },
-        "aborted_popunder_execution": {
-            "message": "PopupBlocker menghentikan eksekusi script untuk mencegah perubahan laman di latar belakang",
             "platform": [
                 "userscript",
                 "extension"
@@ -1609,14 +1586,8 @@
         "silenced_tooltip": {
             "message": "Powiadomienia o zablokowanych wyskakujących okienkach nie będą wyświetlane dla stron tutaj wymienionych."
         },
-        "noinst_step_3": {
-            "message": "Krok 3: Odśwież tę stronę, aby uzyskać ustawienia dotyczące skryptów użytkowników"
-        },
         "noinst_ignore_if_ag": {
             "message": "Jeśli zainstalowałeś AdGuard dla systemu Windows, możesz zignorować ten krok, gdy instalator funkcji Bloker wyskakujących okienek zostanie zainstalowany fabrycznie."
-        },
-        "noinst_special_prog": {
-            "message": "Przede wszystkim, aby użyć skryptów użytkownika, potrzebujesz specjalnego programu, który uruchamia te skrypty."
         },
         "noinst_subtitle": {
             "message": "Bloker wyskakujących okienek AdGuard skrypt użytkownika nie jest zainstalowany. Zobacz instrukcję poniżej."
@@ -1633,13 +1604,6 @@
         },
         "on_navigation_by_popunder": {
             "message": "To przejście na nową stronę może być spowodowane przez pop-under. Czy chcesz kontynuować?",
-            "platform": [
-                "userscript",
-                "extension"
-            ]
-        },
-        "aborted_popunder_execution": {
-            "message": "PopupBlocker anulował wykonanie skryptu by przeciwdziałać przekierowaniu w tle",
             "platform": [
                 "userscript",
                 "extension"
@@ -1703,7 +1667,7 @@
             "message": "Instale da {$startLink}{$name}{$endLink}"
         },
         "noinst_step_3": {
-            "message": "Etapa 3: Atualize esta página para obter as configurações de script de usuário"
+            "message": "Passo 3: Atualize esta página para obter as configurações de script de usuário"
         },
         "noinst_ignore_if_ag": {
             "message": "Se você instalou o AdGuard para Windows, você pode ignorar esta etapa, porque o script de usuário do Bloqueador de Pop-ups já vem pré-instalado."
@@ -1715,7 +1679,7 @@
             "message": "Por favor, aguarde enquanto detectamos o Bloqueador de Pop-ups"
         },
         "noinst_special_prog": {
-            "message": "Primeiro de tudo, para usar um script de usuário você precisa de um programa ou uma extensão especial para executá-los."
+            "message": "Primeiro de tudo, para usar um script de usuário você precisa de um programa ou uma extensão especial para executar scripts de usuário."
         },
         "noinst_subtitle": {
             "message": "O script de usuário do Bloqueador de Pop-ups do AdGuard não está instalado. Por favor, siga as instruções abaixo."
@@ -1966,7 +1930,7 @@
             "message": "Установить из {$startLink}{$name}{$endLink}"
         },
         "noinst_step_3": {
-            "message": "Шаг 3: обновите эту страницу, чтобы перейти к настройкам пользовательского скрипта"
+            "message": "Шаг 3: Обновите эту страницу, чтобы перейти к настройкам пользовательского скрипта"
         },
         "noinst_ignore_if_ag": {
             "message": "Если вы установили AdGuard для Windows, вы можете проигнорировать этот шаг, так как Блокировщик всплывающей рекламы уже установлен."
@@ -2653,7 +2617,7 @@
             "message": "請等待，正偵測到彈出式視窗封鎖器"
         },
         "noinst_special_prog": {
-            "message": "首先，為使用一個使用者腳本，您需要可執行腳本之專門的程式或擴充功能。"
+            "message": "首先，為使用一個使用者腳本，您需要執行使用者腳本之專門的程式或擴充功能。"
         },
         "noinst_subtitle": {
             "message": "AdGuard 彈出式視窗封鎖器使用者腳本未被安裝。請查看下面的用法說明。"
