@@ -13,6 +13,10 @@ const CROWDIN_PROJECT = 'popup-blocker';
 const CROWDIN_FILES = ['source.json']; // crowdin files for downloading/uploading
 const LOCALES = [...locales]; // locales for downloading
 const LOCALES_DIR = './src/locales';
+const LOCALES_EQUIVALENTS = {
+    'pt-BR': 'pt',
+    'zh-CN': 'zh'
+};
 
 
 /**
@@ -26,27 +30,6 @@ const getQueryString = (lang, file) => {
     res += `&project=${CROWDIN_PROJECT}`;
     res += `&filename=${file}`;
     return res;
-};
-
-/**
- * Iterates over translation object and removes keys with empty values
- * @param {Object} data translation
- */
-const removeEmptyStrings = (data) => {
-    const result = {};
-    Object.entries(data).forEach(([key, value]) => {
-        if (typeof value === 'string') {
-            if (value !== '') {
-                result[key] = value;
-            }
-        } else if (typeof value === 'object') {
-            // eslint-disable-next-line dot-notation
-            if (value['message'] !== '') {
-                result[key] = value;
-            }
-        }
-    });
-    return result;
 };
 
 /**
@@ -99,6 +82,14 @@ const replaceObjectToArray = (key, data) => {
 }
 
 /**
+ * Returns equivalent of specified locale code
+ * @param {string} locale locale
+ */
+const getEquivalent = (locale) => {
+    return LOCALES_EQUIVALENTS[locale] || locale;
+}
+
+/**
  * Save file by path with passed content
  * @param {string} filePath path to file
  * @param {any} content
@@ -118,7 +109,8 @@ async function download() {
             try {
                 const { data } = await axios.get(getDownloadlURL(lang, file));
                 const formatted = replaceObjectToArray('platform', data);
-                translations[lang] = formatted;
+                const resultLocale = getEquivalent(lang);
+                translations[resultLocale] = formatted;
             } catch (e) {
                 console.log(getDownloadlURL(lang, file));
                 console.log(e);

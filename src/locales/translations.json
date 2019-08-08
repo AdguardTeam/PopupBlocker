@@ -1614,7 +1614,7 @@
             "platform": "extension"
         }
     },
-    "pt-BR": {
+    "pt": {
         "show_popup": {
             "message": "Mostrar {$destUrl}"
         },
@@ -2417,7 +2417,7 @@
             "message": "Налаштування збережені"
         }
     },
-    "zh-CN": {
+    "zh": {
         "show_popup": {
             "message": "显示 {$destUrl}"
         },
