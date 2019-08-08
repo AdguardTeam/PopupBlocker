@@ -18,7 +18,6 @@ const LOCALES_EQUIVALENTS = {
     'zh-CN': 'zh'
 };
 
-
 /**
  * Build query string for downloading tranlations
  * @param {string} lang locale code
