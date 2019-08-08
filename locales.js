@@ -13,9 +13,13 @@ const CROWDIN_PROJECT = 'popup-blocker';
 const CROWDIN_FILES = ['source.json']; // crowdin files for downloading/uploading
 const LOCALES = [...locales]; // locales for downloading
 const LOCALES_DIR = './src/locales';
-const LOCALES_EQUIVALENTS = {
+/**
+ * Users locale may be defined with only two chars (language code)
+ * Here we provide a map of equivalent translation for such locales
+ */
+const LOCALES_EQUIVALENTS_MAP = {
     'pt-BR': 'pt',
-    'zh-CN': 'zh'
+    'zh-CN': 'zh',
 };
 
 /**
@@ -85,7 +89,7 @@ const replaceObjectToArray = (key, data) => {
  * @param {string} locale locale
  */
 const getEquivalent = (locale) => {
-    return LOCALES_EQUIVALENTS[locale] || locale;
+    return LOCALES_EQUIVALENTS_MAP[locale] || locale;
 }
 
 /**
