@@ -354,6 +354,13 @@
                 "extension"
             ]
         },
+        "userscript_name": {
+            "message": "AdGuard Popup Blocker",
+            "platform": [
+                "userscript",
+                "userscript_settings"
+            ]
+        },
         "extension_description": {
             "message": "Blokerer pop-up reklamer på websider",
             "platform": [
@@ -1277,6 +1284,9 @@
         "noinst_subtitle": {
             "message": "Lo script utenti Blocco popup di AdGuard non è installato. Per favore guarda le istruzioni qui sotto."
         },
+        "homepage": {
+            "message": "Pagina principale"
+        },
         "noinst_step_1": {
             "message": "Passo 1: Installa un manager dello script utenti"
         },
@@ -1962,6 +1972,13 @@
             "message": "Bloqueador de Popup por AdGuard",
             "platform": [
                 "extension"
+            ]
+        },
+        "userscript_name": {
+            "message": "Bloqueador de Popup AdGuard",
+            "platform": [
+                "userscript",
+                "userscript_settings"
             ]
         },
         "extension_description": {
