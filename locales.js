@@ -5,11 +5,11 @@ const axios = require('axios');
 const FormData = require('form-data');
 const twoskyConfig = require('./.twosky.json')[0];
 
-const BASE_LOCALE = twoskyConfig.baseLocale;
+const BASE_LOCALE = twoskyConfig.base_locale;
 const BASE_URL = 'https://twosky.adtidy.org/api/v1';
 const BASE_DOWNLOAD_URL = `${BASE_URL}/download`;
 const BASE_UPLOAD_URL = `${BASE_URL}/upload`;
-const CROWDIN_PROJECT = twoskyConfig.projectId;
+const CROWDIN_PROJECT = twoskyConfig.project_id;
 const CROWDIN_FILES = ['source.json']; // crowdin files for downloading/uploading
 const LOCALES = Object.keys(twoskyConfig.languages);
 const LOCALES_DIR = './src/locales';
