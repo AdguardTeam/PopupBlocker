@@ -5,7 +5,7 @@
     },
     "userscript_name": {
         "message": "AdGuard Popup Blocker",
-        "patform": ["userscript", "userscript_settings"]
+        "platform": ["userscript", "userscript_settings"]
     },
     "extension_description": {
         "message": "Blocks popup ads on web pages",
@@ -16,7 +16,7 @@
         "platform": ["userscript", "extension"]
     },
     "aborted_popunder_execution": {
-        "message": "PopupBlocker aborted a script execution to prevent background redirect",
+        "message": "Popup Blocker aborted a script execution to prevent background redirect",
         "platform": ["userscript", "extension"]
     },
     "ext_enabled": {

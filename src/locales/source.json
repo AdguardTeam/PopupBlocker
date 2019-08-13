@@ -51,7 +51,7 @@
         "message": "Install from {$startLink}{$name}{$endLink}"
     },
     "noinst_step_3": {
-        "message": "Step 3: Refresh this page to get the userscript settings"
+        "message": "Step 3: Refresh this page to get to the userscript settings"
     },
     "noinst_ignore_if_ag": {
         "message": "If you installed AdGuard for Windows, you can ignore this step as the Popup Blocker userscript comes pre-installed."
@@ -63,7 +63,7 @@
         "message": "Please wait, detecting the Popup Blocker"
     },
     "noinst_special_prog": {
-        "message": "First of all, to use a userscript you need a special program that runs userscript."
+        "message": "First of all, to use a userscript you need a special program or extension that runs userscripts."
     },
     "noinst_subtitle": {
         "message": "AdGuard Popup Blocker userscript is not installed. Please see the instruction below."
@@ -85,7 +85,7 @@
     },
     "userscript_name": {
         "message": "AdGuard Popup Blocker",
-        "patform": [
+        "platform": [
             "userscript",
             "userscript_settings"
         ]
@@ -104,7 +104,7 @@
         ]
     },
     "aborted_popunder_execution": {
-        "message": "PopupBlocker aborted a script execution to prevent background redirect",
+        "message": "Popup Blocker aborted a script execution to prevent background redirect",
         "platform": [
             "userscript",
             "extension"

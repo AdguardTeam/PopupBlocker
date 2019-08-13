@@ -1,0 +1,32 @@
+[
+    {
+        "project_id": "popup-blocker",
+        "base_locale": "en",
+        "languages": {
+            "en": "English",
+            "ar": "Arabic",
+            "cs": "Czech",
+            "da": "Danish",
+            "de": "German",
+            "es": "Spanish",
+            "fa": "Persian",
+            "fr": "French",
+            "id": "Indonesian",
+            "it": "Italian",
+            "ja": "Japanese",
+            "no": "Norwegian",
+            "pl": "Polish",
+            "pt-BR": "Portuguese (Brazil)",
+            "pt-PT": "Portuguese",
+            "ru": "Russian",
+            "sl": "Slovenian",
+            "tr": "Turkish",
+            "uk": "Ukrainian",
+            "zh-CN": "Chinese Simplified (mainland China)",
+            "zh-TW": "Chinese Traditional (Taiwan)"
+        },
+        "localizable_files": [
+            "src/locales/source.json"
+        ]
+    }
+]

@@ -1,13 +1,148 @@
 {
-    "ar": {
+    "en": {
+        "show_popup": {
+            "message": "Show {$destUrl}"
+        },
+        "continue_blocking": {
+            "message": "Continue blocking"
+        },
         "allow_from": {
-            "message": "{$origDomain}السماح بالنوافذ المنبثقة على"
+            "message": "Allow pop-ups on {$origDomain}"
+        },
+        "manage_pref": {
+            "message": "Manage preferences..."
+        },
+        "popup_text": {
+            "message": "AdGuard prevented this website from opening {$numPopup} pop-up windows"
+        },
+        "options": {
+            "message": "Options"
+        },
+        "silence_noti": {
+            "message": "Don't show this message on {$origDomain}"
+        },
+        "site_input_ph": {
+            "message": "Enter site name"
+        },
+        "add_site": {
+            "message": "Add a site"
+        },
+        "add": {
+            "message": "Add"
+        },
+        "allowed_empty": {
+            "message": "List of exceptions is empty"
+        },
+        "allowed": {
+            "message": "Exceptions"
+        },
+        "silenced_empty": {
+            "message": "List of websites with silenced notifications is empty"
+        },
+        "silenced": {
+            "message": "Silenced"
+        },
+        "allowed_tooltip": {
+            "message": "Popups will be allowed on websites listed here."
+        },
+        "silenced_tooltip": {
+            "message": "Blocked popups notifications will not be shown on websites listed here."
+        },
+        "installFrom": {
+            "message": "Install from {$startLink}{$name}{$endLink}"
+        },
+        "noinst_step_3": {
+            "message": "Step 3: Refresh this page to get to the userscript settings"
+        },
+        "noinst_ignore_if_ag": {
+            "message": "If you have AdGuard for Windows installed, you can ignore this step as the Popup Blocker userscript comes pre-installed."
+        },
+        "noinst_rec": {
+            "message": "(Recommended)"
+        },
+        "please_wait": {
+            "message": "Please wait, detecting the Popup Blocker"
+        },
+        "noinst_special_prog": {
+            "message": "First of all, to use a userscript you need a special program or extension that runs userscripts."
+        },
+        "noinst_subtitle": {
+            "message": "AdGuard Popup Blocker userscript is not installed. Please see the instruction below."
+        },
+        "homepage": {
+            "message": "Homepage"
+        },
+        "noinst_step_1": {
+            "message": "Step 1: Install a userscript manager"
+        },
+        "noinst_step_2": {
+            "message": "Step 2: Userscript"
+        },
+        "extension_name": {
+            "message": "Popup Blocker by AdGuard",
+            "platform": [
+                "extension"
+            ]
+        },
+        "userscript_name": {
+            "message": "AdGuard Popup Blocker",
+            "platform": [
+                "userscript",
+                "userscript_settings"
+            ]
+        },
+        "extension_description": {
+            "message": "Blocks popup ads on web pages",
+            "platform": [
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "This transition to the new page is likely to be caused by a pop-under. Do you wish to continue?",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "Popup Blocker aborted a script execution to prevent background redirect",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "ext_enabled": {
+            "message": "Popup Blocker is on duty",
+            "platform": [
+                "extension"
+            ]
+        },
+        "ext_disabled": {
+            "message": "Popup Blocker is disabled for $DOMAIN$",
+            "platform": "extension",
+            "placeholders": {
+                "domain": {
+                    "content": "$1"
+                }
+            }
+        },
+        "ext_disabled_default": {
+            "message": "Popup Blocker cannot run on this domain",
+            "platform": "extension"
+        },
+        "settings_saved": {
+            "message": "Settings saved"
+        }
+    },
+    "ar": {
+        "show_popup": {
+            "message": "{$destUrl}اظهار"
         },
         "continue_blocking": {
             "message": "متابعة الحظر"
         },
-        "show_popup": {
-            "message": "{$destUrl}اظهار"
+        "allow_from": {
+            "message": "{$origDomain}السماح بالنوافذ المنبثقة على"
         },
         "manage_pref": {
             "message": "...أداره التفضيلات"
@@ -52,7 +187,7 @@
             "message": "{$startLink}{$name}{$endLink}التثبيت من"
         },
         "noinst_step_3": {
-            "message": "usercript الخطوة 3 قم بتحديث هذه الصفحة للوصول إلى إعدادات"
+            "message": "الخطوة 3: قم بتحديث هذه الصفحة للوصول إلى إعدادات userscript"
         },
         "noinst_ignore_if_ag": {
             "message": "إذا كان لديك برنامج ادجوارد مثبتًا على الويندوز ، فيمكنك تجاهل هذه الخطوة حيث يأتي مانع النوافذ المنبثقة مثبتة مسبقًا"
@@ -64,50 +199,62 @@
             "message": "يرجى الانتظار للكشف عن مانع ظهور النوافذ المنبثقة"
         },
         "noinst_special_prog": {
-            "message": "أولاً وقبل كل شيء لاستخدام البرامج النصية للمستخدم تحتاج إلى برنامج خاص أو ملحق يمكن تشغيل البرامج النصية للمستخدم"
+            "message": "أولاً وقبل كل شيء, لاستخدام userscript تحتاج إلى برنامج خاص أو ملحق الذي يستطيع تشغيل userscript."
         },
         "noinst_subtitle": {
             "message": "لم يتم تثبيت يوزر سكربت ادجوارد مانع النوافذ المنبثقة  يرجى الاطلاع على التعليمات أدناه"
         },
-        "noinst_step_1": {
-            "message": "الخطوة 1: تثبيت مديريوزر سكربت"
-        },
         "homepage": {
             "message": "الصفحه الرئيسيه"
+        },
+        "noinst_step_1": {
+            "message": "الخطوة 1: تثبيت مديريوزر سكربت"
         },
         "noinst_step_2": {
             "message": "الخطوة 2: يوزر سكربت"
         },
         "extension_name": {
-            "description": "يستخدم هذا الاسم لملحقات المستعرض",
+            "message": "AdGuardمانع النوافذ المنبثقة من قبل",
             "platform": [
-                "ملحق"
-            ],
-            "message": "AdGuardمانع النوافذ المنبثقة من قبل"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "يتم استخدام هذا الاسم لـ يوزر سكربت",
-            "patform": [
-                "يوزر سكربت",
-                "إعدادات يوزر سكربت"
-            ],
-            "message": "مانع النوافذ المنبثقة AdGuard"
+            "message": "مانع النوافذ المنبثقة AdGuard",
+            "platform": [
+                "userscript",
+                "userscript_settings"
+            ]
         },
         "extension_description": {
+            "message": "لحظر الإعلانات المنبثقة على صفحات الويب",
             "platform": [
-                "ملحق"
-            ],
-            "message": "لحظر الإعلانات المنبثقة على صفحات الويب"
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "من المحتمل ان يكون هذا الانتقال إلى الصفحة الجديدة ناتجا عن الإطار المنبثق. هل ترغب في المتابعة ؟",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "مانع النوافذ المنبثقة احبط تنفيذ script لمنع أعاده توجيه الخلفية",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "مانع النوافذ المنبثقة يعمل في الخدمة",
             "platform": [
-                "ملحق"
+                "extension"
             ]
         },
         "ext_disabled": {
             "message": "$ DOMAIN $تم تعطيل مانع النوافذ المنبثقة بـ",
-            "platform": "ملحق",
+            "platform": "extension",
             "placeholders": {
                 "domain": {
                     "content": "$1"
@@ -116,48 +263,21 @@
         },
         "ext_disabled_default": {
             "message": "لا يمكن تشغيل مانع النوافذ المنبثقة على هذا النطاق",
-            "platform": "ملحق"
+            "platform": "extension"
         },
         "settings_saved": {
             "message": "الإعدادات المحفوظة"
-        },
-        "popup_text_full": {
-            "message": "نافذة منبثقة{{0_url}}منعت محاولة لفتح"
-        },
-        "popup_allow_dest": {
-            "message": "${domain}السماح دائما"
-        },
-        "popup_allow_dest_conf": {
-            "message": "${domain}?السماح لجميع النوافذ المنبثقة التي تؤدي إلى"
-        },
-        "popup_allow_origin": {
-            "message": "السماح لجميع النوافذ المنبثقة علي هذا الموقع"
-        },
-        "popup_allow_origin_conf": {
-            "message": "${parent}السماح بكافة الإطارات المنبثقة الناشئة عن"
-        },
-        "popup_text_min": {
-            "message": "حظر"
-        },
-        "popup_expand_min": {
-            "message": "الإطار المنبثق"
-        },
-        "on_navigation_by_popunder": {
-            "message": "من المحتمل ان يكون هذا الانتقال إلى الصفحة الجديدة ناتجا عن الإطار المنبثق. هل ترغب في المتابعة ؟"
-        },
-        "aborted_popunder_execution": {
-            "message": "مانع النوافذ المنبثقة احبط تنفيذ برنامج نصي لمنع أعاده توجيه الخلفية"
         }
     },
     "cs": {
-        "allow_from": {
-            "message": "Povolit vyskakovací okna na {$origDomain}"
+        "show_popup": {
+            "message": "Zobrazit {$destUrl}"
         },
         "continue_blocking": {
             "message": "Pokračovat v blokování"
         },
-        "show_popup": {
-            "message": "Zobrazit {$destUrl}"
+        "allow_from": {
+            "message": "Povolit vyskakovací okna na {$origDomain}"
         },
         "manage_pref": {
             "message": "Spravovat předvolby"
@@ -219,45 +339,57 @@
         "noinst_subtitle": {
             "message": "Uživatelský skript pro blokování vyskakovacích oken AdGuard není nainstalován. Pokyny naleznete níže."
         },
-        "noinst_step_1": {
-            "message": "Krok 1: Nainstalujte správce uživatelských skriptů"
-        },
         "homepage": {
             "message": "Domovská stránka"
+        },
+        "noinst_step_1": {
+            "message": "Krok 1: Nainstalujte správce uživatelských skriptů"
         },
         "noinst_step_2": {
             "message": "Krok 2: Uživatelský skript"
         },
         "extension_name": {
-            "description": "Tento název se používá pro rozšíření prohlížeče.",
+            "message": "Blok. vyskak. oken od AdGuard",
             "platform": [
-                "rozšíření"
-            ],
-            "message": "Blok. vyskak. oken od AdGuard"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "Tento název se používá pro uživatelský skript.",
-            "patform": [
-                "uživatelský skript",
-                "uživatelský skript_nastavení"
-            ],
-            "message": "Blok. vyskak. oken AdGuard"
+            "message": "Blok. vyskak. oken AdGuard",
+            "platform": [
+                "userscript",
+                "userscript_settings"
+            ]
         },
         "extension_description": {
+            "message": "Blokuje vyskakovací reklamy na webových stránkách",
             "platform": [
-                "rozšíření"
-            ],
-            "message": "Blokuje vyskakovací reklamy na webových stránkách"
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "Tento přechod na novou stránku bude pravděpodobně způsoben pop-under. Chcete pokračovat?",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "Blokátor vyskakovacích oken zrušil spuštění skriptu, aby zabránil přesměrování na pozadí",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "Blokování vyskakovacích oken je v provozu",
             "platform": [
-                "rozšíření"
+                "extension"
             ]
         },
         "ext_disabled": {
             "message": "Blokování vyskakovacích oken je zakázáno pro $DOMAIN$",
-            "platform": "rozšíření",
+            "platform": "extension",
             "placeholders": {
                 "domain": {
                     "content": "$1"
@@ -266,48 +398,21 @@
         },
         "ext_disabled_default": {
             "message": "Blokování vyskakovacích oken nemůže běžet na této doméně",
-            "platform": "rozšíření"
+            "platform": "extension"
         },
         "settings_saved": {
             "message": "Nastavení uložena"
-        },
-        "popup_text_full": {
-            "message": "Zablokovaný pokus otevřít {{0_url}} vyskakovací okno"
-        },
-        "popup_allow_dest": {
-            "message": "Vždy povolit ${domain}"
-        },
-        "popup_allow_dest_conf": {
-            "message": "Povolit všechna vyskakovací okna vedoucí k ${domain}?"
-        },
-        "popup_allow_origin": {
-            "message": "Povolit všechna vyskakovací okna na této webové stránce"
-        },
-        "popup_allow_origin_conf": {
-            "message": "Povolit všechna vyskakovací okna pocházející z ${parent}?"
-        },
-        "popup_text_min": {
-            "message": "Zablokováno"
-        },
-        "popup_expand_min": {
-            "message": "vyskakující okno"
-        },
-        "on_navigation_by_popunder": {
-            "message": "Tento přechod na novou stránku bude pravděpodobně způsoben pop-under. Chcete pokračovat?"
-        },
-        "aborted_popunder_execution": {
-            "message": "Blokátor vyskakovacích oken zrušil spuštění skriptu, aby zabránil přesměrování na pozadí"
         }
     },
     "da": {
-        "allow_from": {
-            "message": "Tillad pop-ups på {$origDomain}"
+        "show_popup": {
+            "message": "Vis {$destUrl}"
         },
         "continue_blocking": {
             "message": "Fortsæt blokering"
         },
-        "show_popup": {
-            "message": "Vis {$destUrl}"
+        "allow_from": {
+            "message": "Tillad pop-ups på {$origDomain}"
         },
         "manage_pref": {
             "message": "Administrer præferencer..."
@@ -369,45 +474,57 @@
         "noinst_subtitle": {
             "message": "AdGuard Popup Blocker userscript er ikke installeret. Se venligst nedenstående instruktion."
         },
-        "noinst_step_1": {
-            "message": "Trin 1: Installer en userscript manager"
-        },
         "homepage": {
             "message": "Hjemmeside"
+        },
+        "noinst_step_1": {
+            "message": "Trin 1: Installer en userscript manager"
         },
         "noinst_step_2": {
             "message": "Trin 2: Userscript"
         },
         "extension_name": {
-            "description": "Dette navn bruges til browserudvidelser.",
+            "message": "Popup Blocker af AdGuard",
             "platform": [
-                "udvidelse"
-            ],
-            "message": "Popup Blocker af AdGuard"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "Dette navn bruges til userscripts.",
-            "patform": [
+            "message": "AdGuard Popup Blocker",
+            "platform": [
                 "userscript",
-                "userscript_indstillinger"
-            ],
-            "message": "AdGuard Popup Blocker"
+                "userscript_settings"
+            ]
         },
         "extension_description": {
+            "message": "Blokerer pop-up reklamer på websider",
             "platform": [
-                "udvidelse"
-            ],
-            "message": "Blokerer pop-up reklamer på websider"
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "Denne overgang til den nye side vil sandsynligvis medføre et pop under-vindue. Ønsker du at fortsætte?",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "Popup Blocker afbrød en script eksekvering for at forhindre baggrundsomdirigering",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "Popup Blocker er på vagt",
             "platform": [
-                "udvidelse"
+                "extension"
             ]
         },
         "ext_disabled": {
             "message": "Popup Blocker er deaktiveret for $DOMAIN$",
-            "platform": "udvidelse",
+            "platform": "extension",
             "placeholders": {
                 "domain": {
                     "content": "$1"
@@ -416,48 +533,21 @@
         },
         "ext_disabled_default": {
             "message": "Popup Blocker kan ikke køre på dette domæne",
-            "platform": "udvidelse"
+            "platform": "extension"
         },
         "settings_saved": {
             "message": "Indstillingerne er gemt"
-        },
-        "popup_text_full": {
-            "message": "Blokerede et forsøg på at åbne et {{0_url}} pop op-vindue"
-        },
-        "popup_allow_dest": {
-            "message": "Tillad altid ${domain}"
-        },
-        "popup_allow_dest_conf": {
-            "message": "Tillad alle pop op-vinduer der fører til ${domain}?"
-        },
-        "popup_allow_origin": {
-            "message": "Tillad alle pop op-vinduer på denne webside"
-        },
-        "popup_allow_origin_conf": {
-            "message": "Tillad alle pop op-vinduer med oprindelse fra ${parent}?"
-        },
-        "popup_text_min": {
-            "message": "Blokeret"
-        },
-        "popup_expand_min": {
-            "message": "pop op-vindue"
-        },
-        "on_navigation_by_popunder": {
-            "message": "Denne overgang til den nye side vil sandsynligvis medføre et pop under-vindue. Ønsker du at fortsætte?"
-        },
-        "aborted_popunder_execution": {
-            "message": "Popup Blocker afbrød en script eksekvering for at forhindre baggrundsomdirigering"
         }
     },
     "de": {
-        "allow_from": {
-            "message": "Pop-ups auf {$origDomain} zulassen"
+        "show_popup": {
+            "message": "{$destUrl} anzeigen"
         },
         "continue_blocking": {
             "message": "Blockieren fortsetzen"
         },
-        "show_popup": {
-            "message": "{$destUrl} anzeigen"
+        "allow_from": {
+            "message": "Pop-ups auf {$origDomain} zulassen"
         },
         "manage_pref": {
             "message": "Einstellungen verwalten..."
@@ -502,7 +592,7 @@
             "message": "Von {$startLink}{$name}{$endLink} installieren"
         },
         "noinst_step_3": {
-            "message": "Schritt 3: Aktualisieren Sie diese Seite, um zu den Benutzerskript-Einstellungen zu übergehen."
+            "message": "Schritt 3: Aktualisieren Sie diese Seite, um zu den Benutzerskript-Einstellungen zu übergehen"
         },
         "noinst_ignore_if_ag": {
             "message": "Wenn Sie AdGuard für Windows installiert haben, können Sie diesen Schritt ignorieren, da das Benutzerskript für den Pop-up-Blocker bereits vorinstalliert ist."
@@ -519,6 +609,9 @@
         "noinst_subtitle": {
             "message": "AdGuard Pop-up-Blocker Benutzerskript ist nicht installiert. Bitte beachten Sie die folgende Anleitung."
         },
+        "homepage": {
+            "message": "Startseite"
+        },
         "noinst_step_1": {
             "message": "Schritt 1: Installieren Sie einen Benutzerskript-Manager"
         },
@@ -526,184 +619,46 @@
             "message": "Schritt 2: Benutzerskript"
         },
         "extension_name": {
-            "description": "Dieser Name wird für Browsererweiterungen verwendet.",
+            "message": "Pop-up-Blocker von AdGuard",
             "platform": [
-                "Erweiterung"
-            ],
-            "message": "Pop-up-Blocker von AdGuard"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "Dieser Name wird für Benutzerskripte verwendet.",
-            "patform": [
-                "Benutzerskript",
-                "Benutzerskript_Einstellungen"
-            ],
-            "message": "AdGuard Pop-up-Blocker"
+            "message": "AdGuard Pop-up-Blocker",
+            "platform": [
+                "userscript",
+                "userscript_settings"
+            ]
         },
         "extension_description": {
+            "message": "Blockiert Anzeige-Pop-ups auf Webseiten",
             "platform": [
-                "Erweiterung"
-            ],
-            "message": "Blockiert Anzeige-Pop-ups auf Webseiten"
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "Diese Seiten-Navigation wird wahrscheinlich durch ein Pop-under verursacht. Möchten Sie fortfahren?",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "Pop-up-Blocker hat eine Skript-Ausführung abgebrochen, um eine Hintergrundumleitung zu verhindern",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "Pop-up-Blocker verrichtet seinen Dienst",
             "platform": [
-                "Erweiterung"
+                "extension"
             ]
         },
         "ext_disabled": {
             "message": "Der Pop-up-Blocker ist für $DOMAIN$ deaktiviert",
-            "platform": "Erweiterung",
-            "placeholders": {
-                "domain": {
-                    "content": "$1"
-                }
-            }
-        },
-        "ext_disabled_default": {
-            "message": "Pop-up-Blocker funktioniert auf dieser Domain nicht",
-            "platform": "Erweiterung"
-        },
-        "settings_saved": {
-            "message": "Einstellungen gespeichert"
-        },
-        "popup_text_full": {
-            "message": "Es wurde ein Versuch blockiert ein {{0_url}} Popup-Fenster zu öffnen."
-        },
-        "popup_allow_dest": {
-            "message": "${domain} immer zulassen"
-        },
-        "popup_allow_dest_conf": {
-            "message": "Alle Pop-ups zulassen, die zu ${domain} führen?"
-        },
-        "popup_allow_origin": {
-            "message": "Alle Pop-ups auf dieser Webseite erlauben"
-        },
-        "popup_allow_origin_conf": {
-            "message": "Alle Pop-ups aus der aktuellen Domain zulassen — ${parent}?"
-        },
-        "popup_text_min": {
-            "message": "Blockiert"
-        },
-        "popup_expand_min": {
-            "message": "Pop-up"
-        },
-        "on_navigation_by_popunder": {
-            "message": "Diese Seiten-Navigation wird wahrscheinlich durch ein Pop-under verursacht. Möchten Sie fortfahren?"
-        },
-        "aborted_popunder_execution": {
-            "message": "Pop-up-Blocker hat eine Skript-Ausführung abgebrochen, um eine Hintergrundumleitung zu verhindern"
-        }
-    },
-    "en": {
-        "allow_from": {
-            "message": "Allow pop-ups on {$origDomain}"
-        },
-        "continue_blocking": {
-            "message": "Continue blocking"
-        },
-        "show_popup": {
-            "message": "Show {$destUrl}"
-        },
-        "manage_pref": {
-            "message": "Manage preferences..."
-        },
-        "popup_text": {
-            "message": "AdGuard prevented this website from opening {$numPopup} pop-up windows"
-        },
-        "options": {
-            "message": "Options"
-        },
-        "silence_noti": {
-            "message": "Don't show this message on {$origDomain}"
-        },
-        "site_input_ph": {
-            "message": "Enter site name"
-        },
-        "add_site": {
-            "message": "Add a site"
-        },
-        "add": {
-            "message": "Add"
-        },
-        "allowed_empty": {
-            "message": "List of exceptions is empty"
-        },
-        "allowed": {
-            "message": "Exceptions"
-        },
-        "silenced_empty": {
-            "message": "List of websites with silenced notifications is empty"
-        },
-        "silenced": {
-            "message": "Silenced"
-        },
-        "allowed_tooltip": {
-            "message": "Popups will be allowed on websites listed here."
-        },
-        "silenced_tooltip": {
-            "message": "Blocked popups notifications will not be shown on websites listed here."
-        },
-        "installFrom": {
-            "message": "Install from {$startLink}{$name}{$endLink}"
-        },
-        "noinst_step_3": {
-            "message": "Step 3: Refresh this page to get to the userscript settings"
-        },
-        "noinst_ignore_if_ag": {
-            "message": "If you have AdGuard for Windows installed, you can ignore this step as the Popup Blocker userscript comes pre-installed."
-        },
-        "noinst_rec": {
-            "message": "(Recommended)"
-        },
-        "please_wait": {
-            "message": "Please wait, detecting the Popup Blocker"
-        },
-        "noinst_special_prog": {
-            "message": "First of all, to use a userscript you need a special program or extension that can run userscripts."
-        },
-        "noinst_subtitle": {
-            "message": "AdGuard Popup Blocker userscript is not installed. Please see the instruction below."
-        },
-        "noinst_step_1": {
-            "message": "Step 1: Install a userscript manager"
-        },
-        "homepage": {
-            "message": "Homepage"
-        },
-        "noinst_step_2": {
-            "message": "Step 2: Userscript"
-        },
-        "extension_name": {
-            "description": "This name is used for browser extensions.",
-            "platform": [
-                "extension"
-            ],
-            "message": "Popup Blocker by AdGuard"
-        },
-        "userscript_name": {
-            "description": "This name is used for userscripts.",
-            "patform": [
-                "userscript",
-                "userscript_settings"
-            ],
-            "message": "AdGuard Popup Blocker"
-        },
-        "extension_description": {
-            "platform": [
-                "extension"
-            ],
-            "message": "Blocks popup ads on web pages"
-        },
-        "ext_enabled": {
-            "message": "Popup Blocker is on duty",
-            "platform": [
-                "extension"
-            ]
-        },
-        "ext_disabled": {
-            "message": "Popup Blocker is disabled for $DOMAIN$",
             "platform": "extension",
             "placeholders": {
                 "domain": {
@@ -712,49 +667,22 @@
             }
         },
         "ext_disabled_default": {
-            "message": "Popup Blocker cannot run on this domain",
+            "message": "Pop-up-Blocker funktioniert auf dieser Domain nicht",
             "platform": "extension"
         },
         "settings_saved": {
-            "message": "Settings saved"
-        },
-        "popup_text_full": {
-            "message": "Blocked an attempt to open a {{0_url}} pop-up window"
-        },
-        "popup_allow_dest": {
-            "message": "Always allow ${domain}"
-        },
-        "popup_allow_dest_conf": {
-            "message": "Allow all pop-ups leading to ${domain}?"
-        },
-        "popup_allow_origin": {
-            "message": "Allow all pop-ups on this website"
-        },
-        "popup_allow_origin_conf": {
-            "message": "Allow all pop-ups originating from ${parent}?"
-        },
-        "popup_text_min": {
-            "message": "Blocked"
-        },
-        "popup_expand_min": {
-            "message": "pop-up"
-        },
-        "on_navigation_by_popunder": {
-            "message": "This transition to the new page is likely to be caused by a pop-under. Do you wish to continue?"
-        },
-        "aborted_popunder_execution": {
-            "message": "Popup Blocker aborted a script execution to prevent background redirect"
+            "message": "Einstellungen gespeichert"
         }
     },
     "es": {
-        "allow_from": {
-            "message": "Permitir ventanas emergentes en {$origDomain}"
+        "show_popup": {
+            "message": "Mostrar {$destUrl}"
         },
         "continue_blocking": {
             "message": "Continuar bloqueando\n"
         },
-        "show_popup": {
-            "message": "Mostrar {$destUrl}"
+        "allow_from": {
+            "message": "Permitir ventanas emergentes en {$origDomain}"
         },
         "manage_pref": {
             "message": "Administrar preferencias..."
@@ -799,7 +727,7 @@
             "message": "Instalar desde {$startLink}{$name}{$endLink}"
         },
         "noinst_step_3": {
-            "message": "Paso 3: Recargue esta página para obtener los ajustes de userscript"
+            "message": "Paso 3: Actualice esta página para acceder a la configuración del userscript"
         },
         "noinst_ignore_if_ag": {
             "message": "Si tiene instalado AdGuard para Windows, puede ignorar este paso ya que el bloqueador de ventanas emergentes viene preinstalado."
@@ -811,50 +739,62 @@
             "message": "Por favor espere, detectando el Bloqueador de popup"
         },
         "noinst_special_prog": {
-            "message": "Primero para usar userscript se necesita un programa especial que lo ejecuta."
+            "message": "En primer lugar, para usar un userscript necesita un programa especial que ejecute el userscript."
         },
         "noinst_subtitle": {
             "message": "Bloqueador de popup de AdGuard no es instalado. Por favor, vea el manual abajo."
         },
-        "noinst_step_1": {
-            "message": "Paso 1: Instale el gestor de userscript"
-        },
         "homepage": {
             "message": "Página de inicio"
+        },
+        "noinst_step_1": {
+            "message": "Paso 1: Instale el gestor de userscript"
         },
         "noinst_step_2": {
             "message": "Paso 2: Userscript"
         },
         "extension_name": {
-            "description": "Este nombre se usa para las extensiones de navegador.",
+            "message": "Bloqueador de popup de AdGuard",
             "platform": [
-                "extensión"
-            ],
-            "message": "Bloqueador de popup de AdGuard"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "Este nombre se usa para userscripts.",
-            "patform": [
+            "message": "Bloqueador de popup de AdGuard",
+            "platform": [
                 "userscript",
-                "ajustes_userscript"
-            ],
-            "message": "Bloqueador de popup de AdGuard"
+                "userscript_settings"
+            ]
         },
         "extension_description": {
+            "message": "Bloquea elementos emergentes en sitios web",
             "platform": [
-                "extensión"
-            ],
-            "message": "Bloquea elementos emergentes en sitios web"
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "Parece que la transición a nueva página sea causada por un pop-under (elemento emergente). ¿Quiere continuar?",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "Popup Blocker canceló la ejecución de un script para evitar la redirección en segundo plano",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "Bloqueador de popup está en servicio",
             "platform": [
-                "extensión"
+                "extension"
             ]
         },
         "ext_disabled": {
             "message": "Bloqueador de popup está desactivado para $DOMAIN$",
-            "platform": "extensión",
+            "platform": "extension",
             "placeholders": {
                 "domain": {
                     "content": "$1"
@@ -863,48 +803,21 @@
         },
         "ext_disabled_default": {
             "message": "Bloqueador de popup no puede ejecutar en este dominio",
-            "platform": "extensión"
+            "platform": "extension"
         },
         "settings_saved": {
             "message": "Ajustes guardados"
-        },
-        "popup_text_full": {
-            "message": "Bloqueó un intento de abrir un  {{0_url}} elemento emergente"
-        },
-        "popup_allow_dest": {
-            "message": "Siempre permitir ${domain}"
-        },
-        "popup_allow_dest_conf": {
-            "message": "¿Siempre permitir todos los elementos emergentes que llevan a ${domain}?"
-        },
-        "popup_allow_origin": {
-            "message": "Permitir todos los elementos emergentes en este sitio web"
-        },
-        "popup_allow_origin_conf": {
-            "message": "¿Permitir todos los elementos emergentes de ${parent}?"
-        },
-        "popup_text_min": {
-            "message": "Bloqueado"
-        },
-        "popup_expand_min": {
-            "message": "ventana emergente"
-        },
-        "on_navigation_by_popunder": {
-            "message": "Parece que la transición a nueva página sea causada por un pop-under (elemento emergente). ¿Quiere continuar?"
-        },
-        "aborted_popunder_execution": {
-            "message": " Bloqueador de popup canceló  la ejecución del script para evitar una redirección de segundo plano"
         }
     },
     "fa": {
-        "allow_from": {
-            "message": "اجازه پاپ آپ ها در {$origDomain}"
+        "show_popup": {
+            "message": "نمایش {$destUrl}"
         },
         "continue_blocking": {
             "message": "ادامه مسدودسازی"
         },
-        "show_popup": {
-            "message": "نمایش {$destUrl}"
+        "allow_from": {
+            "message": "اجازه پاپ آپ ها در {$origDomain}"
         },
         "manage_pref": {
             "message": "مدیریت اولویت ها..."
@@ -966,45 +879,57 @@
         "noinst_subtitle": {
             "message": "یوزراسکریپت مسدودساز پاپ آپ AdGuard نصب نشده است. لطفا دستور العمل را در زیر مشاهده کنید."
         },
-        "noinst_step_1": {
-            "message": "گام 1:نصب مدیر یوزر اسکریپت"
-        },
         "homepage": {
             "message": "صفحه خانگی"
+        },
+        "noinst_step_1": {
+            "message": "گام 1:نصب مدیر یوزر اسکریپت"
         },
         "noinst_step_2": {
             "message": "گام 2: یوزر اسکریپت"
         },
         "extension_name": {
-            "description": "این نام برای افزونه های مرورگر استفاده می شود",
+            "message": "مسدودساز پاپ-آپ AdGuard",
             "platform": [
-                "افزونه"
-            ],
-            "message": "مسدودساز پاپ-آپ AdGuard"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "این نام برای یوزراسکریپت ها بکار رفته است.",
-            "patform": [
-                "یوزر اسکریپت",
-                "تنظیمات_یوزر اسکریپت"
-            ],
-            "message": "مسدودساز پاپ-آپ AdGuard"
+            "message": "مسدودساز پاپ-آپ AdGuard",
+            "platform": [
+                "userscript",
+                "userscript_settings"
+            ]
         },
         "extension_description": {
+            "message": "مسدودسازی تبلیغات پاپ آپ در صفحات وب.",
             "platform": [
-                "افزونه"
-            ],
-            "message": "مسدودسازی تبلیغات پاپ آپ در صفحات وب."
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "انتقال به این صفحه جدید احتمالا بخاطر یه پاپ-آندر انجام شده است. میخواهید ادامه دهید؟",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "مسدودساز پاپ-آپ اجرای کد را لغو کرده تا از ریدایرکت جبلوگیری شود",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "مسدودساز پاپ آپ در حال انجام وظیفه است",
             "platform": [
-                "افزونه"
+                "extension"
             ]
         },
         "ext_disabled": {
             "message": "مسدودساز پاپ آپ برای $DOMAIN$ غیر فعال شده است",
-            "platform": "افزونه",
+            "platform": "extension",
             "placeholders": {
                 "domain": {
                     "content": "$1"
@@ -1013,54 +938,30 @@
         },
         "ext_disabled_default": {
             "message": "مسدودساز پاپ آپ نمیتواند در این دامنه اجرا شود",
-            "platform": "افزونه"
+            "platform": "extension"
         },
         "settings_saved": {
             "message": "تنظيمات ذخیره شد"
-        },
-        "popup_text_full": {
-            "message": "یک پاپ آپ در {{0_url}} مسدود شد."
-        },
-        "popup_allow_dest": {
-            "message": "همیشه به ${domain} اجازه بده"
-        },
-        "popup_allow_dest_conf": {
-            "message": "اجازه همیشگی به پاپ-آپ هایی که در ${domain} وجود دارند؟"
-        },
-        "popup_allow_origin": {
-            "message": "اجازه به همه پاپ-آپ های موجود در این سایت؟"
-        },
-        "popup_allow_origin_conf": {
-            "message": "اجازه به پاپ-آپ هایی که منبعشان ${parent} است؟"
-        },
-        "popup_text_min": {
-            "message": "مسدود شده"
-        },
-        "popup_expand_min": {
-            "message": "پاپ-آپ"
-        },
-        "on_navigation_by_popunder": {
-            "message": "انتقال به این صفحه جدید احتمالا بخاطر یه پاپ-آندر انجام شده است. میخواهید ادامه دهید؟"
-        },
-        "aborted_popunder_execution": {
-            "message": "مسدودساز پاپ-آپ اجرای کد را لغو کرده تا از ریدایرکت جبلوگیری شود"
         }
     },
     "fr": {
-        "allow_from": {
-            "message": "Autoriser fenêtres pop-up pour {$origDomain}"
+        "show_popup": {
+            "message": "Afficher {$destUrl}"
         },
         "continue_blocking": {
             "message": "Continuer le blocage"
         },
-        "show_popup": {
-            "message": "Afficher {$destUrl}"
+        "allow_from": {
+            "message": "Autoriser fenêtres pop-up pour {$origDomain}"
         },
         "manage_pref": {
             "message": "Administrer les préférences..."
         },
         "popup_text": {
             "message": "AdGuard a empêché ce site web d'afficher {$numPopup} fenêtres pop-up"
+        },
+        "options": {
+            "message": "Options"
         },
         "silence_noti": {
             "message": "Ne pas afficher ce message sur {$origDomain}"
@@ -1077,6 +978,9 @@
         "allowed_empty": {
             "message": "La liste des exceptions est vide"
         },
+        "allowed": {
+            "message": "Autorisé"
+        },
         "silenced_empty": {
             "message": "La liste des sites web aux notifications silencieuses est vide"
         },
@@ -1084,7 +988,7 @@
             "message": "Silence imposé"
         },
         "allowed_tooltip": {
-            "message": "Fenêtres pop-up pour les sites web sur la liste vont être \u001cautorisés."
+            "message": "Fenêtres pop-up pour les sites web sur la liste vont être autorisés."
         },
         "silenced_tooltip": {
             "message": "Les notifications pour les fenêtres pop-up bloquées depuis les sites web listés ci-dessous ne seront pas affichées."
@@ -1093,10 +997,10 @@
             "message": "Installer de {$startLink}{$name}{$endLink}"
         },
         "noinst_step_3": {
-            "message": "Étape 3: renouvelez la page pour accéder aux paramètres du script utilisateur"
+            "message": "Étape 3: actualisez cette page page pour accéder aux paramètres du script utilisateur"
         },
         "noinst_ignore_if_ag": {
-            "message": "Si vous avez installé AdGuard pour Windows auparavant, vous pouvez passer cette étape car le script utilisateur Bloqueur de fenêtres pop-up y est déjà pré-installé.\u001c"
+            "message": "Si vous avez installé AdGuard pour Windows auparavant, vous pouvez passer cette étape car le script utilisateur Bloqueur de fenêtres pop-up y est déjà pré-installé."
         },
         "noinst_rec": {
             "message": "(Recommandé)"
@@ -1105,40 +1009,52 @@
             "message": "Veuillez patienter, recherche de bloqueur des fenêtres pop-up en cours"
         },
         "noinst_special_prog": {
-            "message": "À l'essentiel pour vous servied'un script utilisateur vous avez besoin d'un programme spécial ou extension qui fonctionne sur ces types de script."
+            "message": "Tout d'abord, pour utiliser un script utilisateur vous avez besoin d'un programme spécial ou d'une extension qui gère les scripts utilisateur."
         },
         "noinst_subtitle": {
-            "message": "Le script utilisateur bloqueur de fenê\u001ctres pop-up n'est pas installé. Veuillez consulter le manuel ci-dessous."
-        },
-        "noinst_step_1": {
-            "message": "Étape 1: installer un logiciel géstionnaire de scripts utilisateurs"
+            "message": "Le script utilisateur bloqueur de fenêtres pop-up n'est pas installé. Veuillez consulter le manuel ci-dessous."
         },
         "homepage": {
             "message": "Page d'accueil"
+        },
+        "noinst_step_1": {
+            "message": "Étape 1: installer un logiciel géstionnaire de scripts utilisateurs"
         },
         "noinst_step_2": {
             "message": "Étape 2: script utilisateur"
         },
         "extension_name": {
-            "description": "Ce nom est utilisé pour les extentions de navigateur.",
+            "message": "Bloqueur de fenêtres pop-up de AdGuard",
             "platform": [
                 "extension"
-            ],
-            "message": "Bloqueur de fenêtres pop-up de AdGuard"
+            ]
         },
         "userscript_name": {
-            "description": "Ce nom est utilisé pour les scripts utilisateurs.",
-            "patform": [
-                "script utilisateur",
-                "paramètres_script utilisateur"
-            ],
-            "message": "Bloqueur de fenêtres pop-up de AdGuard"
+            "message": "Bloqueur de fenêtres pop-up de AdGuard",
+            "platform": [
+                "userscript",
+                "userscript_settings"
+            ]
         },
         "extension_description": {
+            "message": "Bloque les fenêtres pop-up avec publicités intrusives sur les pages web",
             "platform": [
                 "extension"
-            ],
-            "message": "Bloque les fenêtres pop-up avec publicités intrusives sur les pages web"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "Cette transition vers la nouvelle page est susceptible d'être causée par un pop-under. Désirez-vous continuer?",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "Le bloqueur de pop-ups a interrompu l'exécution d'un script pour empêcher une redirection en arrière-plan",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "Le bloqueur des fenêtres pop-up est en marche",
@@ -1156,49 +1072,22 @@
             }
         },
         "ext_disabled_default": {
-            "message": "Le bloqueur de fenêtres pop-up ne marche pas sur ce domaine\u001c",
+            "message": "Le bloqueur de fenêtres pop-up ne marche pas sur ce domaine",
             "platform": "extension"
         },
         "settings_saved": {
             "message": "Paramètres sauvegardés"
-        },
-        "popup_text_full": {
-            "message": "Blocage d'une tentative d'ouverture de fenêtre pop-up intrusive {{0_url}} ."
-        },
-        "popup_allow_dest": {
-            "message": "Toujours autoriser ${domain}"
-        },
-        "popup_allow_dest_conf": {
-            "message": "Autoriser toutes les fenêtres pop-up conduisant vers ${domain}?"
-        },
-        "popup_allow_origin": {
-            "message": "Autoriser toutes les fenêtres pop-up depuis ce site web"
-        },
-        "popup_allow_origin_conf": {
-            "message": "Autoriser toutes les fenêtres pop-up originaires de ${parent}?"
-        },
-        "popup_text_min": {
-            "message": "Bloqué"
-        },
-        "popup_expand_min": {
-            "message": "fenêtre pop-up\u001c"
-        },
-        "on_navigation_by_popunder": {
-            "message": "Cette transition vers la nouvelle page est susceptible d'être causée par un pop-under. Désirez-vous continuer?"
-        },
-        "aborted_popunder_execution": {
-            "message": "Le Bloqueur de fenêtres pop-up \u001ca interrompu l'exécution d'un script pour éviter la redirection au fond d'écran"
         }
     },
     "id": {
-        "allow_from": {
-            "message": "Izinkan popup di {$origDomain}"
+        "show_popup": {
+            "message": "Tampilkan {$destUrl}"
         },
         "continue_blocking": {
             "message": "Lanjutkan pemblokiran"
         },
-        "show_popup": {
-            "message": "Tampilkan {$destUrl}"
+        "allow_from": {
+            "message": "Izinkan popup di {$origDomain}"
         },
         "manage_pref": {
             "message": "Kelola pengaturan..."
@@ -1243,7 +1132,7 @@
             "message": "Pasang dari {$startLink}{$name}{$endLink}"
         },
         "noinst_step_3": {
-            "message": "Langkah 3: Segarkan halaman ini untuk masuk ke pengaturan userscript"
+            "message": "Tahap 3: Muat ulang halamana ini untuk masuk ke pengaturan userscript"
         },
         "noinst_ignore_if_ag": {
             "message": "Jika Anda telah memasang AdGuard untuk Windows, Anda dapat mengabaikan langkah ini karena Pemblokir Popup sudah terpasang."
@@ -1260,45 +1149,57 @@
         "noinst_subtitle": {
             "message": "Userscript Pemblokir Popup AdGuard belum terpasang. Silakan lihat instruksi di bawah ini."
         },
-        "noinst_step_1": {
-            "message": "Langkah 1: Pasang pengelola userscript"
-        },
         "homepage": {
             "message": "Situs"
+        },
+        "noinst_step_1": {
+            "message": "Langkah 1: Pasang pengelola userscript"
         },
         "noinst_step_2": {
             "message": "Langkah 2: Userscript"
         },
         "extension_name": {
-            "description": "Nama ini digunakan untuk ekstensi peramban.",
+            "message": "Pemblokir Popup oleh AdGuard",
             "platform": [
-                "ekstensi"
-            ],
-            "message": "Pemblokir Popup oleh AdGuard"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "Nama ini digunakan untuk userscript.",
-            "patform": [
+            "message": "Pemblokir Popup AdGuard",
+            "platform": [
                 "userscript",
                 "userscript_settings"
-            ],
-            "message": "AdGuard Popup Blocker"
+            ]
         },
         "extension_description": {
+            "message": "Blokir iklan popup di halaman web",
             "platform": [
-                "ekstensi"
-            ],
-            "message": "Blokir iklan popup di halaman web"
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "Transisi ke laman baru ini kemungkinan disebabkan oleh sebuah pop-up. Apakah Anda ingin melanjutkan?",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "Popup Blocker menghentikan eksekusi skrip untuk mencegah perubahan laman di latar belakang",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "Pemblokir Popup sedang bekerja",
             "platform": [
-                "ekstensi"
+                "extension"
             ]
         },
         "ext_disabled": {
             "message": "Pemblokir Popup dinonaktifkan untuk $DOMAIN$",
-            "platform": "ekstensi",
+            "platform": "extension",
             "placeholders": {
                 "domain": {
                     "content": "$1"
@@ -1307,45 +1208,21 @@
         },
         "ext_disabled_default": {
             "message": "Pemblokir Popup tidak dapat bekerja di domain ini",
-            "platform": "ekstensi"
+            "platform": "extension"
         },
         "settings_saved": {
             "message": "Pengaturan disimpan"
-        },
-        "popup_text_full": {
-            "message": "Memblokir percobaan membuka pop-up laman {{0_url}}"
-        },
-        "popup_allow_dest": {
-            "message": "Selalu izinkan ${domain}"
-        },
-        "popup_allow_dest_conf": {
-            "message": "Izinkan semua pop-up yang mengarah ke ${domain}?"
-        },
-        "popup_allow_origin": {
-            "message": "Izinkan semua pop-up di situs ini"
-        },
-        "popup_allow_origin_conf": {
-            "message": "Izinkan semua pop-up yang berasal dari ${parent}?"
-        },
-        "popup_text_min": {
-            "message": "Diblok"
-        },
-        "on_navigation_by_popunder": {
-            "message": "Transisi ke laman baru ini kemungkinan disebabkan oleh sebuah pop-up. Apakah Anda ingin melanjutkan?"
-        },
-        "aborted_popunder_execution": {
-            "message": "PopupBlocker menghentikan eksekusi script untuk mencegah perubahan laman di latar belakang"
         }
     },
     "it": {
-        "allow_from": {
-            "message": "Permetti popup per {$origDomain}"
+        "show_popup": {
+            "message": "Mostra {$destUrl}"
         },
         "continue_blocking": {
             "message": "Continua a bloccare"
         },
-        "show_popup": {
-            "message": "Mostra {$destUrl}"
+        "allow_from": {
+            "message": "Permetti popup per {$origDomain}"
         },
         "manage_pref": {
             "message": "Gestisci opzioni"
@@ -1407,6 +1284,9 @@
         "noinst_subtitle": {
             "message": "Lo script utenti Blocco popup di AdGuard non è installato. Per favore guarda le istruzioni qui sotto."
         },
+        "homepage": {
+            "message": "Pagina principale"
+        },
         "noinst_step_1": {
             "message": "Passo 1: Installa un manager dello script utenti"
         },
@@ -1414,35 +1294,47 @@
             "message": "Passo 2: Script utenti"
         },
         "extension_name": {
-            "description": "Questo nome è usato per le estensioni del browser.",
+            "message": "Blocco Pop-Up di AdGuard",
             "platform": [
-                "estensione"
-            ],
-            "message": "Blocco Pop-Up di AdGuard"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "Questo nome è usato per gli script utenti.",
-            "patform": [
-                "scriptutenti",
-                "impostazioni_scriptutenti"
-            ],
-            "message": "Blocco Pop-Up di AdGuard"
+            "message": "Blocco Pop-Up di AdGuard",
+            "platform": [
+                "userscript",
+                "userscript_settings"
+            ]
         },
         "extension_description": {
+            "message": "Blocca gli annunci di popup nelle pagine internet",
             "platform": [
-                "estensione"
-            ],
-            "message": "Blocca gli annunci di popup nelle pagine internet"
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "Questo passaggio alla nuova pagina è probabilmente causato da un pop-under. Vuoi continuare?",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "PopupBlocker ha interrotto l'esecuzione di uno script per impedire il reindirizzamento in background",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "Blocco popup è al lavoro",
             "platform": [
-                "estensione"
+                "extension"
             ]
         },
         "ext_disabled": {
             "message": "Blocco popup è disattivato per $DOMAIN$",
-            "platform": "estensione",
+            "platform": "extension",
             "placeholders": {
                 "domain": {
                     "content": "$1"
@@ -1451,45 +1343,21 @@
         },
         "ext_disabled_default": {
             "message": "Blocco popup non può essere eseguito in questo dominio",
-            "platform": "estensione"
+            "platform": "extension"
         },
         "settings_saved": {
             "message": "Impostazioni salvate"
-        },
-        "popup_text_full": {
-            "message": "Bloccato un tentativo di apertura finestra pop-up da {{0_url}}"
-        },
-        "popup_allow_dest": {
-            "message": "Permetti sempre ${domain}"
-        },
-        "popup_allow_dest_conf": {
-            "message": "Permetti tutti i pop-up che portano a ${domain}?"
-        },
-        "popup_allow_origin": {
-            "message": "Permetti tutti i pop-up su questo sito"
-        },
-        "popup_allow_origin_conf": {
-            "message": "Permetti tutti i pop-up provenienti da ${parent}?"
-        },
-        "popup_text_min": {
-            "message": "Bloccato"
-        },
-        "on_navigation_by_popunder": {
-            "message": "Questo passaggio alla nuova pagina è probabilmente causato da un pop-under. Vuoi continuare?"
-        },
-        "aborted_popunder_execution": {
-            "message": "PopupBlocker ha interrotto l'esecuzione di uno script per impedire il reindirizzamento in background"
         }
     },
     "ja": {
-        "allow_from": {
-            "message": "{$origDomain}のポップアップを許可する"
+        "show_popup": {
+            "message": "{$destUrl}を表示する"
         },
         "continue_blocking": {
             "message": "ブロッキングを続ける"
         },
-        "show_popup": {
-            "message": "{$destUrl}を表示する"
+        "allow_from": {
+            "message": "{$origDomain}のポップアップを許可する"
         },
         "manage_pref": {
             "message": "設定を管理…"
@@ -1551,45 +1419,57 @@
         "noinst_subtitle": {
             "message": "AdGuardポップアップブロッカー・ユーザスクリプトがインストールされていません。 下記の指示をご覧ください。"
         },
-        "noinst_step_1": {
-            "message": "ステップ1：ユーザースクリプト・マネージャをインストールする"
-        },
         "homepage": {
             "message": "ホームページ"
+        },
+        "noinst_step_1": {
+            "message": "ステップ1：ユーザースクリプト・マネージャをインストールする"
         },
         "noinst_step_2": {
             "message": "ステップ２：ユーザスクリプト"
         },
         "extension_name": {
-            "description": "この名称はブラウザの拡張機能に使用されます。",
+            "message": "ポップアップブロッカー by AdGuard",
             "platform": [
-                "拡張機能"
-            ],
-            "message": "ポップアップブロッカー by AdGuard"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "この名称はユーザスクリプトに使用されます。",
-            "patform": [
-                "ユーザスクリプト",
+            "message": "AdGuard ポップアップブロッカー",
+            "platform": [
+                "userscript",
                 "userscript_settings"
-            ],
-            "message": "AdGuard ポップアップブロッカー"
+            ]
         },
         "extension_description": {
+            "message": "Webページでポップアップ広告をブロックします。",
             "platform": [
-                "拡張機能"
-            ],
-            "message": "Webページでポップアップ広告をブロックします。"
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "新しいページへの移動はポップアンダーによって生じた可能性があります。続行しますか？",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "ポップアップブロッカーはバックグラウンドリダイレクトを防ぐためにスクリプトの実行を中止しました",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "ポップアップブロッカー作動中",
             "platform": [
-                "拡張機能"
+                "extension"
             ]
         },
         "ext_disabled": {
             "message": "$DOMAIN$に対してポップアップブロッカーは無効になっています",
-            "platform": "拡張機能",
+            "platform": "extension",
             "placeholders": {
                 "domain": {
                     "content": "$1"
@@ -1598,48 +1478,21 @@
         },
         "ext_disabled_default": {
             "message": "このドメインではポップアップブロッカーは動作できません",
-            "platform": "拡張機能"
+            "platform": "extension"
         },
         "settings_saved": {
             "message": "設定保存完了"
-        },
-        "popup_text_full": {
-            "message": "{{0_url}} のポップアップウィンドウをブロックしました"
-        },
-        "popup_allow_dest": {
-            "message": "${domain}を常に許可する"
-        },
-        "popup_allow_dest_conf": {
-            "message": "${domain}へ接続するすべてのポップアップを許可しますか？"
-        },
-        "popup_allow_origin": {
-            "message": "このウェブサイトでは全てのポップアップを許可"
-        },
-        "popup_allow_origin_conf": {
-            "message": "${parent}でのすべてのポップアップを許可しますか？"
-        },
-        "popup_text_min": {
-            "message": "ブロック"
-        },
-        "popup_expand_min": {
-            "message": "ポップアップ"
-        },
-        "on_navigation_by_popunder": {
-            "message": "新しいページへの移動はポップアンダーによって生じた可能性があります。続行しますか？"
-        },
-        "aborted_popunder_execution": {
-            "message": "ポップアップブロッカーはバックグラウンドリダイレクトを防ぐためにスクリプトの実行を中止しました"
         }
     },
     "no": {
-        "allow_from": {
-            "message": "Tillat popup-vinduer for {$origDomain}"
+        "show_popup": {
+            "message": "Vis {$destUrl}"
         },
         "continue_blocking": {
             "message": "Fortsett blokkering"
         },
-        "show_popup": {
-            "message": "Vis {$destUrl}"
+        "allow_from": {
+            "message": "Tillat popup-vinduer for {$origDomain}"
         },
         "manage_pref": {
             "message": "Administrer preferanser…"
@@ -1701,45 +1554,57 @@
         "noinst_subtitle": {
             "message": "Brukerskript for AdGuards popup-blokkerer er ikke installert. Vennligst se instruksjonene nedenfor."
         },
-        "noinst_step_1": {
-            "message": "Trinn 1: Installer en brukerskript-administerere"
-        },
         "homepage": {
             "message": "Hjemmeside"
+        },
+        "noinst_step_1": {
+            "message": "Trinn 1: Installer en brukerskript-administerere"
         },
         "noinst_step_2": {
             "message": "Stinn 2: Brukerskript"
         },
         "extension_name": {
-            "description": "Dette navnet brukes til nettleserutvidelser.",
+            "message": "Popup-blokkerer fra AdGuard",
             "platform": [
-                "utvidelse"
-            ],
-            "message": "Popup-blokkerer fra AdGuard"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "Dette navnet brukes til brukerskript.",
-            "patform": [
-                "brukerskript",
-                "brukerskript_innstillinger"
-            ],
-            "message": "AdGuards popup-blokkerer"
+            "message": "AdGuards popup-blokkerer",
+            "platform": [
+                "userscript",
+                "userscript_settings"
+            ]
         },
         "extension_description": {
+            "message": "Blokker popup-annonser på nettsider",
             "platform": [
-                "utvidelse"
-            ],
-            "message": "Blokker popup-annonser på nettsider"
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "Omdirigeringen til den nye nettsiden er sannsynligvis forårsaket av en pop-under. Ønsker du å fortsette?",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "Popup Blocker avbrøt en skrift fra å kjøre for å hindre bakgrunnsomdirigering",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "Popup-blokkereren er på vakt",
             "platform": [
-                "utvidelse"
+                "extension"
             ]
         },
         "ext_disabled": {
             "message": "Popup-blokkereren er deaktivert for $DOMAIN$",
-            "platform": "utvidelse",
+            "platform": "extension",
             "placeholders": {
                 "domain": {
                     "content": "$1"
@@ -1748,48 +1613,21 @@
         },
         "ext_disabled_default": {
             "message": "Popup-blokkereren kan ikke kjøre på dette domenet",
-            "platform": "utvidelse"
+            "platform": "extension"
         },
         "settings_saved": {
             "message": "Innstillinger lagret"
-        },
-        "popup_text_full": {
-            "message": "Blokkert et forsøk på å åpne et {{0_url}} popup-vindu"
-        },
-        "popup_allow_dest": {
-            "message": "Alltid tillat ${domain}"
-        },
-        "popup_allow_dest_conf": {
-            "message": "Tillat alle popup-vinduer som fører til ${domain}?"
-        },
-        "popup_allow_origin": {
-            "message": "Tillat alle popup-vinduer på denne nettsiden"
-        },
-        "popup_allow_origin_conf": {
-            "message": "Tillat alle popup-vinduer som kommer fra ${parent}?"
-        },
-        "popup_text_min": {
-            "message": "Blokkert"
-        },
-        "popup_expand_min": {
-            "message": "popup"
-        },
-        "on_navigation_by_popunder": {
-            "message": "Omdirigeringen til den nye nettsiden er sannsynligvis forårsaket av en pop-under. Ønsker du å fortsette?"
-        },
-        "aborted_popunder_execution": {
-            "message": "Popup Blocker avbrøt en skrift fra å kjøre for å hindre bakgrunnsomdirigering"
         }
     },
     "pl": {
-        "allow_from": {
-            "message": "Zezwalaj na wyskakujące okienka dla {$origDomain}"
+        "show_popup": {
+            "message": "Pokaż {$destUrl}"
         },
         "continue_blocking": {
             "message": "Kontynuuj blokowanie"
         },
-        "show_popup": {
-            "message": "Pokaż {$destUrl}"
+        "allow_from": {
+            "message": "Zezwalaj na wyskakujące okienka dla {$origDomain}"
         },
         "manage_pref": {
             "message": "Zarządzaj preferencjami..."
@@ -1831,10 +1669,10 @@
             "message": "Powiadomienia o zablokowanych wyskakujących okienkach nie będą wyświetlane dla stron tutaj wymienionych."
         },
         "installFrom": {
-            "message": "Zainstaluj z {$startLink}{$name}{$endLink}"
+            "message": "Instaluj z {$startLink}{$name}{$endLink}"
         },
         "noinst_step_3": {
-            "message": "Krok 3: Odśwież tę stronę, aby uzyskać ustawienia dotyczące skryptów użytkowników"
+            "message": "Krok 3: Odśwież tę stronę, aby przejść do ustawień skryptu użytkownika"
         },
         "noinst_ignore_if_ag": {
             "message": "Jeśli zainstalowałeś AdGuard dla systemu Windows, możesz zignorować ten krok, gdy instalator funkcji Bloker wyskakujących okienek zostanie zainstalowany fabrycznie."
@@ -1843,53 +1681,65 @@
             "message": "(Zalecane)"
         },
         "please_wait": {
-            "message": "Proszę czekać, wykrywam Bloker wyskakujących okienek"
+            "message": "Proszę czekać, wykrywam, uruchamiam bloker wyskakujących okienek"
         },
         "noinst_special_prog": {
-            "message": "Przede wszystkim, aby użyć skryptów użytkownika, potrzebujesz specjalnego programu, który uruchamia te skrypty."
+            "message": "Przede wszystkim, aby użyć skryptu użytkownika, potrzebujesz specjalnego programu, który uruchamia takie skrypty."
         },
         "noinst_subtitle": {
             "message": "Bloker wyskakujących okienek AdGuard skrypt użytkownika nie jest zainstalowany. Zobacz instrukcję poniżej."
         },
-        "noinst_step_1": {
-            "message": "Krok 1: Zainstaluj menedżera skryptów użytkownika"
-        },
         "homepage": {
             "message": "Strona domowa"
         },
+        "noinst_step_1": {
+            "message": "Krok 1: Zainstaluj menedżera skryptów użytkownika"
+        },
         "noinst_step_2": {
-            "message": "Krok 2: Skrypt użytkownika"
+            "message": "Krok 2: Skrypty użytkownika"
         },
         "extension_name": {
-            "description": "Ta nazwa jest używana dla rozszerzeń przeglądarki.",
+            "message": "Bloker wyskakujących okienek przez AdGuard",
             "platform": [
-                "rozszerzenie"
-            ],
-            "message": "Bloker wyskakujących okienek przez AdGuard"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "Ta nazwa jest używana dla skryptów użytkownika",
-            "patform": [
-                "skrypt użytkownika",
-                "skrypt użytkownika_ustawienia"
-            ],
-            "message": "Bloker wyskakujących okienek przez AdGuard"
+            "message": "Bloker wyskakujących okienek przez AdGuard",
+            "platform": [
+                "userscript",
+                "userscript_settings"
+            ]
         },
         "extension_description": {
+            "message": "Blokuje wyskakujące okienka na stronach internetowych",
             "platform": [
-                "rozszerzenie"
-            ],
-            "message": "Blokuje wyskakujące okienka z reklamami na stronach internetowych"
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "To przejście na nową stronę może być spowodowane przez pop-under. Czy chcesz kontynuować?",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "Bloker wyskakujących okienek przerwał wykonywanie skryptu, aby zapobiec przekierowaniu w tle",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "Bloker wyskakujących okienek jest na służbie",
             "platform": [
-                "rozszerzenie"
+                "extension"
             ]
         },
         "ext_disabled": {
             "message": "Bloker wyskakujących okienek jest wyłączony dla $DOMAIN$",
-            "platform": "rozszerzenie",
+            "platform": "extension",
             "placeholders": {
                 "domain": {
                     "content": "$1"
@@ -1898,48 +1748,21 @@
         },
         "ext_disabled_default": {
             "message": "Bloker wyskakujących okienek nie może działać na tej domenie",
-            "platform": "rozszerzenie"
+            "platform": "extension"
         },
         "settings_saved": {
             "message": "Ustawienia zapisane"
-        },
-        "popup_text_full": {
-            "message": "Zablokowano próbę otwarcia {{0_url}} wyskakującego okienka"
-        },
-        "popup_allow_dest": {
-            "message": "Zawsze zezwalaj ${domain}"
-        },
-        "popup_allow_dest_conf": {
-            "message": "Zezwalaj na wszystkie wyskakujące okienka prowadzące do ${domain}?"
-        },
-        "popup_allow_origin": {
-            "message": "Zezwalaj na wszystkie wyskakujące okienka na tej stronie internetowej"
-        },
-        "popup_allow_origin_conf": {
-            "message": "Zezwalaj na wszystkie wyskakujące okienka pochodzące z ${parent}?"
-        },
-        "popup_text_min": {
-            "message": "Zablokowane"
-        },
-        "popup_expand_min": {
-            "message": "wyskakujące okienko"
-        },
-        "on_navigation_by_popunder": {
-            "message": "To przejście na nową stronę może być spowodowane przez pop-under. Czy chcesz kontynuować?"
-        },
-        "aborted_popunder_execution": {
-            "message": "PopupBlocker anulował wykonanie skryptu by przeciwdziałać przekierowaniu w tle"
         }
     },
     "pt": {
-        "allow_from": {
-            "message": "Permitir pop-ups em {$origDomain}"
+        "show_popup": {
+            "message": "Mostrar {$destUrl}"
         },
         "continue_blocking": {
             "message": "Continuar bloqueando"
         },
-        "show_popup": {
-            "message": "Mostrar {$destUrl}"
+        "allow_from": {
+            "message": "Permitir pop-ups em {$origDomain}"
         },
         "manage_pref": {
             "message": "Gerenciar preferências..."
@@ -1984,7 +1807,7 @@
             "message": "Instale da {$startLink}{$name}{$endLink}"
         },
         "noinst_step_3": {
-            "message": "Etapa 3: Atualize esta página para obter as configurações de script de usuário"
+            "message": "Passo 3: Atualize esta página para obter as configurações de script de usuário"
         },
         "noinst_ignore_if_ag": {
             "message": "Se você instalou o AdGuard para Windows, você pode ignorar esta etapa, porque o script de usuário do Bloqueador de Pop-ups já vem pré-instalado."
@@ -1996,50 +1819,62 @@
             "message": "Por favor, aguarde enquanto detectamos o Bloqueador de Pop-ups"
         },
         "noinst_special_prog": {
-            "message": "Primeiro de tudo, para usar um script de usuário você precisa de um programa ou uma extensão especial para executá-los."
+            "message": "Primeiro de tudo, para usar um script de usuário você precisa de um programa ou uma extensão especial para executar scripts de usuário."
         },
         "noinst_subtitle": {
             "message": "O script de usuário do Bloqueador de Pop-ups do AdGuard não está instalado. Por favor, siga as instruções abaixo."
         },
-        "noinst_step_1": {
-            "message": "Etapa 1: Instale um gerenciador de script de usuário"
-        },
         "homepage": {
             "message": "Página Inicial"
+        },
+        "noinst_step_1": {
+            "message": "Etapa 1: Instale um gerenciador de script de usuário"
         },
         "noinst_step_2": {
             "message": "Etapa 2: Script de Usuário"
         },
         "extension_name": {
-            "description": "Esse nome é usado para extensões do navegador.",
+            "message": "Bloqueador de Pop-ups por AdGuard",
             "platform": [
-                "extensão"
-            ],
-            "message": "Bloqueador de Pop-ups por AdGuard"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "Esse nome é usado para scripts de usuário.",
-            "patform": [
-                "script de usuário",
-                "config_scriptdeusuario"
-            ],
-            "message": "AdGuard Bloqueador de Pop-ups"
+            "message": "AdGuard Bloqueador de Pop-ups",
+            "platform": [
+                "userscript",
+                "userscript_settings"
+            ]
         },
         "extension_description": {
+            "message": "Bloqueia anúncios pop-ups dentro dos sites",
             "platform": [
-                "extensão"
-            ],
-            "message": "Bloqueia anúncios pop-ups dentro dos sites"
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "Essa transição para a nova página provavelmente será causada por um pop-under. Você deseja continuar?",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "O bloqueador de pop-ups interrompeu uma execução de script para evitar um redirecionamento em segundo plano",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "Bloqueador de Pop-ups está de plantão",
             "platform": [
-                "extensão"
+                "extension"
             ]
         },
         "ext_disabled": {
             "message": "Bloqueador de Pop-ups está desativado para $DOMAIN$",
-            "platform": "extensão",
+            "platform": "extension",
             "placeholders": {
                 "domain": {
                     "content": "$1"
@@ -2048,45 +1883,21 @@
         },
         "ext_disabled_default": {
             "message": "O bloqueador de pop-ups não pode ser executado neste domínio.",
-            "platform": "extensão"
+            "platform": "extension"
         },
         "settings_saved": {
             "message": "Configurações salvas"
-        },
-        "popup_text_full": {
-            "message": "Bloqueou uma tentativa de abrir um pop-up de {{0_url}}"
-        },
-        "popup_allow_dest": {
-            "message": "Sempre permitir ${domain}"
-        },
-        "popup_allow_dest_conf": {
-            "message": "Permitir que todos os pop-ups que levam ${domain}?"
-        },
-        "popup_allow_origin": {
-            "message": "Permitir todos os pop-ups neste site"
-        },
-        "popup_allow_origin_conf": {
-            "message": "Permitir todos os pop-ups de origem ${parent}?"
-        },
-        "popup_text_min": {
-            "message": "Bloqueado"
-        },
-        "on_navigation_by_popunder": {
-            "message": "Essa transição para a nova página provavelmente será causada por um pop-under. Você deseja continuar?"
-        },
-        "aborted_popunder_execution": {
-            "message": "O bloqueador de pop-ups interrompeu uma execução de script para evitar um redirecionamento em segundo plano"
         }
     },
     "pt-PT": {
-        "allow_from": {
-            "message": "Permitir popups em {$origDomain}"
+        "show_popup": {
+            "message": "Mostrar {$destUrl}"
         },
         "continue_blocking": {
             "message": "Continuar a bloquear"
         },
-        "show_popup": {
-            "message": "Mostrar {$destUrl}"
+        "allow_from": {
+            "message": "Permitir popups em {$origDomain}"
         },
         "manage_pref": {
             "message": "Gerir preferências..."
@@ -2148,45 +1959,57 @@
         "noinst_subtitle": {
             "message": "O userscript do AdGuard Popup Blocker não está instalado. Por favor, veja as instruções abaixo."
         },
-        "noinst_step_1": {
-            "message": "Etapa 1: Instalar um gestor de userscript"
-        },
         "homepage": {
             "message": "Página Principal"
+        },
+        "noinst_step_1": {
+            "message": "Etapa 1: Instalar um gestor de userscript"
         },
         "noinst_step_2": {
             "message": "Etapa 2: Userscript"
         },
         "extension_name": {
-            "description": "Esse nome é usado para extensões do navegador.",
+            "message": "Bloqueador de Popup por AdGuard",
             "platform": [
-                "extensão"
-            ],
-            "message": "Bloqueador de Popup por AdGuard"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "Este nome é usado para userscripts.",
-            "patform": [
+            "message": "Bloqueador de Popup AdGuard",
+            "platform": [
                 "userscript",
-                "definições de_userscript"
-            ],
-            "message": "AdGuard Popup Blocker"
+                "userscript_settings"
+            ]
         },
         "extension_description": {
+            "message": "Bloqueia anúncios popup em páginas da web.",
             "platform": [
-                "extensão"
-            ],
-            "message": "Bloqueia anúncios popup em páginas da web."
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "Esta transição para a nova página  será  provavelmente causada por um popunder. Deseja continuar?",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "PopupBlocker abortou uma execução de script para evitar o redireccionamento em segundo plano",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "O Bloqueador de popups está em serviço",
             "platform": [
-                "extensão"
+                "extension"
             ]
         },
         "ext_disabled": {
             "message": "O Bloqueador de popups está desactivado para $DOMAIN$",
-            "platform": "extensão",
+            "platform": "extension",
             "placeholders": {
                 "domain": {
                     "content": "$1"
@@ -2195,48 +2018,21 @@
         },
         "ext_disabled_default": {
             "message": "O Bloqueador de popups não pode ser executado neste domínio",
-            "platform": "extensão"
+            "platform": "extension"
         },
         "settings_saved": {
             "message": "As definições foram guardadas"
-        },
-        "popup_text_full": {
-            "message": "Foi bloqueada uma tentativa de abrir uma janela popup {{0_url}}"
-        },
-        "popup_allow_dest": {
-            "message": "Permitir sempre ${domain}"
-        },
-        "popup_allow_dest_conf": {
-            "message": "Permitir todos os popups que conduzem a ${domain}?"
-        },
-        "popup_allow_origin": {
-            "message": "Permitir todos os popups neste site"
-        },
-        "popup_allow_origin_conf": {
-            "message": "Permitir todos os popups provenientes de ${parent}?"
-        },
-        "popup_text_min": {
-            "message": "Bloqueado"
-        },
-        "popup_expand_min": {
-            "message": "popup"
-        },
-        "on_navigation_by_popunder": {
-            "message": "Esta transição para a nova página  será  provavelmente causada por um popunder. Deseja continuar?"
-        },
-        "aborted_popunder_execution": {
-            "message": "PopupBlocker abortou uma execução de script para evitar o redireccionamento em segundo plano"
         }
     },
     "ru": {
-        "allow_from": {
-            "message": "Разрешить всплывающие окна на {$origDomain}"
+        "show_popup": {
+            "message": "Показать {$destUrl}"
         },
         "continue_blocking": {
             "message": "Продолжить блокировку"
         },
-        "show_popup": {
-            "message": "Показать {$destUrl}"
+        "allow_from": {
+            "message": "Разрешить всплывающие окна на {$origDomain}"
         },
         "manage_pref": {
             "message": "Управлять настройками..."
@@ -2281,7 +2077,7 @@
             "message": "Установить из {$startLink}{$name}{$endLink}"
         },
         "noinst_step_3": {
-            "message": "Шаг 3: обновите эту страницу, чтобы перейти к настройкам пользовательского скрипта"
+            "message": "Шаг 3: Обновите эту страницу, чтобы перейти к настройкам пользовательского скрипта"
         },
         "noinst_ignore_if_ag": {
             "message": "Если вы установили AdGuard для Windows, вы можете проигнорировать этот шаг, так как Блокировщик всплывающей рекламы уже установлен."
@@ -2298,45 +2094,57 @@
         "noinst_subtitle": {
             "message": "Блокировщик всплывающей рекламы AdGuard не установлен. Пожалуйста, обратитесь к инструкции ниже."
         },
-        "noinst_step_1": {
-            "message": "Шаг 1: установите программу для управления пользовательскими скриптами"
-        },
         "homepage": {
             "message": "Домашняя страница"
+        },
+        "noinst_step_1": {
+            "message": "Шаг 1: установите программу для управления пользовательскими скриптами"
         },
         "noinst_step_2": {
             "message": "Шаг 2: пользовательский скрипт"
         },
         "extension_name": {
-            "description": "Это имя используется для расширений браузера.",
+            "message": "Блокировщик всплывающей рекламы от AdGuard",
             "platform": [
-                "расширение"
-            ],
-            "message": "Блокировщик всплывающей рекламы от AdGuard"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "Это имя используется для пользовательских скриптов.",
-            "patform": [
-                "пользовательский скрипт",
+            "message": "Блокировщик всплывающей рекламы от AdGuard",
+            "platform": [
+                "userscript",
                 "userscript_settings"
-            ],
-            "message": "Блокировщик всплывающей рекламы от AdGuard"
+            ]
         },
         "extension_description": {
+            "message": "Блокирует всплывающую рекламу на страницах",
             "platform": [
-                "расширение"
-            ],
-            "message": "Блокирует всплывающую рекламу на страницах"
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "Этот переход на новую страницу скорее всего вызван поп-андером. Всё равно продолжить?",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "Блокировщик всплывающей рекламы прервал исполнение скрипта, чтобы предотвратить фоновую переадресацию",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "Блокировщик всплывающей рекламы готов к работе",
             "platform": [
-                "расширение"
+                "extension"
             ]
         },
         "ext_disabled": {
             "message": "Блокировщик всплывающей рекламы отключен для $DOMAIN$",
-            "platform": "расширение",
+            "platform": "extension",
             "placeholders": {
                 "domain": {
                     "content": "$1"
@@ -2345,48 +2153,21 @@
         },
         "ext_disabled_default": {
             "message": "Блокировщик всплывающей рекламы не работает на этом домене.",
-            "platform": "расширение"
+            "platform": "extension"
         },
         "settings_saved": {
             "message": "Настройки сохранены"
-        },
-        "popup_text_full": {
-            "message": "Заблокирована попытка открытия всплывающего окна {{0_url}}"
-        },
-        "popup_allow_dest": {
-            "message": "Всегда разрешать ${domain}"
-        },
-        "popup_allow_dest_conf": {
-            "message": "Всегда разрешать всплывающие окна, ведущие на ${domain}?"
-        },
-        "popup_allow_origin": {
-            "message": "Разрешить все всплывающие окна на этом сайте"
-        },
-        "popup_allow_origin_conf": {
-            "message": "Разрешить все всплывающие окна, исходящие от ${parent}?"
-        },
-        "popup_text_min": {
-            "message": "Заблокировано"
-        },
-        "popup_expand_min": {
-            "message": "поп-ап"
-        },
-        "on_navigation_by_popunder": {
-            "message": "Этот переход на новую страницу скорее всего вызван поп-андером. Всё равно продолжить?"
-        },
-        "aborted_popunder_execution": {
-            "message": "Блокировщик всплывающей рекламы прервал исполнение скрипта, чтобы предотвратить фоновую переадресацию"
         }
     },
     "sl": {
-        "allow_from": {
-            "message": "Dovoli pojavna okna na {$origDomain}"
+        "show_popup": {
+            "message": " Prikaži {$destUrl}"
         },
         "continue_blocking": {
             "message": "Nadaljuj z blokiranjem"
         },
-        "show_popup": {
-            "message": " Prikaži {$destUrl}"
+        "allow_from": {
+            "message": "Dovoli pojavna okna na {$origDomain}"
         },
         "manage_pref": {
             "message": "Upravljaj nastavitve..."
@@ -2448,95 +2229,80 @@
         "noinst_subtitle": {
             "message": "AdGuard uporabniški skript Popup Blocker ni nameščen. Oglejte si spodnja navodila."
         },
-        "noinst_step_1": {
-            "message": "1. korak: Namestite upravitelja uporabniških skriptov"
-        },
         "homepage": {
             "message": "Domača stran"
+        },
+        "noinst_step_1": {
+            "message": "1. korak: Namestite upravitelja uporabniških skriptov"
         },
         "noinst_step_2": {
             "message": "2. korak: Uporabniški skript"
         },
         "extension_name": {
-            "description": "To ime se uporablja za razširitve brskalnika.",
+            "message": "Blokirnik pojavnih oken z AdGuardom",
             "platform": [
-                "razširitev"
-            ],
-            "message": "Blokirnik pojavnih oken z AdGuardom"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "To ime se uporablja za uporabniške skripte.",
-            "patform": [
-                "uporabniški skript",
+            "message": "AdGuard Blokirnik pojavnih oken",
+            "platform": [
+                "userscript",
                 "userscript_settings"
-            ],
-            "message": "AdGuard Blokirnik pojavnih oken"
+            ]
         },
         "extension_description": {
+            "message": "Blokira pojavne oglase na spletnih straneh",
             "platform": [
-                "razširitev"
-            ],
-            "message": "Blokira pojavne oglase na spletnih straneh"
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "Ta prehod na novo stran je verjetno posledica pojavnega okna. Ali želite nadaljevati?",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "Blokirnik pojavnih oken je prekinil izvajanje skripta, da bi preprečil preusmerjanje v ozadju",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "Blokirnik pojavnih oken je na dolžnosti",
             "platform": [
-                "razširitev"
+                "extension"
             ]
         },
         "ext_disabled": {
             "message": "Blokirnik pojavnih oken je onemogočen za $DOMAIN$",
-            "platform": "razširitev",
+            "platform": "extension",
             "placeholders": {
                 "domain": {
-                    "content": "$1\n "
+                    "content": "$1"
                 }
             }
         },
         "ext_disabled_default": {
             "message": "Blokirnik pojavnih oken ne more delovati na tej domeni",
-            "platform": "razširitev"
+            "platform": "extension"
         },
         "settings_saved": {
             "message": "Nastavitve so shranjene"
-        },
-        "popup_text_full": {
-            "message": "Blokiran je poskus odpiranja pojavnega okna {{0_url}}"
-        },
-        "popup_allow_dest": {
-            "message": "Vedno dovoli ${domain}"
-        },
-        "popup_allow_dest_conf": {
-            "message": "Ali dovolite vsa pojavna okna, ki vodijo do ${domain}?"
-        },
-        "popup_allow_origin": {
-            "message": "Dovoli vsa pojavna okna na tej spletni strani"
-        },
-        "popup_allow_origin_conf": {
-            "message": "Ali dovolite vsa pojavna okna, ki izvirajo iz ${parent}?"
-        },
-        "popup_text_min": {
-            "message": "Blokirano"
-        },
-        "popup_expand_min": {
-            "message": "pojavno okno"
-        },
-        "on_navigation_by_popunder": {
-            "message": "Ta prehod na novo stran je verjetno posledica pojavnega okna. Ali želite nadaljevati?"
-        },
-        "aborted_popunder_execution": {
-            "message": "Blokirnik pojavnih oken je prekinil izvajanje skripta, da bi preprečil preusmerjanje v ozadju"
         }
     },
     "tr": {
-        "allow_from": {
-            "message": "{$origDomain} için açılır pencerelere izin ver"
+        "show_popup": {
+            "message": "{$destUrl} Göster"
         },
         "continue_blocking": {
             "message": "Engellemeye devam et"
         },
-        "show_popup": {
-            "message": "{$destUrl} Göster"
+        "allow_from": {
+            "message": "{$origDomain} için açılır pencerelere izin ver"
         },
         "manage_pref": {
             "message": "Tercihleri yönet..."
@@ -2598,45 +2364,57 @@
         "noinst_subtitle": {
             "message": "AdGuard Açılır Pencere Engelleyicisi kullanıcı betiği yüklü değil. Lütfen aşağıdaki yönergeleri inceleyin."
         },
-        "noinst_step_1": {
-            "message": "Adım 1: Bir kullanıcı betiği yöneticisi yükle"
-        },
         "homepage": {
             "message": "Anasayfa"
+        },
+        "noinst_step_1": {
+            "message": "Adım 1: Bir kullanıcı betiği yöneticisi yükle"
         },
         "noinst_step_2": {
             "message": "Adım 2: Kullanıcı betiği"
         },
         "extension_name": {
-            "description": "Bu ad, tarayıcı eklentileri için kullanılır.",
+            "message": "AdGuard Açılır Pencere Engelleyici",
             "platform": [
-                "eklenti"
-            ],
-            "message": "AdGuard Açılır Pencere Engelleyici"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "Bu ad, kullanıcı betikleri için kullanılır.",
-            "patform": [
-                "kullanıcı betiği",
-                "kullanıcı betiği ayarları"
-            ],
-            "message": "AdGuard Popup Blocker eklentisi"
+            "message": "AdGuard Popup Blocker eklentisi",
+            "platform": [
+                "userscript",
+                "userscript_settings"
+            ]
         },
         "extension_description": {
+            "message": "Web sayfalarında açılan pencere reklamları engeller",
             "platform": [
-                "eklenti"
-            ],
-            "message": "Web sayfalarında açılan pencere reklamları engeller"
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "Yeni sayfaya geçiş, bir gizli pencere nedeniyle meydana gelmiş olabilir. Devam etmek istiyor musunuz?",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "Arka plan yönlendirmesini önlemek için Açılır Pencere Engelleyicisi bir komut dosyasının çalışmasını engelledi",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "Açılır Pencere Engelleyici görevinin başında",
             "platform": [
-                "eklenti"
+                "extension"
             ]
         },
         "ext_disabled": {
             "message": "Açılır Pencere Engelleyici $DOMAIN$ için devre dışı bırakıldı",
-            "platform": "eklenti",
+            "platform": "extension",
             "placeholders": {
                 "domain": {
                     "content": "$1"
@@ -2645,48 +2423,21 @@
         },
         "ext_disabled_default": {
             "message": "Açılır Pencere Engelleyici bu alan adı üzerinde çalışamaz",
-            "platform": "eklenti"
+            "platform": "extension"
         },
         "settings_saved": {
             "message": "Ayarlar kaydedildi"
-        },
-        "popup_text_full": {
-            "message": "{{0_url}} sitesinin açılır pencere açma isteği engellendi"
-        },
-        "popup_allow_dest": {
-            "message": "${domain} alan adına her zaman izin ver"
-        },
-        "popup_allow_dest_conf": {
-            "message": "${domain} sitesine yönlendiren tüm açılır pencerelere izin verilsin mi?"
-        },
-        "popup_allow_origin": {
-            "message": "Bu web sitesinde tüm açılır pencerelere izin ver"
-        },
-        "popup_allow_origin_conf": {
-            "message": "${parent} kaynaklı tüm açılır pencerelere izin verilsin mi?"
-        },
-        "popup_text_min": {
-            "message": "Engellendi"
-        },
-        "popup_expand_min": {
-            "message": "açılır pencere"
-        },
-        "on_navigation_by_popunder": {
-            "message": "Yeni sayfaya geçiş, bir gizli pencere nedeniyle meydana gelmiş olabilir. Devam etmek istiyor musunuz?"
-        },
-        "aborted_popunder_execution": {
-            "message": "Arka plan yönlendirmesini önlemek için Açılır Pencere Engelleyicisi bir komut dosyasının çalışmasını engelledi"
         }
     },
     "uk": {
-        "allow_from": {
-            "message": "Дозволити спливаючі вікна {$origDomain}"
+        "show_popup": {
+            "message": "Показати {$destUrl}"
         },
         "continue_blocking": {
             "message": "Продовжити блокування"
         },
-        "show_popup": {
-            "message": "Показати {$destUrl}"
+        "allow_from": {
+            "message": "Дозволити спливаючі вікна {$origDomain}"
         },
         "manage_pref": {
             "message": "Керувати налаштуваннями..."
@@ -2748,45 +2499,57 @@
         "noinst_subtitle": {
             "message": "Блокувальник спливаючої реклами AdGuard не встановлений. Будь ласка, зверніться до інструкції нижче."
         },
-        "noinst_step_1": {
-            "message": "Крок 1: встановіть програму для управління скриптами користувача"
-        },
         "homepage": {
             "message": "Домашня сторінка"
+        },
+        "noinst_step_1": {
+            "message": "Крок 1: встановіть програму для управління скриптами користувача"
         },
         "noinst_step_2": {
             "message": "Крок 2: скрипт користувача"
         },
         "extension_name": {
-            "description": "Це ім'я використовується для розширень браузеру.",
+            "message": "Блокувальник спливаючої реклами AdGuard",
             "platform": [
-                "розширення"
-            ],
-            "message": "Блокувальник спливаючої реклами AdGuard"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "Це ім'я використовується для скриптів користувача.",
-            "patform": [
-                "скрипт користувача",
+            "message": "Блокувальник спливаючої реклами AdGuard",
+            "platform": [
+                "userscript",
                 "userscript_settings"
-            ],
-            "message": "Блокувальник спливаючої реклами AdGuard"
+            ]
         },
         "extension_description": {
+            "message": "Блокує спливаючу рекламу на веб-сторінках",
             "platform": [
-                "розширення"
-            ],
-            "message": "Блокує спливаючу рекламу на веб-сторінках"
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "Цей перехід на нову сторінку, ймовірно, міг бути викликаний поп-андером. Бажаєте продовжити?",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "PopupBlocker перервав виконання скрипта, щоб запобігти фоновому перенаправленню",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "Блокувальник спливаючої реклами готовий до роботи",
             "platform": [
-                "розширення"
+                "extension"
             ]
         },
         "ext_disabled": {
             "message": "Блокувальник спливаючої реклами відключений для $DOMAIN$",
-            "platform": "розширення",
+            "platform": "extension",
             "placeholders": {
                 "domain": {
                     "content": "$1"
@@ -2795,48 +2558,21 @@
         },
         "ext_disabled_default": {
             "message": "Блокувальник спливаючої реклами не працює на цьому домені.",
-            "platform": "розширення"
+            "platform": "extension"
         },
         "settings_saved": {
             "message": "Налаштування збережені"
-        },
-        "popup_text_full": {
-            "message": "Заблоковано спробу відкрити спливаюче вікно {{0_url}}"
-        },
-        "popup_allow_dest": {
-            "message": "Завжди дозволяти ${domain}"
-        },
-        "popup_allow_dest_conf": {
-            "message": "Завжди дозволяти спливаючі вікна, які ведуть на ${domain}?"
-        },
-        "popup_allow_origin": {
-            "message": "Дозволити всі спливаючі вікна на цьому веб-сайті"
-        },
-        "popup_allow_origin_conf": {
-            "message": "Дозволити всі спливаючі вікна, що походять від ${parent}?"
-        },
-        "popup_text_min": {
-            "message": "Заблоковано"
-        },
-        "popup_expand_min": {
-            "message": "Спливаюче вікно"
-        },
-        "on_navigation_by_popunder": {
-            "message": "Цей перехід на нову сторінку, ймовірно, міг бути викликаний поп-андером. Бажаєте продовжити?"
-        },
-        "aborted_popunder_execution": {
-            "message": "PopupBlocker перервав виконання скрипта, щоб запобігти фоновому перенаправленню"
         }
     },
     "zh": {
-        "allow_from": {
-            "message": "允许 {$origDomain} 弹窗"
+        "show_popup": {
+            "message": "显示 {$destUrl}"
         },
         "continue_blocking": {
             "message": "继续拦截"
         },
-        "show_popup": {
-            "message": "显示 {$destUrl}"
+        "allow_from": {
+            "message": "允许 {$origDomain} 弹窗"
         },
         "manage_pref": {
             "message": "管理首选项..."
@@ -2898,45 +2634,57 @@
         "noinst_subtitle": {
             "message": "AdGuard Popup Blocker 用户脚本未安装。请查看以下指示说明。"
         },
-        "noinst_step_1": {
-            "message": "步骤 1：安装用户脚本管理器"
-        },
         "homepage": {
             "message": "主页"
+        },
+        "noinst_step_1": {
+            "message": "步骤 1：安装用户脚本管理器"
         },
         "noinst_step_2": {
             "message": "步骤 2：用户脚本"
         },
         "extension_name": {
-            "description": "此名称已用于浏览器扩展。",
+            "message": "AdGuard 弹窗拦截器",
             "platform": [
-                "扩展"
-            ],
-            "message": "AdGuard 弹窗拦截器"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "此名称已用于用户脚本。",
-            "patform": [
-                "用户脚本",
+            "message": "AdGuard 弹窗拦截器",
+            "platform": [
+                "userscript",
                 "userscript_settings"
-            ],
-            "message": "AdGuard 弹窗拦截器"
+            ]
         },
         "extension_description": {
+            "message": "拦截网页弹窗广告",
             "platform": [
-                "扩展"
-            ],
-            "message": "拦截网页弹窗广告"
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "此网页导航可能导致弹窗。您要继续？",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "PopupBlocker 已中止脚本执行以防止后台重新定向",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "弹窗拦截器工作中",
             "platform": [
-                "扩展"
+                "extension"
             ]
         },
         "ext_disabled": {
             "message": "已在 $DOMAIN$ 上禁用弹窗拦截器",
-            "platform": "扩展",
+            "platform": "extension",
             "placeholders": {
                 "domain": {
                     "content": "$1"
@@ -2945,54 +2693,27 @@
         },
         "ext_disabled_default": {
             "message": "弹窗拦截器无法运行于此域之上",
-            "platform": "扩展"
+            "platform": "extension"
         },
         "settings_saved": {
             "message": "设置已保存"
-        },
-        "popup_text_full": {
-            "message": "已拦截打开 {{0_url}} 弹窗的尝试"
-        },
-        "popup_allow_dest": {
-            "message": "始终允许 ${domain}"
-        },
-        "popup_allow_dest_conf": {
-            "message": "允许通向 ${domain} 的所有弹窗？"
-        },
-        "popup_allow_origin": {
-            "message": "允许此网站的所有弹出"
-        },
-        "popup_allow_origin_conf": {
-            "message": "允许源自 ${parent} 所有弹窗口？"
-        },
-        "popup_text_min": {
-            "message": "已拦截"
-        },
-        "popup_expand_min": {
-            "message": "弹出"
-        },
-        "on_navigation_by_popunder": {
-            "message": "此网页导航可能导致弹窗。您要继续？"
-        },
-        "aborted_popunder_execution": {
-            "message": "PopupBlocker 已中止脚本执行以防止后台重新定向"
         }
     },
     "zh-TW": {
-        "allow_from": {
-            "message": "允許於 {$origDomain} 上之彈出式視窗"
+        "show_popup": {
+            "message": "顯示 {$destUrl}"
         },
         "continue_blocking": {
             "message": "繼續封鎖"
         },
-        "show_popup": {
-            "message": "顯示 {$destUrl}"
+        "allow_from": {
+            "message": "允許在 {$origDomain} 的彈出式視窗"
         },
         "manage_pref": {
-            "message": "管理偏好設定..."
+            "message": "管理偏好設定…"
         },
         "popup_text": {
-            "message": "AdGuard 已防止該網站展現 {$numPopup} 彈出式視窗"
+            "message": "AdGuard 已防止該網站開啟 {$numPopup} 彈出式視窗"
         },
         "options": {
             "message": "選項"
@@ -3010,83 +2731,95 @@
             "message": "增加"
         },
         "allowed_empty": {
-            "message": "例外的清單為空"
+            "message": "已允許的網站之清單為空"
         },
         "allowed": {
-            "message": "例外"
+            "message": "已允許的"
         },
         "silenced_empty": {
-            "message": "用靜音通知的網站之清單為空"
+            "message": "已靜默的網站之清單為空"
         },
         "silenced": {
-            "message": "已靜音的"
+            "message": "已靜默的"
         },
         "allowed_tooltip": {
-            "message": "於此被列出的網站上，彈出式視窗將被允許。"
+            "message": "在這裡被列出的網域，彈出式視窗將被允許。"
         },
         "silenced_tooltip": {
-            "message": "於此被列出的網站上，已封鎖的彈出式視窗通知將不被顯示。"
+            "message": "在這裡被列出的網域，關於已封鎖的彈出式視窗之通知將不被顯示。"
         },
         "installFrom": {
             "message": "從 {$startLink}{$name}{$endLink} 安裝"
         },
         "noinst_step_3": {
-            "message": "步驟 3：重新整理該頁面以開始使用者腳本設定"
+            "message": "步驟 3：重新整理該頁面以到達使用者腳本設定"
         },
         "noinst_ignore_if_ag": {
-            "message": "如果您有已安裝的 AdGuard for Windows，您可忽略該步驟，因為彈出式視窗封鎖器使用者腳本變為已預安裝的。"
+            "message": "如果您已安裝 AdGuard for Windows，您可忽略該步驟，因為彈出式視窗封鎖器使用者腳本變為已預安裝的。"
         },
         "noinst_rec": {
             "message": "（被建議的）"
         },
         "please_wait": {
-            "message": "請等待，偵測到彈出式視窗封鎖器"
+            "message": "請等待，正偵測到彈出式視窗封鎖器"
         },
         "noinst_special_prog": {
-            "message": "首先，為使用一個使用者腳本，您需要可執行腳本之專門的程式或擴充功能。"
+            "message": "首先，為使用一個使用者腳本，您需要執行使用者腳本之專門的程式或擴充功能。"
         },
         "noinst_subtitle": {
             "message": "AdGuard 彈出式視窗封鎖器使用者腳本未被安裝。請查看下面的用法說明。"
         },
-        "noinst_step_1": {
-            "message": "步驟 1：安裝使用者腳本管理器"
-        },
         "homepage": {
             "message": "首頁"
+        },
+        "noinst_step_1": {
+            "message": "步驟 1：安裝使用者腳本管理器"
         },
         "noinst_step_2": {
             "message": "步驟 2：使用者腳本"
         },
         "extension_name": {
-            "description": "該名稱被用於瀏覽器擴充功能。",
+            "message": "由 AdGuard 提供之彈出式視窗封鎖器",
             "platform": [
-                "擴充功能"
-            ],
-            "message": "AdGuard 彈出式視窗封鎖器"
+                "extension"
+            ]
         },
         "userscript_name": {
-            "description": "該名稱被用於使用者腳本。",
-            "patform": [
-                "使用者腳本",
-                "使用者腳本_設定"
-            ],
-            "message": "AdGuard 彈出式視窗封鎖器"
+            "message": "AdGuard 彈出式視窗封鎖器",
+            "platform": [
+                "userscript",
+                "userscript_settings"
+            ]
         },
         "extension_description": {
+            "message": "封鎖於網頁上之彈出式視窗廣告",
             "platform": [
-                "擴充功能"
-            ],
-            "message": "封鎖於網頁上之彈出式視窗廣告"
+                "extension"
+            ]
+        },
+        "on_navigation_by_popunder": {
+            "message": "此至新的頁面之轉換很可能是由一個背彈式視窗引起。您想要繼續嗎？",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
+        },
+        "aborted_popunder_execution": {
+            "message": "彈出式視窗封鎖器已中止腳本執行以防止背景重新導向",
+            "platform": [
+                "userscript",
+                "extension"
+            ]
         },
         "ext_enabled": {
             "message": "彈出式視窗封鎖器執勤中",
             "platform": [
-                "擴充功能"
+                "extension"
             ]
         },
         "ext_disabled": {
-            "message": "對於 $DOMAIN$，彈出式視窗封鎖器被禁用",
-            "platform": "擴充功能",
+            "message": "在 $DOMAIN$，彈出式視窗封鎖器被禁用",
+            "platform": "extension",
             "placeholders": {
                 "domain": {
                     "content": "$1"
@@ -3094,38 +2827,11 @@
             }
         },
         "ext_disabled_default": {
-            "message": "彈出式視窗封鎖器不可於該網域上執行",
-            "platform": "擴充功能"
+            "message": "在此網域，彈出式視窗封鎖器被禁用",
+            "platform": "extension"
         },
         "settings_saved": {
             "message": "設定被儲存"
-        },
-        "popup_text_full": {
-            "message": "已封鎖打開 {{0_url}} 彈出式視窗的企圖"
-        },
-        "popup_allow_dest": {
-            "message": "總是允許 ${domain}"
-        },
-        "popup_allow_dest_conf": {
-            "message": "允許所有的通向 ${domain} 之彈出式視窗嗎？"
-        },
-        "popup_allow_origin": {
-            "message": "允許於該網站上之所有的彈出式視窗"
-        },
-        "popup_allow_origin_conf": {
-            "message": "允許所有的來自 ${parent} 之彈出式視窗嗎？"
-        },
-        "popup_text_min": {
-            "message": "已封鎖"
-        },
-        "popup_expand_min": {
-            "message": "彈出式視窗"
-        },
-        "on_navigation_by_popunder": {
-            "message": "此至新的頁面之轉換很可能是由一個背彈式視窗引起。您想要繼續嗎？"
-        },
-        "aborted_popunder_execution": {
-            "message": "彈出式視窗封鎖器中止腳本執行以防止背景重新導向"
         }
     }
 }
