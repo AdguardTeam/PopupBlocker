@@ -10,8 +10,7 @@ import preprocess = require('gulp-preprocess');
 import rename = require('gulp-rename');
 import rollup = require('gulp-rollup');
 import uglify = require('gulp-uglify');
-import runSequence = require('run-sequence');
-
+import file = require('gulp-file');
 import xml2js = require('xml2js');
 
 import typescript = require('@alexlur/rollup-plugin-typescript');
@@ -23,6 +22,7 @@ import { BuildTarget, Channel, BuildOption } from './compiler/BuildOption';
 import Builder from './compiler/Builder';
 import PathUtils from './compiler/PathUtils';
 import { toPromise } from './compiler/utils/to_promise';
+const pkg = require('./package.json');
 
 /******************************************************************************************************/
 
@@ -63,8 +63,15 @@ for (let target in BuildTarget) {
     }
 }
 
+gulp.task('build-version', () => {
+    const str = `version=${pkg.version}`;
+
+    return file('build.txt', str, { src: true })
+        .pipe(gulp.dest('build'))
+});
+
 // Define gulp tasks: build -t=chrome -c=beta --minify --use_adg_domain
-gulp.task('build', () => {
+gulp.task('build', gulp.series('build-version', () => {
     let args = minimist(process.argv.slice(2));
 
     let target: BuildTarget = args["target"] || args["t"];
@@ -88,7 +95,7 @@ gulp.task('build', () => {
     );
 
     return new Builder(option).build()
-})
+}))
 
 /******************************************************************************************************/
 
