@@ -13,3 +13,6 @@ deploy:
     keep-history: true
     on:
       branch: master
+notifications:
+  slack: performix:yXTihlSzsLFSZiqbXMNzvTSX
+
