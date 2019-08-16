@@ -6,7 +6,8 @@
 
 
 
-
+function print(str, obj) {
+}
 /**
  * Accepts a function, and returns a wrapped function that calls `call` and `callEnd`
  * automatically before and after invoking the function, respectively.
@@ -85,7 +86,7 @@ var buggyWeakMapSupport = !nativeWeakMapSupport ? false : (function () {
 })();
 // To be used in AudioBufferCache
 
-var wm$1 = nativeWeakMapSupport ? WeakMap : WeakMapPolyfill;
+var wm = nativeWeakMapSupport ? WeakMap : WeakMapPolyfill;
 
 var CurrentMouseEvent = /** @class */ (function () {
     function CurrentMouseEvent() {
@@ -191,6 +192,10 @@ var reEmptyUrl = new RegExp('^' + ABOUT_PROTOCOL);
 var isEmptyUrl = function (url) {
     return reEmptyUrl.test(url);
 };
+var frameElementDesc = Object.getOwnPropertyDescriptor(window, 'frameElement') || Object.getOwnPropertyDescriptor(Window.prototype, 'frameElement');
+var getFrameElement = frameElementDesc.get;
+
+var shadowDomV1Support = 'attachShadow' in Element.prototype;
 
 /**
  * @fileoverview Utility functions for instanceof checks against DOM classes. Used for type casting.
@@ -271,7 +276,7 @@ function maybeOverlay(el) {
     } // not an HTMLElement instance
     var view = el.ownerDocument.defaultView;
     var w = view.innerWidth, h = view.innerHeight;
-    var _a = el.getBoundingClientRect();
+    var _a = el.getBoundingClientRect(), left = _a.left, right = _a.right, top = _a.top, bottom = _a.bottom;
     if (rectAlmostCoversView(el.getBoundingClientRect(), w, h)) {
         // Find artificial stacking context root
         do {
@@ -325,7 +330,7 @@ var hasOwnProperty = Object.prototype.hasOwnProperty;
 var functionApply = Function.prototype.apply;
 var functionCall = Function.prototype.call;
 var functionBind = Function.prototype.bind;
-
+var functionToString = Function.prototype.toString;
 
 var ProxyCtor = window.Proxy;
 // Conditional export workaround for tsickle
@@ -339,12 +344,12 @@ if (ProxyCtor) {
     reflectNamespace.reflectOwnKeys = Reflect.ownKeys;
     reflectNamespace.reflectApply = Reflect.apply;
 }
-
-
+var MO = window.MutationObserver || window.WebKitMutationObserver;
+var MessageChannelCtor = window.MessageChannel;
 var setTimeout$1 = window.setTimeout.bind(window);
-
-
-
+var getContentWindow = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentWindow').get;
+var getContentDocument = getOwnPropertyDescriptor(HTMLIFrameElement.prototype, 'contentDocument').get;
+var getMessageSource = getOwnPropertyDescriptor(MessageEvent.prototype, 'source').get;
 var captureStackTrace = Error.captureStackTrace;
 
 var use_proxy = false;
@@ -380,6 +385,9 @@ var _reflect = ProxyCtor ?
             return functionApply[PRIVATE_PROPERTY](target, thisArg, args);
         };
     })();
+// Lodash isNative
+var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
+var reIsNative = new RegExp('^' + functionToString.call(hasOwnProperty).replace(reRegExpChar, '\\$&').replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$');
 /**
  * Certain built-in functions depends on internal slots of 'this' of its execution context.
  * In order to make such methods of proxied objects behave identical to the original object,
@@ -391,8 +399,8 @@ var _reflect = ProxyCtor ?
  * which obviously does not have access to the internal slot of 'this'.
  */
 
-var proxyToReal = new wm$1();
-var realToProxy = new wm$1();
+var proxyToReal = new wm();
+var realToProxy = new wm();
 /**
  * An apply handler to make invoke handler.
  */
@@ -532,11 +540,11 @@ function wrapMethod(obj, prop, applyHandler) {
  * Below we patch jQuery internals to create a mapping of native events and jQuery events.
  * jQuery sets `currentTarget` property on jQuery event instances while triggering event handlers.
  */
-var JQueryEventStack$1 = /** @class */ (function () {
+var JQueryEventStack = /** @class */ (function () {
     function JQueryEventStack(jQuery) {
         var _this = this;
         this.jQuery = jQuery;
-        this.eventMap = new wm$1();
+        this.eventMap = new wm();
         this.eventStack = [];
         /**
          * Wraps jQuery.event.dispatch.
@@ -596,7 +604,7 @@ var JQueryEventStack$1 = /** @class */ (function () {
         if (JQueryEventStack.jQueries.indexOf(jQuery) !== -1) {
             return;
         }
-        var eventMap = new wm$1();
+        var eventMap = new wm();
         JQueryEventStack.jQueries.push(jQuery);
         JQueryEventStack.jqToStack.set(jQuery, new JQueryEventStack(jQuery).wrap());
     };
@@ -696,11 +704,11 @@ var JQueryEventStack$1 = /** @class */ (function () {
         return current.currentTarget;
     };
     JQueryEventStack.jQueries = [];
-    JQueryEventStack.jqToStack = new wm$1();
+    JQueryEventStack.jqToStack = new wm();
     return JQueryEventStack;
 }());
-JQueryEventStack$1.initialize();
-var getCurrentJQueryTarget = JQueryEventStack$1.getCurrentJQueryTarget;
+JQueryEventStack.initialize();
+var getCurrentJQueryTarget = JQueryEventStack.getCurrentJQueryTarget;
 /**
  * React production build by default attaches an event listener to `document`
  * and processes all events in its internel 'event hub'. It should be possible
@@ -845,7 +853,7 @@ function retrieveEvent() {
     if (!currentEvent) {
         try {
             var caller = arguments.callee;
-            var touched = new wm$1();
+            var touched = new wm();
             while (caller.caller) {
                 caller = caller.caller;
                 if (touched.has(caller)) {
@@ -858,7 +866,7 @@ function retrieveEvent() {
                 
             }
             else {
-                
+                print('The function at the bottom of the call stack does not have an expected type.', caller.arguments[0]);
             }
         }
         catch (e) {
@@ -1102,8 +1110,8 @@ function __generator(thisArg, body) {
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
         while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
                 case 0: case 1: t = op; break;
                 case 4: _.label++; return { value: op[1], done: false };
@@ -1147,7 +1155,7 @@ describe('JQueryEventStack', function () {
                                 it("detects simple target in " + jQuery.version, function (done) {
                                     $('#JQueryTestRoot').one('click', function (evt) {
                                         var expected = JQueryTestRoot;
-                                        var got = JQueryEventStack$1.getCurrentJQueryTarget(window.event);
+                                        var got = JQueryEventStack.getCurrentJQueryTarget(window.event);
                                         expect$3(got).to.equal(expected);
                                         done();
                                     });
@@ -1156,7 +1164,7 @@ describe('JQueryEventStack', function () {
                                 it("detects delegated target in " + jQuery.version, function (done) {
                                     $(document).one('click', '#JQueryTestRoot', function (evt) {
                                         var expected = JQueryTestRoot;
-                                        var got = JQueryEventStack$1.getCurrentJQueryTarget(window.event);
+                                        var got = JQueryEventStack.getCurrentJQueryTarget(window.event);
                                         expect$3(got).to.equal(expected);
                                         done();
                                     });
@@ -1173,7 +1181,7 @@ describe('JQueryEventStack', function () {
                                     });
                                     $('#JQueryTestRoot').one('CustomClick_2', function (evt) {
                                         var expected = JQueryTestRoot;
-                                        var got = JQueryEventStack$1.getCurrentJQueryTarget(window.event);
+                                        var got = JQueryEventStack.getCurrentJQueryTarget(window.event);
                                         expect$3(got).to.equal(expected);
                                         done();
                                     });
@@ -1189,11 +1197,12 @@ describe('JQueryEventStack', function () {
                                         $(target).trigger('CustomClick_2');
                                     });
                                     $('#JQueryTestRoot').one('CustomClick_2', function (evt) {
+                                        var target = evt.target;
                                         $('head').trigger('CustomClick_3');
                                     });
                                     $('head').one('CustomClick_3', function (evt) {
                                         var expected = JQueryTestRoot;
-                                        var got = JQueryEventStack$1.getCurrentJQueryTarget(window.event);
+                                        var got = JQueryEventStack.getCurrentJQueryTarget(window.event);
                                         expect$3(got).to.equal(expected);
                                         done();
                                     });
@@ -1203,7 +1212,7 @@ describe('JQueryEventStack', function () {
                                     $(document).one('click', '#JQueryTestRoot', function (evt) {
                                         $(document).one('click', '#JQueryTestRoot', function (evt) {
                                             var expected = JQueryTestRoot;
-                                            var got = JQueryEventStack$1.getCurrentJQueryTarget(window.event);
+                                            var got = JQueryEventStack.getCurrentJQueryTarget(window.event);
                                             expect$3(got).to.equal(expected);
                                             done();
                                         });
@@ -1460,7 +1469,7 @@ var Timeline = /** @class */ (function () {
     Timeline.prototype.registerEvent = function (event, index) {
         if (this.isRecording) {
             var name_1 = event.$name ? event.$name.toString() : '';
-            
+            print("Timeline.registerEvent: " + event.$type + " " + name_1, event.$data);
         }
         var i = afterTest.length;
         while (i--) {
@@ -1541,7 +1550,7 @@ function cc_export() {
     window['registerEvent'] = timeline.registerEvent;
     window['canOpenPopup'] = timeline.canOpenPopup;
     window['onNewFrame'] = timeline.onNewFrame;
-    "REMOVE_END";
+    
 }
 cc_export();
 window['__t'] = timeline;
