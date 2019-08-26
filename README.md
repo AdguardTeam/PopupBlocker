@@ -43,7 +43,7 @@ To report a bug, go to [this page](https://github.com/AdguardTeam/PopupBlocker/i
 		
 ## Translation	
 
-You can help us with translating Popup Blocker into other languages! Our project on [OneSky](https://adguard.oneskyapp.com/collaboration/project?id=124184) is open for public contributions.
+You can help us with translating Popup Blocker into other languages! Our project on [Crowdin](https://crowdin.com/project/adguard-applications/en#/userscripts/popup-blocker) is open for public contribution.
 
 ## Development build
 
