@@ -56,7 +56,9 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/PopupBlocker/issues/169
         "*://*.mail.ukr.net/*",
         // https://github.com/AdguardTeam/PopupBlocker/issues/166
-        "*://*.sahadan.com/*"
+        "*://*.sahadan.com/*",
+        // https://github.com/AdguardTeam/PopupBlocker/issues/186
+        "*://*.groupon.*/*"
     ];
 
     private static extension_exclusions = {
@@ -309,7 +311,9 @@ export default class MetadataUtils {
             // https://github.com/AdguardTeam/PopupBlocker/issues/169
             "*://*.mail.ukr.net/*",
             // https://github.com/AdguardTeam/PopupBlocker/issues/166
-            "*://*.sahadan.com/*"
+            "*://*.sahadan.com/*",
+            // https://github.com/AdguardTeam/PopupBlocker/issues/186
+            "*://*.groupon.*/*"
         ]
     }
 
