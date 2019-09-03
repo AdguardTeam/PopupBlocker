@@ -49,8 +49,7 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/PopupBlocker/issues/170
         "*://*.washingtonpost.com/*",
         // https://github.com/AdguardTeam/PopupBlocker/issues/157
-        "*://*.tv.kakao.com/*",
-        "*://*.play-tv.kakao.com/*",
+        "*://*.kakao.com/*",
         // https://github.com/AdguardTeam/PopupBlocker/issues/165
         "*://*.discounttire.com/*",
         // https://github.com/AdguardTeam/PopupBlocker/issues/169
@@ -59,7 +58,9 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/PopupBlocker/issues/166
         "*://*.sahadan.com/*",
         // https://github.com/AdguardTeam/PopupBlocker/issues/186
-        "*://*.groupon.*/*"
+        "*://*.groupon.*/*",
+        // https://github.com/AdguardTeam/PopupBlocker/issues/162
+        "*://*.amoma.com/*",
     ];
 
     private static extension_exclusions = {
@@ -305,8 +306,7 @@ export default class MetadataUtils {
             // https://github.com/AdguardTeam/PopupBlocker/issues/170
             "*://*.washingtonpost.com/*",
             // https://github.com/AdguardTeam/PopupBlocker/issues/157
-            "*://*.tv.kakao.com/*",
-            "*://*.play-tv.kakao.com/*",
+            "*://*.kakao.com/*",
             // https://github.com/AdguardTeam/PopupBlocker/issues/165
             "*://*.discounttire.com/*",
             // https://github.com/AdguardTeam/PopupBlocker/issues/169
@@ -315,7 +315,9 @@ export default class MetadataUtils {
             // https://github.com/AdguardTeam/PopupBlocker/issues/166
             "*://*.sahadan.com/*",
             // https://github.com/AdguardTeam/PopupBlocker/issues/186
-            "*://*.groupon.*/*"
+            "*://*.groupon.*/*",
+            // https://github.com/AdguardTeam/PopupBlocker/issues/162
+            "*://*.amoma.com/*",
         ]
     }
 
