@@ -403,6 +403,7 @@ export default class MetadataUtils {
         insertKey('match', 'https://*/*');
         insertKey('grant', 'GM_getValue');
         insertKey('grant', 'GM_setValue');
+        insertKey('grant', 'GM_deleteValue');
         insertKey('grant', 'GM_listValues');
         insertKey('grant', 'GM_getResourceURL');
         insertKey('grant', 'unsafeWindow');
