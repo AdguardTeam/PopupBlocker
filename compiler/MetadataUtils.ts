@@ -61,6 +61,8 @@ export default class MetadataUtils {
         "*://*.groupon.*/*",
         // https://github.com/AdguardTeam/PopupBlocker/issues/162
         "*://*.amoma.com/*",
+        // https://github.com/AdguardTeam/PopupBlocker/issues/183
+        "*://*.jccsmart.com/*",
     ];
 
     private static extension_exclusions = {
@@ -318,6 +320,8 @@ export default class MetadataUtils {
             "*://*.groupon.*/*",
             // https://github.com/AdguardTeam/PopupBlocker/issues/162
             "*://*.amoma.com/*",
+            // https://github.com/AdguardTeam/PopupBlocker/issues/183
+            "*://*.jccsmart.com/*",
         ]
     }
 
