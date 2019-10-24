@@ -63,6 +63,8 @@ export default class MetadataUtils {
         "*://*.amoma.com/*",
         // https://github.com/AdguardTeam/PopupBlocker/issues/183
         "*://*.jccsmart.com/*",
+        // https://github.com/AdguardTeam/PopupBlocker/issues/193
+        "https://web.skype.com/*"
     ];
 
     private static extension_exclusions = {
