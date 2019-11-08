@@ -266,6 +266,22 @@ export default class MetadataUtils {
             'https://*.google.co.zw/*',
             'https://*.google.cat/*',
             // google end
+            // yandex start
+            'https://yandex.ru/*',
+            'https://*.yandex.ru/*',
+            'https://yandex.ua/*',
+            'https://*.yandex.ua/*',
+            'https://yandex.by/*',
+            'https://*.yandex.by/*',
+            'https://yandex.com/*',
+            'https://*.yandex.com/*',
+            'https://yandex.com.tr/*',
+            'https://*.yandex.com.tr/*',
+            'https://yandex.kz/*',
+            'https://*.yandex.kz/*',
+            'https://yandex.fr/*',
+            'https://*.yandex.fr/*',
+            // yandex end
             'https://*.youtube.com/*',
             '*://disqus.com/embed/*',
             'https://vk.com/*',
