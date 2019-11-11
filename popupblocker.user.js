@@ -54,7 +54,7 @@
 // @description:vi Chặn quảng cáo bật lên trên các trang web
 // @description:zh 拦截网页弹窗广告
 // @description:zh-TW 封鎖於網頁上之彈出式視窗廣告
-// @version 2.5.23
+// @version 2.5.24
 // @license LGPL-3.0; https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE
 // @downloadURL https://AdguardTeam.github.io/PopupBlocker/popupblocker.user.js
 // @updateURL https://AdguardTeam.github.io/PopupBlocker/popupblocker.meta.js
