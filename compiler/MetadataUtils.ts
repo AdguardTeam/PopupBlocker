@@ -273,7 +273,10 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/PopupBlocker/issues/183
         "*://*.jccsmart.com/*",
         // https://github.com/AdguardTeam/PopupBlocker/issues/193
-        "https://web.skype.com/*"
+        "https://web.skype.com/*",
+        // https://github.com/AdguardTeam/PopupBlocker/issues/197
+        "*://karelia.press/*",
+        "*://*.karelia.press/*"
     ];
 
     private static extension_exclusions = {
