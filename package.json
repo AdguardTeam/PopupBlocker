@@ -1,6 +1,6 @@
 {
   "name": "popup-blocker",
-  "version": "2.5.24",
+  "version": "2.5.25",
   "description": "Block popups preemptively by wrapping browser APIs for additional check",
   "scripts": {
     "dev": "gulp dev && gulp watch",
