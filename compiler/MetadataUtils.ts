@@ -276,7 +276,25 @@ export default class MetadataUtils {
         "https://web.skype.com/*",
         // https://github.com/AdguardTeam/PopupBlocker/issues/197
         "*://karelia.press/*",
-        "*://*.karelia.press/*"
+        "*://*.karelia.press/*",
+        // https://github.com/AdguardTeam/PopupBlocker/issues/206
+        '*://microsoft.com/*',
+        '*://*.microsoft.com/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/204
+        '*://bancoctt.pt/*',
+        '*://*.bancoctt.pt/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/203
+        '*://print24.com/*',
+        '*://*.print24.com/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/202
+        '*://shellfcu.org/*',
+        '*://*.shellfcu.org/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/201
+        '*://yesfile.com/*',
+        '*://*.yesfile.com/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/200
+        '*://sunrise.ch/*',
+        '*://*.sunrise.ch/*'
     ];
 
     private static extension_exclusions = {
@@ -545,7 +563,25 @@ export default class MetadataUtils {
             "*://*.jccsmart.com/*",
             // https://github.com/AdguardTeam/PopupBlocker/issues/197
             "*://karelia.press/*",
-            "*://*.karelia.press/*"
+            "*://*.karelia.press/*",
+            // https://github.com/AdguardTeam/PopupBlocker/issues/206
+            '*://microsoft.com/*',
+            '*://*.microsoft.com/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/204
+            '*://bancoctt.pt/*',
+            '*://*.bancoctt.pt/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/203
+            '*://print24.com/*',
+            '*://*.print24.com/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/202
+            '*://shellfcu.org/*',
+            '*://*.shellfcu.org/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/201
+            '*://yesfile.com/*',
+            '*://*.yesfile.com/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/200
+            '*://sunrise.ch/*',
+            '*://*.sunrise.ch/*'
         ]
     }
 
