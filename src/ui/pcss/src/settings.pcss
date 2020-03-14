@@ -1,7 +1,6 @@
 .settings {
     display: flex;
-    height: 100%;
-    margin: 0 auto;
+    margin: 40px auto;
     width: 540px;
     flex-direction: column;
 
@@ -29,7 +28,7 @@
         &--popup {
             width: 400px;
             min-height: 0;
-            box-shadow: 0 0 10px 1px rgba(72, 70, 70, 0.5);
+            box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.15);
         }
     }
 
@@ -39,7 +38,7 @@
 
     &__title {
         font-size: 2.3rem;
-        margin-bottom: 35px;
+        margin-bottom: 25px;
     }
 
     &__subtitle {
@@ -120,19 +119,24 @@
         width: 100%;
         border: 0;
         padding: 10px 0;
-        margin-bottom: 17px;
+        margin-bottom: 25px;
         box-shadow: inset 0 -1px 0 0 var(--grayc5);
+        @mixin weight-regular;
     }
 
     &__submit {
         cursor: pointer;
         width: 100%;
         height: 40px;
-        line-height: 40px;
+        padding: 10px;
+        font-size: 1.5rem;
         color: var(--white-color);
+        border: 0;
         background-color: var(--green74);
         transition: var(--t3) background-color;
         @mixin ellipsis;
+
+        @mixin weight-regular;
 
         &:hover {
             background-color: #58a273;
