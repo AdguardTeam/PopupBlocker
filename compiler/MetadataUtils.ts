@@ -236,7 +236,9 @@ export default class MetadataUtils {
         'https://*.twitch.tv/*',
         'https://tinder.com/*',
         '*://*.yahoo.com/*',
-        '*://chat.chatovod.ru/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/86
+        '*://chatovod.ru/*',
+        '*://*.chatovod.ru/*',
         '*://vc.ru/*',
         '*://tjournal.ru/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/94
@@ -534,7 +536,9 @@ export default class MetadataUtils {
             'https://*.twitch.tv/*',
             'https://tinder.com/*',
             '*://*.yahoo.com/*',
-            '*://chat.chatovod.ru/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/86
+            '*://chatovod.ru/*',
+            '*://*.chatovod.ru/*',
             '*://vc.ru/*',
             '*://tjournal.ru/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/94
