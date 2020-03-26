@@ -243,6 +243,9 @@ export default class MetadataUtils {
         '*://amanice.ru/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/109
         '*://ka-union.ru/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/122
+        '*://gameforge.com/*',
+        '*://*.gameforge.com/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/144
         '*://*.ssgdfm.com/*',
         // https://github.com/AdguardTeam/CoreLibs/issues/490
@@ -538,6 +541,9 @@ export default class MetadataUtils {
             '*://amanice.ru/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/109
             '*://ka-union.ru/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/122
+            '*://gameforge.com/*',
+            '*://*.gameforge.com/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/144
             '*://*.ssgdfm.com/*',
             // https://github.com/AdguardTeam/CoreLibs/issues/490
