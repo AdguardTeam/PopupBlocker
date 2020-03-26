@@ -5,7 +5,7 @@
 // @name:cs Blok. vyskak. oken AdGuard (Dev)
 // @name:da AdGuard Popup Blocker (Dev)
 // @name:de AdGuard Pop-up-Blocker (Dev)
-// @name:es Bloqueador de popup de AdGuard (Dev)
+// @name:es AdGuard Popup Blocker (Dev)
 // @name:fa مسدودساز پاپ-آپ AdGuard (Dev)
 // @name:fi AdGuardin Ponnahdusikkunan estäjä (Dev)
 // @name:fr Bloqueur de fenêtres pop-up de AdGuard (Dev)
@@ -33,7 +33,7 @@
 // @description:cs Blokuje vyskakovací reklamy na webových stránkách
 // @description:da Blokerer pop-up reklamer på websider
 // @description:de Blockiert Anzeige-Pop-ups auf Webseiten
-// @description:es Bloquea elementos emergentes en sitios web
+// @description:es Bloquea anuncios emergentes en sitios web
 // @description:fa مسدودسازی تبلیغات پاپ آپ در صفحات وب.
 // @description:fi Estää ponnahdusikkunamainokset verkkosivustoilla
 // @description:fr Bloque les fenêtres pop-up avec publicités intrusives sur les pages web
@@ -54,7 +54,7 @@
 // @description:vi Chặn quảng cáo bật lên trên các trang web
 // @description:zh 拦截网页弹窗广告
 // @description:zh-TW 封鎖於網頁上之彈出式視窗廣告
-// @version 2.5.26
+// @version 2.5.27
 // @license LGPL-3.0; https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE
 // @downloadURL https://AdguardTeam.github.io/PopupBlocker/popupblocker.user.js
 // @updateURL https://AdguardTeam.github.io/PopupBlocker/popupblocker.meta.js
