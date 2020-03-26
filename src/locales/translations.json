@@ -814,7 +814,7 @@
             "message": "Mostrar {$destUrl}"
         },
         "continue_blocking": {
-            "message": "Continuar bloqueando\n"
+            "message": "Continuar bloqueando"
         },
         "allow_from": {
             "message": "Permitir ventanas emergentes en {$origDomain}"
@@ -865,19 +865,19 @@
             "message": "Paso 3: Actualice esta página para acceder a la configuración del userscript"
         },
         "noinst_ignore_if_ag": {
-            "message": "Si tiene instalado AdGuard para Windows, puede ignorar este paso ya que el bloqueador de ventanas emergentes viene preinstalado."
+            "message": "Si tiene instalado AdGuard para Windows, puede ignorar este paso ya que el userscript Popup Blocker viene preinstalado."
         },
         "noinst_rec": {
             "message": "(recomendado)"
         },
         "please_wait": {
-            "message": "Por favor espere, detectando el Bloqueador de popup"
+            "message": "Espere por favor, detectando Popup Blocker"
         },
         "noinst_special_prog": {
             "message": "En primer lugar, para usar un userscript necesita un programa especial que ejecute el userscript."
         },
         "noinst_subtitle": {
-            "message": "Bloqueador de popup de AdGuard no es instalado. Por favor, vea el manual abajo."
+            "message": "AdGuard Popup Blocker no es instalado. Por favor, vea el manual abajo."
         },
         "homepage": {
             "message": "Página de inicio"
@@ -889,20 +889,20 @@
             "message": "Paso 2: Userscript"
         },
         "extension_name": {
-            "message": "Bloqueador de popup de AdGuard",
+            "message": "Popup Blocker por AdGuard",
             "platform": [
                 "extension"
             ]
         },
         "userscript_name": {
-            "message": "Bloqueador de popup de AdGuard",
+            "message": "AdGuard Popup Blocker",
             "platform": [
                 "userscript",
                 "userscript_settings"
             ]
         },
         "extension_description": {
-            "message": "Bloquea elementos emergentes en sitios web",
+            "message": "Bloquea anuncios emergentes en sitios web",
             "platform": [
                 "extension"
             ]
@@ -922,13 +922,13 @@
             ]
         },
         "ext_enabled": {
-            "message": "Bloqueador de popup está en servicio",
+            "message": "Popup Blocker está en servicio",
             "platform": [
                 "extension"
             ]
         },
         "ext_disabled": {
-            "message": "Bloqueador de popup está desactivado para $DOMAIN$",
+            "message": "Popup Blocker está deshabilitado para $DOMAIN$",
             "platform": "extension",
             "placeholders": {
                 "domain": {
@@ -937,7 +937,7 @@
             }
         },
         "ext_disabled_default": {
-            "message": "Bloqueador de popup no puede ejecutar en este dominio",
+            "message": "Popup Blocker está deshabilitado para este dominio",
             "platform": "extension"
         },
         "settings_saved": {
@@ -3564,7 +3564,7 @@
             "message": "（被建議的）"
         },
         "please_wait": {
-            "message": "請等待，正偵測到彈出式視窗封鎖器"
+            "message": "請稍候，正偵測到彈出式視窗封鎖器"
         },
         "noinst_special_prog": {
             "message": "首先，為使用一個使用者腳本，您需要執行使用者腳本之專門的程式或擴充功能。"
