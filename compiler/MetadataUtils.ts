@@ -272,6 +272,9 @@ export default class MetadataUtils {
         "*://*.amoma.com/*",
         // https://github.com/AdguardTeam/PopupBlocker/issues/183
         "*://*.jccsmart.com/*",
+        // https://github.com/AdguardTeam/PopupBlocker/issues/191
+        '*://vietjetair.com/*',
+        '*://*.vietjetair.com/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/193
         "https://web.skype.com/*",
         // https://github.com/AdguardTeam/PopupBlocker/issues/197
@@ -564,6 +567,9 @@ export default class MetadataUtils {
             "*://*.amoma.com/*",
             // https://github.com/AdguardTeam/PopupBlocker/issues/183
             "*://*.jccsmart.com/*",
+            // https://github.com/AdguardTeam/PopupBlocker/issues/191
+            '*://vietjetair.com/*',
+            '*://*.vietjetair.com/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/197
             "*://karelia.press/*",
             "*://*.karelia.press/*",
