@@ -28,7 +28,6 @@ const CROWDIN_FILES = twoskyConfig.localizable_files
 const LOCALES_EQUIVALENTS_MAP = {
     'pt-BR': 'pt',
     'zh-CN': 'zh',
-    'zh-TW': 'zh_TW',
 };
 
 /**

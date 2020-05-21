@@ -3502,7 +3502,7 @@
             "message": "设置已保存"
         }
     },
-    "zh_TW": {
+    "zh-TW": {
         "show_popup": {
             "message": "顯示 {$destUrl}"
         },
