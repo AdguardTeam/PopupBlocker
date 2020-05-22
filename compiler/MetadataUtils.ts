@@ -305,7 +305,10 @@ export default class MetadataUtils {
         '*://*.sunrise.ch/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/208
         '*://cetesdirecto.com/*',
-        '*://*.cetesdirecto.com/*'
+        '*://*.cetesdirecto.com/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/211
+        '*://ubi.com/*',
+        '*://*.ubi.com/*'
     ];
 
     private static extension_exclusions = {
@@ -603,7 +606,10 @@ export default class MetadataUtils {
             '*://*.sunrise.ch/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/208
             '*://cetesdirecto.com/*',
-            '*://*.cetesdirecto.com/*'
+            '*://*.cetesdirecto.com/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/211
+            '*://ubi.com/*',
+            '*://*.ubi.com/*'
         ]
     }
 
