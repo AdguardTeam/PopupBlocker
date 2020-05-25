@@ -484,13 +484,13 @@
             "message": "Krok 2: Uživatelský skript"
         },
         "extension_name": {
-            "message": "Blok. vyskak. oken od AdGuard",
+            "message": "AdGuard blokátor vyskakovacích oken",
             "platform": [
                 "extension"
             ]
         },
         "userscript_name": {
-            "message": "Blok. vyskak. oken AdGuard",
+            "message": "AdGuard blokátor vyskakovacích oken",
             "platform": [
                 "userscript",
                 "userscript_settings"
@@ -3564,7 +3564,7 @@
             "message": "（被建議的）"
         },
         "please_wait": {
-            "message": "請稍候，正偵測到彈出式視窗封鎖器"
+            "message": "請稍候，正在檢測彈出式視窗封鎖器"
         },
         "noinst_special_prog": {
             "message": "首先，為使用一個使用者腳本，您需要執行使用者腳本之專門的程式或擴充功能。"
