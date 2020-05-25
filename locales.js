@@ -68,11 +68,11 @@ const getDownloadlURL = (lang, file) => BASE_DOWNLOAD_URL + getQueryString(lang,
 
 /**
  * Replaces object to array with values by passed key in message object
- * 
+ *
  * WHY WE USE IT?
  * Crowdin transforms output and replaces arrays to objects,
  * these transformations can cause the errors in application.
- * 
+ *
  * @param {string} key member of message object
  * @param {Object} data translation for specific locale
  */
