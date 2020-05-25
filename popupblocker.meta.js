@@ -2,7 +2,7 @@
 // @name AdGuard Popup Blocker (Dev)
 // @name:ar مانع النوافذ المنبثقة AdGuard (Dev)
 // @name:be Блакавальнік усплывальнай рэкламы ад AdGuard (Dev)
-// @name:cs Blok. vyskak. oken AdGuard (Dev)
+// @name:cs AdGuard blokátor vyskakovacích oken (Dev)
 // @name:da AdGuard Popup Blocker (Dev)
 // @name:de AdGuard Pop-up-Blocker (Dev)
 // @name:es AdGuard Popup Blocker (Dev)
