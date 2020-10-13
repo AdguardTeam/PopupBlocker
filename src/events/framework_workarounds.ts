@@ -249,10 +249,20 @@ const HOOK_PROPERTY_NAME = '__REACT_DEVTOOLS_GLOBAL_HOOK__';
 let accessedReactInternals = false;
 
 if (!hasOwnProperty.call(window, HOOK_PROPERTY_NAME)) {
+    var nextID = 0;
     let tempValue = {
         // Create a dummy function for preact compatibility
         // https://github.com/AdguardTeam/PopupBlocker/issues/119
-        "inject": function() { }
+        // Add more property for NextJS compatibility
+        // https://github.com/AdguardTeam/PopupBlocker/issues/219
+        renderers: new Map(),
+        supportsFiber: true,
+        inject: function (injected) {
+          return nextID++;
+        },
+        onScheduleFiberRoot: function (id, root, children) {},
+        onCommitFiberRoot: function (id, root, maybePriorityLevel, didError) {},
+        onCommitFiberUnmount: function () {}
     }; // to be used as window.__REACT_DEVTOOLS_GLOBAL_HOOK__
     defineProperty(tempValue, 'isDisabled', {
         get: function() {
