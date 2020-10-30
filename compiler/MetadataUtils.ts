@@ -308,7 +308,9 @@ export default class MetadataUtils {
         '*://*.cetesdirecto.com/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/211
         '*://ubi.com/*',
-        '*://*.ubi.com/*'
+        '*://*.ubi.com/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/222
+        '*://*.sistic.com.sg/*'
     ];
 
     private static extension_exclusions = {
@@ -609,7 +611,9 @@ export default class MetadataUtils {
             '*://*.cetesdirecto.com/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/211
             '*://ubi.com/*',
-            '*://*.ubi.com/*'
+            '*://*.ubi.com/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/222
+            '*://*.sistic.com.sg/*'
         ]
     }
 
