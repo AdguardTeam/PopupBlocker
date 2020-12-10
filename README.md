@@ -1,3 +1,5 @@
+# Popup Blocker by AdGuard
+
 ## Summary:
 
 Popup Blocker by AdGuard is a userscript that blocks all unwanted pop-up windows in different browsers.
