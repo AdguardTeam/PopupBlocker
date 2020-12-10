@@ -1,5 +1,3 @@
-# Popup Blocker by AdGuard [![Build Status](https://travis-ci.com/AdguardTeam/PopupBlocker.svg?branch=master)](https://travis-ci.com/AdguardTeam/PopupBlocker)
-
 ## Summary:
 
 Popup Blocker by AdGuard is a userscript that blocks all unwanted pop-up windows in different browsers.
