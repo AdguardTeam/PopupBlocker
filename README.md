@@ -1,4 +1,4 @@
-# Popup Blocker by AdGuard [![Build Status](https://travis-ci.com/AdguardTeam/PopupBlocker.svg?branch=master)](https://travis-ci.com/AdguardTeam/PopupBlocker)
+# Popup Blocker by AdGuard
 
 ## Summary:
 
