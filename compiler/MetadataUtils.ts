@@ -217,6 +217,9 @@ export default class MetadataUtils {
         '*://coub.com/*',
         '*://*.googlesyndication.com/*',
         '*://*.naver.com/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/227
+        'https://gstatic.com/*',
+        'https://*.gstatic.com/*',
         // yandex start
         'https://yandex.ru/*',
         'https://*.yandex.ru/*',
@@ -537,6 +540,9 @@ export default class MetadataUtils {
             'https://*.google.co.zw/*',
             'https://*.google.cat/*',
             // google end
+            // https://github.com/AdguardTeam/PopupBlocker/issues/227
+            'https://gstatic.com/*',
+            'https://*.gstatic.com/*',
             // yandex start
             'https://yandex.ru/*',
             'https://*.yandex.ru/*',
