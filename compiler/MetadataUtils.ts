@@ -338,7 +338,14 @@ export default class MetadataUtils {
         '*://ubi.com/*',
         '*://*.ubi.com/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/222
-        '*://*.sistic.com.sg/*'
+        '*://*.sistic.com.sg/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/224
+        '*://*.ilfattoquotidiano.it/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/215
+        '*://*.vanis.io/*',
+        '*://*.senpa.io/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/210
+        '*://*.astrogo.astro.com.my/*'
     ];
 
     private static extension_exclusions = {
@@ -669,7 +676,14 @@ export default class MetadataUtils {
             '*://ubi.com/*',
             '*://*.ubi.com/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/222
-            '*://*.sistic.com.sg/*'
+            '*://*.sistic.com.sg/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/224
+            '*://*.ilfattoquotidiano.it/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/215
+            '*://*.vanis.io/*',
+            '*://*.senpa.io/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/210
+            '*://*.astrogo.astro.com.my/*'
         ]
     }
 
