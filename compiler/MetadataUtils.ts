@@ -345,7 +345,8 @@ export default class MetadataUtils {
         '*://*.vanis.io/*',
         '*://*.senpa.io/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/210
-        '*://*.astrogo.astro.com.my/*'
+        '*://*.astrogo.astro.com.my/*',
+        '*://*.chaturbate.com/*'
     ];
 
     private static extension_exclusions = {
@@ -683,7 +684,8 @@ export default class MetadataUtils {
             '*://*.vanis.io/*',
             '*://*.senpa.io/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/210
-            '*://*.astrogo.astro.com.my/*'
+            '*://*.astrogo.astro.com.my/*',
+            '*://*.chaturbate.com/*'
         ]
     }
 
