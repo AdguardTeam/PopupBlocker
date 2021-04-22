@@ -349,7 +349,12 @@ export default class MetadataUtils {
         '*://*.chaturbate.com/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/233
         '*://24.play.pl/*',
-        '*://*.24.play.pl/*'
+        '*://*.24.play.pl/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/214
+        '*://web.de/*',
+        '*://*.web.de/*',
+        '*://gmx.net/*',
+        '*://*.gmx.net/*'
     ];
 
     private static extension_exclusions = {
@@ -691,7 +696,12 @@ export default class MetadataUtils {
             '*://*.chaturbate.com/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/233
             '*://play.pl/*',
-            '*://*.play.pl/*'
+            '*://*.play.pl/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/214
+            '*://web.de/*',
+            '*://*.web.de/*',
+            '*://gmx.net/*',
+            '*://*.gmx.net/*'
         ]
     }
 
