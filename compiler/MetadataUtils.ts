@@ -346,7 +346,10 @@ export default class MetadataUtils {
         '*://*.senpa.io/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/210
         '*://*.astrogo.astro.com.my/*',
-        '*://*.chaturbate.com/*'
+        '*://*.chaturbate.com/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/233
+        '*://24.play.pl/*',
+        '*://*.24.play.pl/*'
     ];
 
     private static extension_exclusions = {
@@ -685,7 +688,10 @@ export default class MetadataUtils {
             '*://*.senpa.io/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/210
             '*://*.astrogo.astro.com.my/*',
-            '*://*.chaturbate.com/*'
+            '*://*.chaturbate.com/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/233
+            '*://play.pl/*',
+            '*://*.play.pl/*'
         ]
     }
 
