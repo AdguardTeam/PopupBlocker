@@ -348,8 +348,8 @@ export default class MetadataUtils {
         '*://*.astrogo.astro.com.my/*',
         '*://*.chaturbate.com/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/233
-        '*://24.play.pl/*',
-        '*://*.24.play.pl/*',
+        '*://play.pl/*',
+        '*://*.play.pl/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/214
         '*://web.de/*',
         '*://*.web.de/*',
