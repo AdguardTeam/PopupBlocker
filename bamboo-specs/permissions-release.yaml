@@ -1,0 +1,16 @@
+---
+version: 2
+deployment:
+  name: popup blocker - deploy release
+deployment-permissions:
+  - groups:
+      - extensions-developers
+    permissions:
+      - view
+environment-permissions:
+  - userscripts.adtidy.org:
+      - groups:
+          - extensions-developers
+        permissions:
+          - view
+          - deploy

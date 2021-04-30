@@ -1,0 +1,77 @@
+---
+version: 2
+plan:
+  project-key: ADGEXT
+  key: ADGBLOCKERRELEASESPECS
+  name: popup blocker - build release
+variables:
+  dockerNode: adguard/node-ssh:15.14--5
+
+stages:
+  - Build:
+      manual: 'false'
+      final: 'false'
+      jobs:
+        - Build
+
+Build:
+  key: BUILD
+  other:
+    clean-working-dir: true
+  docker:
+    image: ${bamboo.dockerNode}
+    volumes:
+      ${system.YARN_DIR}: "${bamboo.cacheYarn}"
+  tasks:
+    - checkout:
+        force-clean-build: 'true'
+    - checkout:
+        repository: extensions-private
+        path: private
+        force-clean-build: 'true'
+    - script:
+        interpreter: SHELL
+        scripts:
+          - |-
+            set -x
+            set -e
+            ls -alt
+
+            yarn install ${system.YARN_ARGS}
+            yarn userscript-release
+            tar -C build -zcvf build/userscript.tar.gz userscript
+    - inject-variables:
+        file: build/build.txt
+        scope: RESULT
+        namespace: userscriptMeta
+    - any-task:
+        plugin-key: com.atlassian.bamboo.plugins.vcs:task.vcs.tagging
+        configuration:
+          selectedRepository: defaultRepository
+          tagName: v${bamboo.userscriptMeta.version}-release
+  artifacts:
+    - name: userscript.tar.gz
+      location: build
+      pattern: userscript.tar.gz
+      shared: true
+      required: true
+  requirements:
+    - adg-docker: 'true'
+
+triggers: []
+
+branches:
+  create: manually
+  delete: never
+  link-to-jira: 'true'
+
+notifications:
+  - events:
+      - plan-status-changed
+    recipients:
+      - webhook:
+          name: Build webhook
+          url: http://prod.jirahub.service.eu.consul/v1/webhook/bamboo
+labels: []
+other:
+  concurrent-build-plugin: system-default

@@ -1,0 +1,58 @@
+---
+version: 2
+plan:
+  project-key: ADGEXT
+  key: ADGBLOCKERTESTSPECS
+  name: popup blocker - test
+variables:
+  dockerNode: adguard/node-ssh:15.14--5
+
+stages:
+  - Test:
+      manual: 'false'
+      final: 'false'
+      jobs:
+        - Test
+
+Test:
+  key: TEST
+  other:
+    clean-working-dir: true
+  docker:
+    image: ${bamboo.dockerNode}
+    volumes:
+      ${system.YARN_DIR}: "${bamboo.cacheYarn}"
+  tasks:
+    - checkout:
+        force-clean-build: 'true'
+    - script:
+        interpreter: SHELL
+        scripts:
+          - |-
+            set -x
+            set -e
+            ls -alt
+
+            yarn install ${system.YARN_ARGS}
+            yarn userscript-dev
+            tar -C build -zcvf build/userscript.tar.gz userscript
+  artifacts:
+    - name: userscript.tar.gz
+      location: build
+      pattern: userscript.tar.gz
+      shared: true
+      required: true
+  requirements:
+    - adg-docker: 'true'
+
+branches:
+  create: for-pull-request
+  delete:
+    after-deleted-days: '1'
+    after-inactive-days: '5'
+  link-to-jira: 'true'
+
+notifications: []
+labels: []
+other:
+  concurrent-build-plugin: system-default

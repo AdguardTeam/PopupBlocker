@@ -1,0 +1,50 @@
+---
+version: 2
+plan:
+  project-key: ADGEXT
+  key: ADGBLOCKERINCRSPECS
+  name: popup blocker - increment version
+variables:
+  dockerNode: adguard/node-ssh:15.14--5
+
+stages:
+  - Increment:
+      manual: false
+      final: false
+      jobs:
+        - Increment
+Increment:
+  key: INCR
+  other:
+    clean-working-dir: true
+  docker:
+    image: ${bamboo.dockerNode}
+    volumes:
+      ${system.YARN_DIR}: "${bamboo.cacheYarn}"
+  tasks:
+    - checkout:
+        force-clean-build: 'true'
+    - script:
+        interpreter: SHELL
+        scripts:
+          - |-
+            set -e
+            set -x
+
+            yarn increment
+    - any-task:
+        plugin-key: com.atlassian.bamboo.plugins.vcs:task.vcs.commit
+        configuration:
+          commitMessage: 'skipci: Automatic increment build number'
+          selectedRepository: defaultRepository
+  requirements:
+    - adg-docker: 'true'
+
+branches:
+  create: manually
+  delete: never
+  link-to-jira: true
+notifications: []
+labels: []
+other:
+  concurrent-build-plugin: system-default

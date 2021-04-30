@@ -10,7 +10,7 @@
     "travis": "gulp travis",
     "locales:download": "LOCALES=DOWNLOAD node locales.js",
     "locales:upload": "LOCALES=UPLOAD node locales.js",
-    "ci:increment": "yarn version --patch --no-git-tag-version"
+    "increment": "yarn version --patch --no-git-tag-version"
   },
   "repository": "https://github.com/AdguardTeam/PopupBlocker",
   "license": "LGPL-3.0",
