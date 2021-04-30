@@ -2,7 +2,7 @@
 version: 2
 deployment:
   name: popup blocker - deploy beta
-  source-plan: ADGEXT-ADGBLOCKERBETASPECS
+  source-plan: ADGEXT-POPUPBLOCKBETASPECS
 release-naming: ${bamboo.userscriptMeta.version}-beta
 environments:
   - userscripts.adtidy.org

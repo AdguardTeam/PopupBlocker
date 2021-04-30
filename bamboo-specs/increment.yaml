@@ -2,7 +2,7 @@
 version: 2
 plan:
   project-key: ADGEXT
-  key: ADGBLOCKERINCRSPECS
+  key: POPUPBLOCKINCRSPECS
   name: popup blocker - increment version
 variables:
   dockerNode: adguard/node-ssh:15.14--5

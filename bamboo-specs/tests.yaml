@@ -2,7 +2,7 @@
 version: 2
 plan:
   project-key: ADGEXT
-  key: ADGBLOCKERTESTSPECS
+  key: POPUPBLOCKTESTSPECS
   name: popup blocker - test
 variables:
   dockerNode: adguard/node-ssh:15.14--5

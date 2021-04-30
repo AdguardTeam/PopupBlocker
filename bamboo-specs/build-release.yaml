@@ -2,7 +2,7 @@
 version: 2
 plan:
   project-key: ADGEXT
-  key: ADGBLOCKERRELEASESPECS
+  key: POPUPBLOCKRELEASESPECS
   name: popup blocker - build release
 variables:
   dockerNode: adguard/node-ssh:15.14--5
