@@ -344,12 +344,18 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/PopupBlocker/issues/215
         '*://*.vanis.io/*',
         '*://*.senpa.io/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/236
+        '*://wielkopolskiebilety.pl/*',
+        '*://*.wielkopolskiebilety.pl/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/210
         '*://*.astrogo.astro.com.my/*',
         '*://*.chaturbate.com/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/233
         '*://play.pl/*',
         '*://*.play.pl/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/218
+        '*://findicons.com/*',
+        '*://*.findicons.com/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/214
         '*://web.de/*',
         '*://*.web.de/*',
@@ -694,12 +700,18 @@ export default class MetadataUtils {
             // https://github.com/AdguardTeam/PopupBlocker/issues/215
             '*://*.vanis.io/*',
             '*://*.senpa.io/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/236
+            '*://wielkopolskiebilety.pl/*',
+            '*://*.wielkopolskiebilety.pl/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/210
             '*://*.astrogo.astro.com.my/*',
             '*://*.chaturbate.com/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/233
             '*://play.pl/*',
             '*://*.play.pl/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/218
+            '*://findicons.com/*',
+            '*://*.findicons.com/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/214
             '*://web.de/*',
             '*://*.web.de/*',
