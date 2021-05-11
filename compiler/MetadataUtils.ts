@@ -353,6 +353,9 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/PopupBlocker/issues/233
         '*://play.pl/*',
         '*://*.play.pl/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/218
+        '*://findicons.com/*',
+        '*://*.findicons.com/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/214
         '*://web.de/*',
         '*://*.web.de/*',
@@ -703,6 +706,9 @@ export default class MetadataUtils {
             // https://github.com/AdguardTeam/PopupBlocker/issues/233
             '*://play.pl/*',
             '*://*.play.pl/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/218
+            '*://findicons.com/*',
+            '*://*.findicons.com/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/214
             '*://web.de/*',
             '*://*.web.de/*',
