@@ -360,7 +360,10 @@ export default class MetadataUtils {
         '*://web.de/*',
         '*://*.web.de/*',
         '*://gmx.net/*',
-        '*://*.gmx.net/*'
+        '*://*.gmx.net/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/234
+        '*://clashofclans.com/*',
+        '*://*.clashofclans.com/*'
     ];
 
     private static extension_exclusions = {
@@ -713,7 +716,10 @@ export default class MetadataUtils {
             '*://web.de/*',
             '*://*.web.de/*',
             '*://gmx.net/*',
-            '*://*.gmx.net/*'
+            '*://*.gmx.net/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/234
+            '*://clashofclans.com/*',
+            '*://*.clashofclans.com/*'
         ]
     }
 
