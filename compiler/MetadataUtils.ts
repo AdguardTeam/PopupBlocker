@@ -344,6 +344,9 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/PopupBlocker/issues/215
         '*://*.vanis.io/*',
         '*://*.senpa.io/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/236
+        '*://wielkopolskiebilety.pl/*',
+        '*://*.wielkopolskiebilety.pl/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/210
         '*://*.astrogo.astro.com.my/*',
         '*://*.chaturbate.com/*',
@@ -691,6 +694,9 @@ export default class MetadataUtils {
             // https://github.com/AdguardTeam/PopupBlocker/issues/215
             '*://*.vanis.io/*',
             '*://*.senpa.io/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/236
+            '*://wielkopolskiebilety.pl/*',
+            '*://*.wielkopolskiebilety.pl/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/210
             '*://*.astrogo.astro.com.my/*',
             '*://*.chaturbate.com/*',
