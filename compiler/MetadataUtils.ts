@@ -363,7 +363,10 @@ export default class MetadataUtils {
         '*://*.gmx.net/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/234
         '*://clashofclans.com/*',
-        '*://*.clashofclans.com/*'
+        '*://*.clashofclans.com/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/238
+        '*://online.bfgruppe.de/*',
+        '*://*.online.bfgruppe.de/*'
     ];
 
     private static extension_exclusions = {
@@ -719,7 +722,10 @@ export default class MetadataUtils {
             '*://*.gmx.net/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/234
             '*://clashofclans.com/*',
-            '*://*.clashofclans.com/*'
+            '*://*.clashofclans.com/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/238
+            '*://online.bfgruppe.de/*',
+            '*://*.online.bfgruppe.de/*'
         ]
     }
 
