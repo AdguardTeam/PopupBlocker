@@ -1,7 +1,7 @@
 ---
 version: 2
 deployment:
-  name: popup blocker - deploy release
+  name: popup blocker - release deploy
   source-plan: ADGEXT-POPUPBLOCKRELEASESPECS
 release-naming: ${bamboo.userscriptMeta.version}
 environments:
