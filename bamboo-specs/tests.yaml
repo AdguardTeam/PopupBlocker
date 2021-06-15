@@ -31,7 +31,6 @@ Test:
           - |-
             set -x
             set -e
-            ls -alt
 
             yarn install ${system.YARN_ARGS}
             yarn userscript-dev
