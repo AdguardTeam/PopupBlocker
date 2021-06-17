@@ -1,7 +1,7 @@
 ---
 version: 2
 deployment:
-  name: popup blocker - deploy release
+  name: popup blocker - release deploy
 deployment-permissions:
   - groups:
       - extensions-developers
