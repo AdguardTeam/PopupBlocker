@@ -24,7 +24,7 @@
     "@types/node": "^9.4.6",
     "add-stream": "^1.0.0",
     "async-file": "^2.0.2",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "chai": "^4.1.2",
     "closure-library.ts": "^1.0.0",
     "closure-tools-helper": "https://github.com/AdguardTeam/closure-tools-helper.git",
