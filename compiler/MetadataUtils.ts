@@ -364,6 +364,9 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/PopupBlocker/issues/238
         '*://online.bfgruppe.de/*',
         '*://*.online.bfgruppe.de/*'
+        // https://github.com/AdguardTeam/PopupBlocker/issues/238
+        '*://epicgames.com/*',
+        '*://*.epicgames.com/*'
     ];
 
     private static extension_exclusions = {
@@ -720,6 +723,9 @@ export default class MetadataUtils {
             // https://github.com/AdguardTeam/PopupBlocker/issues/238
             '*://online.bfgruppe.de/*',
             '*://*.online.bfgruppe.de/*'
+            // https://github.com/AdguardTeam/PopupBlocker/issues/238
+            '*://epicgames.com/*',
+            '*://*.epicgames.com/*'
         ]
     }
 
