@@ -364,6 +364,9 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/PopupBlocker/issues/238
         '*://online.bfgruppe.de/*',
         '*://*.online.bfgruppe.de/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/237
+        '*://portalpasazera.pl/*',
+        '*://*.portalpasazera.pl/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/241
         '*://epicgames.com/*',
         '*://*.epicgames.com/*'
@@ -723,6 +726,9 @@ export default class MetadataUtils {
             // https://github.com/AdguardTeam/PopupBlocker/issues/238
             '*://online.bfgruppe.de/*',
             '*://*.online.bfgruppe.de/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/237
+            '*://portalpasazera.pl/*',
+            '*://*.portalpasazera.pl/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/241
             '*://epicgames.com/*',
             '*://*.epicgames.com/*'
