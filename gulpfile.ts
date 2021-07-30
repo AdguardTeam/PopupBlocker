@@ -13,7 +13,7 @@ import uglify = require('gulp-uglify');
 import file = require('gulp-file');
 import xml2js = require('xml2js');
 
-import typescript = require('@alexlur/rollup-plugin-typescript');
+import typescript = require('@rollup/plugin-typescript');
 import typescript2 = require('rollup-plugin-typescript2');
 
 import * as closureTools from 'closure-tools-helper';
