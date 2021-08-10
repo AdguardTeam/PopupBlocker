@@ -735,6 +735,9 @@ export default class MetadataUtils {
             // https://github.com/AdguardTeam/PopupBlocker/issues/241
             '*://epicgames.com/*',
             '*://*.epicgames.com/*'
+            // https://github.com/AdguardTeam/AdguardFilters/issues/90068
+            '*://freizeithugl.de/*',
+            '*://*.freizeithugl.de/*'
         ]
     }
 
