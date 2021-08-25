@@ -369,7 +369,7 @@ export default class MetadataUtils {
         '*://*.portalpasazera.pl/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/241
         '*://epicgames.com/*',
-        '*://*.epicgames.com/*'
+        '*://*.epicgames.com/*',
         // https://github.com/AdguardTeam/AdguardFilters/issues/90068
         '*://freizeithugl.de/*',
         '*://*.freizeithugl.de/*'
@@ -734,7 +734,7 @@ export default class MetadataUtils {
             '*://*.portalpasazera.pl/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/241
             '*://epicgames.com/*',
-            '*://*.epicgames.com/*'
+            '*://*.epicgames.com/*',
             // https://github.com/AdguardTeam/AdguardFilters/issues/90068
             '*://freizeithugl.de/*',
             '*://*.freizeithugl.de/*'
