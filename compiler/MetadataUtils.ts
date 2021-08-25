@@ -367,6 +367,9 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/PopupBlocker/issues/237
         '*://portalpasazera.pl/*',
         '*://*.portalpasazera.pl/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/246
+        '*://jeanne-laffitte.com/*',
+        '*://*.jeanne-laffitte.com/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/241
         '*://epicgames.com/*',
         '*://*.epicgames.com/*',
@@ -732,6 +735,9 @@ export default class MetadataUtils {
             // https://github.com/AdguardTeam/PopupBlocker/issues/237
             '*://portalpasazera.pl/*',
             '*://*.portalpasazera.pl/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/246
+            '*://jeanne-laffitte.com/*',
+            '*://*.jeanne-laffitte.com/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/241
             '*://epicgames.com/*',
             '*://*.epicgames.com/*',
