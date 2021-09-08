@@ -375,7 +375,12 @@ export default class MetadataUtils {
         '*://*.epicgames.com/*',
         // https://github.com/AdguardTeam/AdguardFilters/issues/90068
         '*://freizeithugl.de/*',
-        '*://*.freizeithugl.de/*'
+        '*://*.freizeithugl.de/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/249
+        '*://ygosu.com/*',
+        '*://*.ygosu.com/*',
+        '*://ppss.kr/*',
+        '*://*.ppss.kr/*',
     ];
 
     private static extension_exclusions = {
@@ -743,7 +748,12 @@ export default class MetadataUtils {
             '*://*.epicgames.com/*',
             // https://github.com/AdguardTeam/AdguardFilters/issues/90068
             '*://freizeithugl.de/*',
-            '*://*.freizeithugl.de/*'
+            '*://*.freizeithugl.de/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/249
+            '*://ygosu.com/*',
+            '*://*.ygosu.com/*',
+            '*://ppss.kr/*',
+            '*://*.ppss.kr/*',
         ]
     }
 
