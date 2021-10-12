@@ -37,7 +37,7 @@ Build:
             set -e
             ls -alt
 
-            yarn install ${system.YARN_ARGS}
+            yarn install ${bamboo.varsYarn}
             yarn userscript-release
             tar -C build -zcvf build/userscript.tar.gz userscript
     - inject-variables:
