@@ -32,7 +32,7 @@ Test:
             set -x
             set -e
 
-            yarn install ${system.YARN_ARGS}
+            yarn install ${bamboo.varsYarn}
             yarn userscript-dev
             tar -C build -zcvf build/userscript.tar.gz userscript
   artifacts:
