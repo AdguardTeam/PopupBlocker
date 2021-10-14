@@ -36,6 +36,7 @@ Build:
             yarn install ${bamboo.varsYarn}
             yarn userscript-beta
             tar -C build -zcvf build/userscript.tar.gz userscript
+            rm -rf node_modules
     - inject-variables:
         file: build/build.txt
         scope: RESULT

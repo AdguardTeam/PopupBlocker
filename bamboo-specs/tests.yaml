@@ -35,6 +35,7 @@ Test:
             yarn install ${bamboo.varsYarn}
             yarn userscript-dev
             tar -C build -zcvf build/userscript.tar.gz userscript
+            rm -rf node_modules
   artifacts:
     - name: userscript.tar.gz
       location: build
