@@ -376,6 +376,9 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/AdguardFilters/issues/90068
         '*://freizeithugl.de/*',
         '*://*.freizeithugl.de/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/253
+        '*://koleje-wielkopolskie.com.pl/*',
+        '*://*.koleje-wielkopolskie.com.pl/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/249
         '*://ygosu.com/*',
         '*://*.ygosu.com/*',
@@ -752,6 +755,9 @@ export default class MetadataUtils {
             // https://github.com/AdguardTeam/AdguardFilters/issues/90068
             '*://freizeithugl.de/*',
             '*://*.freizeithugl.de/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/253
+            '*://koleje-wielkopolskie.com.pl/*',
+            '*://*.koleje-wielkopolskie.com.pl/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/249
             '*://ygosu.com/*',
             '*://*.ygosu.com/*',
