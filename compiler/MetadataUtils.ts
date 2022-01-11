@@ -387,6 +387,9 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/PopupBlocker/issues/251
         '*://nordea.com/*',
         '*://*.nordea.com/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/255
+        '*://*.gov/*',
+
     ];
 
     private static extension_exclusions = {
@@ -766,6 +769,8 @@ export default class MetadataUtils {
             // https://github.com/AdguardTeam/PopupBlocker/issues/251
             '*://nordea.com/*',
             '*://*.nordea.com/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/255
+            '*://*.gov/*',
         ]
     }
 
