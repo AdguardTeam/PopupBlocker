@@ -389,6 +389,9 @@ export default class MetadataUtils {
         '*://*.nordea.com/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/255
         '*://*.gov/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/254
+        '*://learn-anything.xyz/*',
+        '*://*.learn-anything.xyz/*',
 
     ];
 
@@ -771,6 +774,9 @@ export default class MetadataUtils {
             '*://*.nordea.com/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/255
             '*://*.gov/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/254
+            '*://learn-anything.xyz/*',
+            '*://*.learn-anything.xyz/*',
         ]
     }
 
