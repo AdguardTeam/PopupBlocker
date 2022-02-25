@@ -396,8 +396,8 @@ export default class MetadataUtils {
         '*://learn-anything.xyz/*',
         '*://*.learn-anything.xyz/*',
         // https://github.com/AdguardTeam/PopupBlocker/issues/262
-        '*://egybest.zone/*',
-        '*://*.egybest.zone/*',
+        '*://egybest.*/*',
+        '*://*.egybest.*/*',
     ];
 
     private static extension_exclusions = {
@@ -786,8 +786,8 @@ export default class MetadataUtils {
             '*://learn-anything.xyz/*',
             '*://*.learn-anything.xyz/*',
             // https://github.com/AdguardTeam/PopupBlocker/issues/262
-            '*://egybest.zone/*',
-            '*://*.egybest.zone/*',
+            '*://egybest.*/*',
+            '*://*.egybest.*/*',
         ]
     }
 
