@@ -398,6 +398,9 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/PopupBlocker/issues/262
         '*://egybest.*/*',
         '*://*.egybest.*/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/263
+        '*://ancestry.com/*',
+        '*://*.ancestry.com/*',
     ];
 
     private static extension_exclusions = {
@@ -788,6 +791,9 @@ export default class MetadataUtils {
             // https://github.com/AdguardTeam/PopupBlocker/issues/262
             '*://egybest.*/*',
             '*://*.egybest.*/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/263
+            '*://ancestry.com/*',
+            '*://*.ancestry.com/*',
         ]
     }
 
