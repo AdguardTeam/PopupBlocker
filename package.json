@@ -50,7 +50,7 @@
     "inline-resource-literal": "^1.0.2",
     "merge-options": "^1.0.0",
     "merge-stream": "^1.0.1",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.6",
     "mocha": "^4.0.1",
     "onesky-utils": "^1.2.0",
     "postcss-cssnext": "2.9.0",
