@@ -401,6 +401,9 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/PopupBlocker/issues/263
         '*://ancestry.com/*',
         '*://*.ancestry.com/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/267
+        '*://login.mts.ru/*',
+        '*://*.login.mts.ru/*',
     ];
 
     private static extension_exclusions = {
@@ -794,6 +797,9 @@ export default class MetadataUtils {
             // https://github.com/AdguardTeam/PopupBlocker/issues/263
             '*://ancestry.com/*',
             '*://*.ancestry.com/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/267
+            '*://login.mts.ru/*',
+            '*://*.login.mts.ru/*',
         ]
     }
 
