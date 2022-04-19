@@ -404,6 +404,8 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/PopupBlocker/issues/267
         '*://login.mts.ru/*',
         '*://*.login.mts.ru/*',
+        '*://ebay.com/*',
+        '*://*.ebay.com/*',
     ];
 
     private static extension_exclusions = {
@@ -800,6 +802,8 @@ export default class MetadataUtils {
             // https://github.com/AdguardTeam/PopupBlocker/issues/267
             '*://login.mts.ru/*',
             '*://*.login.mts.ru/*',
+            '*://ebay.com/*',
+            '*://*.ebay.com/*',
         ]
     }
 
