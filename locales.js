@@ -6,14 +6,14 @@ const FormData = require('form-data');
 const twoskyConfig = require('./.twosky.json')[0];
 
 // URLs
-const BASE_URL = 'https://twosky.adtidy.org/api/v1';
+const BASE_URL = 'https://twosky.int.agrd.dev/api/v1';
 const BASE_DOWNLOAD_URL = `${BASE_URL}/download`;
 const BASE_UPLOAD_URL = `${BASE_URL}/upload`;
 // Directory where locales should be stored
 const LOCALES_DIR = './src/locales';
 // Base locale
 const BASE_LOCALE = twoskyConfig.base_locale;
-// Twosky project see mapping https://twosky.adtidy.org/api/v1/mapping
+// Twosky project see mapping https://twosky.int.agrd.dev/api/v1/mapping
 const CROWDIN_PROJECT = twoskyConfig.project_id;
 // Available translations list
 const LOCALES = Object.keys(twoskyConfig.languages);
