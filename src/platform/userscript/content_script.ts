@@ -11,7 +11,7 @@ const settingsDao = new UserscriptSettingsDao();
 const cssService = new CSSService(GM_getResourceURL);
 const alertController = new AlertController(cssService, settingsDao, () => {
     window.open(
-        'https://popupblocker.adguard.com/options.html',
+        'https://link.adtidy.org/forward.html?action=popup_blocker_options&from=content_script&app=popup_blocker',
         '__popupBlocker_options_page__'
     );
 });
@@ -47,7 +47,7 @@ if (csApiFacade.envIsFirefoxBrowserExt) {
 function isOptionsPage() {
     let { href } = location;
     return href === 'https://adguardteam.github.io/PopupBlocker/options.html' ||
-        href === 'https://popupblocker.adguard.com/options.html' ||
+        href === 'https://link.adtidy.org/forward.html?action=popup_blocker_options&from=content_script&app=popup_blocker' ||
         href === 'http://localhost:8000/options.html'; // For debug purposes.
 }
 
