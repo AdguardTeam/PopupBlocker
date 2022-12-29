@@ -409,6 +409,9 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/PopupBlocker/issues/269
         '*://outlook.live.*/*',
         '*://*.outlook.live.*/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/280
+        '*://joom.com.*/*',
+        '*://*.joom.com.*/*',
     ];
 
     private static extension_exclusions = {
@@ -810,6 +813,9 @@ export default class MetadataUtils {
             // https://github.com/AdguardTeam/PopupBlocker/issues/269
             '*://outlook.live.*/*',
             '*://*.outlook.live.*/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/280
+            '*://joom.com.*/*',
+            '*://*.joom.com.*/*',
         ]
     }
 
