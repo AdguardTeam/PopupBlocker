@@ -412,6 +412,9 @@ export default class MetadataUtils {
         // https://github.com/AdguardTeam/PopupBlocker/issues/280
         '*://joom.com.*/*',
         '*://*.joom.com.*/*',
+        // https://github.com/AdguardTeam/PopupBlocker/issues/281
+        '*://unrealengine.com/*',
+        '*://*.unrealengine.com/*'
     ];
 
     private static extension_exclusions = {
@@ -816,6 +819,9 @@ export default class MetadataUtils {
             // https://github.com/AdguardTeam/PopupBlocker/issues/280
             '*://joom.com.*/*',
             '*://*.joom.com.*/*',
+            // https://github.com/AdguardTeam/PopupBlocker/issues/281
+            '*://unrealengine.com/*',
+            '*://*.unrealengine.com/*'
         ]
     }
 
