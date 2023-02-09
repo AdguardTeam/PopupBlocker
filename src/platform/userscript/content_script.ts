@@ -41,14 +41,18 @@ if (csApiFacade.envIsFirefoxBrowserExt) {
     popupBlocker(win, BRIDGE_KEY);
 }
 
+const optionsPageURLs = [
+    'https://adguardteam.github.io/PopupBlocker/options.html',
+    'https://link.adtidy.org/forward.html?action=popup_blocker_options&from=content_script&app=popup_blocker',
+    'http://localhost:8000/options.html', // For debug purposes.
+];
+
 /**
  * Expose GM_api on options page.
  */
 function isOptionsPage() {
     let { href } = location;
-    return href === 'https://adguardteam.github.io/PopupBlocker/options.html' ||
-        href === 'https://link.adtidy.org/forward.html?action=popup_blocker_options&from=content_script&app=popup_blocker' ||
-        href === 'http://localhost:8000/options.html'; // For debug purposes.
+    return optionsPageURLs.some((url) => url === href);
 }
 
 if (isOptionsPage()) {
