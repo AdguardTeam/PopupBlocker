@@ -42,8 +42,8 @@ if (csApiFacade.envIsFirefoxBrowserExt) {
 }
 
 const optionsPageURLs = [
+    'https://popupblocker.adguard.com/options.html',
     'https://adguardteam.github.io/PopupBlocker/options.html',
-    'https://link.adtidy.org/forward.html?action=popup_blocker_options&from=content_script&app=popup_blocker',
     'http://localhost:8000/options.html', // For debug purposes.
 ];
 
