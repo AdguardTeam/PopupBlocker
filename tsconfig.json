@@ -1,11 +1,36 @@
 {
     "compilerOptions": {
-        "target": "es2017",
+        "allowSyntheticDefaultImports": true,
+        "target": "ES2015",
         "lib": ["dom", "es6", "es2016"],
-        "types": ["filesystem"]
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        // Preact config
+        "jsx": "react-jsx",
+        "jsxImportSource": "preact",
+        "baseUrl": "./",
+        "paths": {
+            "react": ["./node_modules/preact/compat/"],
+            "react-dom": ["./node_modules/preact/compat/"]
+        }
+    },
+    "ts-node": {
+        "transpileOnly": true,
+        "compilerOptions": {
+            "types": ["filesystem", "node"],
+            "resolveJsonModule": true,
+            "esModuleInterop": true,
+            "module":"CommonJS",
+          }
     },
     "include": [
+        "*.ts",
         "src/**/*.ts",
-        "test/**/*.ts"
+        "src/**/*.tsx",
+        "test/**/*.ts",
+        "tasks/**/*.ts",
+        "**/.eslintrc.js"
     ]
 }

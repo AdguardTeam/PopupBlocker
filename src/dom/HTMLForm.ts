@@ -5,7 +5,8 @@ import ILoggedProxyService from '../proxy/ILoggedProxyService';
  * This is enabled on DEV version only for debugging purpose.
  */
 export function wrapFormTarget(window:Window, proxyService:ILoggedProxyService) {
-    // @ifdef DEBUG
-    proxyService.wrapAccessor(window.HTMLFormElement.prototype, 'target');
-    // @endif
+    if (DEBUG) {
+        // TODO make preprocessor plugin to cut these from beta and release builds
+        proxyService.wrapAccessor(window.HTMLFormElement.prototype, 'target');
+    }
 }

@@ -18,12 +18,8 @@ jobs:
       - name: yarn install
         run: yarn install
 
-      - name: install gulp
-        run: npm install -g gulp ts-node
-
       - name: build
-        run: gulp travis
-# TODO GULP???
+        run: yarn bundle
 
       - name: deploy
         uses: peaceiris/actions-gh-pages@v3

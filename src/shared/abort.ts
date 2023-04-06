@@ -10,15 +10,17 @@
  * to the current window or `href` attribute of a clicked anchor, and triggers aborting in such cases.
  */
 
-import adguard from '../page_script_namespace';
-import { ProxyServiceExternalError } from '../proxy/ProxyService';
-import { closeAllGroup } from './debug';
+import { ProxyServiceExternalError } from '../proxy/ProxyServiceExternalError';
+import { log } from './debug';
+import { translator } from '../i18n';
 
-let MAGIC:string;
+let externalErrorId:string;
 
-export default function abort():never {
-    closeAllGroup();
-    MAGIC = Math.random().toString(36).substr(7);
-    console.warn(adguard.contentScriptApiFacade.$getMessage('aborted_popunder_execution'));
-    throw new ProxyServiceExternalError(MAGIC);
+export function abort():never {
+    log.closeAllGroup();
+    externalErrorId = Math.random().toString(36).substr(7);
+    // eslint-disable-next-line no-console
+    console.warn(translator.getMessage('aborted_popunder_execution'));
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
+    throw new ProxyServiceExternalError(externalErrorId);
 }

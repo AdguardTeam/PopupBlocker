@@ -34,7 +34,7 @@ On the other hand, Popup Blocker is an independent project, you can use it with 
 
 ## Options page
 
-From userscript version 2.5.0 and higher, you can manage a list of whitelisted domains and silenced domain on a dedicated [options page](https://popupblocker.adguard.com/options.html).
+From userscript version 2.5.0 and higher, you can manage a list of allowlisted domains and silenced domain on a dedicated [options page](https://popupblocker.adguard.com/options.html).
 
 ## Reporting a bug
 
@@ -55,12 +55,6 @@ Unit test for dev build is [here](https://popupblocker.adguard.com/test/).
 
 ## How to build
 
-Install `gulp` and `ts-node` globally by running:
-
-```
-npm install -g gulp ts-node
-```
-
 Install local dependencies by runnning:
 
 ```
@@ -70,39 +64,34 @@ yarn install
 To build, run:
 
 ```
-$ gulp <channel>-<target>[-[un]minified]
+$ NODE_ENV=<channel> ts-node tasks/builder --target=<target>
 ```
 
 or in a minimist style:
 
 ```
-gulp build --channel=<channel> --target=<target> --minify=(boolean) --use_adg_domain
+yarn userscript-<channel>
+yarn options-page
+yarn tests
+yarn bundle
 ```
 
 Available channels are: `dev`, `beta`, `release`.
-Available targets are: `userscript`, `chrome`, `webext`, `userscript-settings`.
-Use `userscript-settings` option to build an `options.js` file only.
-
-`minify` option will override default minification settings for `channel`.
-
-`use_adg_domain` option will make userscript builds to use urls in `adguard.com` domain as urls of `@resource` meta tags.
+Available targets are: `userscript`, `options`, `tests`, `bundle`.
 
 Developement builds are not minified, and will print logs into the browser console.
 
 Beta and release builds will be minified and have all logging codes stripped out.
-For minified builds, ensure that you have Java installed and have necessary environment variables.
 
 ## How to debug the options page
 
-Build using the `userscript-settings` option, go to the build folder via `cd` command, then run local server:
+Build using the options page, go to the build folder via `cd` command and run local server of you choice
 
 ```
-python -m SimpleHTTPServer
+yarn options-page
 ```
 
-Open http://localhost:8000/options.html
-
-If you use other address or port, you have to modify the `src/platform/userscript/content_script.ts` file with your address and port.
+Modify `isOptionsPage` at `option-init.ts` to allow specific address and port.
 After that, ensure, that userscript (for example, in AG) contains this address and port too.
 
 To see the options page, ensure, that AG filters your debug page.

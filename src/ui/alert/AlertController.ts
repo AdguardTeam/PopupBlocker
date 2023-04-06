@@ -1,18 +1,21 @@
-import IAlertController from './IAlertController';
-import AlertView from './AlertView';
-import IAlertView from './IAlertView'
-import ISettingsDao from '../../storage/ISettingsDao';
-import { isUndef, isNumber } from '../../shared/instanceof';
-import CSSService from '../utils/CssService';
-import { DomainOptionEnum } from '../../storage/storage_data_structure';
+import { ISettingsDao } from '../../storage/SettingsDao';
 import ToastController from '../toast/ToastController';
-import adguard from '../../content_script_namespace';
-import { functionBind, create, setTimeout } from '../../shared/protected_api';
+import { AlertView, AlertViewInterface } from './AlertView';
+import { AlertControllerInterface } from './AlertControllerInterface';
+import { translator } from '../../i18n';
+import { OptionName } from '../../storage/Option';
+import {
+    isUndef,
+    isNumber,
+    functionBind,
+    create,
+    setTimeout,
+} from '../../shared';
 
 const enum AlertStates {
     NONE,
     EXPANDED,
-    COLLAPSED
+    COLLAPSED,
 }
 
 interface IAlertData {
@@ -20,46 +23,58 @@ interface IAlertData {
     destUrl:string
 }
 
-export default class AlertController implements IAlertController { 
+export class AlertController implements AlertControllerInterface {
     /**
      * Controller state provided from external sources
      */
-    private domainToPopupCount:stringmap<number> = create(null);
+    private domainToPopupCount = create(null);
+
     private currentAlertData:IAlertData;
+
     private renderedAlertData:IAlertData;
+
     /**
      * Controller internal states
      */
     private $state:AlertStates = AlertStates.NONE;
+
     private stateTransitionTimer:number;
+
     private timerStart:number;
+
     private remainingAfterMouseLeave:number;
+
     private remainingTimeout:number;
+
     /**
      * Configuration constants
      */
     private static STATE_TRANSITION_TIMEOUT = 1000 * 10; // 10 sec
+
     private static HOVER_TIMEOUT_INCR = 1000 * 2; // 2 sec
+
     private static TOAST_DURATION = 1000 * 2; // 2 seconds
+
     /**
      * Dependent classes
      */
     private toastController:ToastController;
-    private alertView:IAlertView;
+
+    private alertView:AlertViewInterface;
 
     constructor(
-        private cssService:CSSService,
         private settingsDao:ISettingsDao,
         // Platform-specific functionalities are injected via ctor
-        private $openOptionsPage:()=>void
+        private $openOptionsPage:()=>void,
     ) {
         this.$expand = functionBind.call(this.$expand, this);
         this.$collapse = functionBind.call(this.$collapse, this);
         this.$destroy = functionBind.call(this.$destroy, this);
         this.notifyAboutSavedSettings = functionBind.call(this.notifyAboutSavedSettings, this);
 
-        this.toastController = new ToastController(this.cssService, AlertController.TOAST_DURATION);
+        this.toastController = new ToastController(AlertController.TOAST_DURATION);
     }
+
     /**
      * Not providing @param callback means that a currently scheduled transition will be canceled.
      */
@@ -73,6 +88,7 @@ export default class AlertController implements IAlertController {
             this.stateTransitionTimer = this.timerStart = this.remainingTimeout = null;
         }
     }
+
     /**
      * State transition handlers
      */
@@ -83,6 +99,7 @@ export default class AlertController implements IAlertController {
         this.scheduleTransition(this.$collapse, AlertController.STATE_TRANSITION_TIMEOUT);
         this.remainingAfterMouseLeave = null;
     }
+
     private $collapse() {
         this.alertView.$collapse();
         this.$state = AlertStates.COLLAPSED;
@@ -90,6 +107,7 @@ export default class AlertController implements IAlertController {
         this.scheduleTransition(this.$destroy, AlertController.STATE_TRANSITION_TIMEOUT);
         this.remainingAfterMouseLeave = null;
     }
+
     private $destroy() {
         if (this.alertView) {
             this.alertView.$destroy();
@@ -99,21 +117,24 @@ export default class AlertController implements IAlertController {
         this.scheduleTransition();
         this.remainingAfterMouseLeave = null;
     }
+
     /**
      * Public methods
      */
     createAlert(origDomain:string, destUrl:string) {
-        const domainToPopupCount = this.domainToPopupCount;
-        const numPopup:number = isUndef(domainToPopupCount[origDomain]) ?
-            (domainToPopupCount[origDomain] = 1) :
-            ++domainToPopupCount[origDomain];
+        const { domainToPopupCount } = this;
+        const numPopup:number = isUndef(domainToPopupCount[origDomain])
+            ? (domainToPopupCount[origDomain] = 1)
+            // eslint-disable-next-line no-plusplus
+            : ++domainToPopupCount[origDomain];
 
         // Initialize view when necessary
         if (!this.alertView) {
-            this.alertView = new AlertView(this.cssService, this);
+            this.alertView = new AlertView(this);
         }
 
-        let alertData = this.currentAlertData = { origDomain, destUrl };
+        const alertData = { origDomain, destUrl };
+        this.currentAlertData = alertData;
         this.alertView.render(numPopup, origDomain, destUrl, () => {
             this.renderedAlertData = alertData;
         });
@@ -130,10 +151,13 @@ export default class AlertController implements IAlertController {
                 // resets the timer.
                 this.scheduleTransition(this.$collapse, AlertController.STATE_TRANSITION_TIMEOUT);
                 break;
-            // If a new alert has arrived while it is in a collpased state, 
+            default:
+                break;
+            // If a new alert has arrived while it is in a collpased state,
             // do nothing.
         }
     }
+
     onMouseEnter() {
         // Only do the logic of postponing state transition when there is
         // an ongoing timer.
@@ -141,21 +165,24 @@ export default class AlertController implements IAlertController {
         this.remainingAfterMouseLeave = this.remainingTimeout - (Date.now() - this.timerStart);
         this.scheduleTransition();
     }
+
     onMouseLeave() {
         if (!isNumber(this.remainingAfterMouseLeave)) { return; }
         // The alert should not be collapsed within 2 sec of of mouseleave event.
         this.scheduleTransition(
             this.$state === AlertStates.EXPANDED ? this.$collapse : this.$destroy,
-            max(
+            Math.max(
                 this.remainingAfterMouseLeave,
-                AlertController.HOVER_TIMEOUT_INCR
-            )
+                AlertController.HOVER_TIMEOUT_INCR,
+            ),
         );
         this.remainingAfterMouseLeave = null;
     }
+
     onClose() {
         this.$collapse();
     }
+
     onPinClick() {
         switch (this.$state) {
             case AlertStates.COLLAPSED:
@@ -164,47 +191,58 @@ export default class AlertController implements IAlertController {
             case AlertStates.EXPANDED:
                 this.$collapse();
                 break;
+            default: break;
         }
     }
+
     onContinueBlocking() {
         this.$destroy();
     }
+
     onOptionChange(evt:Event) {
-        let select = <HTMLSelectElement>evt.target;
-        let selectedValue = select.value;
+        const select = <HTMLSelectElement>evt.target;
+        const selectedValue = select.value;
         switch (selectedValue) {
-            case "1":
-                this.settingsDao.setWhitelist(this.renderedAlertData.origDomain, true, this.notifyAboutSavedSettings);
+            case '1':
+                this.settingsDao.setListItem(
+                    OptionName.Allowed,
+                    this.renderedAlertData.origDomain,
+                    this.notifyAboutSavedSettings,
+                );
                 break;
-            case "2":
-                this.settingsDao.setSourceOption(this.renderedAlertData.origDomain, DomainOptionEnum.SILENCED, this.notifyAboutSavedSettings);
+            case '2':
+                this.settingsDao.setListItem(
+                    OptionName.Silenced,
+                    this.renderedAlertData.origDomain,
+                    this.notifyAboutSavedSettings,
+                );
                 break;
-            case "3":
+            case '3':
                 this.$openOptionsPage();
                 this.onOptionChangeOperationCompletion();
                 break;
-            case "4":
+            case '4':
                 window.open(this.renderedAlertData.destUrl, '_blank');
                 this.onOptionChangeOperationCompletion();
                 break;
+            default: break;
         }
         evt.preventDefault();
     }
+
     onUserInteraction() {
         this.scheduleTransition();
     }
+
     private onOptionChangeOperationCompletion() {
         this.$destroy();
     }
+
     private notifyAboutSavedSettings() {
-        let toastController = this.toastController;
+        const { toastController } = this;
         if (toastController) {
-            toastController.showNotification(adguard.i18nService.$getMessage("settings_saved"));
+            toastController.showNotification(translator.getMessage('settings_saved'));
         }
         this.onOptionChangeOperationCompletion();
     }
-}
-
-function max(a:number, b:number) {
-    return a > b ? a : b;
 }

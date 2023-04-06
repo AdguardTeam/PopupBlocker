@@ -1,38 +1,47 @@
-import * as log from './debug';
+import { log } from './debug';
+
+interface DOMPoint {
+    new(x?:number, y?:number, z?:number, w?:number):any
+}
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+declare const DOMPoint: DOMPoint;
 
 /**
  * A polyfill for the WeakMap that covers only the most basic usage.
  * Originally based on {@link https://github.com/Polymer/WeakMap}
- */ 
+ */
 let counter = Date.now() % 1e9;
-const defineProperty = Object.defineProperty;
+const { defineProperty } = Object;
 export class WeakMapPolyfill<K, V> {
     private $name;
+
     constructor() {
-        this.$name = '__st' + (Math.random() * 1e9 >>> 0) + (counter++ + '__');
+        this.$name = `__st${Math.floor(Math.random() * 1000000000)}${counter += 1}__`;
     }
+
     set(key:K, value:V) {
-        let entry = key[this.$name];
-        if (entry && entry[0] === key)
-            entry[1] = value;
-        else
-            defineProperty(key, this.$name, {value: [key, value], writable: true});
+        const entry = key[this.$name];
+        if (entry && entry[0] === key) entry[1] = value;
+        else defineProperty(key, this.$name, { value: [key, value], writable: true });
         return this;
     }
+
     get(key:K):V {
-        let entry;
-        return (entry = key[this.$name]) && entry[0] === key ?
-            entry[1] : undefined;
+        const entry = key[this.$name];
+        return entry[0] === key ? entry[1] : undefined;
     }
+
     delete(key:K):boolean {
-        var entry = key[this.$name];
+        const entry = key[this.$name];
         if (!entry) return false;
-        var hasValue = entry[0] === key;
+        const hasValue = entry[0] === key;
         entry[0] = entry[1] = undefined;
         return hasValue;
     }
+
     has(key:K):boolean {
-        var entry = key[this.$name];
+        const entry = key[this.$name];
         if (!entry) return false;
         return entry[0] === key;
     }
@@ -46,27 +55,21 @@ export const nativeWeakMapSupport = typeof WeakMap === 'function';
  * {@link https://bugzilla.mozilla.org/show_bug.cgi?id=1351501}
  * A similar error prevents using `AudioBuffer` as a key.
  */
-export const buggyWeakMapSupport = !nativeWeakMapSupport ? false : (function() {
-    if (typeof DOMPoint !== 'function') { return false; }
+export const buggyWeakMapSupport = !nativeWeakMapSupport ? false : (function () {
+    if (typeof DOMPoint !== 'function') {
+        return false;
+    }
     const key = new DOMPoint();
     const weakmap = new WeakMap();
     try {
         weakmap.set(key, undefined); // Firefox 58 throws here.
         return false;
-    } catch(e) {
+    } catch (e) {
         log.print('Buggy WeakMap support');
         return true;
     }
-})();
+}());
 // To be used in AudioBufferCache
 export const NonBuggyWeakMap:IWeakMapCtor = nativeWeakMapSupport && !buggyWeakMapSupport ? WeakMap : WeakMapPolyfill;
 
-const wm:IWeakMapCtor = nativeWeakMapSupport ? WeakMap : WeakMapPolyfill;
-export default wm;
-
-//
-
-interface DOMPoint {
-    new(x?:number, y?:number, z?:number, w?:number):any
-}
-declare const DOMPoint:DOMPoint
+export const SafeWeakMap:IWeakMapCtor = nativeWeakMapSupport ? WeakMap : WeakMapPolyfill;

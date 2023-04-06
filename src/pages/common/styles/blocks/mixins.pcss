@@ -1,0 +1,66 @@
+@define-mixin weight-regular {
+    font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 400;
+}
+
+@define-mixin weight-medium {
+    font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 600;
+}
+
+@define-mixin weight-bold {
+    font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700;
+}
+
+@define-mixin bnt-white {
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 0 0 1px var(--grayc5);
+    padding: 0 20px;
+    height: 40px;
+    line-height: 40px;
+    background-color: var(--white-color);
+    transition: var(--t3) background-color;
+    @mixin weight-bold;
+
+    &:hover {
+        background-color: var(--green02);
+    }
+}
+
+@define-mixin ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@define-mixin link-reset {
+    color: var(--gray-base);
+    transition: var(--t3) color;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+        color: var(--green74);
+    }
+}
+
+@define-mixin select-reset {
+    border-radius: 0;
+    appearance:none;
+    outline: none;
+    font-size: inherit;
+    border: 0;
+}
+
+@define-mixin close-btn {
+    display: block;
+    position: absolute;
+    background-image: svg-load("../../../../assets/icons/cross.svg");
+    cursor: pointer;
+    top: 20px;
+    right: 20px;
+    width: 15px;
+    height: 15px;
+}

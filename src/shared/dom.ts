@@ -1,46 +1,44 @@
+// @ts-ignore
 export const matches = Element.prototype.matches || Element.prototype.msMatchesSelector;
 
-export const closest = 'closest' in Element.prototype ? (el: Element, selector: string): Element => {
-    return el.closest(selector);
-} : (el: Element, selector: string): Element => {
-    while (el) {
-        if (matches.call(el, selector)) {
-            return el;
-        }
-        else {
+export const closest = 'closest' in Element.prototype
+    ? (el: Element, selector: string)
+    : Element => el.closest(selector) : (el: Element, selector: string): Element => {
+        while (el) {
+            if (matches.call(el, selector)) {
+                return el;
+            }
+            // eslint-disable-next-line no-param-reassign
             el = el.parentElement;
         }
-    }
-    return null;
-};
+        return null;
+    };
 
 /**
- * This serves as a whitelist on various checks where we block re-triggering of events.
+ * This serves as an allowlist on various checks where we block re-triggering of events.
  * See dom/dispatchEvent.ts.
  */
 export function targetsAreChainable(prev: Node, next: Node): boolean {
     if (prev.nodeType === 3 /* Node.TEXT_NODE */) {
         // Based on observation that certain libraries re-triggers
         // an event on text nodes on its parent due to iOS quirks.
+        // eslint-disable-next-line no-param-reassign
         prev = prev.parentNode;
     }
     return prev === next;
 }
 
-export const getTagName = (el: Node): string => {
-    return el.nodeName.toUpperCase();
-};
+export const getTagName = (el: Node): string => el.nodeName.toUpperCase();
 
 /**
  * Detects about:blank, about:srcdoc urls.
  */
 export const ABOUT_PROTOCOL = 'about:';
-const reEmptyUrl = new RegExp('^' + ABOUT_PROTOCOL);
-export const isEmptyUrl = (url: string): boolean => {
-    return reEmptyUrl.test(url);
-};
+const reEmptyUrl = new RegExp(`^${ABOUT_PROTOCOL}`);
+export const isEmptyUrl = (url: string): boolean => reEmptyUrl.test(url);
 
-const frameElementDesc = Object.getOwnPropertyDescriptor(window, 'frameElement') || Object.getOwnPropertyDescriptor(Window.prototype, 'frameElement');
+const frameElementDesc = Object.getOwnPropertyDescriptor(window, 'frameElement')
+    || Object.getOwnPropertyDescriptor(Window.prototype, 'frameElement');
 const getFrameElement = frameElementDesc.get;
 
 /**
@@ -51,15 +49,19 @@ const getFrameElement = frameElementDesc.get;
  * and use it afterhands.
  */
 const getSafeParent = (window: Window): Window => {
-    let frameElement = getFrameElement.call(window);
-    if (!frameElement) { return null; }
+    const frameElement = getFrameElement.call(window);
+    if (!frameElement) {
+        return null;
+    }
     return frameElement.ownerDocument.defaultView;
 };
 
 export const getSafeNonEmptyParent = (window: Window): Window => {
     let frame = window;
     while (frame && isEmptyUrl(frame.location.href)) { frame = getSafeParent(frame); }
-    if (!frame) { return null; }
+    if (!frame) {
+        return null;
+    }
     return frame;
 };
 

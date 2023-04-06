@@ -1,30 +1,33 @@
-import adguard from '../page_script_namespace';
+import { adguard } from '../page-script-namespace';
 import { ApplyHandler } from '../proxy/IProxyService';
 import ILoggedProxyService from '../proxy/ILoggedProxyService';
 import { retrieveEvent, verifyEvent } from '../events/verify';
-import * as log from '../shared/debug';
-import createUrl from '../shared/url';
-import onBlocked from '../on_blocked';
-import { isAnchor } from '../shared/instanceof';
+import {
+    log,
+    createUrl,
+    isAnchor,
+} from '../shared';
+import onBlocked from '../on-blocked';
 
-const clickVerified:ApplyHandler<HTMLElement,void> = function(execContext, _arguments) {
-    const _this = execContext.thisArg;
-    if (isAnchor(_this)) {
-        log.print('click() was called on an anchor tag', _this);
-        if (adguard.contentScriptApiFacade.originIsWhitelisted()) {
+const clickVerified:ApplyHandler<HTMLElement, void> = (execContext, _arguments) => {
+    const { thisArg } = execContext;
+    if (isAnchor(thisArg)) {
+        log.print('click() was called on an anchor tag', thisArg);
+        if (adguard.contentScriptApiFacade.originIsAllowed()) {
             return execContext.invokeTarget(_arguments);
         }
-        // Checks if an url is in a whitelist
-        let url = createUrl(_this.href);
-        let destDomain = url[1];
-        if (adguard.contentScriptApiFacade.originIsWhitelisted(destDomain)) {
-            log.print(`The domain ${destDomain} is in whitelist.`);
+        // Checks if an url is in allowlist
+        const url = createUrl(thisArg.href);
+        const destDomain = url[1];
+        if (adguard.contentScriptApiFacade.originIsAllowed(destDomain)) {
+            log.print(`The domain ${destDomain} is in allowlist.`);
             return execContext.invokeTarget(_arguments);
         }
-        let currentEvent = retrieveEvent();
+        const currentEvent = retrieveEvent();
         if (!verifyEvent(currentEvent)) {
             log.print('It did not pass the test, not clicking element');
             onBlocked(url[2], currentEvent);
+            // eslint-disable-next-line consistent-return
             return;
         }
     }
@@ -34,4 +37,3 @@ const clickVerified:ApplyHandler<HTMLElement,void> = function(execContext, _argu
 export function wrapClick(window:Window, proxyService:ILoggedProxyService) {
     proxyService.wrapMethod(window.HTMLElement.prototype, 'click', log.connect(clickVerified, 'Verifying click'));
 }
-

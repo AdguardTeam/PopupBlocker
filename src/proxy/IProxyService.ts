@@ -4,11 +4,16 @@ export default interface IProxyService {
      * to re-define a property owned by obj.
      */
     wrapMethod<T, R>(obj:T, prop:PropertyKey, applyHandler?:ApplyHandler<T, R>):void
-    wrapAccessor<T, R>(obj:T, prop:PropertyKey, getterApplyHandler?:ApplyHandler<T, R>, setterApplyHandler?:ApplyHandler<T, any>)
+    wrapAccessor<T, R>(
+        obj:T,
+        prop:PropertyKey,
+        getterApplyHandler?:ApplyHandler<T, R>,
+        setterApplyHandler?:ApplyHandler<T, any>
+    )
     makeObjectProxy<T extends object>(obj:T):T
 }
 
-export interface IWrappedExecutionContext<T,R> {
+export interface IWrappedExecutionContext<T, R> {
     readonly thisArg:T
     /**
      * @param thisArg was made optional just because it is identical to this.thisArg in most of cases.
@@ -16,5 +21,8 @@ export interface IWrappedExecutionContext<T,R> {
     invokeTarget(args:IArguments, thisArg?:T):R
 }
 
-export type ApplyHandler<T,R,C=never> = (ctxt:IWrappedExecutionContext<T,R>, _arguments:IArguments, externalContext?:C) => R;
-
+export type ApplyHandler<T, R, C=never> = (
+    ctxt:IWrappedExecutionContext<T, R>,
+    _arguments:IArguments,
+    externalContext?:C
+) => R;

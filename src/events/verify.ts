@@ -1,10 +1,20 @@
-import * as log from '../shared/debug';
-import WeakMap from '../shared/WeakMap';
-import CurrentMouseEvent from './current_mouse_event';
-import { eventTargetIsRootNode, maybeOverlay } from './element_tests';
-import { isReactInstancePresent, jsActionTarget, getCurrentJQueryTarget } from './framework_workarounds';
-import { isNode, isElement, isMouseEvent, isTouchEvent, isClickEvent } from '../shared/instanceof';
-import { matches, getTagName } from '../shared/dom';
+import {
+    log,
+    isNode,
+    isElement,
+    isMouseEvent,
+    isTouchEvent,
+    isClickEvent,
+    SafeWeakMap,
+    getTagName,
+} from '../shared';
+import CurrentMouseEvent from './current-mouse-event';
+import { eventTargetIsRootNode, maybeOverlay } from './element-tests';
+import {
+    isReactInstancePresent,
+    jsActionTarget,
+    getCurrentJQueryTarget,
+} from './framework-workarounds';
 
 /**
  * On IE 10 and lower, window.event is a `MSEventObj` instance which does not implement `target` property.
@@ -28,12 +38,12 @@ export function retrieveEvent():Event {
     log.call('Retrieving event');
     let win = window;
     let currentEvent;
-    // @ifndef NO_EVENT
     if (supported) {
         currentEvent = win.event;
-        while( !currentEvent ) {
-            let parent = win.parent;
+        while (!currentEvent) {
+            const { parent } = win;
             if (parent === win) { break; }
+            // @ts-ignore
             win = parent;
             try {
                 currentEvent = win.event;
@@ -45,25 +55,40 @@ export function retrieveEvent():Event {
     } else {
         currentEvent = currentMouseEvent();
     }
-    // @endif
+
     if (!currentEvent) {
         log.print('window.event does not exist, trying to get event from Function.caller');
         try {
+            // eslint-disable-next-line no-restricted-properties, no-caller
             let caller = arguments.callee;
-            let touched = new WeakMap();
+            const touched = new SafeWeakMap();
             while (caller.caller) {
                 caller = caller.caller;
                 if (touched.has(caller)) {
-                    throw /* @ifdef DEBUG */ "Recursion in the call stack"; /* @endif */ /* @ifndef DEBUG */ null; /* @endif */
+                    /* eslint-disable @typescript-eslint/no-throw-literal */
+                    if (DEBUG) {
+                        // TODO make preprocessor plugin to cut these from beta and release builds
+                        throw 'Recursion in the call stack';
+                    } else {
+                        throw null;
+                    }
+                    /* eslint-enable @typescript-eslint/no-throw-literal */
                 }
                 touched.set(caller, true);
             }
             log.print('Reached at the top of caller chain.');
             if (caller.arguments && caller.arguments[0] && 'target' in caller.arguments[0]) {
+                // eslint-disable-next-line prefer-destructuring
                 currentEvent = caller.arguments[0];
-                log.print('The function at the bottom of the stack has an expected type. The current event is:', currentEvent);
+                log.print(
+                    'The function at the bottom of the stack has an expected type. The current event is:',
+                    currentEvent,
+                );
             } else {
-                log.print('The function at the bottom of the call stack does not have an expected type.', caller.arguments[0]);
+                log.print(
+                    'The function at the bottom of the call stack does not have an expected type.',
+                    caller.arguments[0],
+                );
             }
         } catch (e) {
             log.print('Getting event from Function.caller failed, due to an error:', e);
@@ -73,7 +98,7 @@ export function retrieveEvent():Event {
     }
     log.callEnd();
     return currentEvent;
-};
+}
 
 /**
  * @param event Optional argument, an event to test with. Default value is currentEvent.
@@ -82,48 +107,53 @@ export function retrieveEvent():Event {
 export const verifyEvent = log.connect((event?:Event):boolean => {
     if (event) {
         if ((!isMouseEvent(event) || !isClickEvent(event)) && !isTouchEvent(event)) { return true; }
-        let currentTarget = event.currentTarget;
+        const { currentTarget } = event;
         if (currentTarget) {
             log.print('Event is:', event);
             log.print('currentTarget is: ', currentTarget);
             if (eventTargetIsRootNode(currentTarget)) {
-                let eventPhase = event.eventPhase;
-                log.print('Phase is: ' + eventPhase);
+                const { eventPhase } = event;
+                log.print(`Phase is: ${eventPhase}`);
                 // Workaround for jsaction
-                let maybeJsActionTarget = jsActionTarget(event);
+                const maybeJsActionTarget = jsActionTarget(event);
                 if (maybeJsActionTarget) {
                     log.print('maybeJsActionTarget');
                     if (eventTargetIsRootNode(maybeJsActionTarget)) {
                         return false;
-                    } else {
-                        log.print('jsActionTarget is not a root');
-                        return true;
                     }
+                    log.print('jsActionTarget is not a root');
+                    return true;
                 }
                 if (eventPhase === 1 /* Event.CAPTURING_PHASE */|| eventPhase === 2 /* Event.AT_TARGET */) {
+                    // eslint-disable-next-line max-len
                     log.print('VerifyEvent - the current event handler is suspicious, for the current target is either window, document, html, or body.');
                     return false;
-                } else {
-                    log.print('VerifyEvent - the current target is document/html/body, but the event is in a bubbling phase.');
-                    // Workaround for jQuery
-                    let jQueryTarget = getCurrentJQueryTarget(event);
-                    if (jQueryTarget) {
-                        log.print('jQueryTarget exists: ', jQueryTarget);
-                        // Performs the check with jQueryTarget again.
-                        if (eventTargetIsRootNode(jQueryTarget) || (isElement(jQueryTarget) && maybeOverlay(jQueryTarget))) {
-                            return false;
-                        }
-                    } else if (!isReactInstancePresent() || (isNode(currentTarget) && getTagName(currentTarget) !== '#DOCUMENT')) {
-                        // Workaround for React
+                }
+                // eslint-disable-next-line max-len
+                log.print('VerifyEvent - the current target is document/html/body, but the event is in a bubbling phase.');
+                // Workaround for jQuery
+                const jQueryTarget = getCurrentJQueryTarget(event);
+                if (jQueryTarget) {
+                    log.print('jQueryTarget exists: ', jQueryTarget);
+                    // Performs the check with jQueryTarget again.
+                    if (eventTargetIsRootNode(jQueryTarget)
+                        || (isElement(jQueryTarget) && maybeOverlay(jQueryTarget))) {
                         return false;
                     }
+                    // Workaround for React
+                } else if (!isReactInstancePresent()
+                        || (isNode(currentTarget) && getTagName(currentTarget) !== '#DOCUMENT')) {
+                    return false;
                 }
+
             // When an overlay is being used, checking for useCapture is not necessary.
             } else if (isElement(currentTarget) && maybeOverlay(currentTarget)) {
+                // eslint-disable-next-line max-len
                 log.print('VerifyEvent - the current event handler is suspicious, for the current target looks like an artificial overlay.');
                 return false;
             }
         }
     }
     return true;
-}, 'Verifying event', function() { return arguments[0] });
+// eslint-disable-next-line prefer-rest-params
+}, 'Verifying event', function () { return arguments[0]; });

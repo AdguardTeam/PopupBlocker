@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 import * as ProxyService from './proxy/ProxyService';
 import LoggedProxyService from './proxy/LoggedProxyService';
 import { timeline } from './timeline/Timeline';
@@ -9,16 +10,29 @@ import { wrapObjectData } from './dom/HTMLObject';
 import { wrapDocumentWrite } from './dom/write';
 import { wrapPreventDefault } from './dom/preventDefault';
 import ChildContextInjector from './proxy/ChildContextInjector';
-import { installAlertMessageTransferrer } from './on_blocked'
-import { installDispatchMouseEventMessageTransferrer } from './events/examine_target';
+import { installAlertMessageTransferrer } from './on-blocked';
+import { installDispatchMouseEventMessageTransferrer } from './events/examine-target';
 import InterContextMessageHub from './messaging/InterContextMessageHub';
-import adguard from './page_script_namespace';
+import { adguard } from './page-script-namespace';
 
-export default function main(window:Window, globalKey:string) {
+export function main(window:Window, globalKey:string) {
+    // eslint-disable-next-line no-prototype-builtins
     if (window.hasOwnProperty(globalKey)) {
+        // eslint-disable-next-line no-param-reassign
         delete window[globalKey];
-        return;
     } else {
+        const initMsgHub = (window:Window) => {
+            adguard.messageHub = new InterContextMessageHub(window);
+            installAlertMessageTransferrer(adguard.messageHub);
+            installDispatchMouseEventMessageTransferrer(adguard.messageHub);
+        };
+
+        const initMsgHubInIframe = (window:Window) => {
+            const messageHub = new InterContextMessageHub(window, adguard.messageHub);
+            installAlertMessageTransferrer(messageHub);
+            installDispatchMouseEventMessageTransferrer(messageHub);
+        };
+
         const initProxy = (window:Window) => {
             ProxyService.$apply(window);
             const framePosition = timeline.onNewFrame(window); // Will be `0` for main fame
@@ -35,18 +49,6 @@ export default function main(window:Window, globalKey:string) {
             const injector = new ChildContextInjector(window, loggedProxyService, globalKey);
             injector.registerCallback(initProxy);
             injector.registerCallback(initMsgHubInIframe);
-        };
-
-        const initMsgHub = (window:Window) => {
-            adguard.messageHub = new InterContextMessageHub(window);
-            installAlertMessageTransferrer(adguard.messageHub);
-            installDispatchMouseEventMessageTransferrer(adguard.messageHub);
-        };
-
-        const initMsgHubInIframe = (window:Window) => {
-            const messageHub = new InterContextMessageHub(window, adguard.messageHub);
-            installAlertMessageTransferrer(messageHub);
-            installDispatchMouseEventMessageTransferrer(messageHub);
         };
 
         initProxy(window);

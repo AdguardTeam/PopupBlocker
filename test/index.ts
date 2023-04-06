@@ -1,7 +1,7 @@
 import './events/verify';
-import './events/element_tests';
-import './events/current_mouse_event';
-import './events/framework_workarounds';
+import './events/element-tests';
+import './events/current-mouse-event';
+import './storage/migrator';
+import './events/framework-workarounds';
 import './timeline/index';
 import './shared/url';
-import './platform/userscript/storage/UserscriptSettingsDao';

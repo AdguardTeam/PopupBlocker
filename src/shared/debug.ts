@@ -1,99 +1,125 @@
+/* eslint-disable no-console, prefer-rest-params */
 /**
- * @fileoverview Logging functions to be used in dev channel. Function bodies are enclosed with preprocess
- * directives in order to ensure that these are stripped out by minifier in beta and release channels.
+ * @fileoverview Logging functions to be used in dev channel.
  */
 
-// @ifdef DEBUG
-import getTime from './time';
+// TODO make preprocessor plugin to cut these from beta and release builds
+// this file should be restored to named exports
+// https://bit.adguard.com/projects/EXTENSIONS/repos/popup-blocker/pull-requests/123/diff#src/shared/debug.ts
 
-let prefix = '';
-let win = window;
-while (win.parent !== win) {
-    win = win.parent;
-    prefix += '-- ';
-}
-let loc = location.href;
-let suffix = `    (at ${loc})`;
-let depth = 0;
-// @endif
+import { getTime } from './time';
 
-export function call(msg:string) {
-    // @ifdef DEBUG
-    depth++;
-    console.group(prefix + msg + suffix);
-    // @endif
-}
+export const log = (() => {
+    let prefix = '';
+    let win = window;
+    while (win.parent !== win) {
+        // @ts-ignore
+        win = win.parent;
+        prefix += '-- ';
+    }
+    const loc = window.location.href;
+    const suffix = `    (at ${loc})`;
+    let depth = 0;
 
-export function callEnd() {
-    // @ifdef DEBUG
-    depth--;
-    console.groupEnd();
-    // @endif
-}
+    function call(msg:string) {
+        depth += 1;
+        console.group(prefix + msg + suffix);
+    }
 
-export function closeAllGroup() {
-    // @ifdef DEBUG
-    while (depth > 0) {
+    function callEnd() {
+        depth -= 1;
         console.groupEnd();
-        depth--;
     }
-    // @endif
-}
 
-export function print(str:string, obj?):void {
-    // @ifdef DEBUG
-    let date = getTime().toFixed(3);
-    let indent = 10 - date.length;
-    if (indent < 0) { indent =0; }
-    let indentstr = '';
-    while (indent-- > 0) { indentstr += ' '; }
-    console.log(prefix + `[${indentstr}${date}]: ${str}${suffix}`);
-    if (obj !== undefined) {
-        console.log(prefix + '=============================');
-        try {
-            console.log(obj);
-            /**
-             * Acconding to testing, Edge 41.16299 throws some errors
-             * while printing some `Proxy` objects in console, such as
-             * new Proxy(window, { get: Reflect.get }).
-             * Strangely, just having a try-catch block enclosing it prevents errors.
-             */
-        } catch(e) {
-            console.log('Object not printed due to an error');
+    function closeAllGroup() {
+        while (depth > 0) {
+            console.groupEnd();
+            depth -= 1;
         }
-        console.log(prefix + '=============================');
     }
-    // @endif
-}
 
-/**
- * Accepts a function, and returns a wrapped function that calls `call` and `callEnd`
- * automatically before and after invoking the function, respectively.
- * @param fn A function to wrap
- * @param message
- * @param cond optional argument, the function argument will be passed to `cond` function, and
- * its return value will determine whether to call `call` and `callEnd`.
- */
-export function connect<T extends (...args)=>any>(fn:T, message:string, cond?:(this:null)=>boolean):T {
-    // @ifdef DEBUG
-    return <T>function () {
-        let shouldLog = cond ? cond.apply(null, arguments) : true;
+    function print(str:string, obj?):void {
+        const date = getTime().toFixed(3);
+        let indent = 10 - date.length;
+        if (indent < 0) {
+            indent = 0;
+        }
+        let indentstr = '';
+        // eslint-disable-next-line no-plusplus
+        while (indent-- > 0) { indentstr += ' '; }
+        console.log(`${prefix}[${indentstr}${date}]: ${str}${suffix}`);
+        if (obj !== undefined) {
+            console.log(`${prefix}=============================`);
+            try {
+                console.log(obj);
+            } catch (e) {
+                /**
+                 * According to testing, Edge 41.16299 throws some errors
+                 * while printing some `Proxy` objects in console, such as
+                 * new Proxy(window, { get: Reflect.get }).
+                 * Strangely, just having a try-catch block enclosing it prevents errors.
+                 */
+                console.log('Object not printed due to an error');
+            }
+            console.log(`${prefix}=============================`);
+        }
+    }
+
+    /**
+     * Accepts a function, and returns a wrapped function that calls `call` and `callEnd`
+     * automatically before and after invoking the function, respectively.
+     * @param fn A function to wrap
+     * @param message
+     * @param cond optional argument, the function argument will be passed to `cond` function, and
+     * its return value will determine whether to call `call` and `callEnd`.
+     */
+    type ArbitraryFunc = (...args)=>any;
+    type ConditionFunc = (this: null)=>boolean;
+    type IConnect = <T extends ArbitraryFunc>(fn: T, message: string, cond?: ConditionFunc) => T;
+
+    const connect: IConnect = <T>(fn, message, cond) => <T> function () {
+        // eslint-disable-next-line prefer-spread
+        const shouldLog = cond ? cond.apply(null, arguments) : true;
         if (shouldLog) { call(message); }
-        let ret = fn.apply(this, arguments);
-        if (shouldLog) { callEnd(); }
+        const ret = fn.apply(this, arguments);
+        if (shouldLog) {
+            callEnd();
+        }
         return ret;
     };
-    // @endif
-    // @ifndef DEBUG
-    return fn;
-    // @endif
-}
 
-export function throwMessage(thrown:any, code:number):never {
-    // @ifdef DEBUG
-    throw thrown;
-    // @endif
-    // @ifndef DEBUG
-    throw code;
-    // @endif
-}
+    const connectSimplified: IConnect = (fn) => fn;
+
+    function throwMessage(thrown: any): never {
+        throw thrown;
+    }
+
+    function throwMessageSimplified(thrown: any, code: number): never {
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
+        throw code;
+    }
+
+    // Debug api is only required in DEBUG mode
+    if (DEBUG) {
+        return {
+            call,
+            callEnd,
+            closeAllGroup,
+            print,
+            connect,
+            throwMessage,
+        };
+    }
+
+    // For beta and release builds simple debug methods are stubbed,
+    // connect() and throwMessage() methods are simplified
+    const noopFunc = (): any => {};
+    return {
+        call: noopFunc,
+        callEnd: noopFunc,
+        closeAllGroup: noopFunc,
+        print: noopFunc,
+        connect: connectSimplified,
+        throwMessage: throwMessageSimplified,
+    };
+})();

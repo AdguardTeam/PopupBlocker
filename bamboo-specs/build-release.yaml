@@ -5,7 +5,7 @@ plan:
   key: POPUPBLOCKRELEASESPECS
   name: popup blocker - build release
 variables:
-  dockerNode: adguard/maven-nodejs:14--14--2
+  dockerNode: adguard/node-ssh:18.13--0
 
 stages:
   - Build:

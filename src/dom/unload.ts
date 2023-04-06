@@ -1,8 +1,9 @@
-import adguard from '../page_script_namespace';
-import * as log from '../shared/debug';
+import { log } from '../shared';
+import { translator } from '../i18n';
 
 const onbeforeunloadHandler = (evt:BeforeUnloadEvent) => {
-    const MSG = adguard.contentScriptApiFacade.$getMessage('on_navigation_by_popunder');
+    const MSG = translator.getMessage('on_navigation_by_popunder');
+    // eslint-disable-next-line no-param-reassign
     evt.returnValue = MSG;
     return MSG;
 };
@@ -10,7 +11,7 @@ const onbeforeunloadHandler = (evt:BeforeUnloadEvent) => {
 export const setBeforeunloadHandler = () => {
     // ToDo: if this is found to be useful, consider making it work on cross-origin iframes
     if (window === window.top) {
-        log.call("Attaching beforeunload event handler");
+        log.call('Attaching beforeunload event handler');
         window.addEventListener('beforeunload', onbeforeunloadHandler);
         setTimeout(() => {
             window.removeEventListener('beforeunload', onbeforeunloadHandler);

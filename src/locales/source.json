@@ -1,24 +1,24 @@
 {
     "show_popup": {
-        "message": "Show {$destUrl}"
+        "message": "Show %destUrl%"
     },
     "continue_blocking": {
         "message": "Continue blocking"
     },
     "allow_from": {
-        "message": "Allow pop-ups for {$origDomain}"
+        "message": "Allow popups for %origDomain%"
     },
     "manage_pref": {
         "message": "Manage preferences..."
     },
     "popup_text": {
-        "message": "AdGuard prevented this website from opening {$numPopup} pop-up windows"
+        "message": "AdGuard prevented this website from opening %numPopup% pop-up windows"
     },
     "options": {
         "message": "Options"
     },
     "silence_noti": {
-        "message": "Don't show this message on {$origDomain}"
+        "message": "Don't show this message on %origDomain%"
     },
     "site_input_ph": {
         "message": "Enter site name"
@@ -48,7 +48,7 @@
         "message": "Notifications for blocked popups will not be shown for domains listed here."
     },
     "installFrom": {
-        "message": "Install from {$startLink}{$name}{$endLink}"
+        "message": "Install from <a>%name%</a>"
     },
     "noinst_step_3": {
         "message": "Step 3: Refresh this page to get to the userscript settings"
@@ -63,7 +63,7 @@
         "message": "Please wait, detecting the Popup Blocker"
     },
     "noinst_special_prog": {
-        "message": "First of all, to use a userscript you need a special program or extension that runs userscripts."
+        "message": "To use a userscript, you first need a special program or extension that runs userscript."
     },
     "noinst_subtitle": {
         "message": "AdGuard Popup Blocker userscript is not installed. Please see the instruction below."
@@ -72,16 +72,13 @@
         "message": "Homepage"
     },
     "noinst_step_1": {
-        "message": "Step 1: Install a usrscript manager"
+        "message": "Step 1: Install a userscript manager"
     },
     "noinst_step_2": {
         "message": "Step 2: Userscript"
     },
     "extension_name": {
-        "message": "Popup Blocker by AdGuard",
-        "platform": [
-            "extension"
-        ]
+        "message": "Popup Blocker by AdGuard"
     },
     "userscript_name": {
         "message": "AdGuard Popup Blocker",
@@ -91,34 +88,25 @@
         ]
     },
     "extension_description": {
-        "message": "Blocks popup ads on web pages",
-        "platform": [
-            "extension"
-        ]
+        "message": "Blocks pop-up ads on web pages"
     },
     "on_navigation_by_popunder": {
         "message": "This transition to the new page is likely to be caused by a pop-under. Do you wish to continue?",
         "platform": [
-            "userscript",
-            "extension"
+            "userscript"
         ]
     },
     "aborted_popunder_execution": {
         "message": "Popup Blocker aborted a script execution to prevent background redirect",
         "platform": [
-            "userscript",
-            "extension"
+            "userscript"
         ]
     },
     "ext_enabled": {
-        "message": "Popup Blocker is on duty",
-        "platform": [
-            "extension"
-        ]
+        "message": "Popup Blocker is on duty"
     },
     "ext_disabled": {
         "message": "Popup Blocker is disabled for $DOMAIN$",
-        "platform": "extension",
         "placeholders": {
             "domain": {
                 "content": "$1"
@@ -126,8 +114,7 @@
         }
     },
     "ext_disabled_default": {
-        "message": "Popup Blocker is disabled for this domain",
-        "platform": "extension"
+        "message": "Popup Blocker is disabled for this domain"
     },
     "settings_saved": {
         "message": "Settings saved"

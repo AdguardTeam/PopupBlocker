@@ -5,7 +5,7 @@ plan:
   key: POPUPBLOCKTESTSPECS
   name: popup blocker - test
 variables:
-  dockerNode: adguard/node-ssh:15.14--6
+  dockerNode: adguard/node-ssh:18.13--0
 
 stages:
   - Test:
@@ -33,6 +33,7 @@ Test:
             set -e
 
             yarn install ${bamboo.varsYarn}
+            yarn lint
             yarn userscript-dev
             tar -C build -zcvf build/userscript.tar.gz userscript
             rm -rf node_modules

@@ -1,8 +1,6 @@
 import { condition } from '../Timeline';
-import { TimelineEvent, TLEventType } from '../TimelineEvent';
-import { ABOUT_PROTOCOL } from '../../shared/dom';
-import getTime from '../../shared/time';
-import * as log from '../../shared/debug';
+import { TLEventType } from '../TimelineEvent';
+import { getTime, log } from '../../shared';
 
 /**
  * If an empty iframe which does not have an associacted http request tries to open a popup
@@ -12,9 +10,9 @@ const TIME_MINIMUM_BEFORE_POPUP = 200;
 
 const createOpen:condition = (index, events) => {
     log.print('index:', index);
-    let evt = events[index][0];
-    if (evt.$type == TLEventType.CREATE && getTime() - evt.$timeStamp < TIME_MINIMUM_BEFORE_POPUP) {
-        log.print(`time difference is less than a threshold`);
+    const evt = events[index][0];
+    if (evt.$type === TLEventType.CREATE && getTime() - evt.$timeStamp < TIME_MINIMUM_BEFORE_POPUP) {
+        log.print('time difference is less than a threshold');
         /**
          * A test here is meant to block attempts to call window.open from iframes which
          * was created later than 200 milliseconds ago. Such techniques are mostly used
@@ -36,12 +34,12 @@ const createOpen:condition = (index, events) => {
          * Therefore, we take advantage of `performance.timing` api to determine whether the
          * empty iframe has an associated HTTP request.
          */
-        let browsingContext = <Window>evt.$data.thisOrReceiver;
-        log.print(`testing context is: `, browsingContext);
-        let isSameOriginChildContext = browsingContext.frameElement !== null;
+        const browsingContext = <Window>evt.$data.thisOrReceiver;
+        log.print('testing context is: ', browsingContext);
+        const isSameOriginChildContext = browsingContext.frameElement !== null;
         if (isSameOriginChildContext) {
-            let timing = browsingContext.performance.timing;
-            let { fetchStart, responseEnd } = timing;
+            const { timing } = browsingContext.performance;
+            const { fetchStart, responseEnd } = timing;
             if (fetchStart === 0 || fetchStart === responseEnd) {
                 return false;
             }

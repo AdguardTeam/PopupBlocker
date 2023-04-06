@@ -1,5 +1,4 @@
-import { isWindow, isLocation } from '../shared/instanceof';
-import WeakMap from '../shared/WeakMap';
+/* eslint-disable @typescript-eslint/no-shadow, no-param-reassign, no-underscore-dangle */
 import {
     defineProperty,
     functionBind as _bind,
@@ -11,15 +10,20 @@ import {
     reflectNamespace,
     ProxyCtor,
     getOwnPropertyDescriptor,
-    captureStackTrace
-} from '../shared/protected_api'
+    captureStackTrace,
+    log,
+    SafeWeakMap,
+} from '../shared';
 import { IWrappedExecutionContext, ApplyHandler } from './IProxyService';
-import * as debug from '../shared/debug';
+import { ProxyServiceExternalError } from './ProxyServiceExternalError';
 
+// eslint-disable-next-line import/no-mutable-exports
 export let use_proxy = false;
-// @ifndef NO_PROXY
-use_proxy = typeof ProxyCtor !== 'undefined';
-// @endif
+if (!NO_PROXY) {
+    // TODO make preprocessor plugin to cut these from beta and release builds
+    use_proxy = typeof ProxyCtor !== 'undefined';
+}
+
 /**
  * Why not use Proxy on production version?
  * Using proxy instead of an original object in some places require overriding Function#bind,apply,call,
@@ -32,9 +36,9 @@ use_proxy = typeof ProxyCtor !== 'undefined';
  * may call third-party code outside our membrane.
  * Instead, we need to use `exec` whenever possible.
  */
-export const _reflect = ProxyCtor ?
-    reflectNamespace.reflectApply :
-    (function() {
+export const _reflect = ProxyCtor
+    ? reflectNamespace.reflectApply
+    : ((() => {
         /**
          * It is not possible to emulate `Reflect.apply` simply with references to `Function#apply`
          * and such.
@@ -46,16 +50,16 @@ export const _reflect = ProxyCtor ?
         let PRIVATE_PROPERTY:number;
         do {
             PRIVATE_PROPERTY = Math.random();
-        } while (PRIVATE_PROPERTY in _apply)
+        } while (PRIVATE_PROPERTY in _apply);
         defineProperty(_apply, PRIVATE_PROPERTY, { value: _call });
-        return (target, thisArg, args) => {
-            return _apply[PRIVATE_PROPERTY](target, thisArg, args);
-        };
-    })();
+        return (target, thisArg, args) => _apply[PRIVATE_PROPERTY](target, thisArg, args);
+    })());
 
 // Lodash isNative
-const reRegExpChar = /[\\^$.*+?()[\]{}|]/g
-const reIsNative = new RegExp('^' + _toStringFn.call(hasOwnProperty).replace(reRegExpChar, '\\$&').replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$');
+const reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
+const reIsNative = new RegExp(`^${_toStringFn.call(hasOwnProperty)
+    .replace(reRegExpChar, '\\$&')
+    .replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?')}$`);
 
 /**
  * Certain built-in functions depends on internal slots of 'this' of its execution context.
@@ -79,24 +83,24 @@ export const isNativeFn = function (fn:Function):boolean {
     let tostr;
     try {
         tostr = _reflect(_toStringFn, fn, []);
-    } catch(e) {
+    } catch (e) {
         // The above block throws if `fn` is a Proxy constructed over a function, from a third-party code.
         // Such a proxy is still callable, so Function.prototype.(bind,apply,call) may be invoked on it.
         // It is a common practice to bind the correct `this` to methods, so we try in that way.
         try {
             tostr = fn.toString();
-        } catch(e) {
+        } catch (err) {
             // In this case, we bail out, hoping for a third-party code does not mess with internal slots.
             return false;
         }
     }
     return _reflect(_exec, reIsNative, [tostr]) !== null;
-}
+};
 
-export const proxyToReal = new WeakMap();
-export const realToProxy = new WeakMap();
+export const proxyToReal = new SafeWeakMap();
+export const realToProxy = new SafeWeakMap();
 
-export type RawApplyHandler<T,R> = (target:Function, _this:T, _arguments:IArguments|any[], context?:any) => R;
+export type RawApplyHandler<T, R> = (target:Function, _this:T, _arguments:IArguments | any[], context?:any) => R;
 
 /**
  * An apply handler to be used to proxy Function#(bind, apply, call) methods.
@@ -110,16 +114,16 @@ export type RawApplyHandler<T,R> = (target:Function, _this:T, _arguments:IArgume
  * @param _this A function which called (bind, apply, call).
  * @param _arguments
  */
-const applyWithUnproxiedThis:RawApplyHandler<Function,any> = (target, _this, _arguments) => {
+const applyWithUnproxiedThis:RawApplyHandler<Function, any> = (target, _this, _arguments) => {
     // Convert _arguments[0] to its unproxied version
     // When it is kind of object which may depend on its internal slot
-    let _caller = proxyToReal.get(_this) || _this;
-    if (_caller !== _bind && _caller !== _apply && _caller !== _call && isNativeFn(_caller) ) {
+    const _caller = proxyToReal.get(_this) || _this;
+    if (_caller !== _bind && _caller !== _apply && _caller !== _call && isNativeFn(_caller)) {
         // Function#(bind, apply, call) does not depend on the target's internal slots,
         // In (Function.prototype.call).apply(Function.prototype.toString, open)
         // we should not convert Function.prototype.toString to the original function.
-        var thisOfReceiver = _arguments[0];
-        var unproxied = proxyToReal.get(thisOfReceiver);
+        const thisOfReceiver = _arguments[0];
+        const unproxied = proxyToReal.get(thisOfReceiver);
         if (unproxied) { _arguments[0] = unproxied; }
     }
     return _reflect(target, _this, _arguments);
@@ -129,12 +133,12 @@ const applyWithUnproxiedThis:RawApplyHandler<Function,any> = (target, _this, _ar
  * An apply handler to make Reflect.apply handler
  * Reflect.apply(EventTarget.prototype.addEventListener, proxideWindow, ['click', function(){}])
  */
-const reflectWithUnproxiedThis:RawApplyHandler<Function,any> = (target, _this, _arguments) => {
+const reflectWithUnproxiedThis:RawApplyHandler<Function, any> = (target, _this, _arguments) => {
     let appliedFn = _arguments[0];
     appliedFn = proxyToReal.get(appliedFn) || appliedFn;
-    if (appliedFn !== _bind && appliedFn !== _apply && appliedFn !== _call && isNativeFn(appliedFn) ) {
-        let thisOfAppliedFn = _arguments[1];
-        let unproxied = proxyToReal.get(thisOfAppliedFn);
+    if (appliedFn !== _bind && appliedFn !== _apply && appliedFn !== _call && isNativeFn(appliedFn)) {
+        const thisOfAppliedFn = _arguments[1];
+        const unproxied = proxyToReal.get(thisOfAppliedFn);
         if (unproxied) { _arguments[1] = unproxied; }
     }
     return _reflect(target, _this, _arguments);
@@ -143,30 +147,42 @@ const reflectWithUnproxiedThis:RawApplyHandler<Function,any> = (target, _this, _
 /**
  * An apply handler to make invoke handler.
  */
-export const invokeWithUnproxiedThis:RawApplyHandler<Function,any> = (target, _this, _arguments) => {
+export const invokeWithUnproxiedThis:RawApplyHandler<Function, any> = (target, _this, _arguments) => {
     let unproxied = proxyToReal.get(_this);
-    if (typeof unproxied == 'undefined') { unproxied = _this; }
+    if (typeof unproxied === 'undefined') { unproxied = _this; }
     return use_proxy ? _reflect(target, unproxied, _arguments) : target.apply(unproxied, _arguments);
 };
 
 /**
  * An apply handler to be used for MessageEvent.prototype.source.
  */
-const proxifyReturn:RawApplyHandler<any,any> = (target, _this, _arguments) => {
+const proxifyReturn:RawApplyHandler<any, any> = (target, _this, _arguments) => {
     let ret = _reflect(target, _this, _arguments);
-    let proxy = realToProxy.get(ret);
+    const proxy = realToProxy.get(ret);
     if (proxy) { ret = proxy; }
     return ret;
 };
 
-export function makeFunctionWrapper<T,R>(orig:(this:T,...args)=>R, applyHandler:RawApplyHandler<T,R>):(this:T,...args)=>R {
+function copyProperty(orig, wrapped, prop:PropertyKey) {
+    const desc = getOwnPropertyDescriptor(orig, prop);
+    if (desc && desc.configurable) {
+        desc.value = orig[prop];
+        defineProperty(wrapped, prop, desc);
+    }
+}
+
+export function makeFunctionWrapper<T, R>(orig:(
+    this:T,
+    ...args
+)=>R, applyHandler:RawApplyHandler<T, R>):(this:T, ...args)=>R {
     let wrapped;
-    let proxy = realToProxy.get(orig);
+    const proxy = realToProxy.get(orig);
     if (proxy) { return proxy; }
     if (use_proxy) {
         wrapped = new ProxyCtor(orig, { apply: applyHandler });
     } else {
-        wrapped = function() { return applyHandler(orig, this, arguments); };
+        // eslint-disable-next-line prefer-rest-params
+        wrapped = function () { return applyHandler(orig, this, arguments); };
         copyProperty(orig, wrapped, 'name');
         copyProperty(orig, wrapped, 'length');
     }
@@ -175,31 +191,28 @@ export function makeFunctionWrapper<T,R>(orig:(this:T,...args)=>R, applyHandler:
     return wrapped;
 }
 
-function copyProperty(orig, wrapped, prop:PropertyKey) {
-    let desc = getOwnPropertyDescriptor(orig, prop);
-    if (desc && desc.configurable) {
-        desc.value = orig[prop];
-        defineProperty(wrapped, prop, desc);
-    }
-}
-
-function _wrapMethod(obj, prop:string, applyHandler?:RawApplyHandler<Function,any>) {
-    if (obj.hasOwnProperty(prop)) {
+function _wrapMethod(obj, prop:string, applyHandler?:RawApplyHandler<Function, any>) {
+    if (Object.prototype.hasOwnProperty.call(obj, prop)) {
         obj[prop] = makeFunctionWrapper(obj[prop], applyHandler);
     }
 }
 
-function _wrapAccessor(obj, prop:string, getterApplyHandler?:RawApplyHandler<Function,any>, setterApplyHandler?:RawApplyHandler<Function,any>):void {
+function _wrapAccessor(
+    obj,
+    prop:string,
+    getterApplyHandler?:RawApplyHandler<Function, any>,
+    setterApplyHandler?:RawApplyHandler<Function, any>,
+):void {
     const desc = getOwnPropertyDescriptor(obj, prop);
     if (desc && desc.get && desc.configurable) {
-        var getter = makeFunctionWrapper(desc.get, getterApplyHandler);
-        var setter;
+        const getter = makeFunctionWrapper(desc.get, getterApplyHandler);
+        let setter;
         if (desc.set) { setter = makeFunctionWrapper(desc.set, setterApplyHandler); }
         defineProperty(obj, prop, {
             get: getter,
             set: setter,
             configurable: true,
-            enumerable: desc.enumerable
+            enumerable: desc.enumerable,
         });
     }
 }
@@ -217,39 +230,35 @@ export function $apply(window:Window) {
     _wrapMethod(functionPrototype, 'toSource', invokeWithUnproxiedThis);
 }
 
-export class ProxyServiceExternalError {
-    constructor(
-        public original:any
-    ) {  }
-}
-
 /**
  * Internal errors shall not be re-thrown and will be reported in dev versions.
  */
 function reportIfInternalError(error, target):error is ProxyServiceExternalError {
     if (error instanceof ProxyServiceExternalError) { return true; }
-    debug.print(`Internal error from proxyService:`, error);
-    debug.print(`from a target:`, target);
+    log.print('Internal error from proxyService:', error);
+    log.print('from a target:', target);
     return false;
 }
 
 /**
  * This addresses {@link https://github.com/AdguardTeam/PopupBlocker/issues/91}
  */
-class WrappedExecutionContext<T,R> implements IWrappedExecutionContext<T,R> {
-    public originalInvoked = false // friend class ProxyService
+class WrappedExecutionContext<T, R> implements IWrappedExecutionContext<T, R> {
+    public originalInvoked = false; // friend class ProxyService
+
     constructor(
         private orig:any,
         public thisArg:T,
-        private wrapper
+        private wrapper,
     ) {
         // Can't use this.invokeTarget = this.invokeTarget.bind(this); as it accesses unsafe functions.
         this.invokeTarget = _reflect(_bind, this.invokeTarget, [this]);
     }
+
     // Throws ProxyServiceExternalError
     invokeTarget(args:IArguments, thisArg:T = this.thisArg):R {
         if (this.originalInvoked) {
-            debug.throwMessage("A wrapped target was invoked more than once.", 1);
+            log.throwMessage('A wrapped target was invoked more than once.', 1);
         }
         this.originalInvoked = true;
         try {
@@ -261,28 +270,33 @@ class WrappedExecutionContext<T,R> implements IWrappedExecutionContext<T,R> {
                 // When possible, strip out inner functions from stack trace
                 try {
                     captureStackTrace(e, this.wrapper);
-                } catch(e) {
+                } catch (e) {
                     // `e` thrown from this.orig may not be an instance of error
                     // and in such cases captureStackTrace will throw.
                 }
-                
             }
+            // eslint-disable-next-line @typescript-eslint/no-throw-literal
             throw new ProxyServiceExternalError(e);
         }
     }
 }
 
-export const defaultApplyHandler = <T,R>(ctxt:IWrappedExecutionContext<T,R>, args:IArguments):R => {
-    return ctxt.invokeTarget(args);
-}
+export const defaultApplyHandler = <T, R>(
+    ctxt:IWrappedExecutionContext<T, R>,
+    args:IArguments,
+):R => ctxt.invokeTarget(args);
 
-export function makeSafeFunctionWrapper<T,R>(orig:(this:T,...args)=>R, applyHandler:ApplyHandler<T,R> = defaultApplyHandler):(this:T,...args)=>R {
+export function makeSafeFunctionWrapper<T, R>(orig:(
+    this:T,
+    ...args
+)=>R, applyHandler:ApplyHandler<T, R> = defaultApplyHandler):(this:T, ...args)=>R {
     let wrapped;
+    // eslint-disable-next-line consistent-return
     const rawApplyHandler = (orig, _this, _arguments) => {
-        const context:WrappedExecutionContext<any,any> = new WrappedExecutionContext<any,any>(orig, _this, wrapped);
+        const context:WrappedExecutionContext<any, any> = new WrappedExecutionContext<any, any>(orig, _this, wrapped);
         try {
             return applyHandler(context, _arguments);
-        } catch (error)  {
+        } catch (error) {
             if (reportIfInternalError(error, orig)) {
                 // error is an external error; re-throws it.
                 throw error.original;
@@ -300,13 +314,13 @@ export function makeSafeFunctionWrapper<T,R>(orig:(this:T,...args)=>R, applyHand
                 }
             }
         }
-    }
+    };
     wrapped = makeFunctionWrapper(orig, rawApplyHandler);
     return wrapped;
 }
 
-export function wrapMethod(obj, prop:string, applyHandler?:ApplyHandler<Function,any>) {
-    if (obj.hasOwnProperty(prop)) {
+export function wrapMethod(obj, prop:string, applyHandler?:ApplyHandler<Function, any>) {
+    if (Object.prototype.hasOwnProperty.call(obj, prop)) {
         obj[prop] = makeSafeFunctionWrapper(obj[prop], applyHandler);
     }
 }

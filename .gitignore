@@ -3,6 +3,7 @@ build
 build_tsickle
 .rpt2_cache
 config
-yarn-error
+yarn-error.log
 .DS_Store
-.idea
+.idea/
+.vscode/
