@@ -210,6 +210,9 @@
                 "userscript_settings"
             ]
         },
+        "extension_description": {
+            "message": "لحظر الإعلانات المنبثقة على صفحات الويب"
+        },
         "on_navigation_by_popunder": {
             "message": "من المحتمل ان يكون هذا الانتقال إلى الصفحة الجديدة ناتجا عن الإطار المنبثق. هل ترغب في المتابعة ؟",
             "platform": [
@@ -328,6 +331,9 @@
                 "userscript",
                 "userscript_settings"
             ]
+        },
+        "extension_description": {
+            "message": "Блакуе ўсплывальную рэкламу на старонках"
         },
         "on_navigation_by_popunder": {
             "message": "Гэты пераход на новую старонку найхутчэй выкліканы поп-андэрам. Усё адно працягнуць?",
@@ -692,6 +698,9 @@
                 "userscript_settings"
             ]
         },
+        "extension_description": {
+            "message": "Blockiert Anzeige-Pop-ups auf Websites"
+        },
         "on_navigation_by_popunder": {
             "message": "Diese Seiten-Navigation wird wahrscheinlich durch ein Pop-under verursacht. Möchten Sie fortfahren?",
             "platform": [
@@ -810,6 +819,9 @@
                 "userscript",
                 "userscript_settings"
             ]
+        },
+        "extension_description": {
+            "message": "Αποκλείει αναδυόμενες διαφημίσεις σε ιστοσελίδες"
         },
         "on_navigation_by_popunder": {
             "message": "Αυτή η μετάβαση σε νέα σελίδα είναι πιθανό να προκαλείται από ένα αναδυόμενο παράθυρο. Θέλετε να συνεχίσετε;",
@@ -930,6 +942,9 @@
                 "userscript_settings"
             ]
         },
+        "extension_description": {
+            "message": "Bloquea anuncios emergentes en sitios web"
+        },
         "on_navigation_by_popunder": {
             "message": "Es probable que esta transición a la nueva página sea causada por un elemento emergente. ¿Deseas continuar?",
             "platform": [
@@ -1048,6 +1063,9 @@
                 "userscript",
                 "userscript_settings"
             ]
+        },
+        "extension_description": {
+            "message": "مسدودسازی تبلیغات پاپ آپ در صفحات وب."
         },
         "on_navigation_by_popunder": {
             "message": "انتقال به این صفحه جدید احتمالا بخاطر یه پاپ-آندر انجام شده است. میخواهید ادامه دهید؟",
@@ -1290,6 +1308,9 @@
                 "userscript_settings"
             ]
         },
+        "extension_description": {
+            "message": "Bloque les fenêtres pop-up avec publicités intrusives sur les pages web"
+        },
         "on_navigation_by_popunder": {
             "message": "Cette transition vers la nouvelle page est susceptible d'être causée par un pop-under. Désirez-vous continuer?",
             "platform": [
@@ -1408,6 +1429,9 @@
                 "userscript",
                 "userscript_settings"
             ]
+        },
+        "extension_description": {
+            "message": "חוסם פרסומות קופצות בדפי רשת"
         },
         "on_navigation_by_popunder": {
             "message": "מעבר זה אל הדף החדש כנראה נגרם ע״י חלון קופץ מתחת. האם אתה רוצה להמשיך?",
@@ -1650,6 +1674,9 @@
                 "userscript_settings"
             ]
         },
+        "extension_description": {
+            "message": "Blokkolja a felugró ablakban megjelenő reklámokat a webhelyeken"
+        },
         "on_navigation_by_popunder": {
             "message": "Az új oldalra való áttérést valószínűleg egy előugró ablak okozza. Kívánja folytatni?",
             "platform": [
@@ -1768,6 +1795,9 @@
                 "userscript",
                 "userscript_settings"
             ]
+        },
+        "extension_description": {
+            "message": "Blokir iklan popup di halaman web"
         },
         "on_navigation_by_popunder": {
             "message": "Transisi ke laman baru ini kemungkinan disebabkan oleh sebuah pop-up. Apakah Anda ingin melanjutkan?",
@@ -1888,6 +1918,9 @@
                 "userscript_settings"
             ]
         },
+        "extension_description": {
+            "message": "Blocca gli annunci pop-up sulle pagine web"
+        },
         "on_navigation_by_popunder": {
             "message": "È probabile che questa transizione alla nuova pagina sia causata da un pop-under. Desideri proseguire?",
             "platform": [
@@ -2006,6 +2039,9 @@
                 "userscript",
                 "userscript_settings"
             ]
+        },
+        "extension_description": {
+            "message": "Webページでポップアップ広告をブロックします。"
         },
         "on_navigation_by_popunder": {
             "message": "新しいページへの移動はポップアンダーによって生じた可能性があります。続行しますか？",
@@ -2126,6 +2162,9 @@
                 "userscript_settings"
             ]
         },
+        "extension_description": {
+            "message": "웹 페이지에서 팝업 광고를 차단"
+        },
         "on_navigation_by_popunder": {
             "message": "이 새 페이지로의 이동은 팝언더 광고에 의한 것일 수 있습니다. 계속 하시겠습니까?",
             "platform": [
@@ -2244,6 +2283,9 @@
                 "userscript",
                 "userscript_settings"
             ]
+        },
+        "extension_description": {
+            "message": "Blokuoja iššokančius skelbimus tinklalapiuose"
         },
         "on_navigation_by_popunder": {
             "message": "Šis perėjimas į naują puslapį greičiausiai buvo įtakotas pop-under. Ar norite tęsti?",
@@ -2364,6 +2406,9 @@
                 "userscript_settings"
             ]
         },
+        "extension_description": {
+            "message": "Sekat pop timbul pada laman web"
+        },
         "on_navigation_by_popunder": {
             "message": "Peralihan ke laman baru ini kemungkinan disebabkan oleh pop-bawah. Anda ingin meneruskan?",
             "platform": [
@@ -2483,6 +2528,9 @@
                 "userscript_settings"
             ]
         },
+        "extension_description": {
+            "message": "Blokker popup-annonser på nettsider"
+        },
         "on_navigation_by_popunder": {
             "message": "Omdirigeringen til den nye nettsiden er sannsynligvis forårsaket av en pop-under. Ønsker du å fortsette?",
             "platform": [
@@ -2601,6 +2649,9 @@
                 "userscript",
                 "userscript_settings"
             ]
+        },
+        "extension_description": {
+            "message": "Blokuje wyskakujące okienka na stronach internetowych"
         },
         "on_navigation_by_popunder": {
             "message": "To przejście na nową stronę może być spowodowane przez pop-under. Czy chcesz kontynuować?",
@@ -3087,6 +3138,9 @@
                 "userscript_settings"
             ]
         },
+        "extension_description": {
+            "message": "Blochează reclame pop-up pe pagini web"
+        },
         "on_navigation_by_popunder": {
             "message": "Tranziția la această noua pagină este probabil cauzată de un pop-under. Vrei să continui?",
             "platform": [
@@ -3205,6 +3259,9 @@
                 "userscript",
                 "userscript_settings"
             ]
+        },
+        "extension_description": {
+            "message": "Блокирует всплывающую рекламу на страницах"
         },
         "on_navigation_by_popunder": {
             "message": "Этот переход на новую страницу скорее всего вызван поп-андером. Всё равно продолжить?",
@@ -3325,6 +3382,9 @@
                 "userscript_settings"
             ]
         },
+        "extension_description": {
+            "message": "Blokuje vyskakovacie reklamy na webových stránkach"
+        },
         "on_navigation_by_popunder": {
             "message": "Tento prechod na novú stránku bude pravdepodobne spôsobený kontextovým oknom. Prajete si pokračovať?",
             "platform": [
@@ -3443,6 +3503,9 @@
                 "userscript",
                 "userscript_settings"
             ]
+        },
+        "extension_description": {
+            "message": "Blokira pojavne oglase na spletnih straneh"
         },
         "on_navigation_by_popunder": {
             "message": "Ta prehod na novo stran je verjetno posledica pojavnega okna. Ali želite nadaljevati?",
@@ -3563,6 +3626,9 @@
                 "userscript_settings"
             ]
         },
+        "extension_description": {
+            "message": "Blokira iskačuće reklame na veb stranicama"
+        },
         "on_navigation_by_popunder": {
             "message": "Ovo preusmerenje na novu stranicu je verovatno uzrokovano iskačućim prozorom. Želite li da nastavite?",
             "platform": [
@@ -3682,6 +3748,9 @@
                 "userscript_settings"
             ]
         },
+        "extension_description": {
+            "message": "வலைப்பக்கங்களில் பாப்அப் விளம்பரங்களைத் தடுக்கிறது"
+        },
         "on_navigation_by_popunder": {
             "message": "புதிய பக்கத்திற்கான இந்த மாற்றம் ஒரு பாப்-அண்டர் காரணமாக ஏற்படக்கூடும். தொடர விரும்புகிறீர்களா?",
             "platform": [
@@ -3800,6 +3869,9 @@
                 "userscript",
                 "userscript_settings"
             ]
+        },
+        "extension_description": {
+            "message": "ปิดกั้นโฆษณาป๊อปอัพในหน้าเว็บ"
         },
         "on_navigation_by_popunder": {
             "message": "การเปลี่ยนไปใช้หน้าใหม่นี้น่าจะเกิดจากป๊อปอันเดอร์ คุณต้องการทำต่อไปหรือไม่?",
@@ -4164,6 +4236,9 @@
                 "userscript_settings"
             ]
         },
+        "extension_description": {
+            "message": "Chặn quảng cáo bật lên trên các trang web"
+        },
         "on_navigation_by_popunder": {
             "message": "Việc chuyển đổi sang trang mới này có thể được gây ra bởi một cửa sổ bật xuống. Bạn có muốn tiếp tục?",
             "platform": [
@@ -4282,6 +4357,9 @@
                 "userscript",
                 "userscript_settings"
             ]
+        },
+        "extension_description": {
+            "message": "拦截网页弹窗广告"
         },
         "on_navigation_by_popunder": {
             "message": "此网页导航可能导致弹窗。您要继续？",
@@ -4402,6 +4480,9 @@
                 "userscript_settings"
             ]
         },
+        "extension_description": {
+            "message": "封鎖網頁上的彈出式視窗廣告"
+        },
         "on_navigation_by_popunder": {
             "message": "頁面轉跳可能是由彈出式視窗進行的，您要繼續嗎？",
             "platform": [
@@ -4520,6 +4601,9 @@
                 "userscript",
                 "userscript_settings"
             ]
+        },
+        "extension_description": {
+            "message": "封鎖於網頁上之彈出式視窗廣告"
         },
         "on_navigation_by_popunder": {
             "message": "此至新的頁面之轉換很可能是由一個背彈式視窗引起。您想要繼續嗎？",
