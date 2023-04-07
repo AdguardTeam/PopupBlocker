@@ -404,4 +404,12 @@ export const exclusions = [
     // https://github.com/AdguardTeam/PopupBlocker/issues/281
     '*://unrealengine.com/*',
     '*://*.unrealengine.com/*',
+    // https://github.com/AdguardTeam/PopupBlocker/issues/283
+    'freelancer.com',
+    // https://github.com/AdguardTeam/PopupBlocker/issues/278
+    'ov-chipkaart.nl',
+    // https://github.com/AdguardTeam/PopupBlocker/issues/275
+    'tezgoal.com',
+    // https://github.com/AdguardTeam/PopupBlocker/issues/280
+    'joom.com',
 ];
