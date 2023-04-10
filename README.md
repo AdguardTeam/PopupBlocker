@@ -55,19 +55,25 @@ Unit test for dev build is [here](https://popupblocker.adguard.com/test/).
 
 ## How to build
 
-Install local dependencies by runnning:
+To build the project, follow these steps:
 
+Install local dependencies by running the following command in the terminal:
 ```
 yarn install
 ```
 
-To build, run:
-
+To build, run the following command in the terminal:
 ```
 $ NODE_ENV=<channel> ts-node tasks/builder --target=<target>
 ```
 
-or in a minimist style:
+Replace `channel` with the desired channel, which can be `dev`, `beta`, or `release`. Also, replace `target` with the desired build target, which can be
+ * `userscript` – build userscript for a specified channel;
+ * `options` – build options page, which is a standalone page, that provides the user with convenient way of managing allowed and silenced websites;
+ * `tests` – build tests;
+ * `bundle` – build and bundle all of the above for a release channel.
+
+Alternatively, you can run the following commands in a minimist style:
 
 ```
 yarn userscript-<channel>
@@ -76,12 +82,9 @@ yarn tests
 yarn bundle
 ```
 
-Available channels are: `dev`, `beta`, `release`.
-Available targets are: `userscript`, `options`, `tests`, `bundle`.
+If you are building for development, note that the output will not be minified and will contain logs in the browser console.
 
-Developement builds are not minified, and will print logs into the browser console.
-
-Beta and release builds will be minified and have all logging codes stripped out.
+Beta and release builds will be minified, and all logging codes will be stripped out.
 
 ## How to debug the options page
 
