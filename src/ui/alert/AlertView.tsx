@@ -154,7 +154,6 @@ export class AlertView implements AlertViewInterface {
         }
         render(<Alert numPopup={numPopup} origDomain={origDomain} destUrl={destUrl} />, doc.body);
 
-        doc.getElementsByClassName('alert__select')[0] as HTMLElement;
         // Get references of elements.
         /* eslint-disable prefer-destructuring */
         this.alertRoot = doc.getElementsByClassName('alert')[0] as HTMLElement;
