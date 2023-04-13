@@ -3,6 +3,7 @@ const USERSCRIPT_NAME = 'popupblocker';
 const METADATA_NAME = 'popupblocker';
 const METADATA_TEMPLATE_NAME = 'meta.template.js';
 const POPUPBLOCKER_CNAME = 'popupblocker.adguard.com';
+const RESOURCE_VERSION = 'v1';
 
 enum Target {
     Userscript = 'userscript',
@@ -45,4 +46,5 @@ export {
     RESOURCE_PATHS,
     BUNDLE_RESOURCE_PATHS,
     USERSCRIPT_ICON_RELATIVE_PATH,
+    RESOURCE_VERSION,
 };

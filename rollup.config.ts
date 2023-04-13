@@ -18,6 +18,7 @@ import {
     USERSCRIPT_NAME,
     METADATA_NAME,
     METADATA_TEMPLATE_NAME,
+    RESOURCE_VERSION,
 } from './tasks/constants';
 
 const BUILD_PATH = path.resolve(__dirname, BUILD_DIR);
@@ -72,6 +73,7 @@ const getUserscriptConfig = (buildPath = USERSCRIPT_BUILD_PATH) => {
                     // Required to build specific options page URLs
                     // for each channel
                     __userscriptResourceEnv__: resourceEnv,
+                    __userscriptResourceVersion__: RESOURCE_VERSION,
                 },
             }),
             ...commonPlugins,

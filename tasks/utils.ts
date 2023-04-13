@@ -2,10 +2,12 @@ import fs from 'fs-extra';
 import path from 'path';
 import copy from 'copy';
 import pJson from '../package.json';
-import { POPUPBLOCKER_CNAME } from './constants';
+import { POPUPBLOCKER_CNAME, RESOURCE_VERSION } from './constants';
 import { Channel, ChannelBaseUrl } from './channels';
 
-export const getHomepageUrl = (channel: Channel): string => `https://${POPUPBLOCKER_CNAME}${channel}`;
+export const getHomepageUrl = (
+    channel: Channel,
+): string => `https://${POPUPBLOCKER_CNAME}/${channel}/${RESOURCE_VERSION}`;
 
 export const getDownloadUrl = (channel: Channel): string => `${ChannelBaseUrl[channel]}popupblocker.user.js`;
 
