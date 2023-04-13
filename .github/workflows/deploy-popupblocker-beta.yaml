@@ -1,0 +1,54 @@
+name: Deploy popup blocker beta (manually)
+
+on: workflow_dispatch
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: yarn install
+        run: yarn install
+
+      - name: build
+        run: yarn bundle:beta
+
+      - name: deploy
+        uses: peaceiris/actions-gh-pages@v3
+        # Only deploy project from master branch
+        if: startsWith(github.ref, 'refs/heads/master')
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: build
+          destination_dir: beta/v1
+
+  notify:
+    needs:
+      - build
+    if:
+      ${{ always() &&
+        (
+          github.event_name == 'push' ||
+          github.event.pull_request.head.repo.full_name == github.repository
+        )
+      }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Conclusion
+        uses: technote-space/workflow-conclusion-action@v3
+
+      - name: Send Slack notif
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ env.WORKFLOW_CONCLUSION }}
+          fields: workflow, repo, message, commit, author, eventName, ref
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

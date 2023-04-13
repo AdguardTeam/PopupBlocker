@@ -11,18 +11,6 @@ enum Target {
     Bundle = 'bundle',
 }
 
-enum Channel {
-    Dev = 'dev',
-    Beta = 'beta',
-    Release = 'release',
-}
-
-const CHANNEL_BASE_URLS = {
-    [Channel.Dev]: 'https://AdguardTeam.github.io/PopupBlocker/',
-    [Channel.Beta]: 'https://userscripts.adtidy.org/beta/popup-blocker/2.5/',
-    [Channel.Release]: 'https://userscripts.adtidy.org/release/popup-blocker/2.5/',
-};
-
 // Used in userscript metadata
 const RESOURCE_PATHS = [
     './assets/fonts/bold/OpenSans-Bold.woff',
@@ -45,7 +33,7 @@ const BUNDLE_RESOURCE_PATHS = [
     { src: 'node_modules/chai/chai.js', dest: '/node_modules/chai' },
 ];
 
-const USERSCRIPT_ICON_RELATIVE_URL = './assets/128.png';
+const USERSCRIPT_ICON_RELATIVE_PATH = './assets/128.png';
 
 export {
     BUILD_DIR,
@@ -54,9 +42,7 @@ export {
     METADATA_TEMPLATE_NAME,
     POPUPBLOCKER_CNAME,
     Target,
-    Channel,
-    CHANNEL_BASE_URLS,
     RESOURCE_PATHS,
     BUNDLE_RESOURCE_PATHS,
-    USERSCRIPT_ICON_RELATIVE_URL,
+    USERSCRIPT_ICON_RELATIVE_PATH,
 };

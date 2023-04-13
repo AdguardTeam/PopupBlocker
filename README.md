@@ -24,9 +24,9 @@ Other scripts on the page can not detect that Popup Blocker is being used, other
 
 ## Installation
 
-Current release version: https://userscripts.adtidy.org/release/popup-blocker/2.5/popupblocker.user.js
+- **Current release version**: https://userscripts.adtidy.org/release/popup-blocker/2.5/popupblocker.user.js
 
-Curent beta version: https://userscripts.adtidy.org/beta/popup-blocker/2.5/popupblocker.user.js
+- Curent beta version: https://userscripts.adtidy.org/beta/popup-blocker/2.5/popupblocker.user.js
 
 Popup Blocker is being developed by the same team that develops AdGuard, and AdGuard for Windows can serve as a userscript manager. If you are an AdGuard user, go to Settings – Extensions – Add Extension and enter the desired Popup Blocker .js file URL there. This way you can use it in literally any browser.
 
@@ -34,7 +34,9 @@ On the other hand, Popup Blocker is an independent project, you can use it with 
 
 ## Options page
 
-From userscript version 2.5.0 and higher, you can manage a list of allowlisted domains and silenced domain on a dedicated [options page](https://popupblocker.adguard.com/options.html).
+You can manage a list of allowlisted domains and silenced domain on a dedicated options page:
+* **Current release version**: https://popupblocker.adguard.com/release/v1
+* Curent beta version: https://popupblocker.adguard.com/beta/v1
 
 ## Reporting a bug
 
@@ -46,12 +48,9 @@ You can help us with translating Popup Blocker into other languages! Our project
 
 ## Development build
 
-Built automatically on every new commit:
-https://popupblocker.adguard.com/popupblocker.user.js
-
 Development builds have logging enabled and overrides significantly more browser apis to introspect behavior of popup/popunder script. It is not suitable for normal usage.
 
-Unit test for dev build is [here](https://popupblocker.adguard.com/test/).
+Unit test for dev build is [here](https://popupblocker.adguard.com/release/v1/test/).
 
 ## How to build
 
@@ -71,7 +70,7 @@ Replace `channel` with the desired channel, which can be `dev`, `beta`, or `rele
  * `userscript` – build userscript for a specified channel;
  * `options` – build options page, which is a standalone page, that provides the user with convenient way of managing allowed and silenced websites;
  * `tests` – build tests;
- * `bundle` – build and bundle all of the above for a release channel.
+ * `bundle` – build and bundle all of the above for a specified channel.
 
 Alternatively, you can run the following commands in a minimist style:
 
@@ -79,8 +78,11 @@ Alternatively, you can run the following commands in a minimist style:
 yarn userscript-<channel>
 yarn options-page
 yarn tests
-yarn bundle
+yarn bundle:dev
+yarn bundle:beta
+yarn bundle:release
 ```
+
 
 If you are building for development, note that the output will not be minified and will contain logs in the browser console.
 
@@ -106,3 +108,7 @@ An easy way to test the script is to visit http://code.ptcong.com/better-js-popu
 Just click anywhere on that page to get a popunder, or use specific links to get popup/popunder/tabup/etc.
 
 Expected behavior: new windows get blocked with a notification in the top right corner.
+
+## How to deploy options page
+
+Options page is deployed via GitHub Pages with a manual actions `Deploy popup blocker beta` and `Deploy popup blocker release` for `beta` and `release` versions respectively.

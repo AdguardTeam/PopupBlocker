@@ -2,12 +2,12 @@
 // [USERSCRIPT_NAME]
 // @namespace adguard
 // [USERSCRIPT_DESCRIPTION]
-// @namespace    adguard
 // [USERSCRIPT_VERSION]
+// @license LGPL-3.0; https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE
 // [DOWNLOAD_URL]
 // [UPDATE_URL]
 // @supportURL https://github.com/AdguardTeam/PopupBlocker/issues
-// @homepageURL  https://adguard.com/
+// [HOMEPAGE_URL]
 // @match http://*/*
 // @match https://*/*
 // @grant GM_getValue

@@ -8,9 +8,12 @@ import { OPTIONS_API_PROP } from './shared';
  */
 export function isOptionsPage(context: Window & typeof globalThis): boolean {
     const LOCAL_OPTIONS_URL_REGEX = /(localhost:|http:\/\/127\.0\.0\.1).*(\/options\.html)/;
+
     const OPTIONS_PAGE_URLS = [
-        'https://adguardteam.github.io/PopupBlocker/options.html',
-        'https://popupblocker.adguard.com/options.html',
+        // userscriptResourceEnv will be replaced with corresponding env variable at build time
+        'https://popupblocker.adguard.com/__userscriptResourceEnv__/v1/options.html',
+        // github pages alias
+        'https://adguardteam.github.io/PopupBlocker/__userscriptResourceEnv__/v1/options.html',
     ];
 
     const { href } = context.location;

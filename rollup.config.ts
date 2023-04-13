@@ -2,6 +2,7 @@ import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
 import postcss from 'rollup-plugin-postcss';
 import resolve from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
 import json from '@rollup/plugin-json';
 import terser from '@rollup/plugin-terser';
 import copy from 'rollup-plugin-copy';
@@ -10,7 +11,8 @@ import * as path from 'path';
 import MetaDataPlugin from './tasks/metadata/MetaDataPlugin';
 import metaSettings from './tasks/metadata/meta.settings';
 import { commonPostcssConfig, userscriptPostcssConfig } from './postcss.config';
-import { env } from './tasks/environment';
+import { env, resourceEnv } from './tasks/environment';
+import { ChannelPostfix } from './tasks/channels';
 import {
     BUILD_DIR,
     USERSCRIPT_NAME,
@@ -48,11 +50,8 @@ const getUserscriptConfig = (buildPath = USERSCRIPT_BUILD_PATH) => {
         METADATA_NAME,
         METADATA_TEMPLATE_PATH,
         LOCALES_PATH,
-        metaSettings[env].postfix,
-        {
-            ...metaSettings.common.headersData,
-            ...metaSettings[env].headersData,
-        },
+        ChannelPostfix[env],
+        metaSettings.headersData,
     );
 
     return {
@@ -65,6 +64,16 @@ const getUserscriptConfig = (buildPath = USERSCRIPT_BUILD_PATH) => {
             compact: true,
         },
         plugins: [
+            replace({
+                preventAssignment: true,
+                // word boundaries are ignored
+                delimiters: ['', ''],
+                values: {
+                    // Required to build specific options page URLs
+                    // for each channel
+                    __userscriptResourceEnv__: resourceEnv,
+                },
+            }),
             ...commonPlugins,
             typescript({
                 tsconfig: 'tsconfig.json',
