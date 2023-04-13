@@ -76,12 +76,12 @@
 // @description:zh 拦截网页弹窗广告 
 // @description:zh-HK 封鎖網頁上的彈出式視窗廣告 
 // @description:zh-TW 封鎖於網頁上之彈出式視窗廣告 
-// @version 2.5.83
+// @version 2.5.85
 // @license LGPL-3.0; https://github.com/AdguardTeam/PopupBlocker/blob/master/LICENSE
 // @downloadUrl https://userscripts.adtidy.org/beta/popup-blocker/2.5/popupblocker.user.js
 // @updateUrl https://userscripts.adtidy.org/beta/popup-blocker/2.5/popupblocker.meta.js
 // @supportURL https://github.com/AdguardTeam/PopupBlocker/issues
-// @homepageURL https://popupblocker.adguard.combeta
+// @homepageURL https://popupblocker.adguard.com/beta/v1
 // @match http://*/*
 // @match https://*/*
 // @grant GM_getValue
