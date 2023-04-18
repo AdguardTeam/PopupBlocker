@@ -13,17 +13,17 @@ import metaSettings from './tasks/metadata/meta.settings';
 import { commonPostcssConfig, userscriptPostcssConfig } from './postcss.config';
 import { env, resourceEnv } from './tasks/environment';
 import { ChannelPostfix } from './tasks/channels';
+import { BUILD_PATH } from './tasks/paths';
 import {
-    BUILD_DIR,
     USERSCRIPT_NAME,
     METADATA_NAME,
     METADATA_TEMPLATE_NAME,
     RESOURCE_VERSION,
 } from './tasks/constants';
 
-const BUILD_PATH = path.resolve(__dirname, BUILD_DIR);
 const USERSCRIPT_BUILD_PATH = path.join(BUILD_PATH, 'userscript');
 const USERSCRIPT_ENTRY_PATH = path.resolve(__dirname, './src/init', './userscript-entry.ts');
+const PAGE_SCRIPT_ENTRY_PATH = path.resolve(__dirname, './src/init', './page-script.ts');
 const METADATA_TEMPLATE_PATH = path.join(__dirname, './tasks/metadata', METADATA_TEMPLATE_NAME);
 const LOCALES_PATH = path.join(__dirname, './src/locales/translations.json');
 const ASSETS_PATH = path.resolve(__dirname, './src/assets');
@@ -44,6 +44,20 @@ const commonPlugins = [
 // TODO make preprocessor plugin to cut these from beta and release builds
 const isDev = env === 'dev';
 const intro = `const DEBUG = ${isDev}; const RECORD = ${isDev}; const NO_PROXY = ${!isDev};`;
+
+const pageScriptConfig = {
+    input: PAGE_SCRIPT_ENTRY_PATH,
+    output: {
+        intro,
+        compact: true,
+    },
+    plugins: [
+        ...commonPlugins,
+        typescript({
+            tsconfig: 'tsconfig.json',
+        }),
+    ],
+};
 
 const getUserscriptConfig = (buildPath = USERSCRIPT_BUILD_PATH) => {
     // Prepare metadata
@@ -70,7 +84,7 @@ const getUserscriptConfig = (buildPath = USERSCRIPT_BUILD_PATH) => {
                 // word boundaries are ignored
                 delimiters: ['', ''],
                 values: {
-                    // Required to build specific options page URLs
+                    // To build specific options page URLs
                     // for each channel
                     __userscriptResourceEnv__: resourceEnv,
                     __userscriptResourceVersion__: RESOURCE_VERSION,
@@ -138,8 +152,8 @@ const optionsPageConfig = {
 };
 
 export {
+    pageScriptConfig,
     getUserscriptConfig,
     testsConfig,
     optionsPageConfig,
-    BUILD_PATH,
 };

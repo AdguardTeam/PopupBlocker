@@ -2,3 +2,4 @@ node_modules
 build
 *.template.js
 test/third-party
+tmp

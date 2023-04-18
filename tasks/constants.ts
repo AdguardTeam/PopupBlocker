@@ -1,11 +1,18 @@
 const BUILD_DIR = 'build';
+const TMP_DIR = 'tmp';
 const USERSCRIPT_NAME = 'popupblocker';
 const METADATA_NAME = 'popupblocker';
 const METADATA_TEMPLATE_NAME = 'meta.template.js';
 const POPUPBLOCKER_CNAME = 'popupblocker.adguard.com';
 const RESOURCE_VERSION = 'v1';
+const PAGE_SCRIPT_WRAPPER_NAME = 'popupBlocker';
 
-enum Target {
+const enum PageScriptParam {
+    Context = 'externalContext',
+    BridgeKey = 'externalBridgeKey',
+}
+
+const enum Target {
     Userscript = 'userscript',
     OptionsPage = 'options',
     Tests = 'tests',
@@ -37,12 +44,15 @@ const BUNDLE_RESOURCE_PATHS = [
 const USERSCRIPT_ICON_RELATIVE_PATH = './assets/128.png';
 
 export {
+    PAGE_SCRIPT_WRAPPER_NAME,
+    PageScriptParam,
+    Target,
     BUILD_DIR,
+    TMP_DIR,
     USERSCRIPT_NAME,
     METADATA_NAME,
     METADATA_TEMPLATE_NAME,
     POPUPBLOCKER_CNAME,
-    Target,
     RESOURCE_PATHS,
     BUNDLE_RESOURCE_PATHS,
     USERSCRIPT_ICON_RELATIVE_PATH,

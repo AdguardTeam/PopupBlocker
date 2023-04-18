@@ -29,8 +29,8 @@ class OverlayAnchorObserver {
     };
 
     private static hitTest = ():Element => {
-        const w = window.innerWidth; const
-            h = window.innerHeight;
+        const w = window.innerWidth;
+        const h = window.innerHeight;
         const el = document.elementFromPoint(w >> 1, h >> 1);
         return el;
     };

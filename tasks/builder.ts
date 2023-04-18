@@ -3,12 +3,17 @@ import chalk from 'chalk';
 import { rollup } from 'rollup';
 import { program } from 'commander';
 import { BUNDLE_RESOURCE_PATHS, Target } from './constants';
-import { createBuildTxt, copyFiles } from './utils';
+import { BUILD_PATH, TMP_PATH } from './paths';
 import {
-    BUILD_PATH,
-    getUserscriptConfig,
-    optionsPageConfig,
+    copyFiles,
+    createBuildTxt,
+    makePageScriptBundle,
+} from './utils';
+import {
     testsConfig,
+    pageScriptConfig,
+    optionsPageConfig,
+    getUserscriptConfig,
 } from '../rollup.config';
 
 const { log } = console;
@@ -26,12 +31,26 @@ const build = async (config, target: Target) => {
     log(chalk.green(`Successfully built ${target}.`));
 };
 
+/**
+ * Builds page script bundle, also wrapping it in popupBlocker function
+ * Note: This step is necessary to inject
+ * the userscript as a script tag in Firefox.
+ */
+const buildPageScript = async (): Promise<void> => {
+    const bundle = await rollup(pageScriptConfig);
+
+    const { output } = await bundle.generate(pageScriptConfig.output);
+    await makePageScriptBundle(output[0].code);
+};
+
 const buildUserscript = async (buildPath?: string) => {
+    await buildPageScript();
     const userscriptConfig = getUserscriptConfig(buildPath);
     await build(userscriptConfig, Target.Userscript);
 
     // Write the build info for our CI
     await createBuildTxt(BUILD_PATH);
+
     log(chalk.green('writing build properties complete'));
 };
 
@@ -65,6 +84,7 @@ const tasksMap = {
 const runTask = async (task: () => Promise<void>) => {
     try {
         await fs.remove(BUILD_PATH);
+        await fs.remove(TMP_PATH);
         await task();
     } catch (e) {
         log(chalk.redBright(`Failed at task '${task.name}':`));
