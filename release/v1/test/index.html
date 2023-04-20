@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <title>Popup Blocker Tests</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+    </head>
+    <body>
+        <div id="mocha"></div>
+        
+
+        <script src="../node_modules/mocha/mocha.js"></script>
+        <script src="../node_modules/chai/chai.js"></script>
+
+        <script>
+            mocha.setup({
+              ui: 'bdd'
+            });
+        </script>
+
+        <script id="externs">
+            function popupBlocker() {};
+            _BRIDGE_KEY = 'key';
+            window['key'] = {};
+        </script>
+
+        <script src="third-party/bluebird-3.5.0.min.js"></script>
+        <script>
+            var BlueBird = Promise.noConflict();
+            if (typeof Promise !== 'function') {
+                window.Promise = BlueBird;
+            }
+        </script>
+        
+        <script src="third-party/jquery-1.12.4.min.js"></script>
+        <script src="third-party/jquery-2.2.4.min.js"></script>
+        <script src="third-party/jquery-3.3.1.min.js"></script>
+
+        <script src="./build/index.js"></script>
+        <script>
+            mocha.run();
+        </script>
+        
+        <div id="JQueryTestRoot" style="display:none"></div>
+    </body>
+</html>
