@@ -14,10 +14,6 @@ declare function popupBlocker(window, CONTENT_SCRIPT_KEY?:string):any;
  * passed to page script.
  */
 declare const CONTENT_SCRIPT_KEY:string;
-
-interface Window {
-    popupBlocker:typeof popupBlocker
-}
 declare function InstallTrigger();
 
 // Non-standard DOM apis that are not understood by either Typescript or

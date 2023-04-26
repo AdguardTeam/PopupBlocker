@@ -35,8 +35,8 @@ import * as ProxyService from '../proxy/ProxyService';
 export class JQueryEventStack {
     static initialize() {
         // Attempts to patch before any other page's click event handler is executed.
-        window.addEventListener('mousedown', JQueryEventStack.attemptPatch, true);
-        window.addEventListener('touchstart', JQueryEventStack.attemptPatch, true);
+        externalWindow.addEventListener('mousedown', JQueryEventStack.attemptPatch, true);
+        externalWindow.addEventListener('touchstart', JQueryEventStack.attemptPatch, true);
     }
 
     // eslint-disable-next-line consistent-return
@@ -71,7 +71,7 @@ export class JQueryEventStack {
 
     private static detectionHeuristic():JQueryStatic {
         // @ts-ignore
-        const jQuery = window.jQuery || window.$;
+        const jQuery = externalWindow.jQuery || externalWindow.$;
         if (typeof jQuery !== 'function') { return; }
         if (!('noConflict' in jQuery)) { return; }
         // Test for private property
@@ -267,7 +267,7 @@ const HOOK_PROPERTY_NAME = '__REACT_DEVTOOLS_GLOBAL_HOOK__';
 
 let accessedReactInternals = false;
 
-if (!hasOwnProperty.call(window, HOOK_PROPERTY_NAME)) {
+if (!hasOwnProperty.call(externalWindow, HOOK_PROPERTY_NAME)) {
     let nextID = 0;
     const tempValue = {
         // Create a dummy function for preact compatibility
@@ -294,7 +294,7 @@ if (!hasOwnProperty.call(window, HOOK_PROPERTY_NAME)) {
         },
         set() { },
     });
-    defineProperty(window, HOOK_PROPERTY_NAME, {
+    defineProperty(externalWindow, HOOK_PROPERTY_NAME, {
         get() {
             if (isInOfficialDevtoolsScript()) {
                 return undefined; // So that it re-defines the property
@@ -312,7 +312,7 @@ export function isReactInstancePresent():boolean {
     if (!!document.querySelector(reactRootSelector) || !!document.querySelector(reactIdSelector)) { return true; }
     if (accessedReactInternals) { return true; }
     // Otherwise, react-devtools could have overridden the hook.
-    const hook = window[HOOK_PROPERTY_NAME];
+    const hook = externalWindow[HOOK_PROPERTY_NAME];
     if (typeof hook !== 'object') { return false; }
     const { _renderers } = hook;
     if (typeof _renderers !== 'object' || _renderers === null) { return false; }
@@ -378,7 +378,7 @@ export function isGtmSimulatedAnchorClick(event:Event, windowName:string):boolea
             gtmVariableName = match[1];
         }
 
-        const dataLayer = <GtmDataLayerEvent[]>window[gtmVariableName];
+        const dataLayer = <GtmDataLayerEvent[]>externalWindow[gtmVariableName];
         if (!dataLayer) { continue; }
 
         const latestEvent = dataLayer[dataLayer.length - 1];

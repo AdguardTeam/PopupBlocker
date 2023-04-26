@@ -217,14 +217,14 @@ function _wrapAccessor(
     }
 }
 
-export function $apply(window:Window) {
-    const functionPrototype = window.Function.prototype;
+export function $apply(externalWindow:Window) {
+    const functionPrototype = externalWindow.Function.prototype;
     if (use_proxy) {
         _wrapMethod(functionPrototype, 'bind', applyWithUnproxiedThis);
         _wrapMethod(functionPrototype, 'apply', applyWithUnproxiedThis);
         _wrapMethod(functionPrototype, 'call', applyWithUnproxiedThis);
-        _wrapMethod(window.Reflect, 'apply', reflectWithUnproxiedThis);
-        _wrapAccessor(window.MessageEvent.prototype, 'source', proxifyReturn);
+        _wrapMethod(externalWindow.Reflect, 'apply', reflectWithUnproxiedThis);
+        _wrapAccessor(externalWindow.MessageEvent.prototype, 'source', proxifyReturn);
     }
     _wrapMethod(functionPrototype, 'toString', invokeWithUnproxiedThis);
     _wrapMethod(functionPrototype, 'toSource', invokeWithUnproxiedThis);

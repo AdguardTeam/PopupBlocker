@@ -52,7 +52,7 @@ export const makePageScriptBundle = async (rawBundle: string): Promise<void> => 
      * @param externalBridgeKey prop under which to hide script api
      */
     const code = `export function ${PAGE_SCRIPT_WRAPPER_NAME}(
-        ${PageScriptParam.Context},
+        ${PageScriptParam.Window},
         ${PageScriptParam.BridgeKey},
     ) {
         ${rawBundle}

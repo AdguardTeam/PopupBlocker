@@ -23,9 +23,9 @@ export default class CurrentMouseEvent {
                  */
             setTimeout(removeFromQueue.bind(null, queue, evt));
         };
-        window.addEventListener('mousedown', captureListener(mousedownQueue), true);
-        window.addEventListener('mouseup', captureListener(mouseupQueue), true);
-        window.addEventListener('click', captureListener(clickQueue), true);
+        externalWindow.addEventListener('mousedown', captureListener(mousedownQueue), true);
+        externalWindow.addEventListener('mouseup', captureListener(mouseupQueue), true);
+        externalWindow.addEventListener('click', captureListener(clickQueue), true);
         /**
          * Some events in event queues may have been finished firing event handlers,
          * either by bubbling up to `window` or by `Event#(stopPropagation,stopImmediatePropagation)`

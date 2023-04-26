@@ -56,12 +56,12 @@ const mockLocation = (href:string, proxyService:ILoggedProxyService) => {
     return a;
 };
 
-const mockWindow = (href, name, proxyService:ILoggedProxyService) => {
-    const win:any = mockObject(window);
-    mockObject(Window.prototype, win);
+const mockWindow = (href: string, name: string, proxyService:ILoggedProxyService) => {
+    const win:any = mockObject(externalWindow);
+    mockObject(externalWindow.Window.prototype, win);
     const doc:any = mockObject(document);
     mockObject(Document.prototype, doc);
-    win.opener = window;
+    win.opener = externalWindow;
     win.closed = false;
     win.name = name;
     win.document = doc;

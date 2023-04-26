@@ -14,7 +14,7 @@ export interface PopupContext {
     defaultEventHandlerTarget?:string
 }
 
-export function wrapOpen(window:Window, proxyService:ILoggedProxyService) {
+export function wrapOpen(externalWindow:Window, proxyService:ILoggedProxyService) {
     const openVerifiedWindow:ApplyHandler<Window, Window, PopupContext> = (
         execContext,
         _arguments,
@@ -67,6 +67,6 @@ export function wrapOpen(window:Window, proxyService:ILoggedProxyService) {
         return win;
     };
 
-    proxyService.wrapMethod<Window, Window>(window, 'open', openVerifiedWindow);
-    proxyService.wrapMethod<Window, Window>(window.Window.prototype, 'open', openVerifiedWindow); // for IE
+    proxyService.wrapMethod<Window, Window>(externalWindow, 'open', openVerifiedWindow);
+    proxyService.wrapMethod<Window, Window>(externalWindow.Window.prototype, 'open', openVerifiedWindow); // for IE
 }

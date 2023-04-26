@@ -60,12 +60,12 @@ export default class Timeline {
         return true;
     }
 
-    onNewFrame(window:Window):number {
+    onNewFrame(externalWindow:Window):number {
         const pos = this.events.push([]) - 1;
         // Registers a unique event when a frame is first created.
         // It passes the `window` object of the frame as a value of `$data` property.
         this.registerEvent(new TimelineEvent(TLEventType.CREATE, undefined, {
-            thisOrReceiver: window,
+            thisOrReceiver: externalWindow,
         }), pos);
         return pos;
     }
@@ -111,16 +111,16 @@ export const timeline:Timeline = new Timeline();
  */
 function cc_export() {
     // @ts-ignore
-    window.registerEvent = timeline.registerEvent;
+    externalWindow.registerEvent = timeline.registerEvent;
     // @ts-ignore
-    window.canOpenPopup = timeline.canOpenPopup;
+    externalWindow.canOpenPopup = timeline.canOpenPopup;
     // @ts-ignore
-    window.onNewFrame = timeline.onNewFrame;
+    externalWindow.onNewFrame = timeline.onNewFrame;
 }
 cc_export();
 
 if (RECORD) {
     // TODO make preprocessor plugin to cut these from beta and release builds
     // @ts-ignore
-    window.__t = timeline; // eslint-disable-line no-underscore-dangle
+    externalWindow.__t = timeline; // eslint-disable-line no-underscore-dangle
 }

@@ -10,11 +10,11 @@ const onbeforeunloadHandler = (evt:BeforeUnloadEvent) => {
 
 export const setBeforeunloadHandler = () => {
     // ToDo: if this is found to be useful, consider making it work on cross-origin iframes
-    if (window === window.top) {
+    if (externalWindow === externalWindow.top) {
         log.call('Attaching beforeunload event handler');
-        window.addEventListener('beforeunload', onbeforeunloadHandler);
+        externalWindow.addEventListener('beforeunload', onbeforeunloadHandler);
         setTimeout(() => {
-            window.removeEventListener('beforeunload', onbeforeunloadHandler);
+            externalWindow.removeEventListener('beforeunload', onbeforeunloadHandler);
         }, 1000);
         log.callEnd();
     }

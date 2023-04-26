@@ -34,26 +34,26 @@ export default class InterContextMessageHub implements InterContextMessageHubInt
 
     private parentPort:MessagePort;
 
-    constructor(window:Window, parentInstance?:InterContextMessageHubInterface) {
-        this.hostWindow = window;
+    constructor(externalWindow:Window, parentInstance?:InterContextMessageHubInterface) {
+        this.hostWindow = externalWindow;
         const supported = this.supported = nativeWeakMapSupport;
-        const parent = this.parent = window.parent;
-        const isTop = this.isTop = window.top === window;
+        const parent = this.parent = externalWindow.parent;
+        const isTop = this.isTop = externalWindow.top === externalWindow;
         if (supported) {
             this.framePortMap = new WeakMap();
             // Listens for handshake messages
-            window.addEventListener('message', (evt) => {
+            externalWindow.addEventListener('message', (evt) => {
                 this.handshake(evt);
             });
             // Passes message port to parent context.
             if (parentInstance) {
                 log.print('MessageHub: registering to parent instance directly..');
                 const channel = new MessageChannelCtor(); // Always use API from a 'stable' frame.
-                parentInstance.registerChildPort(window, channel.port1);
+                parentInstance.registerChildPort(externalWindow, channel.port1);
                 this.registerChildPort(parentInstance.hostWindow, channel.port2);
             }
             if (!isTop && (!parentInstance || parentInstance.hostWindow !== parent)) {
-                log.print(`MessageHub: sending message from ${window.location.href} to parent...`);
+                log.print(`MessageHub: sending message from ${externalWindow.location.href} to parent...`);
                 const channel = new MessageChannelCtor();
                 parent.postMessage(InterContextMessageHub.MAGIC, '*', [channel.port1]);
                 this.registerChildPort(parent, channel.port2);

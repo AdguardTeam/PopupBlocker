@@ -20,7 +20,7 @@ import {
  * On IE 10 and lower, window.event is a `MSEventObj` instance which does not implement `target` property.
  * We use a polyfill for such cases.
  */
-const supported = 'event' in window && (!('documentMode' in document) || (document.documentMode === 11));
+const supported = 'event' in externalWindow && (!('documentMode' in document) || (document.documentMode === 11));
 let currentMouseEvent;
 
 if (!supported) {
@@ -36,7 +36,7 @@ if (!supported) {
  */
 export function retrieveEvent():Event {
     log.call('Retrieving event');
-    let win = window;
+    let win = externalWindow;
     let currentEvent;
     if (supported) {
         currentEvent = win.event;

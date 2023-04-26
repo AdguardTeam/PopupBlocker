@@ -39,7 +39,7 @@ export default class ChildContextInjector implements IChildContextInjector {
 
     private childFrameObserver:MutationObserver;
 
-    private observeChildFrames(window:Window) {
+    private observeChildFrames(externalWindow:Window) {
         if (!MO) { return; }
         if (!this.childFrameObserver) {
             this.childFrameObserver = new MO((mutations) => {
@@ -61,7 +61,7 @@ export default class ChildContextInjector implements IChildContextInjector {
                 }
             });
         }
-        this.childFrameObserver.observe(window.document.documentElement, {
+        this.childFrameObserver.observe(externalWindow.document.documentElement, {
             childList: true,
             subtree: true,
         });

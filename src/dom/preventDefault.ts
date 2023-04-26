@@ -18,7 +18,7 @@ const allowVerifiedCall:ApplyHandler<Event, void> = (execContext, _arguments) =>
     return execContext.invokeTarget(_arguments);
 };
 
-export function wrapPreventDefault(window:Window, proxyService:ILoggedProxyService) {
+export function wrapPreventDefault(externalWindow:Window, proxyService:ILoggedProxyService) {
     if (!DEBUG) {
         // TODO make preprocessor plugin to cut these from beta and release builds
         return;
@@ -28,7 +28,7 @@ export function wrapPreventDefault(window:Window, proxyService:ILoggedProxyServi
         return isMouseEvent(arguments[1]);
     }
     proxyService.wrapMethod(
-        window.Event.prototype,
+        externalWindow.Event.prototype,
         'preventDefault',
         log.connect(
             allowVerifiedCall,

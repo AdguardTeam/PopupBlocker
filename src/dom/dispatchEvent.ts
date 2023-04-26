@@ -60,7 +60,7 @@ const logUIEventOnly:ApplyOption<EventTarget> = (target, _this, _arguments) => {
     return isUIEvent(evt);
 };
 
-export function wrapDispatchEvent(window:Window, proxyService:ILoggedProxyService) {
-    const eventTargetCtor = window.EventTarget || window.Node;
+export function wrapDispatchEvent(externalWindow:Window, proxyService:ILoggedProxyService) {
+    const eventTargetCtor = externalWindow.EventTarget || externalWindow.Node;
     proxyService.wrapMethod(eventTargetCtor.prototype, 'dispatchEvent', dispatchVerifiedEvent, logUIEventOnly);
 }

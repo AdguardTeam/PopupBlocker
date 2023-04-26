@@ -8,7 +8,7 @@ const RESOURCE_VERSION = 'v1';
 const PAGE_SCRIPT_WRAPPER_NAME = 'popupBlocker';
 
 const enum PageScriptParam {
-    Context = 'externalContext',
+    Window = 'externalWindow',
     BridgeKey = 'externalBridgeKey',
 }
 

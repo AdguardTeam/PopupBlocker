@@ -29,8 +29,8 @@ class OverlayAnchorObserver {
     };
 
     private static hitTest = ():Element => {
-        const w = window.innerWidth;
-        const h = window.innerHeight;
+        const w = externalWindow.innerWidth;
+        const h = externalWindow.innerHeight;
         const el = document.elementFromPoint(w >> 1, h >> 1);
         return el;
     };
@@ -74,7 +74,7 @@ class OverlayAnchorObserver {
     private static OBSERVE_DURATION_AFTER_CLICK = 200;
 
     constructor() {
-        window.addEventListener('mousedown', (evt) => {
+        externalWindow.addEventListener('mousedown', (evt) => {
             if (evt.isTrusted) {
                 this.clicked = true;
                 clearTimeout(this.clickTimer);
@@ -90,7 +90,7 @@ class OverlayAnchorObserver {
     }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+externalWindow.addEventListener('DOMContentLoaded', () => {
     // eslint-disable-next-line no-new
     new OverlayAnchorObserver();
 });

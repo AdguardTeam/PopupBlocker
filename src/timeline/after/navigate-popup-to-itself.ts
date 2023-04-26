@@ -21,7 +21,7 @@ const navigatePopupToItself:condition = (index, events, incoming) => {
         (($name === 'assign' || $name === 'replace') && $type === TLEventType.APPLY)
         || (($name === 'location' || $name === 'href') && $type === TLEventType.SET)
     ) {
-        const currentHref = window.location.href; // ToDo: Consider making this work on empty iframes
+        const currentHref = externalWindow.location.href; // ToDo: Consider making this work on empty iframes
         const incomingData = incoming.$data;
         const newLocation = String(incomingData.arguments[0]);
         const thisArg = incomingData.thisOrReceiver;

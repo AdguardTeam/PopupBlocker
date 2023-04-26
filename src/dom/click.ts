@@ -34,6 +34,10 @@ const clickVerified:ApplyHandler<HTMLElement, void> = (execContext, _arguments) 
     return execContext.invokeTarget(_arguments);
 };
 
-export function wrapClick(window:Window, proxyService:ILoggedProxyService) {
-    proxyService.wrapMethod(window.HTMLElement.prototype, 'click', log.connect(clickVerified, 'Verifying click'));
+export function wrapClick(externalWindow:Window, proxyService:ILoggedProxyService) {
+    proxyService.wrapMethod(
+        externalWindow.HTMLElement.prototype,
+        'click',
+        log.connect(clickVerified, 'Verifying click'),
+    );
 }
