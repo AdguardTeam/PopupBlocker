@@ -6247,9 +6247,9 @@
                      */
                 setTimeout(removeFromQueue.bind(null, queue, evt));
             }; };
-            window.addEventListener('mousedown', captureListener(mousedownQueue), true);
-            window.addEventListener('mouseup', captureListener(mouseupQueue), true);
-            window.addEventListener('click', captureListener(clickQueue), true);
+            externalWindow.addEventListener('mousedown', captureListener(mousedownQueue), true);
+            externalWindow.addEventListener('mouseup', captureListener(mouseupQueue), true);
+            externalWindow.addEventListener('click', captureListener(clickQueue), true);
             /**
              * Some events in event queues may have been finished firing event handlers,
              * either by bubbling up to `window` or by `Event#(stopPropagation,stopImmediatePropagation)`
@@ -6573,8 +6573,8 @@
         }
         JQueryEventStack.initialize = function () {
             // Attempts to patch before any other page's click event handler is executed.
-            window.addEventListener('mousedown', JQueryEventStack.attemptPatch, true);
-            window.addEventListener('touchstart', JQueryEventStack.attemptPatch, true);
+            externalWindow.addEventListener('mousedown', JQueryEventStack.attemptPatch, true);
+            externalWindow.addEventListener('touchstart', JQueryEventStack.attemptPatch, true);
         };
         // eslint-disable-next-line consistent-return
         JQueryEventStack.getCurrentJQueryTarget = function (event) {
@@ -6606,7 +6606,7 @@
         };
         JQueryEventStack.detectionHeuristic = function () {
             // @ts-ignore
-            var jQuery = window.jQuery || window.$;
+            var jQuery = externalWindow.jQuery || externalWindow.$;
             if (typeof jQuery !== 'function') {
                 return;
             }
@@ -6735,7 +6735,7 @@
     }
     var HOOK_PROPERTY_NAME = '__REACT_DEVTOOLS_GLOBAL_HOOK__';
     var accessedReactInternals = false;
-    if (!hasOwnProperty.call(window, HOOK_PROPERTY_NAME)) {
+    if (!hasOwnProperty.call(externalWindow, HOOK_PROPERTY_NAME)) {
         var nextID_1 = 0;
         var tempValue_1 = {
             // Create a dummy function for preact compatibility
@@ -6762,7 +6762,7 @@
             },
             set: function () { },
         });
-        defineProperty$1(window, HOOK_PROPERTY_NAME, {
+        defineProperty$1(externalWindow, HOOK_PROPERTY_NAME, {
             get: function () {
                 if (isInOfficialDevtoolsScript()) {
                     return undefined; // So that it re-defines the property
@@ -6783,7 +6783,7 @@
             return true;
         }
         // Otherwise, react-devtools could have overridden the hook.
-        var hook = window[HOOK_PROPERTY_NAME];
+        var hook = externalWindow[HOOK_PROPERTY_NAME];
         if (typeof hook !== 'object') {
             return false;
         }
@@ -6818,7 +6818,7 @@
      * On IE 10 and lower, window.event is a `MSEventObj` instance which does not implement `target` property.
      * We use a polyfill for such cases.
      */
-    var supported = 'event' in window && (!('documentMode' in document) || (document.documentMode === 11));
+    var supported = 'event' in externalWindow && (!('documentMode' in document) || (document.documentMode === 11));
     var currentMouseEvent;
     if (!supported) {
         log.print('window.event is not supported.');
@@ -6833,7 +6833,7 @@
      */
     function retrieveEvent() {
         log.call('Retrieving event');
-        var win = window;
+        var win = externalWindow;
         var currentEvent;
         if (supported) {
             currentEvent = win.event;
@@ -7833,7 +7833,7 @@
         var $name = incoming.$name;
         if ((($name === 'assign' || $name === 'replace') && $type === 1 /* TLEventType.APPLY */)
             || (($name === 'location' || $name === 'href') && $type === 3 /* TLEventType.SET */)) {
-            var currentHref = window.location.href; // ToDo: Consider making this work on empty iframes
+            var currentHref = externalWindow.location.href; // ToDo: Consider making this work on empty iframes
             var incomingData = incoming.$data;
             var newLocation = String(incomingData.arguments[0]);
             var thisArg = incomingData.thisOrReceiver;
@@ -7931,12 +7931,12 @@
             log.callEnd();
             return true;
         };
-        Timeline.prototype.onNewFrame = function (window) {
+        Timeline.prototype.onNewFrame = function (externalWindow) {
             var pos = this.events.push([]) - 1;
             // Registers a unique event when a frame is first created.
             // It passes the `window` object of the frame as a value of `$data` property.
             this.registerEvent(new TimelineEvent(0 /* TLEventType.CREATE */, undefined, {
-                thisOrReceiver: window,
+                thisOrReceiver: externalWindow,
             }), pos);
             return pos;
         };
@@ -7984,17 +7984,17 @@
      */
     function cc_export() {
         // @ts-ignore
-        window.registerEvent = timeline.registerEvent;
+        externalWindow.registerEvent = timeline.registerEvent;
         // @ts-ignore
-        window.canOpenPopup = timeline.canOpenPopup;
+        externalWindow.canOpenPopup = timeline.canOpenPopup;
         // @ts-ignore
-        window.onNewFrame = timeline.onNewFrame;
+        externalWindow.onNewFrame = timeline.onNewFrame;
     }
     cc_export();
     if (RECORD) {
         // TODO make preprocessor plugin to cut these from beta and release builds
         // @ts-ignore
-        window.__t = timeline; // eslint-disable-line no-underscore-dangle
+        externalWindow.__t = timeline; // eslint-disable-line no-underscore-dangle
     }
 
     var expect$1 = chai.expect;
