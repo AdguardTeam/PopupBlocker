@@ -1,1 +1,1 @@
-version=2.5.86
+version=2.5.87
