@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v2.5.89
+
+### Fixed
+
+- id.gov.ua [PR#298](https://github.com/AdguardTeam/PopupBlocker/pull/298)
+
 ## v2.5.88
 
 ### Fixed
