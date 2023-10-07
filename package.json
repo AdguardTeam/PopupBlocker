@@ -48,7 +48,7 @@
     "form-data": "^4.0.0",
     "fs-extra": "^11.1.0",
     "mocha": "^4.0.1",
-    "postcss": "^8.4.21",
+    "postcss": "^8.4.31",
     "postcss-import": "^15.1.0",
     "postcss-inline-svg": "^6.0.0",
     "postcss-mixins": "^9.0.4",
