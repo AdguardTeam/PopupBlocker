@@ -414,4 +414,6 @@ export const exclusions = [
     'joom.com',
     // https://github.com/AdguardTeam/AdguardFilters/issues/162029
     '*://id.gov.ua/*',
+    // https://github.com/AdguardTeam/PopupBlocker/issues/297
+    '*://github.com/*',
 ];
