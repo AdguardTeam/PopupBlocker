@@ -14,6 +14,7 @@ import {
     log,
     SafeWeakMap,
 } from '../shared';
+import { safeCallApply } from '../shared/safe-utils';
 import { IWrappedExecutionContext, ApplyHandler } from './IProxyService';
 import { ProxyServiceExternalError } from './ProxyServiceExternalError';
 
@@ -149,8 +150,15 @@ const reflectWithUnproxiedThis:RawApplyHandler<Function, any> = (target, _this, 
  */
 export const invokeWithUnproxiedThis:RawApplyHandler<Function, any> = (target, _this, _arguments) => {
     let unproxied = proxyToReal.get(_this);
-    if (typeof unproxied === 'undefined') { unproxied = _this; }
-    return use_proxy ? _reflect(target, unproxied, _arguments) : target.apply(unproxied, _arguments);
+    if (typeof unproxied === 'undefined') {
+        unproxied = _this;
+    }
+
+    if (use_proxy) {
+        return _reflect(target, unproxied, _arguments);
+    }
+
+    return safeCallApply(target, unproxied, _arguments);
 };
 
 /**

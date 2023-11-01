@@ -9,3 +9,4 @@ export * from './time';
 export * from './url';
 export * from './WeakMap';
 export * from './constants';
+export * from './safe-utils';

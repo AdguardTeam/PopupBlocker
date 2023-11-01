@@ -1,5 +1,6 @@
 import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
+import cleanup from 'rollup-plugin-cleanup';
 import postcss from 'rollup-plugin-postcss';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
@@ -96,6 +97,7 @@ const getUserscriptConfig = (buildPath = USERSCRIPT_BUILD_PATH) => {
             }),
             postcss(userscriptPostcssConfig),
             !isDev && terser(),
+            cleanup(),
             copy({
                 targets: [
                     { src: ASSETS_PATH, dest: buildPath },

@@ -1,3 +1,5 @@
+// Initialize safe utils as fast as possible
+import '../shared/safe-utils';
 import { adguard } from '../page-script-namespace';
 import { main } from '../main';
 import '../observers/overlay-link-observer';
