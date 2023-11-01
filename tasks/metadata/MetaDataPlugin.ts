@@ -103,9 +103,11 @@ export default class MetaDataPlugin implements IMetaDataPlugin {
             const [languageCode, { [localeKey as string]: locale }] = language;
 
             const languagePrefix = index === 0 ? ' ' : `:${languageCode} `;
-            const postfix = headerName === 'name' ? this.postfix : '';
 
-            localizedHeaders.push(`// @${headerName}${languagePrefix}${locale.message} ${postfix}`);
+            const parsedPostfix = this.postfix ? ` ${this.postfix}` : '';
+            const postfix = headerName === 'name' ? parsedPostfix : '';
+
+            localizedHeaders.push(`// @${headerName}${languagePrefix}${locale.message}${postfix}`);
         });
         const headerContent = localizedHeaders.join('\n');
 

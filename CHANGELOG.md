@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - github.com [#297](https://github.com/AdguardTeam/PopupBlocker/issues/297)
+- trailing spaces in meta headers [#301](https://github.com/AdguardTeam/PopupBlocker/issues/301)
 
 ## v2.5.89
 
