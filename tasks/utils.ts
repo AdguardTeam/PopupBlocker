@@ -20,12 +20,30 @@ export const getDownloadUrl = (channel: Channel): string => `${ChannelBaseUrl[ch
 
 export const getUpdateUrl = (channel: Channel): string => `${ChannelBaseUrl[channel]}popupblocker.meta.js`;
 
+/**
+ * Returns absolute path for a given relative path
+ *
+ * @param channel channel to use
+ * @param relativePath relative path to resource
+ * @returns absolute path
+ */
+export const getAbsolutePath = (
+    channel: Channel,
+    relativePath: string,
+): string => new URL(relativePath, ChannelBaseUrl[channel]).href;
+
+/**
+ * Returns url values of `@resource` header for multiple resources
+ *
+ * @param channel channel to use
+ * @param relativePaths relative paths to resources
+ * @returns url value for `@resource` header
+ */
 export const getResourceUrls = (
     channel: Channel,
     relativePaths: string[],
 ): string[] => relativePaths.map((relativePath) => {
-    const base = ChannelBaseUrl[channel];
-    const absolutePath = new URL(relativePath, base).href;
+    const absolutePath = getAbsolutePath(channel, relativePath);
     return `${relativePath} ${absolutePath}`;
 });
 

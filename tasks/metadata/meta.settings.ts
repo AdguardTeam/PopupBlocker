@@ -9,6 +9,7 @@ import {
     getHomepageUrl,
     getDownloadUrl,
     getUpdateUrl,
+    getAbsolutePath,
 } from '../utils';
 
 type MetaSettingsInterface = {
@@ -35,7 +36,7 @@ const metaSettings: MetaSettingsInterface = {
         },
         USERSCRIPT_ICON: {
             headerName: 'icon',
-            headerValue: getResourceUrls(resourceEnv, [USERSCRIPT_ICON_RELATIVE_PATH]),
+            headerValue: getAbsolutePath(resourceEnv, USERSCRIPT_ICON_RELATIVE_PATH),
         },
         USERSCRIPT_RESOURCES: {
             headerName: 'resource',
