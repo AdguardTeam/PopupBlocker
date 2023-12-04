@@ -294,6 +294,8 @@ export const exclusions = [
     '*://*.dobreprogramy.pl/*',
     '*://polygamia.pl/*',
     '*://*.polygamia.pl/*',
+    // False positives on myschool.mosreg.ru
+    '*://*.mosreg.ru/*',
     // https://github.com/AdguardTeam/PopupBlocker/issues/191
     '*://vietjetair.com/*',
     '*://*.vietjetair.com/*',
