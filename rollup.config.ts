@@ -138,6 +138,14 @@ const optionsPageConfig = {
         dir: BUILD_PATH,
     },
     plugins: [
+        replace({
+            preventAssignment: true,
+            // word boundaries are ignored
+            delimiters: ['', ''],
+            values: {
+                __channel__: env,
+            },
+        }),
         ...commonPlugins,
         typescript({
             tsconfig: 'tsconfig.json',
