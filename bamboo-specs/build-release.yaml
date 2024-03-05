@@ -40,7 +40,6 @@ Build:
             yarn install ${bamboo.varsYarn}
             yarn userscript-release
             tar -C build -zcvf build/userscript.tar.gz userscript
-            rm -rf node_modules
     - inject-variables:
         file: build/build.txt
         scope: RESULT
@@ -50,6 +49,22 @@ Build:
         configuration:
           selectedRepository: defaultRepository
           tagName: v${bamboo.userscriptMeta.version}-release
+  final-tasks:
+      - script:
+          interpreter: SHELL
+          scripts:
+            - |-
+              set -x
+              set -e
+
+              # Fix mixed logs
+              exec 2>&1
+
+              ls -la
+
+              echo "Size before cleanup:" && du -h | tail -n 1
+              rm -rf node_modules
+              echo "Size after cleanup:" && du -h | tail -n 1
   artifacts:
     - name: userscript.tar.gz
       location: build
