@@ -60,8 +60,8 @@ const pageScriptConfig = {
     ],
 };
 
-// Prepare metadata
 const getUserscriptConfig = async (buildPath = USERSCRIPT_BUILD_PATH) => {
+    // Prepare metadata
     const metaSettings = await initMetaSettings();
 
     const metadataPlugin = new MetaDataPlugin(
@@ -106,8 +106,8 @@ const getUserscriptConfig = async (buildPath = USERSCRIPT_BUILD_PATH) => {
                 ],
             }),
             {
-                // Build and inject metadata
                 writeBundle() {
+                    // Build and inject metadata
                     metadataPlugin.injectMetadata(buildPath, `${USERSCRIPT_NAME}.user.js`);
                 },
             },
