@@ -60,6 +60,7 @@ const pageScriptConfig = {
     ],
 };
 
+// Prepare metadata
 const getUserscriptConfig = async (buildPath = USERSCRIPT_BUILD_PATH) => {
     const metaSettings = await initMetaSettings();
 
@@ -83,8 +84,11 @@ const getUserscriptConfig = async (buildPath = USERSCRIPT_BUILD_PATH) => {
         plugins: [
             replace({
                 preventAssignment: true,
+                // word boundaries are ignored
                 delimiters: ['', ''],
                 values: {
+                    // To build specific options page URLs
+                    // for each channel
                     __userscriptResourceEnv__: resourceEnv,
                     __userscriptResourceVersion__: RESOURCE_VERSION,
                 },
@@ -102,6 +106,7 @@ const getUserscriptConfig = async (buildPath = USERSCRIPT_BUILD_PATH) => {
                 ],
             }),
             {
+                // Build and inject metadata
                 writeBundle() {
                     metadataPlugin.injectMetadata(buildPath, `${USERSCRIPT_NAME}.user.js`);
                 },
