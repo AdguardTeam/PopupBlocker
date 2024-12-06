@@ -10,7 +10,7 @@ import copy from 'rollup-plugin-copy';
 import * as path from 'path';
 
 import MetaDataPlugin from './tasks/metadata/MetaDataPlugin';
-import metaSettings from './tasks/metadata/meta.settings';
+import initMetaSettings from './tasks/metadata/meta.settings';
 import { commonPostcssConfig, userscriptPostcssConfig } from './postcss.config';
 import { env, resourceEnv } from './tasks/environment';
 import { ChannelPostfix } from './tasks/channels';
@@ -60,8 +60,9 @@ const pageScriptConfig = {
     ],
 };
 
-const getUserscriptConfig = (buildPath = USERSCRIPT_BUILD_PATH) => {
-    // Prepare metadata
+const getUserscriptConfig = async (buildPath = USERSCRIPT_BUILD_PATH) => {
+    const metaSettings = await initMetaSettings();
+
     const metadataPlugin = new MetaDataPlugin(
         METADATA_NAME,
         METADATA_TEMPLATE_PATH,
@@ -82,11 +83,8 @@ const getUserscriptConfig = (buildPath = USERSCRIPT_BUILD_PATH) => {
         plugins: [
             replace({
                 preventAssignment: true,
-                // word boundaries are ignored
                 delimiters: ['', ''],
                 values: {
-                    // To build specific options page URLs
-                    // for each channel
                     __userscriptResourceEnv__: resourceEnv,
                     __userscriptResourceVersion__: RESOURCE_VERSION,
                 },
@@ -105,7 +103,6 @@ const getUserscriptConfig = (buildPath = USERSCRIPT_BUILD_PATH) => {
             }),
             {
                 writeBundle() {
-                    // Build and inject metadata
                     metadataPlugin.injectMetadata(buildPath, `${USERSCRIPT_NAME}.user.js`);
                 },
             },
