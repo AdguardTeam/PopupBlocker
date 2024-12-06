@@ -11,7 +11,7 @@ const MATCH_META_DIRECTIVE = '// @match';
 /**
  * Fetches the metadata for TinyShield from the specified path.
  *
- * @returns {Promise<string>} A promise that resolves to the metadata text.
+ * @returns A promise that resolves to the metadata text.
  */
 async function fetchTinyShieldMeta(): Promise<string> {
     const response = await fetch(TINY_SHIELD_META_PATH);
