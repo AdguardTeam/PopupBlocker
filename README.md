@@ -112,3 +112,23 @@ Expected behavior: new windows get blocked with a notification in the top right 
 ## How to deploy options page
 
 Options page is deployed via GitHub Pages with a manual actions `Deploy popup blocker beta` and `Deploy popup blocker release` for `beta` and `release` versions respectively.
+
+## Meta Information
+
+`AdGuard` websites are manually added to the meta information in the `/exclusions.ts` file. For `TinyShield` websites, the process is automated using a script. Here is how it works:
+
+1. **Update TinyShield Websites**:
+    - Run the script to update the `TinyShield` websites:
+
+      ```bash
+      yarn update-tinyshield
+      ```
+
+    - This script downloads the latest `TinyShield` websites from the TinyShield Meta file at `https://raw.githubusercontent.com/List-KR/tinyShield/refs/heads/main/sources/banner.txt`.
+
+    - The script updates the `/tinyShieldWebsites.json` file with the latest `TinyShield` websites.
+
+2. **Build Process**:
+    - During the build process, the websites listed in `/tinyShieldWebsites.json` are automatically added to the meta information.
+
+Ensure the meta information is always up-to-date with the latest `TinyShield` websites.

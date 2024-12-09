@@ -1,6 +1,7 @@
+import fs from 'fs';
 import pJson from '../../package.json';
 import { exclusions } from '../../exclusions';
-import { getTinyShieldWebsites } from './tinyShieldWebsites';
+import { TINY_SHIELD_EXCLUSIONS_FILE_PATH } from '../updateTinyShieldWebsites';
 import type { HeadersDataContainer } from './metadata';
 import { resourceEnv } from '../environment';
 import { Channel } from '../channels';
@@ -21,8 +22,19 @@ type MetaSettingsInterface = {
     };
 };
 
+/**
+ * Reads the list of TinyShield website URLs from the exclusions JSON file.
+ *
+ * @returns {Promise<string[]>} A promise that resolves to an array of website URLs.
+ */
+const readTinyShieldWebsiteURLs = async (TshieldSitesPath): Promise<string[]> => {
+    const data = fs.readFileSync(TshieldSitesPath, 'utf8');
+    const fileData = JSON.parse(data);
+    return fileData.match;
+};
+
 async function initMetaSettings(): Promise<MetaSettingsInterface> {
-    const tinyShieldWebsites = await getTinyShieldWebsites();
+    const tinyShieldWebsites = await readTinyShieldWebsiteURLs(TINY_SHIELD_EXCLUSIONS_FILE_PATH);
 
     return {
         headersData: {
@@ -66,4 +78,4 @@ async function initMetaSettings(): Promise<MetaSettingsInterface> {
     };
 }
 
-export default initMetaSettings;
+export { initMetaSettings };
