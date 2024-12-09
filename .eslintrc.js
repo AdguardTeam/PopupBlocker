@@ -42,9 +42,11 @@ module.exports = {
             'error',
             {
                 code: 120,
+                ignoreUrls: true,
             },
         ],
         'import/no-extraneous-dependencies': 0,
         'import/prefer-default-export': 0,
+        'jsdoc/require-throws': 'error',
     },
 };

@@ -28,9 +28,15 @@ type MetaSettingsInterface = {
  * @returns {Promise<string[]>} A promise that resolves to an array of website URLs.
  */
 const readTinyShieldWebsiteURLs = async (TshieldSitesPath): Promise<string[]> => {
-    const data = fs.readFileSync(TshieldSitesPath, 'utf8');
-    const fileData = JSON.parse(data);
-    return fileData.match;
+    try {
+        const data = fs.readFileSync(TshieldSitesPath, 'utf8');
+        const fileData = JSON.parse(data);
+        return fileData.match;
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(`Error reading TinyShield website URLs from ${TshieldSitesPath}:`, error);
+        return [];
+    }
 };
 
 async function initMetaSettings(): Promise<MetaSettingsInterface> {
