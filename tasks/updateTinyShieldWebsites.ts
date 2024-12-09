@@ -87,7 +87,11 @@ const getUserscriptVersion = async (userscriptPackageJsonPath: string): Promise<
  * @param matchedWebsites - The list of matched websites.
  * @throws {Error} If writing the TinyShield website URLs fails.
  */
-const writeTinyShieldWebsiteURLs = async (outputFilePath: string, matchedWebsites: string[], userscriptPackageJsonPath) => {
+const writeTinyShieldWebsiteURLs = async (
+    outputFilePath: string,
+    matchedWebsites: string[],
+    userscriptPackageJsonPath,
+) => {
     try {
         const userscriptVersion = await getUserscriptVersion(userscriptPackageJsonPath);
         const data = {
@@ -111,7 +115,11 @@ const writeTinyShieldWebsiteURLs = async (outputFilePath: string, matchedWebsite
  * @returns A promise that resolves when the update is complete.
  * @throws {Error} If updating the TinyShield websites fails.
  */
-const updateTinyShieldExclusionsFile = async (tinyShieldExclusionsPath: string, tinyShieldMetaURL: string, userscriptPackageJsonPath) => {
+const updateTinyShieldExclusionsFile = async (
+    tinyShieldExclusionsPath: string,
+    tinyShieldMetaURL: string,
+    userscriptPackageJsonPath,
+) => {
     try {
         const websiteURLs = await extractTinyShieldWebsiteURLs(tinyShieldMetaURL);
         await writeTinyShieldWebsiteURLs(tinyShieldExclusionsPath, websiteURLs, userscriptPackageJsonPath);
