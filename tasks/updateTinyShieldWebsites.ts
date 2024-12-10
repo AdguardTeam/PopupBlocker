@@ -26,7 +26,7 @@ const MATCH_META_DIRECTIVE = '// @match';
  *
  * @param metadataURL - The URL to fetch the TinyShield metadata.
  * @returns A promise that resolves to the metadata text.
- * @throws {Error} If the fetch operation fails.
+ * @throws Error If the fetch operation fails.
  */
 async function fetchTinyShieldMetadata(metadataURL: string): Promise<string> {
     try {
@@ -47,7 +47,7 @@ async function fetchTinyShieldMetadata(metadataURL: string): Promise<string> {
  *
  * @param metadataURL - The URL to fetch the TinyShield metadata.
  * @returns A promise that resolves to an array of matched websites.
- * @throws {Error} If the extraction of website URLs fails.
+ * @throws Error If the extraction of website URLs fails.
  */
 async function extractTinyShieldWebsiteURLs(metadataURL: string): Promise<string[]> {
     try {
@@ -67,7 +67,7 @@ async function extractTinyShieldWebsiteURLs(metadataURL: string): Promise<string
  *
  * @param userscriptPackageJsonPath - The path to the userscript package.json file.
  * @returns A promise that resolves to the version string.
- * @throws {Error} If reading the userscript version fails.
+ * @throws Error If reading the userscript version fails.
  */
 const getUserscriptVersion = async (userscriptPackageJsonPath: string): Promise<string> => {
     try {
@@ -85,7 +85,7 @@ const getUserscriptVersion = async (userscriptPackageJsonPath: string): Promise<
  *
  * @param outputFilePath - The path to the output JSON file.
  * @param matchedWebsites - The list of matched websites.
- * @throws {Error} If writing the TinyShield website URLs fails.
+ * @throws Error If writing the TinyShield website URLs fails.
  */
 const writeTinyShieldWebsiteURLs = async (
     outputFilePath: string,
@@ -113,7 +113,7 @@ const writeTinyShieldWebsiteURLs = async (
  * @param tinyShieldMetaURL - The URL to fetch the TinyShield metadata.
  * @param userscriptPackageJsonPath - The path to the userscript package.json file.
  * @returns A promise that resolves when the update is complete.
- * @throws {Error} If updating the TinyShield websites fails.
+ * @throws Error If updating the TinyShield websites fails.
  */
 const updateTinyShieldExclusionsFile = async (
     tinyShieldExclusionsPath: string,
