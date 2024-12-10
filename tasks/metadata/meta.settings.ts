@@ -25,7 +25,7 @@ type MetaSettingsInterface = {
 /**
  * Reads the list of TinyShield website URLs from the exclusions JSON file.
  *
- * @returns Array of TinyShield website URLs.
+ * @returns Array of TinyShield exclusions or empty array if cannot read or parse the file.
  */
 const readTinyShieldWebsiteURLs = (TshieldSitesPath): string[] => {
     try {

@@ -24,8 +24,8 @@ const VERSION_META_DIRECTIVE = '// @version';
 /**
  * Generates an error message from an error object.
  *
- * @param error - The error object.
- * @param context - The context of the error.
+ * @param context The context of the error.
+ * @param error The error object.
  * @returns The formatted error message.
  */
 const getErrorMessage = (context: string, error: unknown): string => {
