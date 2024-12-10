@@ -25,7 +25,7 @@ type MetaSettingsInterface = {
 /**
  * Reads the list of TinyShield website URLs from the exclusions JSON file.
  *
- * @returns {Promise<string[]>} A promise that resolves to an array of website URLs.
+ * @returns Array of TinyShield exclusions or empty array if cannot read or parse the file.
  */
 const readTinyShieldWebsiteURLs = async (TshieldSitesPath): Promise<string[]> => {
     try {
