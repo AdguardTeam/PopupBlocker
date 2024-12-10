@@ -1,10 +1,10 @@
 # Popup Blocker by AdGuard
 
-## Summary
+## Summary:
 
 Popup Blocker by AdGuard is a userscript that blocks all unwanted pop-up windows in different browsers.
 
-## Key features
+## Key features:
 
 - Cross-browser support
 
@@ -24,9 +24,9 @@ Other scripts on the page can not detect that Popup Blocker is being used, other
 
 ## Installation
 
-- **Current release version**: <https://userscripts.adtidy.org/release/popup-blocker/2.5/popupblocker.user.js>
+- **Current release version**: https://userscripts.adtidy.org/release/popup-blocker/2.5/popupblocker.user.js
 
-- Curent beta version: <https://userscripts.adtidy.org/beta/popup-blocker/2.5/popupblocker.user.js>
+- Current beta version: https://userscripts.adtidy.org/beta/popup-blocker/2.5/popupblocker.user.js
 
 Popup Blocker is being developed by the same team that develops AdGuard, and AdGuard for Windows can serve as a userscript manager. If you are an AdGuard user, go to Settings – Extensions – Add Extension and enter the desired Popup Blocker .js file URL there. This way you can use it in literally any browser.
 
@@ -35,8 +35,8 @@ On the other hand, Popup Blocker is an independent project, you can use it with 
 ## Options page
 
 You can manage a list of allowlisted domains and silenced domain on a dedicated options page:
-- **Current release version**: <https://popupblocker.adguard.com/release/v1>
-- Curent beta version: <https://popupblocker.adguard.com/beta/v1>
+* **Current release version**: https://popupblocker.adguard.com/release/v1
+* Current beta version: https://popupblocker.adguard.com/beta/v1
 
 ## Reporting a bug
 
@@ -65,7 +65,7 @@ yarn install
 To build, run the following command in the terminal:
 
 ```
-NODE_ENV=<channel> ts-node tasks/builder --target=<target>
+$ NODE_ENV=<channel> ts-node tasks/builder --target=<target>
 ```
 
 Replace `channel` with the desired channel, which can be `dev`, `beta`, or `release`. Also, replace `target` with the desired build target, which can be
@@ -105,7 +105,7 @@ To see the options page, ensure, that AG filters your debug page.
 
 ## How to test
 
-An easy way to test the script is to visit <http://code.ptcong.com/better-js-popunder-script/>
+An easy way to test the script is to visit http://code.ptcong.com/better-js-popunder-script/
 
 Just click anywhere on that page to get a popunder, or use specific links to get popup/popunder/tabup/etc.
 
