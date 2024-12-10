@@ -54,12 +54,12 @@ async function fetchTinyShieldMetadata() {
  * @returns A promise that resolves to an object containing the version and matched websites.
  * @throws Error If the extraction of version or website URLs fails.
  */
-async function extractTinyShieldWebsiteURLs() {
+async function extractTinyShieldMetadata() {
     try {
         const tinyShieldMetadata = await fetchTinyShieldMetadata();
         const tinyShieldMetadataLines = tinyShieldMetadata.split('\n');
-        let version;
-        const matchedWebsites = [];
+        let version: string;
+        const matchedWebsites: string[] = [];
 
         tinyShieldMetadataLines.forEach((metadataLine) => {
             if (metadataLine.startsWith(VERSION_META_DIRECTIVE)) {
@@ -102,14 +102,14 @@ const writeTinyShieldWebsiteURLs = async (
 };
 
 /**
- * Updates the TinyShield exclusions file with the latest websites from TinyShield meta.
+ * Updates the TinyShield exclusions file with the latest websites and version from TinyShield meta.
  *
  * @returns A promise that resolves when the update is complete.
  * @throws Error If updating the TinyShield websites fails.
  */
 const updateTinyShieldExclusionsFile = async () => {
     try {
-        const { version, matchedWebsites } = await extractTinyShieldWebsiteURLs();
+        const { version, matchedWebsites } = await extractTinyShieldMetadata();
         await writeTinyShieldWebsiteURLs(matchedWebsites, version);
         // eslint-disable-next-line no-console
         console.log('TinyShield websites updated successfully.');
