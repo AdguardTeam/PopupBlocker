@@ -83,4 +83,4 @@ const metaSettings: MetaSettingsInterface = {
     },
 };
 
-export default metaSettings;
+export { metaSettings };
