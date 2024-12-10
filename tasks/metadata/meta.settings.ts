@@ -25,6 +25,7 @@ type MetaSettingsInterface = {
 /**
  * Reads the list of TinyShield website URLs from the exclusions JSON file.
  *
+ * @param tinyShieldExclusionsPath The path to the TinyShield exclusions JSON file.
  * @returns Array of TinyShield exclusions or empty array if cannot read or parse the file.
  * @throws Error if the file cannot be read or parsed.
  */
