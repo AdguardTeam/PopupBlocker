@@ -10,7 +10,7 @@ import copy from 'rollup-plugin-copy';
 import * as path from 'path';
 
 import MetaDataPlugin from './tasks/metadata/MetaDataPlugin';
-import { initMetaSettings } from './tasks/metadata/meta.settings';
+import metaSettings from './tasks/metadata/meta.settings';
 import { commonPostcssConfig, userscriptPostcssConfig } from './postcss.config';
 import { env, resourceEnv } from './tasks/environment';
 import { ChannelPostfix } from './tasks/channels';
@@ -60,10 +60,8 @@ const pageScriptConfig = {
     ],
 };
 
-const getUserscriptConfig = async (buildPath = USERSCRIPT_BUILD_PATH) => {
+const getUserscriptConfig = (buildPath = USERSCRIPT_BUILD_PATH) => {
     // Prepare metadata
-    const metaSettings = await initMetaSettings();
-
     const metadataPlugin = new MetaDataPlugin(
         METADATA_NAME,
         METADATA_TEMPLATE_PATH,

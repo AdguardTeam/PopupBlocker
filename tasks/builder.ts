@@ -45,7 +45,7 @@ const buildPageScript = async (): Promise<void> => {
 
 const buildUserscript = async (buildPath?: string) => {
     await buildPageScript();
-    const userscriptConfig = await getUserscriptConfig(buildPath);
+    const userscriptConfig = getUserscriptConfig(buildPath);
     await build(userscriptConfig, Target.Userscript);
 
     // Write the build info for our CI
