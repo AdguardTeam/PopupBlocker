@@ -49,10 +49,10 @@ async function fetchTinyShieldMetadata() {
 }
 
 /**
- * Fetches the TinyShield metadata and extracts the version and list of website URLs.
- *
- * @returns A promise that resolves to an object containing the version and matched websites.
- * @throws Error If the extraction of version or website URLs fails.
+ * Extracts the version and list of website URLs from the TinyShield metadata.
+ * @param tinyShieldMetadata The TinyShield metadata text.
+ * @returns Version and matched websites extracted from the metadata.
+ * @throws Error if the extraction of version or website URLs fails.
  */
 function extractTinyShieldMetadata(tinyShieldMetadata: string) {
     try {
