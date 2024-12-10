@@ -37,7 +37,7 @@ const getErrorMessage = (context: string, error: unknown): string => {
  * Fetches the metadata for TinyShield from the specified URL.
  *
  * @returns A promise that resolves to the metadata text.
- * @throws Error If the fetch operation fails.
+ * @throws Error if the fetch operation fails.
  */
 async function fetchTinyShieldMetadata() {
     try {
