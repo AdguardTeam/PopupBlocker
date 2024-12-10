@@ -1,10 +1,10 @@
 # Popup Blocker by AdGuard
 
-## Summary:
+## Summary
 
 Popup Blocker by AdGuard is a userscript that blocks all unwanted pop-up windows in different browsers.
 
-## Key features:
+## Key features
 
 - Cross-browser support
 
@@ -24,9 +24,9 @@ Other scripts on the page can not detect that Popup Blocker is being used, other
 
 ## Installation
 
-- **Current release version**: https://userscripts.adtidy.org/release/popup-blocker/2.5/popupblocker.user.js
+- **Current release version**: <https://userscripts.adtidy.org/release/popup-blocker/2.5/popupblocker.user.js>
 
-- Curent beta version: https://userscripts.adtidy.org/beta/popup-blocker/2.5/popupblocker.user.js
+- Curent beta version: <https://userscripts.adtidy.org/beta/popup-blocker/2.5/popupblocker.user.js>
 
 Popup Blocker is being developed by the same team that develops AdGuard, and AdGuard for Windows can serve as a userscript manager. If you are an AdGuard user, go to Settings – Extensions – Add Extension and enter the desired Popup Blocker .js file URL there. This way you can use it in literally any browser.
 
@@ -35,8 +35,8 @@ On the other hand, Popup Blocker is an independent project, you can use it with 
 ## Options page
 
 You can manage a list of allowlisted domains and silenced domain on a dedicated options page:
-* **Current release version**: https://popupblocker.adguard.com/release/v1
-* Curent beta version: https://popupblocker.adguard.com/beta/v1
+- **Current release version**: <https://popupblocker.adguard.com/release/v1>
+- Curent beta version: <https://popupblocker.adguard.com/beta/v1>
 
 ## Reporting a bug
 
@@ -57,20 +57,23 @@ Unit test for dev build is [here](https://popupblocker.adguard.com/release/v1/te
 To build the project, follow these steps:
 
 Install local dependencies by running the following command in the terminal:
+
 ```
 yarn install
 ```
 
 To build, run the following command in the terminal:
+
 ```
-$ NODE_ENV=<channel> ts-node tasks/builder --target=<target>
+NODE_ENV=<channel> ts-node tasks/builder --target=<target>
 ```
 
 Replace `channel` with the desired channel, which can be `dev`, `beta`, or `release`. Also, replace `target` with the desired build target, which can be
- * `userscript` – build userscript for a specified channel;
- * `options` – build options page, which is a standalone page, that provides the user with convenient way of managing allowed and silenced websites;
- * `tests` – build tests;
- * `bundle` – build and bundle all of the above for a specified channel.
+
+- `userscript` – build userscript for a specified channel;
+- `options` – build options page, which is a standalone page, that provides the user with convenient way of managing allowed and silenced websites;
+- `tests` – build tests;
+- `bundle` – build and bundle all of the above for a specified channel.
 
 Alternatively, you can run the following commands in a minimist style:
 
@@ -82,7 +85,6 @@ yarn bundle:dev
 yarn bundle:beta
 yarn bundle:release
 ```
-
 
 If you are building for development, note that the output will not be minified and will contain logs in the browser console.
 
@@ -103,7 +105,7 @@ To see the options page, ensure, that AG filters your debug page.
 
 ## How to test
 
-An easy way to test the script is to visit http://code.ptcong.com/better-js-popunder-script/
+An easy way to test the script is to visit <http://code.ptcong.com/better-js-popunder-script/>
 
 Just click anywhere on that page to get a popunder, or use specific links to get popup/popunder/tabup/etc.
 
@@ -113,22 +115,25 @@ Expected behavior: new windows get blocked with a notification in the top right 
 
 Options page is deployed via GitHub Pages with a manual actions `Deploy popup blocker beta` and `Deploy popup blocker release` for `beta` and `release` versions respectively.
 
-## Meta Information
+## Exclusions Meta Information
 
-`AdGuard` websites are manually added to the meta information in the `/exclusions.ts` file. For `TinyShield` websites, the process is automated using a script. Here is how it works:
+`AdGuard` exclusion websites are manually added to the meta information in the `/exclusions.ts` file. For `TinyShield` websites, the process is automated using a script. Here is how it works:
 
 1. **Update TinyShield Websites**:
-    - Run the script to update the `TinyShield` websites:
 
-      ```bash
-      yarn update-tinyshield
-      ```
+- Run the script to update the `TinyShield` websites:
 
-    - This script downloads the latest `TinyShield` websites from the TinyShield Meta file at `https://raw.githubusercontent.com/List-KR/tinyShield/refs/heads/main/sources/banner.txt`.
+  ```bash
+  yarn update-tinyshield
+  ```
 
-    - The script updates the `/tinyShieldWebsites.json` file with the latest `TinyShield` websites.
+- This script downloads the latest `TinyShield` websites from the TinyShield Meta file at `https://raw.githubusercontent.com/List-KR/tinyShield/refs/heads/main/sources/banner.txt`.
 
-2. **Build Process**:
-    - During the build process, the websites listed in `/tinyShieldWebsites.json` are automatically added to the meta information.
+- The script updates the `/tinyShieldWebsites.json` file with the latest `TinyShield` websites.
 
-Ensure the meta information is always up-to-date with the latest `TinyShield` websites.
+1. **Build Process**:
+
+- During the build process, the websites listed in `tasks/tinyShieldWebsites.json` and in `/exclusions.ts` are automatically added to the meta information with
+`//@exclude` prefix.
+
+We exclude TinyShield websites in the metadata due to errors. For more details, refer to [this issue](https://github.com/List-KR/tinyShield/issues/1).
