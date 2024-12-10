@@ -37,7 +37,7 @@ const getErrorMessage = (context: string, error: unknown): string => {
  * Fetches the metadata for TinyShield from the specified URL.
  *
  * @returns A promise that resolves to the metadata text.
- * @throws  Error if the fetch operation fails.
+ * @throws Error if the fetch operation fails.
  */
 async function fetchTinyShieldMetadata() {
     try {
@@ -49,10 +49,10 @@ async function fetchTinyShieldMetadata() {
 }
 
 /**
- * Extracts the version and list of website URLs from the TinyShield metadata.
- * @param tinyShieldMetadata The TinyShield metadata text.
- * @returns Version and matched websites extracted from the metadata.
- * @throws Error if the extraction of version or website URLs fails.
+ * Fetches the TinyShield metadata and extracts the version and list of website URLs.
+ *
+ * @returns A promise that resolves to an object containing the version and matched websites.
+ * @throws Error If the extraction of version or website URLs fails.
  */
 function extractTinyShieldMetadata(tinyShieldMetadata: string) {
     try {
