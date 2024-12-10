@@ -133,7 +133,6 @@ Options page is deployed via GitHub Pages with a manual actions `Deploy popup bl
 
 1. **Build Process**:
 
-- During the build process, the websites listed in `tasks/tinyShieldWebsites.json` and in `/exclusions.ts` are automatically added to the meta information with
-`//@exclude` prefix.
+- During the build process, the websites listed in `tasks/tinyShieldWebsites.json` and in `/exclusions.ts` are automatically added to the meta information with `//@exclude` prefix.
 
 We exclude TinyShield websites in the metadata due to errors. For more details, refer to [this issue](https://github.com/List-KR/tinyShield/issues/1).
