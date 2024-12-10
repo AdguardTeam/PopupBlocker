@@ -124,7 +124,7 @@ Options page is deployed via GitHub Pages with a manual actions `Deploy popup bl
 - Run the script to update the `TinyShield` websites:
 
   ```bash
-  yarn update-tinyshield
+  yarn update-tinyshield-websites
   ```
 
 - This script downloads the latest `TinyShield` websites from the TinyShield Meta file at `https://raw.githubusercontent.com/List-KR/tinyShield/refs/heads/main/sources/banner.txt`.

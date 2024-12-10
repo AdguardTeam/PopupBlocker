@@ -37,7 +37,7 @@ const getErrorMessage = (context: string, error: unknown): string => {
  * Fetches the metadata for TinyShield from the specified URL.
  *
  * @returns A promise that resolves to the metadata text.
- * @throws Error If the fetch operation fails.
+ * @throws  Error if the fetch operation fails.
  */
 async function fetchTinyShieldMetadata() {
     try {
@@ -49,14 +49,13 @@ async function fetchTinyShieldMetadata() {
 }
 
 /**
- * Fetches the TinyShield metadata and extracts the version and list of website URLs.
- *
- * @returns A promise that resolves to an object containing the version and matched websites.
- * @throws Error If the extraction of version or website URLs fails.
+ * Extracts the version and list of website URLs from the TinyShield metadata.
+ * @param tinyShieldMetadata The TinyShield metadata text.
+ * @returns Version and matched websites extracted from the metadata.
+ * @throws Error if the extraction of version or website URLs fails.
  */
-async function extractTinyShieldMetadata() {
+function extractTinyShieldMetadata(tinyShieldMetadata: string) {
     try {
-        const tinyShieldMetadata = await fetchTinyShieldMetadata();
         const tinyShieldMetadataLines = tinyShieldMetadata.split('\n');
         let version: string;
         const matchedWebsites: string[] = [];
@@ -74,18 +73,33 @@ async function extractTinyShieldMetadata() {
             matchedWebsites,
         };
     } catch (error) {
-        throw new Error(getErrorMessage('extract TinyShield website URLs', error));
+        throw new Error(getErrorMessage('extract TinyShield version and website URLs', error));
+    }
+}
+
+/**
+ * Fetches the TinyShield metadata and extracts the version and list of website URLs.
+ *
+ * @returns A promise that resolves to an object containing the version and matched websites.
+ * @throws  Error if the extraction of version or website URLs fails.
+ */
+async function fetchAndExtractTinyShieldMetadata() {
+    try {
+        const tinyShieldMetadata = await fetchTinyShieldMetadata();
+        return extractTinyShieldMetadata(tinyShieldMetadata);
+    } catch (error) {
+        throw new Error(getErrorMessage('fetch and extract TinyShield metadata', error));
     }
 }
 
 /**
  * Writes the list of TinyShield website URLs to the output JSON file.
  *
- * @param matchedWebsites - The list of matched websites.
- * @param tinyShieldVersion - The version of TinyShield.
- * @throws Error If writing the TinyShield website URLs fails.
+ * @param matchedWebsites The list of matched websites.
+ * @param tinyShieldVersion The version of TinyShield.
+ * @throws  Error if writing the TinyShield website URLs fails.
  */
-const writeTinyShieldWebsiteURLs = async (
+const writeTinyShieldWebsiteURLs = (
     matchedWebsites: string[],
     tinyShieldVersion: string,
 ) => {
@@ -105,12 +119,12 @@ const writeTinyShieldWebsiteURLs = async (
  * Updates the TinyShield exclusions file with the latest websites and version from TinyShield meta.
  *
  * @returns A promise that resolves when the update is complete.
- * @throws Error If updating the TinyShield websites fails.
+ * @throws  Error if updating the TinyShield websites fails.
  */
 const updateTinyShieldExclusionsFile = async () => {
     try {
-        const { version, matchedWebsites } = await extractTinyShieldMetadata();
-        await writeTinyShieldWebsiteURLs(matchedWebsites, version);
+        const { version, matchedWebsites } = await fetchAndExtractTinyShieldMetadata();
+        writeTinyShieldWebsiteURLs(matchedWebsites, version);
         // eslint-disable-next-line no-console
         console.log('TinyShield websites updated successfully.');
     } catch (error) {

@@ -26,14 +26,16 @@ type MetaSettingsInterface = {
  * Reads the list of TinyShield website URLs from the exclusions JSON file.
  *
  * @returns Array of TinyShield exclusions or empty array if cannot read or parse the file.
+ * @throws Error if the file cannot be read or parsed.
  */
-const readTinyShieldWebsiteURLs = (TshieldSitesPath): string[] => {
+const readTinyShieldWebsiteURLs = (tinyShieldExclusionsPath: string): string[] => {
     try {
-        const data = fs.readFileSync(TshieldSitesPath, 'utf8');
+        const data = fs.readFileSync(tinyShieldExclusionsPath, 'utf8');
         const fileData = JSON.parse(data);
         return fileData.match;
     } catch (error) {
-        throw new Error(`Error reading TinyShield website URLs from ${TshieldSitesPath}: ${error}`);
+        const message = error instanceof Error ? error.message : String(error);
+        throw new Error(`Failed to read list of TinyShield website URLs from ${tinyShieldExclusionsPath}: ${message}`);
     }
 };
 
