@@ -1,5 +1,7 @@
+import fs from 'fs';
 import pJson from '../../package.json';
 import { exclusions } from '../../exclusions';
+import { TINY_SHIELD_EXCLUSIONS_FILE_PATH } from '../updateTinyShieldWebsites';
 import type { HeadersDataContainer } from './metadata';
 import { resourceEnv } from '../environment';
 import { Channel } from '../channels';
@@ -19,6 +21,26 @@ type MetaSettingsInterface = {
         postfix: string;
     };
 };
+
+/**
+ * Reads the list of TinyShield website URLs from the exclusions JSON file.
+ *
+ * @param tinyShieldExclusionsPath The path to the TinyShield exclusions JSON file.
+ * @returns Array of TinyShield exclusions or empty array if cannot read or parse the file.
+ * @throws Error if the file cannot be read or parsed.
+ */
+const readTinyShieldWebsiteURLs = (tinyShieldExclusionsPath: string): string[] => {
+    try {
+        const data = fs.readFileSync(tinyShieldExclusionsPath, 'utf8');
+        const fileData = JSON.parse(data);
+        return fileData.match;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        throw new Error(`Failed to read list of TinyShield website URLs from ${tinyShieldExclusionsPath}: ${message}`);
+    }
+};
+
+const tinyShieldWebsites = readTinyShieldWebsiteURLs(TINY_SHIELD_EXCLUSIONS_FILE_PATH);
 
 const metaSettings: MetaSettingsInterface = {
     headersData: {
@@ -44,7 +66,7 @@ const metaSettings: MetaSettingsInterface = {
         },
         USERSCRIPT_EXCLUSIONS: {
             headerName: 'exclude',
-            headerValue: exclusions,
+            headerValue: [...exclusions, ...tinyShieldWebsites],
         },
         DOWNLOAD_URL: {
             headerName: 'downloadUrl',
@@ -59,7 +81,6 @@ const metaSettings: MetaSettingsInterface = {
             headerValue: getHomepageUrl(resourceEnv),
         },
     },
-
 };
 
-export default metaSettings;
+export { metaSettings };

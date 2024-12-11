@@ -10,7 +10,7 @@ import copy from 'rollup-plugin-copy';
 import * as path from 'path';
 
 import MetaDataPlugin from './tasks/metadata/MetaDataPlugin';
-import metaSettings from './tasks/metadata/meta.settings';
+import { metaSettings } from './tasks/metadata/meta.settings';
 import { commonPostcssConfig, userscriptPostcssConfig } from './postcss.config';
 import { env, resourceEnv } from './tasks/environment';
 import { ChannelPostfix } from './tasks/channels';

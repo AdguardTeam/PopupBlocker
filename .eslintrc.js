@@ -42,9 +42,23 @@ module.exports = {
             'error',
             {
                 code: 120,
+                ignoreUrls: true,
             },
         ],
         'import/no-extraneous-dependencies': 0,
         'import/prefer-default-export': 0,
     },
+    settings: {
+        jsdoc: {
+            mode: 'typescript',
+        },
+    },
+    overrides: [
+        {
+            files: ['*.ts', '*.tsx'],
+            rules: {
+                'jsdoc/require-throws': 'off',
+            },
+        },
+    ],
 };
