@@ -186,7 +186,7 @@
             "message": "يرجى الانتظار للكشف عن مانع ظهور النوافذ المنبثقة"
         },
         "noinst_special_prog": {
-            "message": "أولاً وقبل كل شيء, لاستخدام userscript تحتاج إلى برنامج خاص أو ملحق الذي يستطيع تشغيل userscript."
+            "message": "لاستخدام نص المستخدم، تحتاج أولاً إلى برنامج خاص أو ملحق يقوم بتشغيل نص المستخدم."
         },
         "noinst_subtitle": {
             "message": "لم يتم تثبيت يوزر سكربت ادجوارد مانع النوافذ المنبثقة  يرجى الاطلاع على التعليمات أدناه"
@@ -680,7 +680,7 @@
             "message": "AdGuard Pop-up-Blocker Benutzerskript ist nicht installiert. Bitte beachten Sie die folgende Anleitung."
         },
         "homepage": {
-            "message": "Startseite"
+            "message": "Homepage"
         },
         "noinst_step_1": {
             "message": "Schritt 1: Installieren Sie einen Benutzerskript-Manager"
@@ -1150,10 +1150,10 @@
             "message": "Asenna kohteesta <a>%name%</a>"
         },
         "noinst_step_3": {
-            "message": "Vaihe 3: Päivitä tämä sivu saadaksesi käyttäjäskriptin asetukset"
+            "message": "Vaihe 3: Avaa käyttäjäskriptin asetukset päivittämällä sivu"
         },
         "noinst_ignore_if_ag": {
-            "message": "Jos asensit AdGuardin Windowsille, voit ohittaa tämän vaiheen, koska Ponnahdusesto-käyttäjäskripti sisältyy siihen."
+            "message": "Jos asensit AdGuardin Windows-sovelluksen, voit ohittaa tämän vaiheen, koska Ponnahdusesto-käyttäjäskripti sältyy jo siihen."
         },
         "noinst_rec": {
             "message": "(suositeltu)"
@@ -1162,16 +1162,16 @@
             "message": "Odota hetki, Ponnahdusestoa havaitaan"
         },
         "noinst_special_prog": {
-            "message": "Käyttääksesi userscript-laajennuksia, tarvitset erityisesti niiden suorittamiseen tarkoitetun ohjelmiston tai laajennuksen."
+            "message": "Käyttääksesi käyttäjäskriptejä, tarvitset erityisesti niiden suorittamiseen tarkoitetun ohjelmiston tai selainlaajennuksen."
         },
         "noinst_subtitle": {
-            "message": "AdGuard Ponnahdusesto -käyttäjäskriptiä ei ole asennettu. Katso ohjeet alta."
+            "message": "AdGuardin Ponnahdusesto-käyttäjäskriptiä ei ole asennettu. Katso ohjeet alta."
         },
         "homepage": {
             "message": "Verkkosivusto"
         },
         "noinst_step_1": {
-            "message": "Vaihe 1: Asenna käyttäjäskriptien hallintamanageri"
+            "message": "Vaihe 1: Asenna käyttäjäskriptihallinta"
         },
         "noinst_step_2": {
             "message": "Vaihe 2: Käyttäjäskripti"
@@ -1196,7 +1196,7 @@
             ]
         },
         "aborted_popunder_execution": {
-            "message": "Ponnahdusesto keskeytti komentosarjan estääkseen taustalla tapahtuvan uudelleenohjauksen",
+            "message": "Ponnahdusesto keskeytti skriptin estääkseen taustalla tapahtuvan uudelleenohjauksen",
             "platform": [
                 "userscript"
             ]
@@ -1733,10 +1733,10 @@
             "message": "Masukkan nama situs"
         },
         "add_site": {
-            "message": "Tambah situs"
+            "message": "Tambahkan situs"
         },
         "add": {
-            "message": "Tambah"
+            "message": "Tambahkan"
         },
         "allowed_empty": {
             "message": "Daftar pengecualian masih kosong"
@@ -1754,13 +1754,13 @@
             "message": "Popup akan diizinkan di situs web yang tercantum di sini."
         },
         "silenced_tooltip": {
-            "message": "Notifikasi popup yang diblokir tidak akan ditampilkan di situs web yang tercantum di sini."
+            "message": "Notifikasi pop-up yang diblokir tidak akan ditampilkan di situs web yang tercantum di sini."
         },
         "installFrom": {
             "message": "Pasang dari <a>%name%</a>"
         },
         "noinst_step_3": {
-            "message": "Tahap 3: Muat ulang halamana ini untuk masuk ke pengaturan userscript"
+            "message": "Langkah 3: Segarkan halaman ini untuk masuk ke pengaturan skrip pengguna"
         },
         "noinst_ignore_if_ag": {
             "message": "Jika Anda telah memasang AdGuard untuk Windows, Anda dapat mengabaikan langkah ini karena Pemblokir Popup sudah terpasang."
@@ -1775,16 +1775,16 @@
             "message": "Pertama-tama, untuk menggunakan userscript Anda memerlukan program atau ekstensi khusus yang dapat menjalankan userscript."
         },
         "noinst_subtitle": {
-            "message": "Userscript Pemblokir Popup AdGuard belum terpasang. Silakan lihat instruksi di bawah ini."
+            "message": "Skrip pengguna Pemblokir Pop-up AdGuard tidak terpasang. Silakan lihat instruksi di bawah."
         },
         "homepage": {
             "message": "Situs"
         },
         "noinst_step_1": {
-            "message": "Langkah 1: Pasang pengelola userscript"
+            "message": "Langkah 1: Pasang pengelola skrip pengguna"
         },
         "noinst_step_2": {
-            "message": "Langkah 2: Userscript"
+            "message": "Langkah 2: Skrip pengguna"
         },
         "extension_name": {
             "message": "Pemblokir Popup oleh AdGuard"
@@ -2617,7 +2617,7 @@
             "message": "Krok 3: Odśwież tę stronę, aby przejść do ustawień skryptu użytkownika"
         },
         "noinst_ignore_if_ag": {
-            "message": "Jeśli zainstalowałeś AdGuard dla systemu Windows, możesz zignorować ten krok, gdy instalator funkcji Bloker wyskakujących okienek zostanie zainstalowany fabrycznie."
+            "message": "Jeśli zainstalowano AdGuard dla systemu Windows, możesz zignorować ten krok, gdy instalator funkcji Bloker wyskakujących okienek zostanie zainstalowany fabrycznie."
         },
         "noinst_rec": {
             "message": "(Zalecane)"
@@ -2685,7 +2685,7 @@
     },
     "nl": {
         "show_popup": {
-            "message": "Toon %destUrl%"
+            "message": "%destUrl% weergeven"
         },
         "continue_blocking": {
             "message": "Doorgaan"
@@ -2745,7 +2745,7 @@
             "message": "(Aanbevolen)"
         },
         "please_wait": {
-            "message": "Even geduld, detectie van de pop-up blokkering"
+            "message": "Even geduld, bezig Popup blokkeerder te detecteren"
         },
         "noinst_special_prog": {
             "message": "Om een gebruikersscript te gebruiken, heb je eerst een speciaal programma of extensie nodig die gebruikersscript uitvoert."
@@ -3340,7 +3340,7 @@
             "message": "Vyskakovacie okná budú povolené pre domény tu uvedené."
         },
         "silenced_tooltip": {
-            "message": "Upozornenia na blokované vyskakovacie okná sa nebudú zobrazovať pre domény tu uvedené."
+            "message": "Upozornenia na zablokované vyskakovacie okná sa nebudú zobrazovať pre domény tu uvedené."
         },
         "installFrom": {
             "message": "Inštalovať z <a>%name%</a>"
@@ -3962,7 +3962,7 @@
             "message": "Windows için AdGuard yüklediyseniz, Açılır Pencere Engelleyici betiği önceden yüklü olarak geldiği için bu adımı görmezden gelebilirsiniz."
         },
         "noinst_rec": {
-            "message": "(Tavsiye edilen)"
+            "message": "(Önerilir)"
         },
         "please_wait": {
             "message": "Lütfen bekleyin, Açılır Pencere Engelleyici tespit ediliyor"
@@ -4141,7 +4141,7 @@
             }
         },
         "ext_disabled_default": {
-            "message": "Блокувальник спливних вікон вимкнено для цього домена"
+            "message": "Блокувальник спливних вікон вимкнено для цього домену"
         },
         "settings_saved": {
             "message": "Налаштування збережено"
