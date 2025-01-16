@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2.5.100
+
+### Added
+
+- Catalan, Macedonian, Serbian (Latin), and Swedish locales [#326](https://github.com/AdguardTeam/PopupBlocker/issues/326)
+
 ## 2.5.98
 
 ### Changed
