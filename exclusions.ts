@@ -418,4 +418,7 @@ export const exclusions = [
     '*://id.gov.ua/*',
     // https://github.com/AdguardTeam/PopupBlocker/issues/297
     '*://github.com/*',
+    // https://github.com/AdguardTeam/PopupBlocker/issues/328
+    '*://tiktok.com/*',
+    '*://*.tiktok.com/*',
 ];
