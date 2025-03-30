@@ -421,4 +421,7 @@ export const exclusions = [
     // https://github.com/AdguardTeam/PopupBlocker/issues/328
     '*://tiktok.com/*',
     '*://*.tiktok.com/*',
+    // https://github.com/AdguardTeam/PopupBlocker/issues/329
+    '*://namu.wiki/*',
+    '*://*.namu.wiki/*',
 ];
