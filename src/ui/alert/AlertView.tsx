@@ -31,6 +31,8 @@ const ALERT_OFFSET_TOP_EXPANDED = BLUR_OFFSET;
 const PIN_OFFSET_TOP_EXPANDED = ALERT_OFFSET_TOP_EXPANDED - ALERT_TOP_REL_PIN;
 const IFRAME_TOP_EXPANDED = PIN_TOP - PIN_OFFSET_TOP_EXPANDED;
 
+const MAX_URL_LENGTH = 50;
+
 export interface AlertViewInterface {
     render(popupCount:number, origDomain:string, destUrl:string, callback?:()=>void):void
     $expand():void
@@ -152,7 +154,10 @@ export class AlertView implements AlertViewInterface {
         if (!doc) {
             return;
         }
-        render(<Alert numPopup={numPopup} origDomain={origDomain} destUrl={destUrl} />, doc.body);
+        // Trim URL to first 50 characters
+        // https://github.com/AdguardTeam/PopupBlocker/issues/250
+        const trimmedUrl = destUrl.length > MAX_URL_LENGTH ? `${destUrl.substring(0, MAX_URL_LENGTH)}...` : destUrl;
+        render(<Alert numPopup={numPopup} origDomain={origDomain} destUrl={trimmedUrl} />, doc.body);
 
         // Get references of elements.
         /* eslint-disable prefer-destructuring */
