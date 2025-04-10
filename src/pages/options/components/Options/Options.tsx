@@ -13,7 +13,7 @@ export const Options: React.FunctionalComponent = () => (
                 controlItem: translator.getMessage('add'),
                 emptyRow: translator.getMessage('silenced_empty'),
             }}
-            option={window[OPTIONS_API_PROP][OptionName.Allowed]}
+            option={window[OPTIONS_API_PROP][OptionName.Silenced]}
         />
         <SettingBlock
             messages={{
@@ -22,7 +22,7 @@ export const Options: React.FunctionalComponent = () => (
                 controlItem: translator.getMessage('add'),
                 emptyRow: translator.getMessage('allowed_empty'),
             }}
-            option={window[OPTIONS_API_PROP][OptionName.Silenced]}
+            option={window[OPTIONS_API_PROP][OptionName.Allowed]}
         />
     </>
 );
