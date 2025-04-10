@@ -189,7 +189,7 @@ var ar = {
 		message: "يرجى الانتظار للكشف عن مانع ظهور النوافذ المنبثقة"
 	},
 	noinst_special_prog: {
-		message: "أولاً وقبل كل شيء, لاستخدام userscript تحتاج إلى برنامج خاص أو ملحق الذي يستطيع تشغيل userscript."
+		message: "لاستخدام نص المستخدم، تحتاج أولاً إلى برنامج خاص أو ملحق يقوم بتشغيل نص المستخدم."
 	},
 	noinst_subtitle: {
 		message: "لم يتم تثبيت يوزر سكربت ادجوارد مانع النوافذ المنبثقة  يرجى الاطلاع على التعليمات أدناه"
@@ -366,6 +366,128 @@ var be = {
 	},
 	settings_saved: {
 		message: "Налады захаваны"
+	}
+};
+var ca = {
+	show_popup: {
+		message: "Mostra %destUrl%"
+	},
+	continue_blocking: {
+		message: "Continua bloquejant"
+	},
+	allow_from: {
+		message: "Permet finestres emergents per a %origDomain%"
+	},
+	manage_pref: {
+		message: "Gestiona les preferències..."
+	},
+	popup_text: {
+		message: "AdGuard ha impedit que aquest lloc web obri %numPopup% finestres emergents"
+	},
+	options: {
+		message: "Opcions"
+	},
+	silence_noti: {
+		message: "No mostris aquest missatge a %origDomain%"
+	},
+	site_input_ph: {
+		message: "Introduïu el nom del lloc"
+	},
+	add_site: {
+		message: "Afegeix un lloc"
+	},
+	add: {
+		message: "Afegir"
+	},
+	allowed_empty: {
+		message: "La llista de llocs permesos està buida"
+	},
+	allowed: {
+		message: "Permès"
+	},
+	silenced_empty: {
+		message: "La llista de llocs silenciats està buida"
+	},
+	silenced: {
+		message: "Silenciat"
+	},
+	allowed_tooltip: {
+		message: "Es permetran les finestres emergents per als dominis que apareixen aquí."
+	},
+	silenced_tooltip: {
+		message: "Les notificacions de finestres emergents bloquejades no es mostraran per als dominis que es mostren aquí."
+	},
+	installFrom: {
+		message: "Instal·leu des de <a>%name%</a>"
+	},
+	noinst_step_3: {
+		message: "Pas 3: Refresca aquesta pàgina per accedir a la configuració de l'script d'usuari"
+	},
+	noinst_ignore_if_ag: {
+		message: "Si heu instal·lat AdGuard per a Windows, podeu ignorar aquest pas, ja que l'script d'usuari del Bloquejador de finestres emergents està preinstal·lada."
+	},
+	noinst_rec: {
+		message: "(Recomanat)"
+	},
+	please_wait: {
+		message: "Espereu, detectant el bloquejador de finestres emergents"
+	},
+	noinst_special_prog: {
+		message: "Primer de tot, per utilitzar un script d’usuari cal un programa o extensió especial que executi scripts d’usuari."
+	},
+	noinst_subtitle: {
+		message: "L'script d'usuari AdGuard Popup Blocker no està instal·lat. Si us plau, consulteu les instruccions a continuació."
+	},
+	homepage: {
+		message: "Pàgina d'inici"
+	},
+	noinst_step_1: {
+		message: "Pas 1: instal·leu un gestor d'scripts d'usuari"
+	},
+	noinst_step_2: {
+		message: "Pas 2: Userscript"
+	},
+	extension_name: {
+		message: "Bloquejador de finestres emergents d'AdGuard"
+	},
+	userscript_name: {
+		message: "Bloquejador de finestres emergents AdGuard",
+		platform: [
+			"userscript",
+			"userscript_settings"
+		]
+	},
+	extension_description: {
+		message: "Bloqueja els anuncis emergents a les pàgines web"
+	},
+	on_navigation_by_popunder: {
+		message: "És probable que aquesta transició a la pàgina nova sigui causada per una finestra emergent. Vols continuar?",
+		platform: [
+			"userscript"
+		]
+	},
+	aborted_popunder_execution: {
+		message: "El bloquejador d'elements emergents ha avortat l'execució d'un script per evitar la redirecció en segon pla",
+		platform: [
+			"userscript"
+		]
+	},
+	ext_enabled: {
+		message: "El bloquejador d'elements emergents està de servei"
+	},
+	ext_disabled: {
+		message: "El bloquejador de finestres emergents està desactivat per a $DOMAIN$",
+		placeholders: {
+			domain: {
+				content: "$1"
+			}
+		}
+	},
+	ext_disabled_default: {
+		message: "El bloquejador de finestres emergents està desactivat per a aquest domini"
+	},
+	settings_saved: {
+		message: "S'ha desat la configuració"
 	}
 };
 var cs = {
@@ -683,7 +805,7 @@ var de = {
 		message: "AdGuard Pop-up-Blocker Benutzerskript ist nicht installiert. Bitte beachten Sie die folgende Anleitung."
 	},
 	homepage: {
-		message: "Startseite"
+		message: "Homepage"
 	},
 	noinst_step_1: {
 		message: "Schritt 1: Installieren Sie einen Benutzerskript-Manager"
@@ -1153,10 +1275,10 @@ var fi = {
 		message: "Asenna kohteesta <a>%name%</a>"
 	},
 	noinst_step_3: {
-		message: "Vaihe 3: Päivitä tämä sivu saadaksesi käyttäjäskriptin asetukset"
+		message: "Vaihe 3: Avaa käyttäjäskriptin asetukset päivittämällä sivu"
 	},
 	noinst_ignore_if_ag: {
-		message: "Jos asensit AdGuardin Windowsille, voit ohittaa tämän vaiheen, koska Ponnahdusesto-käyttäjäskripti sisältyy siihen."
+		message: "Jos asensit AdGuardin Windows-sovelluksen, voit ohittaa tämän vaiheen, koska Ponnahdusesto-käyttäjäskripti sältyy jo siihen."
 	},
 	noinst_rec: {
 		message: "(suositeltu)"
@@ -1165,16 +1287,16 @@ var fi = {
 		message: "Odota hetki, Ponnahdusestoa havaitaan"
 	},
 	noinst_special_prog: {
-		message: "Käyttääksesi userscript-laajennuksia, tarvitset erityisesti niiden suorittamiseen tarkoitetun ohjelmiston tai laajennuksen."
+		message: "Käyttääksesi käyttäjäskriptejä, tarvitset erityisesti niiden suorittamiseen tarkoitetun ohjelmiston tai selainlaajennuksen."
 	},
 	noinst_subtitle: {
-		message: "AdGuard Ponnahdusesto -käyttäjäskriptiä ei ole asennettu. Katso ohjeet alta."
+		message: "AdGuardin Ponnahdusesto-käyttäjäskriptiä ei ole asennettu. Katso ohjeet alta."
 	},
 	homepage: {
 		message: "Verkkosivusto"
 	},
 	noinst_step_1: {
-		message: "Vaihe 1: Asenna käyttäjäskriptien hallintamanageri"
+		message: "Vaihe 1: Asenna käyttäjäskriptihallinta"
 	},
 	noinst_step_2: {
 		message: "Vaihe 2: Käyttäjäskripti"
@@ -1199,7 +1321,7 @@ var fi = {
 		]
 	},
 	aborted_popunder_execution: {
-		message: "Ponnahdusesto keskeytti komentosarjan estääkseen taustalla tapahtuvan uudelleenohjauksen",
+		message: "Ponnahdusesto keskeytti skriptin estääkseen taustalla tapahtuvan uudelleenohjauksen",
 		platform: [
 			"userscript"
 		]
@@ -1736,10 +1858,10 @@ var id = {
 		message: "Masukkan nama situs"
 	},
 	add_site: {
-		message: "Tambah situs"
+		message: "Tambahkan situs"
 	},
 	add: {
-		message: "Tambah"
+		message: "Tambahkan"
 	},
 	allowed_empty: {
 		message: "Daftar pengecualian masih kosong"
@@ -1757,13 +1879,13 @@ var id = {
 		message: "Popup akan diizinkan di situs web yang tercantum di sini."
 	},
 	silenced_tooltip: {
-		message: "Notifikasi popup yang diblokir tidak akan ditampilkan di situs web yang tercantum di sini."
+		message: "Notifikasi pop-up yang diblokir tidak akan ditampilkan di situs web yang tercantum di sini."
 	},
 	installFrom: {
 		message: "Pasang dari <a>%name%</a>"
 	},
 	noinst_step_3: {
-		message: "Tahap 3: Muat ulang halamana ini untuk masuk ke pengaturan userscript"
+		message: "Langkah 3: Segarkan halaman ini untuk masuk ke pengaturan skrip pengguna"
 	},
 	noinst_ignore_if_ag: {
 		message: "Jika Anda telah memasang AdGuard untuk Windows, Anda dapat mengabaikan langkah ini karena Pemblokir Popup sudah terpasang."
@@ -1778,16 +1900,16 @@ var id = {
 		message: "Pertama-tama, untuk menggunakan userscript Anda memerlukan program atau ekstensi khusus yang dapat menjalankan userscript."
 	},
 	noinst_subtitle: {
-		message: "Userscript Pemblokir Popup AdGuard belum terpasang. Silakan lihat instruksi di bawah ini."
+		message: "Skrip pengguna Pemblokir Pop-up AdGuard tidak terpasang. Silakan lihat instruksi di bawah."
 	},
 	homepage: {
 		message: "Situs"
 	},
 	noinst_step_1: {
-		message: "Langkah 1: Pasang pengelola userscript"
+		message: "Langkah 1: Pasang pengelola skrip pengguna"
 	},
 	noinst_step_2: {
-		message: "Langkah 2: Userscript"
+		message: "Langkah 2: Skrip pengguna"
 	},
 	extension_name: {
 		message: "Pemblokir Popup oleh AdGuard"
@@ -2320,6 +2442,128 @@ var lt = {
 		message: "Nustatymai išsaugoti"
 	}
 };
+var mk = {
+	show_popup: {
+		message: "Прикажи %destUrl%"
+	},
+	continue_blocking: {
+		message: "Продолжете со блокирање"
+	},
+	allow_from: {
+		message: "Дозволете скокачки прозорци за %origDomain%"
+	},
+	manage_pref: {
+		message: "Управување со поставките..."
+	},
+	popup_text: {
+		message: "AdGuard ја спречи оваа веб-локација да отвори %numPopup% скокачки прозорци"
+	},
+	options: {
+		message: "Опции"
+	},
+	silence_noti: {
+		message: "Не ја прикажувајте оваа порака на %origDomain%"
+	},
+	site_input_ph: {
+		message: "Внесете име на страницата"
+	},
+	add_site: {
+		message: "Додадете страница"
+	},
+	add: {
+		message: "Додади"
+	},
+	allowed_empty: {
+		message: "Списокот на дозволени страници е празен"
+	},
+	allowed: {
+		message: "Дозволено"
+	},
+	silenced_empty: {
+		message: "Списокот на страници со исклучени известувања е празен"
+	},
+	silenced: {
+		message: "Замолчување"
+	},
+	allowed_tooltip: {
+		message: "Ќе бидат дозволени скокачки прозорци за домени наведени овде."
+	},
+	silenced_tooltip: {
+		message: "Известувањата за блокирани скокачки прозорци нема да се прикажуваат за домени наведени овде."
+	},
+	installFrom: {
+		message: "Инсталирајте од <a>%name%</a>"
+	},
+	noinst_step_3: {
+		message: "Чекор 3: Освежете ја оваа страница за да дојдете до поставките за кориснички скрипти"
+	},
+	noinst_ignore_if_ag: {
+		message: "Ако сте го инсталирале AdGuard за Windows, можете да го игнорирате овој чекор бидејќи корисничката скрипта за блокирање на скокачки прозорци е претходно инсталирана."
+	},
+	noinst_rec: {
+		message: "(Препорачано)"
+	},
+	please_wait: {
+		message: "Ве молиме почекајте, го бараме блокирачот на скокачки прозорци"
+	},
+	noinst_special_prog: {
+		message: "За да користите корисничка скрипа, прво ви треба специјална програма или екстензија што работи на кориснички скрипти."
+	},
+	noinst_subtitle: {
+		message: "Корисничката скрипта на AdGuard Blocker за скокачки прозорци не е инсталирана. Ве молиме погледнете ги насоките подолу."
+	},
+	homepage: {
+		message: "Почетна страница"
+	},
+	noinst_step_1: {
+		message: "Чекор 1: Инсталирајте менаџер за кориснички скрипти"
+	},
+	noinst_step_2: {
+		message: "Чекор 2: Корисничка скрипта"
+	},
+	extension_name: {
+		message: "Блокатор на скокачки прозорци од AdGuard"
+	},
+	userscript_name: {
+		message: "Блокатор на скокачки прозорци AdGuard",
+		platform: [
+			"userscript",
+			"userscript_settings"
+		]
+	},
+	extension_description: {
+		message: "Блокира скокачки реклами на веб-страници"
+	},
+	on_navigation_by_popunder: {
+		message: "Оваа транзиција кон новата страница најверојатно ќе биде предизвикана од скокачки прозорец. Дали сакате да продолжите?",
+		platform: [
+			"userscript"
+		]
+	},
+	aborted_popunder_execution: {
+		message: "Блокаторот на скокачки прозорци прекина извршување на скрипта за да спречи пренасочување во заднина",
+		platform: [
+			"userscript"
+		]
+	},
+	ext_enabled: {
+		message: "Блокаторот на скокачки прозорци е на должност"
+	},
+	ext_disabled: {
+		message: "Блокаторот на скокачки прозорци е оневозможен за $DOMAIN$",
+		placeholders: {
+			domain: {
+				content: "$1"
+			}
+		}
+	},
+	ext_disabled_default: {
+		message: "Блокаторот на скокачки прозорци е оневозможен за овој домен"
+	},
+	settings_saved: {
+		message: "Поставките се зачувани"
+	}
+};
 var ms = {
 	show_popup: {
 		message: "Tunjukkan %destUrl%"
@@ -2620,7 +2864,7 @@ var pl = {
 		message: "Krok 3: Odśwież tę stronę, aby przejść do ustawień skryptu użytkownika"
 	},
 	noinst_ignore_if_ag: {
-		message: "Jeśli zainstalowałeś AdGuard dla systemu Windows, możesz zignorować ten krok, gdy instalator funkcji Bloker wyskakujących okienek zostanie zainstalowany fabrycznie."
+		message: "Jeśli zainstalowano AdGuard dla systemu Windows, możesz zignorować ten krok, gdy instalator funkcji Bloker wyskakujących okienek zostanie zainstalowany fabrycznie."
 	},
 	noinst_rec: {
 		message: "(Zalecane)"
@@ -2688,7 +2932,7 @@ var pl = {
 };
 var nl = {
 	show_popup: {
-		message: "Toon %destUrl%"
+		message: "%destUrl% weergeven"
 	},
 	continue_blocking: {
 		message: "Doorgaan"
@@ -2748,7 +2992,7 @@ var nl = {
 		message: "(Aanbevolen)"
 	},
 	please_wait: {
-		message: "Even geduld, detectie van de pop-up blokkering"
+		message: "Even geduld, bezig Popup blokkeerder te detecteren"
 	},
 	noinst_special_prog: {
 		message: "Om een gebruikersscript te gebruiken, heb je eerst een speciaal programma of extensie nodig die gebruikersscript uitvoert."
@@ -3221,7 +3465,7 @@ var sk = {
 		message: "Vyskakovacie okná budú povolené pre domény tu uvedené."
 	},
 	silenced_tooltip: {
-		message: "Upozornenia na blokované vyskakovacie okná sa nebudú zobrazovať pre domény tu uvedené."
+		message: "Upozornenia na zablokované vyskakovacie okná sa nebudú zobrazovať pre domény tu uvedené."
 	},
 	installFrom: {
 		message: "Inštalovať z <a>%name%</a>"
@@ -3416,6 +3660,128 @@ var sl = {
 	},
 	settings_saved: {
 		message: "Nastavitve so shranjene"
+	}
+};
+var sv = {
+	show_popup: {
+		message: "Visa %destUrl%"
+	},
+	continue_blocking: {
+		message: "Fortsätt blockera"
+	},
+	allow_from: {
+		message: "Tillåt pop-ups på %origDomain%"
+	},
+	manage_pref: {
+		message: "Hantera inställningar..."
+	},
+	popup_text: {
+		message: "AdGuard hindrade denna webbplats från att öppna %numPopup% popup-fönster"
+	},
+	options: {
+		message: "Alternativ"
+	},
+	silence_noti: {
+		message: "Visa inte detta meddelande på %origDomain%"
+	},
+	site_input_ph: {
+		message: "Ange webbplatsens namn"
+	},
+	add_site: {
+		message: "Lägg till webbplats"
+	},
+	add: {
+		message: "Lägg till"
+	},
+	allowed_empty: {
+		message: "Listan över tillåtna webbplatser är tom"
+	},
+	allowed: {
+		message: "Vitlistade"
+	},
+	silenced_empty: {
+		message: "Listan över tystade webbplatser är tom"
+	},
+	silenced: {
+		message: "Tystad"
+	},
+	allowed_tooltip: {
+		message: "Popup-fönster kommer att tillåtas för domäner som listas här."
+	},
+	silenced_tooltip: {
+		message: "Aviseringar för blockerade popup-fönster kommer inte att visas för domäner som listas här."
+	},
+	installFrom: {
+		message: "Installera från <a>%name%</a>"
+	},
+	noinst_step_3: {
+		message: "Steg 3: Uppdatera denna sida för att komma till inställningarna för användarscript"
+	},
+	noinst_ignore_if_ag: {
+		message: "Om du installerade AdGuard för Windows kan du ignorera detta steg eftersom användarskriptet för Popup-blockerare är förinstallerat."
+	},
+	noinst_rec: {
+		message: "(Rekommenderad)"
+	},
+	please_wait: {
+		message: "Vänta, söker Popup-blockeraren"
+	},
+	noinst_special_prog: {
+		message: "För att använda ett användarskript behöver du först ett speciellt program eller tillägg som kör användarskript."
+	},
+	noinst_subtitle: {
+		message: "AdGuard Popup Blocker userscript är inte installerat. Se instruktionerna nedan."
+	},
+	homepage: {
+		message: "Hemsida"
+	},
+	noinst_step_1: {
+		message: "Steg 1: Installera en användarskripthanterare"
+	},
+	noinst_step_2: {
+		message: "Steg 2: Användarskript"
+	},
+	extension_name: {
+		message: "Popup-blockerare från AdGuard"
+	},
+	userscript_name: {
+		message: "AdGuard Popup-blockerare",
+		platform: [
+			"userscript",
+			"userscript_settings"
+		]
+	},
+	extension_description: {
+		message: "Blockerar popup-annonser på webbsidor"
+	},
+	on_navigation_by_popunder: {
+		message: "Den här övergången till den nya sidan kommer sannolikt att orsakas av en pop-under. Vill du fortsätta?",
+		platform: [
+			"userscript"
+		]
+	},
+	aborted_popunder_execution: {
+		message: "Popup-blockeraren avbröt ett skript för att förhindra omledning i bakgrunden",
+		platform: [
+			"userscript"
+		]
+	},
+	ext_enabled: {
+		message: "Popup-blockerare är i tjänst"
+	},
+	ext_disabled: {
+		message: "Popup-blockeraren är inaktiverad för $DOMAIN$",
+		placeholders: {
+			domain: {
+				content: "$1"
+			}
+		}
+	},
+	ext_disabled_default: {
+		message: "Popup-blockerare är inaktiverat för den här domänen"
+	},
+	settings_saved: {
+		message: "Inställningar sparade"
 	}
 };
 var ta = {
@@ -3721,7 +4087,7 @@ var tr = {
 		message: "Windows için AdGuard yüklediyseniz, Açılır Pencere Engelleyici betiği önceden yüklü olarak geldiği için bu adımı görmezden gelebilirsiniz."
 	},
 	noinst_rec: {
-		message: "(Tavsiye edilen)"
+		message: "(Önerilir)"
 	},
 	please_wait: {
 		message: "Lütfen bekleyin, Açılır Pencere Engelleyici tespit ediliyor"
@@ -3900,7 +4266,7 @@ var uk = {
 		}
 	},
 	ext_disabled_default: {
-		message: "Блокувальник спливних вікон вимкнено для цього домена"
+		message: "Блокувальник спливних вікон вимкнено для цього домену"
 	},
 	settings_saved: {
 		message: "Налаштування збережено"
@@ -4154,6 +4520,7 @@ var translations = {
 	en: en$1,
 	ar: ar,
 	be: be,
+	ca: ca,
 	cs: cs,
 	da: da,
 	de: de,
@@ -4170,6 +4537,7 @@ var translations = {
 	ja: ja,
 	ko: ko,
 	lt: lt,
+	mk: mk,
 	ms: ms,
 	no: no,
 	pl: pl,
@@ -4423,6 +4791,129 @@ var translations = {
 		message: "Postavke sačuvane"
 	}
 },
+	"sr-Latn": {
+	show_popup: {
+		message: "Prikaži %destUrl%"
+	},
+	continue_blocking: {
+		message: "Nastavi sa blokiranjem"
+	},
+	allow_from: {
+		message: "Dozvoli iskačuće prozore za %origDomain%"
+	},
+	manage_pref: {
+		message: "Upravljaj postavkama..."
+	},
+	popup_text: {
+		message: "AdGuard je sprečio ovaj sajt da otvori %numPopup% iskačućih prozora"
+	},
+	options: {
+		message: "Opcije"
+	},
+	silence_noti: {
+		message: "Ne prikazuj ovu poruku na %origDomain%"
+	},
+	site_input_ph: {
+		message: "Unesite ime sajta"
+	},
+	add_site: {
+		message: "Dodaj sajt"
+	},
+	add: {
+		message: "Dodaj"
+	},
+	allowed_empty: {
+		message: "Lista dozvoljenih sajtova je prazna"
+	},
+	allowed: {
+		message: "Dozvoljeno"
+	},
+	silenced_empty: {
+		message: "Lista utišanih sajtova je prazna"
+	},
+	silenced: {
+		message: "Utišano"
+	},
+	allowed_tooltip: {
+		message: "Iskačući prozori će biti dozvoljeni za ovde prikazane domene."
+	},
+	silenced_tooltip: {
+		message: "Obaveštenja o blokiranim iskačućim prozorima neće biti prikazivana za ovde prikazane domene."
+	},
+	installFrom: {
+		message: "Instaliraj sa <a>%name%</a>"
+	},
+	noinst_step_3: {
+		message: "Korak 3: Osvežite ovu stranicu da dođete do userscript postavki"
+	},
+	noinst_ignore_if_ag: {
+		message: "Ako ste instalirali AdGuard za Windows, ovaj korak možete zanemariti jer je userscript za blokiranje iskačućih prozora preinstaliran."
+	},
+	noinst_rec: {
+		message: "(preporučuje se)"
+	},
+	please_wait: {
+		message: "Molim sačekajte, otkrivam blokatora iskačućih prozora"
+	},
+	noinst_special_prog: {
+		message: "Pre svega, za kkorišćenje userscript vam je potreban poseban program ili proširenje koje pokreće userscripts."
+	},
+	noinst_subtitle: {
+		message: "AdGuard userscript blokator iskačućih prozora nije instaliran. Pogledajte uputstva ispod."
+	},
+	homepage: {
+		message: "Početna stranica"
+	},
+	noinst_step_1: {
+		message: "Korak 1: Instalirajte usrscript upravljača"
+	},
+	noinst_step_2: {
+		message: "Korak 2: Userscript"
+	},
+	extension_name: {
+		message: "Blokator iskačućih prozora od AdGuard-a"
+	},
+	userscript_name: {
+		message: "AdGuard blokator iskačućih prozora",
+		platform: [
+			"userscript",
+			"userscript_settings"
+		]
+	},
+	extension_description: {
+		message: "Blokira iskačuće reklame na veb stranicama"
+	},
+	on_navigation_by_popunder: {
+		message: "Ovo preusmerenje na novu stranicu je verovatno uzrokovano iskačućim prozorom. Želite li da nastavite?",
+		platform: [
+			"userscript"
+		]
+	},
+	aborted_popunder_execution: {
+		message: "Blokator iskačućih prozora je odbacio izvršenje skripte kako bi sprečio pozadinsko preusmerenje",
+		platform: [
+			"userscript"
+		]
+	},
+	ext_enabled: {
+		message: "Blokator iskačućih prozora je na dužnosti"
+	},
+	ext_disabled: {
+		message: "Blokator iskačućih prozora je isključen za $DOMAIN$",
+		placeholders: {
+			domain: {
+				content: "$1"
+			}
+		}
+	},
+	ext_disabled_default: {
+		message: "Blokator iskačućih prozora je isključen za ovaj domen"
+	},
+	settings_saved: {
+		message: "Postavke sačuvane"
+	}
+},
+	sv: sv,
 	ta: ta,
 	th: th,
 	tr: tr,
@@ -6006,12 +6497,12 @@ const Options = () => (o$1(_$1, { children: [o$1(SettingBlock, { messages: {
                 tooltip: translator.getMessage('silenced_tooltip'),
                 controlItem: translator.getMessage('add'),
                 emptyRow: translator.getMessage('silenced_empty'),
-            }, option: window[OPTIONS_API_PROP]["allowed" /* OptionName.Allowed */] }), o$1(SettingBlock, { messages: {
+            }, option: window[OPTIONS_API_PROP]["silenced" /* OptionName.Silenced */] }), o$1(SettingBlock, { messages: {
                 subtitle: translator.getMessage('allowed'),
                 tooltip: translator.getMessage('allowed_tooltip'),
                 controlItem: translator.getMessage('add'),
                 emptyRow: translator.getMessage('allowed_empty'),
-            }, option: window[OPTIONS_API_PROP]["silenced" /* OptionName.Silenced */] })] }));
+            }, option: window[OPTIONS_API_PROP]["allowed" /* OptionName.Allowed */] })] }));
 
 const USERSCRIPT_DETECT_TIMEOUT_MS = 1000;
 const USERSCRIPT_DETECT_INTERVAL_MS = 250;
@@ -6048,7 +6539,8 @@ styleInject(css_248z);
 const App = () => {
     const [state, setState] = h(0 /* AppState.Detecting */);
     useDetectUserscript(setState);
-    return (o$1(_$1, { children: [o$1("div", Object.assign({ class: "settings" }, { children: [o$1("div", Object.assign({ class: "settings__in" }, { children: [o$1("div", Object.assign({ class: "settings__title" }, { children: translator.getMessage('userscript_name') })), state === 0 /* AppState.Detecting */ && o$1(LoadingSubtitle, {}), state === 1 /* AppState.NotInstalled */ && o$1(NotInstalled, {}), state === 2 /* AppState.Installed */ && o$1(Options, {})] })), o$1(Footer, {})] })), o$1("div", { id: "portal" })] }));
+    let title = translator.getMessage('userscript_name');
+    return (o$1(_$1, { children: [o$1("div", Object.assign({ class: "settings" }, { children: [o$1("div", Object.assign({ class: "settings__in" }, { children: [o$1("div", Object.assign({ class: "settings__title" }, { children: title })), state === 0 /* AppState.Detecting */ && o$1(LoadingSubtitle, {}), state === 1 /* AppState.NotInstalled */ && o$1(NotInstalled, {}), state === 2 /* AppState.Installed */ && o$1(Options, {})] })), o$1(Footer, {})] })), o$1("div", { id: "portal" })] }));
 };
 
 const DEFAULT_PAGE_TITLE = 'AdGuard Popup Blocker';
