@@ -424,4 +424,16 @@ export const exclusions = [
     // https://github.com/AdguardTeam/PopupBlocker/issues/329
     '*://namu.wiki/*',
     '*://*.namu.wiki/*',
+    // https://github.com/AdguardTeam/AdguardFilters/issues/186555
+    '*://beinconnect.com.tr/*',
+    '*://*.beinconnect.com.tr/*',
+    // https://github.com/AdguardTeam/PopupBlocker/issues/314
+    '*://deadshot.io/*',
+    '*://*.deadshot.io/*',
+    // https://github.com/AdguardTeam/PopupBlocker/issues/333
+    '*://gofile.io/*',
+    '*://*.gofile.io/*',
+    // https://github.com/AdguardTeam/AdguardFilters/issues/202408
+    '*://xcancel.com/*',
+    '*://*.xcancel.com/*',
 ];
