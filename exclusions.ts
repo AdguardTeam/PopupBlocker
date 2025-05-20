@@ -436,4 +436,7 @@ export const exclusions = [
     // https://github.com/AdguardTeam/AdguardFilters/issues/202408
     '*://xcancel.com/*',
     '*://*.xcancel.com/*',
+    // https://github.com/AdguardTeam/PopupBlocker/issues/336
+    '*://reddit.com/*',
+    '*://*.reddit.com/*',
 ];
