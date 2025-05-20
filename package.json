@@ -1,6 +1,6 @@
 {
   "name": "popup-blocker",
-  "version": "2.5.109",
+  "version": "2.5.110",
   "description": "Block popups preemptively by wrapping browser APIs for additional check",
   "scripts": {
     "userscript-dev": "cross-env NODE_ENV=dev ts-node tasks/builder --target=userscript",
