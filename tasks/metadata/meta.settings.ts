@@ -1,17 +1,17 @@
 import fs from 'fs';
+import path from 'path';
 import pJson from '../../package.json';
 import { exclusions } from '../../exclusions';
 import { TINY_SHIELD_EXCLUSIONS_FILE_PATH } from '../updateTinyShieldWebsites';
 import type { HeadersDataContainer } from './metadata';
 import { resourceEnv } from '../environment';
 import { Channel } from '../channels';
-import { RESOURCE_PATHS, USERSCRIPT_ICON_RELATIVE_PATH } from '../constants';
+import { RESOURCE_PATHS } from '../constants';
 import {
     getResourceUrls,
     getHomepageUrl,
     getDownloadUrl,
     getUpdateUrl,
-    getAbsolutePath,
 } from '../utils';
 
 type MetaSettingsInterface = {
@@ -42,6 +42,21 @@ const readTinyShieldWebsiteURLs = (tinyShieldExclusionsPath: string): string[] =
 
 const tinyShieldWebsites = readTinyShieldWebsiteURLs(TINY_SHIELD_EXCLUSIONS_FILE_PATH);
 
+/**
+ * Reads an image file from path and returns a Base64 data‑URL.
+ * @param {string} filePath
+ * @returns {string} e.g. "data:image/png;base64,..."
+ */
+const imageToBase64 = (filePath) => {
+    const iconPath = path.join(__dirname, filePath);
+    const bufferImage = fs.readFileSync(iconPath);
+    const imageBase64 = bufferImage.toString('base64');
+    const dataUrlImage = `data:image/png;base64,${imageBase64}`;
+    return dataUrlImage;
+};
+
+const iconBase64 = imageToBase64('../../src/assets/128.png');
+
 const metaSettings: MetaSettingsInterface = {
     headersData: {
         USERSCRIPT_VERSION: {
@@ -58,7 +73,7 @@ const metaSettings: MetaSettingsInterface = {
         },
         USERSCRIPT_ICON: {
             headerName: 'icon',
-            headerValue: getAbsolutePath(resourceEnv, USERSCRIPT_ICON_RELATIVE_PATH),
+            headerValue: iconBase64,
         },
         USERSCRIPT_RESOURCES: {
             headerName: 'resource',
