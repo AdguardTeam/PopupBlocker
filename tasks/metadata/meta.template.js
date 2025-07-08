@@ -8,6 +8,7 @@
 // [UPDATE_URL]
 // @supportURL https://github.com/AdguardTeam/PopupBlocker/issues
 // [HOMEPAGE_URL]
+// @author AdGuard
 // @match http://*/*
 // @match https://*/*
 // @grant GM_getValue
