@@ -439,4 +439,6 @@ export const exclusions = [
     // https://github.com/AdguardTeam/PopupBlocker/issues/336
     '*://reddit.com/*',
     '*://*.reddit.com/*',
+    // https://github.com/AdguardTeam/PopupBlocker/issues/338
+    '*://challenges.cloudflare.com/*',
 ];
