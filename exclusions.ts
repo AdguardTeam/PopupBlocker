@@ -441,4 +441,6 @@ export const exclusions = [
     '*://*.reddit.com/*',
     // https://github.com/AdguardTeam/PopupBlocker/issues/338
     '*://challenges.cloudflare.com/*',
+    // https://github.com/AdguardTeam/PopupBlocker/issues/338
+    '*://web.telegram.org/*',
 ];
