@@ -84,11 +84,11 @@ const metaSettings: MetaSettingsInterface = {
             headerValue: [...exclusions, ...tinyShieldWebsites],
         },
         DOWNLOAD_URL: {
-            headerName: 'downloadUrl',
+            headerName: 'downloadURL',
             headerValue: getDownloadUrl(resourceEnv),
         },
         UPDATE_URL: {
-            headerName: 'updateUrl',
+            headerName: 'updateURL',
             headerValue: getUpdateUrl(resourceEnv),
         },
         HOMEPAGE_URL: {
