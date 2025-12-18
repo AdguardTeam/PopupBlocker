@@ -60,6 +60,7 @@ Test:
       required: true
   requirements:
     - adg-docker: 'true'
+    - extension: 'true'
 
 branches:
   create: for-pull-request

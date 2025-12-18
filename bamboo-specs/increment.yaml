@@ -39,6 +39,7 @@ Increment:
           selectedRepository: defaultRepository
   requirements:
     - adg-docker: 'true'
+    - extension: 'true'
 
 branches:
   create: manually
