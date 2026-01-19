@@ -29,7 +29,6 @@ userscripts.adtidy.org:
   final-tasks: []
   variables: {}
   requirements:
-    - adg-docker: 'true'
     - extension: 'true'
   notifications:
     - events:
