@@ -1,0 +1,16 @@
+{
+    "ul-indent": { "indent": 4 },
+    "line-length": {
+        "strict": true,
+        "line_length": 120,
+        "tables": false
+    },
+    "no-multiple-blanks": { "maximum": 2 },
+    "no-duplicate-heading": { "siblings_only": true },
+    "no-blanks-blockquote": false,
+    "no-bare-urls": false,
+    "table-column-style": {
+        "style": "aligned"
+    },
+    "ul-style": { "style": "dash" }
+}
