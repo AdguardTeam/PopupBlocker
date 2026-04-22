@@ -8,3 +8,5 @@ yarn-error.log
 .idea/
 .vscode/
 tmp
+
+.playwright-mcp/

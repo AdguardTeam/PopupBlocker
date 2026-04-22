@@ -3,6 +3,7 @@ import {
     OPTIONS_API_PROP,
     OPTIONS_PAGE_URL,
     OPTIONS_PAGE_URL_ALIAS,
+    OPTIONS_PAGE_URL_ROOT,
 } from '../shared';
 
 /**
@@ -29,6 +30,7 @@ export function isOptionsPage(context: Window & typeof globalThis): boolean {
     const OPTIONS_PAGE_URLS = [
         OPTIONS_PAGE_URL,
         OPTIONS_PAGE_URL_ALIAS,
+        OPTIONS_PAGE_URL_ROOT,
     ];
 
     const { href } = context.location;

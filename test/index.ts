@@ -5,3 +5,4 @@ import './storage/migrator';
 import './events/framework-workarounds';
 import './timeline/index';
 import './shared/url';
+import './init/utils';
