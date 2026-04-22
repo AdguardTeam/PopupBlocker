@@ -443,4 +443,9 @@ export const exclusions = [
     '*://challenges.cloudflare.com/*',
     // https://github.com/AdguardTeam/PopupBlocker/issues/338
     '*://web.telegram.org/*',
+    // https://github.com/AdguardTeam/PopupBlocker/issues/344
+    '*://claude.com/*',
+    '*://*.claude.com/*',
+    '*://claude.ai/*',
+    '*://*.claude.ai/*',
 ];

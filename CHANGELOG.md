@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Unclickable links on options page.
+- Continue with Google does not work on Claude website [#344].
+
+[#344]: https://github.com/AdguardTeam/PopupBlocker/issues/344
 
 ## 2.5.116
 
