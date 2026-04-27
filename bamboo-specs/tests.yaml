@@ -4,8 +4,6 @@ plan:
   project-key: ADGEXT
   key: POPUPBLOCKTESTSPECS
   name: popup blocker - test
-variables:
-  dockerNode: adguard/node-ssh:18.13--0
 
 stages:
   - Test:
@@ -18,10 +16,6 @@ Test:
   key: TEST
   other:
     clean-working-dir: true
-  docker:
-    image: ${bamboo.dockerNode}
-    volumes:
-      ${system.YARN_DIR}: "${bamboo.cacheYarn}"
   tasks:
     - checkout:
         force-clean-build: 'true'
@@ -32,29 +26,23 @@ Test:
             set -x
             set -e
 
-            yarn install ${bamboo.varsYarn}
-            yarn lint
-            yarn userscript-dev
-            tar -C build -zcvf build/userscript.tar.gz userscript
+            # Fix mixed logs
+            exec 2>&1
+
+            docker build \
+              --file Dockerfile \
+              --progress plain \
+              --target test-output \
+              --output type=local,dest=output \
+              .
   final-tasks:
-      - script:
-          interpreter: SHELL
-          scripts:
-            - |-
-              set -x
-              set -e
-
-              # Fix mixed logs
-              exec 2>&1
-
-              ls -la
-
-              echo "Size before cleanup:" && du -h | tail -n 1
-              rm -rf node_modules
-              echo "Size after cleanup:" && du -h | tail -n 1
+    - script:
+        interpreter: SHELL
+        scripts:
+          - "./bamboo-specs/scripts/cleanup.sh output/artifacts/userscript.tar.gz"
   artifacts:
     - name: userscript.tar.gz
-      location: build
+      location: output/artifacts
       pattern: userscript.tar.gz
       shared: true
       required: true

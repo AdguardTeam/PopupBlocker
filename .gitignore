@@ -10,3 +10,6 @@ yarn-error.log
 tmp
 
 .playwright-mcp/
+
+# Output directory for CI build
+output/
