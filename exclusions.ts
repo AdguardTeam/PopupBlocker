@@ -448,4 +448,7 @@ export const exclusions = [
     '*://*.claude.com/*',
     '*://claude.ai/*',
     '*://*.claude.ai/*',
+    // https://github.com/AdguardTeam/PopupBlocker/issues/347
+    '*://trip.com/*',
+    '*://*.trip.com/*',
 ];
