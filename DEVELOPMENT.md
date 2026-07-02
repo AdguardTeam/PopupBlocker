@@ -18,6 +18,7 @@
     - [Manual Testing](#manual-testing)
     - [Managing Exclusions](#managing-exclusions)
     - [Working with Locales](#working-with-locales)
+- [Running the Full CI Pipeline Locally](#running-the-full-ci-pipeline-locally)
 - [Troubleshooting](#troubleshooting)
 - [Additional Resources](#additional-resources)
 
@@ -40,9 +41,14 @@ yarn --version   # 1.x
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/AdguardTeam/PopupBlocker.git
-cd PopupBlocker
+git clone https://github.com/AdGuardSoftwareLimited/ext-popup-blocker.git
+cd ext-popup-blocker
 ```
+
+> **Repository**: Development happens in the private repo
+> `AdGuardSoftwareLimited/ext-popup-blocker`. A public mirror at
+> `AdguardTeam/PopupBlocker` is synced automatically but should not be used for
+> development.
 
 ### Install Dependencies
 
@@ -89,7 +95,9 @@ in the `build/` directory:
 | `yarn tests`              | Build the test runner          |
 | `yarn lint`               | Run ESLint                     |
 | `yarn lint:md`            | Run Markdownlint               |
-| `yarn increment`          | Bump patch version             |
+
+Versions are driven by `CHANGELOG.md` via the `tag-from-changelog.yml`
+reusable workflow — no manual bump script is needed.
 
 You can also invoke the builder directly:
 
@@ -209,6 +217,21 @@ Crowdin translation platform:
 yarn locales:download   # Pull latest translations
 yarn locales:upload     # Push source strings
 ```
+
+## Running the Full CI Pipeline Locally
+
+The GitHub Actions CI (`.github/workflows/ci.yml`) runs lint, test, and
+build inside Docker. To reproduce the same pipeline locally:
+
+```sh
+# Lint + test + dev build (matches the test-output Docker target)
+DOCKER_BUILDKIT=1 docker build --progress plain --target test-output --output ./artifacts .
+
+# Build release artifacts (matches the build-output Docker target)
+DOCKER_BUILDKIT=1 docker build --progress plain --target build-output --output ./artifacts .
+```
+
+The compiled userscript archive appears in `./artifacts/userscript.tar.gz`.
 
 ## Troubleshooting
 

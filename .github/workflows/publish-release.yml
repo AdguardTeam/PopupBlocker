@@ -1,0 +1,131 @@
+name: Publish release
+
+description: >-
+  Tags the release commit, builds, tests, deploys the compiled userscript
+  archive to userscripts.adtidy.org and to a GitHub Release, mirrors the
+  release to the public repo (AdguardTeam/PopupBlocker), then notifies Slack.
+  Beta tags (e.g. v1.0.0-beta.1) deploy only to the beta channel.
+  Stable tags (e.g. v1.0.0) deploy only to the release channel.
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Ref to publish manually
+        required: false
+        type: string
+
+jobs:
+  tag:
+    # No local `if:` guard — tag-from-changelog.yml@master already gates on
+    # `merged == true && head.ref startsWith 'release-bump/'` for PR events.
+    uses: AdGuardSoftwareLimited/actions/.github/workflows/tag-from-changelog.yml@master
+    with:
+      ref: ${{ inputs.ref || github.event.pull_request.merge_commit_sha || github.ref_name }}
+      team: extensions
+    # `contents: write` — create the git tag
+    permissions:
+      contents: write
+
+  build:
+    name: Test and build
+    needs: tag
+    runs-on: team-extensions
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref || github.event.pull_request.merge_commit_sha || github.ref_name }}
+
+      # Version is parsed from CHANGELOG by the tag job and injected
+      # here so the compiled userscript metadata carries the release tag.
+      - name: Inject version into package.json
+        run: npm pkg set version="${{ needs.tag.outputs.version }}"
+
+      - name: Lint and test
+        run: DOCKER_BUILDKIT=1 docker build --progress plain --target test-output .
+
+      - name: Build artifacts
+        run: >-
+          DOCKER_BUILDKIT=1 docker build --progress plain
+          --target ${{ contains(needs.tag.outputs.tag, '-beta') && 'build-beta-output' || 'build-output' }}
+          --output ./artifacts .
+
+      - name: Extract flat userscript for release asset
+        run: |
+          tar -xzf ./artifacts/userscript.tar.gz -C ./artifacts/
+          cp ./artifacts/userscript/popupblocker.user.js ./artifacts/popupblocker.user.js
+
+      - name: Upload userscript artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: userscript
+          path: |
+            artifacts/userscript.tar.gz
+            artifacts/popupblocker.user.js
+
+  deploy-static:
+    # Deploys to the beta channel for beta tags (with `-beta` suffix)
+    # or to the release channel for stable tags. The userscript archive
+    # (userscript.tar.gz) contains the .user.js, .meta.js, and assets;
+    # the Deployer extracts it to the module's static-host path.
+    needs: [tag, build]
+    uses: AdGuardSoftwareLimited/actions/.github/workflows/deploy-to-static.yml@master
+    with:
+      team: extensions
+      deployer-module: ${{ contains(needs.tag.outputs.tag, '-beta') && 'adguard-popup-beta' || 'adguard-popup-release' }}
+      artifact-pattern: userscript
+      file-mappings: '{"userscript.tar.gz": "userscript.tar.gz"}'
+      environment: ${{ contains(needs.tag.outputs.tag, '-beta') && 'beta-static' || 'production-static' }}
+    # `contents: read` — download artifact only
+    permissions:
+      contents: read
+
+  mirror-and-release:
+    # Mirrors the repo (including the tag) to the public mirror and
+    # creates a matching GitHub Release on AdguardTeam/PopupBlocker.
+    needs: [tag, build]
+    uses: AdGuardSoftwareLimited/actions/.github/workflows/mirror-and-release.yml@master
+    with:
+      team: extensions
+      target_repo: AdguardTeam/PopupBlocker
+      tag: ${{ needs.tag.outputs.tag }}
+      changelog: ${{ needs.tag.outputs.changelog }}
+      artifact_name: userscript
+      prerelease: ${{ contains(needs.tag.outputs.tag, '-beta') }}
+    secrets: inherit
+    # `actions: write` — disable workflows in the public mirror
+    # `contents: write` — create GitHub Release on public repo
+    # `id-token: write` — Octopass token for mirror push
+    permissions:
+      actions: write
+      contents: write
+      id-token: write
+
+  notify:
+    name: Notify
+    needs: [tag, build, deploy-static, mirror-and-release]
+    if: ${{ always() && needs.tag.result == 'success' }}
+    runs-on: team-extensions
+    steps:
+      - name: Build message
+        id: msg
+        run: |
+          run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          if [ "${{ needs.deploy-static.result }}" = "success" ] && \
+             [ "${{ needs.mirror-and-release.result }}" = "success" ]; then
+            echo "text=:white_check_mark: *ext-popup-blocker* *${{ needs.tag.outputs.tag }}* deployed to userscripts.adtidy.org + GitHub Release — <${{ needs.mirror-and-release.outputs.release-url }}|release> | <${run_url}|run>" >> "$GITHUB_OUTPUT"
+            echo "color=good" >> "$GITHUB_OUTPUT"
+          else
+            echo "text=:cross-mark: *ext-popup-blocker* *${{ needs.tag.outputs.tag }}* deploy failed (build: ${{ needs.build.result }}, deploy: ${{ needs.deploy-static.result }}, release: ${{ needs.mirror-and-release.result }}) — <${run_url}|run>" >> "$GITHUB_OUTPUT"
+            echo "color=danger" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Send Slack notification
+        uses: AdGuardSoftwareLimited/actions/actions/slack@master
+        with:
+          channel: '#adguard-extension-vcs'
+          message: ${{ steps.msg.outputs.text }}
+          color: ${{ steps.msg.outputs.color }}

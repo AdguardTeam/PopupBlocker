@@ -15,6 +15,7 @@
     - [Dependency Management](#dependency-management)
     - [Configuration & Documentation](#configuration--documentation)
     - [Markdown Formatting](#markdown-formatting)
+    - [Other](#other)
 
 ## Project Overview
 
@@ -62,7 +63,7 @@ that lets users manage allowlisted and silenced domains.
 ├── .markdownlint.json          # Markdownlint configuration
 ├── exclusions.ts               # AdGuard exclusion websites
 ├── locales.ts                  # Locale upload/download script
-├── bamboo-specs/               # CI/CD pipeline definitions
+├── .github/workflows/          # GitHub Actions CI/CD workflows
 ├── src/
 │   ├── main.ts                 # Core orchestration — wires all layers
 │   ├── on-blocked.ts           # Blocked-popup notification logic
@@ -95,6 +96,11 @@ that lets users manage allowlisted and silenced domains.
     ├── shared/                 # Shared utility tests
     └── mocks/                  # GM API and other mocks
 ```
+
+> **Repository note**: This repo is private at
+> `AdGuardSoftwareLimited/ext-popup-blocker`. A public mirror is automatically
+> synced to `AdguardTeam/PopupBlocker` on every push to `master` via the
+> `mirror.yml` workflow.
 
 ## Build And Test Commands
 
@@ -360,3 +366,10 @@ All Markdown files MUST follow these formatting rules:
 
 **Rationale**: Uniform Markdown formatting improves readability for
 both humans and AI agents that consume project documentation.
+
+### Other
+
+- Preserve Keep a Changelog style in `CHANGELOG.md` and reference related
+  issue numbers when known.
+- Release versions are driven by `CHANGELOG.md` via `tag-from-changelog.yml`;
+  the version is injected into `package.json` at build time.

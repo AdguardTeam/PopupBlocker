@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [Unreleased]
 
 ### Fixed
 
@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#344]: https://github.com/AdguardTeam/PopupBlocker/issues/344
 [#347]: https://github.com/AdguardTeam/PopupBlocker/issues/347
 
-## 2.5.116
+## [2.5.116]
 
 ### Changed
 
@@ -24,13 +24,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [#341]: https://github.com/AdguardTeam/PopupBlocker/issues/341
 
-## 2.5.114
+## [2.5.114]
 
 ### Fixed
 
 - web.telegram.org [#338].
 
-## 2.5.113
+## [2.5.113]
 
 ### Fixed
 
@@ -38,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [#338]: https://github.com/AdguardTeam/PopupBlocker/issues/338
 
-## 2.5.112
+## [2.5.112]
 
 ### Added
 
@@ -46,7 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [#337]: https://github.com/AdguardTeam/PopupBlocker/issues/337
 
-## 2.5.111
+## [2.5.111]
 
 ### Changed
 
@@ -54,7 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [#335]: https://github.com/AdguardTeam/PopupBlocker/issues/335
 
-## 2.5.110
+## [2.5.110]
 
 ### Fixed
 
@@ -62,7 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [#336]: https://github.com/AdguardTeam/PopupBlocker/issues/336
 
-## 2.5.108
+## [2.5.108]
 
 ### Fixed
 
@@ -74,7 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#314]: https://github.com/AdguardTeam/PopupBlocker/issues/314
 [#333]: https://github.com/AdguardTeam/PopupBlocker/issues/333
 
-## 2.5.107
+## [2.5.107]
 
 ### Fixed
 
@@ -83,7 +83,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [#305]: https://github.com/AdguardTeam/PopupBlocker/issues/305
 
-## 2.5.105
+## [2.5.105]
 
 ### Fixed
 
@@ -91,7 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [#250]: https://github.com/AdguardTeam/PopupBlocker/issues/250
 
-## 2.5.103
+## [2.5.103]
 
 ### Fixed
 
@@ -99,7 +99,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [#329]: https://github.com/AdguardTeam/PopupBlocker/issues/329
 
-## 2.5.101
+## [2.5.101]
 
 ### Fixed
 
@@ -107,7 +107,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [#328]: https://github.com/AdguardTeam/PopupBlocker/issues/328
 
-## 2.5.100
+## [2.5.100]
 
 ### Added
 
@@ -115,7 +115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [#326]: https://github.com/AdguardTeam/PopupBlocker/issues/326
 
-## 2.5.98
+## [2.5.98]
 
 ### Changed
 
@@ -123,13 +123,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [#316]: https://github.com/AdguardTeam/PopupBlocker/issues/316
 
-## v2.5.93
+## [2.5.93]
 
 ### Fixed
 
 - `@icon` url in userscript's metadata [#301].
 
-## v2.5.92
+## [2.5.92]
 
 ### Fixed
 
@@ -141,7 +141,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#297]: https://github.com/AdguardTeam/PopupBlocker/issues/297
 [#301]: https://github.com/AdguardTeam/PopupBlocker/issues/301
 
-## v2.5.89
+## [2.5.89]
 
 ### Fixed
 
@@ -149,7 +149,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [PR#298]: https://github.com/AdguardTeam/PopupBlocker/pull/298
 
-## v2.5.88
+## [2.5.88]
 
 ### Fixed
 
@@ -157,7 +157,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [PR#296]: https://github.com/AdguardTeam/PopupBlocker/pull/296
 
-## v2.5.82
+## [2.5.82]
 
 ### Fixed
 
@@ -169,7 +169,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#278]: https://github.com/AdguardTeam/PopupBlocker/issues/278
 [#283]: https://github.com/AdguardTeam/PopupBlocker/issues/283
 
-## v2.5.77
+## [2.5.77]
 
 ### Changed
 
@@ -178,3 +178,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [rollup]: https://rollupjs.org/
 [preact]: https://preactjs.com/
+
+[Unreleased]: https://github.com/AdguardTeam/PopupBlocker/compare/v2.5.116...HEAD

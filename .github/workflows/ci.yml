@@ -1,0 +1,30 @@
+name: CI
+
+description: Lints, tests, and builds on pull requests and pushes to master.
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Lint, test, build
+    runs-on: team-extensions
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Build, lint, and test via Docker
+        run: DOCKER_BUILDKIT=1 docker build --progress plain --target test-output --output ./artifacts .
+
+      - name: Verify archive contents
+        run: tar tzf artifacts/userscript.tar.gz | grep -q 'userscript/popupblocker.user.js'
+
+      - name: Upload userscript archive
+        uses: actions/upload-artifact@v7
+        with:
+          name: userscript.tar.gz
+          path: artifacts/userscript.tar.gz
+          archive: false

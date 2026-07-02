@@ -1,6 +1,5 @@
 {
   "name": "popup-blocker",
-  "version": "2.5.125",
   "description": "Block popups preemptively by wrapping browser APIs for additional check",
   "scripts": {
     "userscript-dev": "cross-env NODE_ENV=dev ts-node tasks/builder --target=userscript",
@@ -16,10 +15,17 @@
     "lint:md": "markdownlint .",
     "locales:download": "ts-node locales.ts download",
     "locales:upload": "ts-node locales.ts upload",
-    "update-tinyshield-websites": "ts-node tasks/updateTinyShieldWebsites.ts",
-    "increment": "yarn version --patch --no-git-tag-version"
+    "update-tinyshield-websites": "ts-node tasks/updateTinyShieldWebsites.ts"
   },
-  "repository": "https://github.com/AdguardTeam/PopupBlocker",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AdGuardSoftwareLimited/ext-popup-blocker.git",
+    "directory": ""
+  },
+  "homepage": "https://github.com/AdGuardSoftwareLimited/ext-popup-blocker#readme",
+  "bugs": {
+    "url": "https://github.com/AdGuardSoftwareLimited/ext-popup-blocker/issues"
+  },
   "license": "LGPL-3.0",
   "devDependencies": {
     "@rollup/plugin-commonjs": "24.0.1",

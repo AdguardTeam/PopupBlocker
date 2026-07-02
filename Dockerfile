@@ -23,7 +23,7 @@ RUN yarn lint && \
     tar -C build -zcvf build/userscript.tar.gz userscript
 
 FROM scratch AS test-output
-COPY --from=test /workdir/build/userscript.tar.gz /artifacts/userscript.tar.gz
+COPY --from=test /workdir/build/userscript.tar.gz /userscript.tar.gz
 
 # =============================================================================
 # Build beta plan
@@ -34,18 +34,22 @@ RUN yarn userscript-beta && \
     tar -C build -zcvf build/userscript.tar.gz userscript
 
 FROM scratch AS build-beta-output
-COPY --from=build-beta /workdir/build/userscript.tar.gz /artifacts/userscript.tar.gz
-COPY --from=build-beta /workdir/build/build.txt /artifacts/build.txt
+COPY --from=build-beta /workdir/build/userscript.tar.gz /userscript.tar.gz
+COPY --from=build-beta /workdir/build/build.txt /build.txt
 
 # =============================================================================
 # Build release plan
 # =============================================================================
 
+# The userscript build does not require the extensions-private build context
+# (signing material is only needed for the browser extension bundle target).
 FROM source-deps AS build-release
-COPY --from=private . /workdir/private
 RUN yarn userscript-release && \
     tar -C build -zcvf build/userscript.tar.gz userscript
 
 FROM scratch AS build-release-output
-COPY --from=build-release /workdir/build/userscript.tar.gz /artifacts/userscript.tar.gz
-COPY --from=build-release /workdir/build/build.txt /artifacts/build.txt
+COPY --from=build-release /workdir/build/userscript.tar.gz /userscript.tar.gz
+COPY --from=build-release /workdir/build/build.txt /build.txt
+
+# Alias used by publish-release.yml to fetch the compiled release userscript.
+FROM build-release-output AS build-output

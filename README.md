@@ -7,6 +7,9 @@ Unlike filter-list approaches, it wraps the browser's native APIs (`window.open`
 `.dispatchEvent()`, etc.) with an additional verification layer. Only calls triggered by genuine
 user input are allowed through — automated pop-up scripts are blocked regardless of the domain or
 technique they use.
+> **Repository**: Development happens in the private repo
+> `AdGuardSoftwareLimited/ext-popup-blocker`. A public mirror is available at
+> [`AdguardTeam/PopupBlocker`](https://github.com/AdguardTeam/PopupBlocker).
 
 ## Key Features
 

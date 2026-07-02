@@ -1,0 +1,31 @@
+name: Prepare release
+
+description: >-
+  Opens a release PR that finalizes CHANGELOG.md for the given tag.
+  After merge, publish-release.yml takes over. Tags containing "-beta"
+  (e.g. v1.2.0-beta.1) deploy only to the beta channel; tags without it
+  (e.g. v1.2.0) deploy only to the release channel.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: >-
+          Release tag WITH "v" prefix.
+          "-beta" suffix = beta channel only (e.g. v1.2.0-beta.1).
+          No suffix = release channel only (e.g. v1.2.0).
+        required: true
+        type: string
+
+# `contents: write` — push the release-bump branch
+# `id-token: write` — Octopass OIDC for PR creation
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  create-release-pr:
+    uses: AdGuardSoftwareLimited/actions/.github/workflows/create-release-pr.yml@master
+    with:
+      tag: ${{ inputs.tag }}
+      team: extensions
