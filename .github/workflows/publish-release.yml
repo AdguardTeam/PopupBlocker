@@ -77,8 +77,7 @@ jobs:
     with:
       team: extensions
       deployer-module: ${{ contains(needs.tag.outputs.tag, '-beta') && 'adguard-popup-beta' || 'adguard-popup-release' }}
-      artifact-pattern: userscript
-      file-mappings: '{"userscript.tar.gz": "userscript.tar.gz"}'
+      artifact-name: userscript
       environment: ${{ contains(needs.tag.outputs.tag, '-beta') && 'beta-static' || 'production-static' }}
     # `contents: read` — download artifact only
     permissions:
