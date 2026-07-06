@@ -231,7 +231,8 @@ DOCKER_BUILDKIT=1 docker build --progress plain --target test-output --output ./
 DOCKER_BUILDKIT=1 docker build --progress plain --target build-output --output ./artifacts .
 ```
 
-The compiled userscript archive appears in `./artifacts/userscript.tar.gz`.
+The compiled userscript files (`popupblocker.user.js`, `popupblocker.meta.js`,
+and `assets/`) appear in `./artifacts/`.
 
 ## Troubleshooting
 

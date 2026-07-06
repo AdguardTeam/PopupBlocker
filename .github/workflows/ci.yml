@@ -19,12 +19,11 @@ jobs:
       - name: Build, lint, and test via Docker
         run: DOCKER_BUILDKIT=1 docker build --progress plain --target test-output --output ./artifacts .
 
-      - name: Verify archive contents
-        run: tar tzf artifacts/userscript.tar.gz | grep -q 'userscript/popupblocker.user.js'
-
-      - name: Upload userscript archive
+      - name: Upload userscript build
         uses: actions/upload-artifact@v7
         with:
-          name: userscript.tar.gz
-          path: artifacts/userscript.tar.gz
-          archive: false
+          name: userscript
+          path: |
+            artifacts/popupblocker.user.js
+            artifacts/popupblocker.meta.js
+            artifacts/assets

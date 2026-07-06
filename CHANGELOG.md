@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Userscript deployment no longer bundles artifacts into `userscript.tar.gz`;
+  the build now outputs `popupblocker.user.js`, `popupblocker.meta.js`, and
+  `assets/` as individual files for the artifact-only `deploy-to-static`
+  contract [AG-56067].
+[AG-56067]: https://jira.int.agrd.dev/browse/AG-56067
+
 ### Security
 
 ## [2.5.117-beta.1] - 2026-07-02
