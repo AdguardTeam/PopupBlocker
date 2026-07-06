@@ -16,25 +16,26 @@ COPY . .
 # Test plan
 # =============================================================================
 
+# The build stages emit the deployable userscript files directly (no archive):
+# popupblocker.user.js, popupblocker.meta.js, and assets/. Each file is
+# published by its exact name via the artifact-only deploy-to-static contract.
 FROM source-deps AS test
 RUN yarn lint && \
     yarn lint:md && \
-    yarn userscript-dev && \
-    tar -C build -zcvf build/userscript.tar.gz userscript
+    yarn userscript-dev
 
 FROM scratch AS test-output
-COPY --from=test /workdir/build/userscript.tar.gz /userscript.tar.gz
+COPY --from=test /workdir/build/userscript/. /
 
 # =============================================================================
 # Build beta plan
 # =============================================================================
 
 FROM source-deps AS build-beta
-RUN yarn userscript-beta && \
-    tar -C build -zcvf build/userscript.tar.gz userscript
+RUN yarn userscript-beta
 
 FROM scratch AS build-beta-output
-COPY --from=build-beta /workdir/build/userscript.tar.gz /userscript.tar.gz
+COPY --from=build-beta /workdir/build/userscript/. /
 COPY --from=build-beta /workdir/build/build.txt /build.txt
 
 # =============================================================================
@@ -44,11 +45,10 @@ COPY --from=build-beta /workdir/build/build.txt /build.txt
 # The userscript build does not require the extensions-private build context
 # (signing material is only needed for the browser extension bundle target).
 FROM source-deps AS build-release
-RUN yarn userscript-release && \
-    tar -C build -zcvf build/userscript.tar.gz userscript
+RUN yarn userscript-release
 
 FROM scratch AS build-release-output
-COPY --from=build-release /workdir/build/userscript.tar.gz /userscript.tar.gz
+COPY --from=build-release /workdir/build/userscript/. /
 COPY --from=build-release /workdir/build/build.txt /build.txt
 
 # Alias used by publish-release.yml to fetch the compiled release userscript.

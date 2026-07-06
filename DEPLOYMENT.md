@@ -36,11 +36,12 @@ entered in `prepare-release.yml` determines which channel receives the build:
 | `deploy-static`      | `adguard-popup-beta`     | `adguard-popup-release`     |
 | `mirror-and-release` | prerelease = `true`      | prerelease = `false`        |
 
-The `deploy-static` job uploads the userscript archive to
+The `deploy-static` job uploads the userscript artifacts to
 `userscripts.adtidy.org` via the `deploy-to-static.yml` reusable workflow; the
 Deployer module and environment are selected dynamically from the tag
 (`-beta` suffix → beta channel, no suffix → release channel). The Deployer
-extracts the archive to the module's static-host path.
+publishes each artifact file by its exact name to the module's static-host
+path.
 
 GitHub Releases are created **only** on the public mirror
 (`AdguardTeam/PopupBlocker`) by the `mirror-and-release` job, which also
@@ -76,9 +77,9 @@ Each production deployment publishes these required artifacts:
 - `popupblocker.meta.js`: userscript metadata for update checks.
 - `assets/`: fonts and icon referenced by `@resource` headers.
 
-The artifacts are bundled into a single `userscript.tar.gz` archive (containing
-`popupblocker.user.js`, `popupblocker.meta.js`, and `assets/`). The Deployer
-receives the archive and extracts it to the module's static-host path.
+The build outputs these artifacts as individual files (not an archive). The
+`deploy-to-static.yml` workflow uploads each file by its exact name, and the
+Deployer publishes them to the module's static-host path.
 
 The release version is parsed from `CHANGELOG.md` by `tag-from-changelog.yml`
 and injected into `package.json` at build time. The `increment` script has been

@@ -54,24 +54,25 @@ jobs:
           --target ${{ contains(needs.tag.outputs.tag, '-beta') && 'build-beta-output' || 'build-output' }}
           --output ./artifacts .
 
-      - name: Extract flat userscript for release asset
-        run: |
-          tar -xzf ./artifacts/userscript.tar.gz -C ./artifacts/
-          cp ./artifacts/userscript/popupblocker.user.js ./artifacts/popupblocker.user.js
-
+      # The build outputs the deployable userscript files directly (no archive):
+      # popupblocker.user.js, popupblocker.meta.js, and assets/. They are
+      # uploaded as individual files so the Deployer publishes each by its
+      # exact name to the module's static-host path.
       - name: Upload userscript artifacts
         uses: actions/upload-artifact@v7
         with:
           name: userscript
           path: |
-            artifacts/userscript.tar.gz
             artifacts/popupblocker.user.js
+            artifacts/popupblocker.meta.js
+            artifacts/assets
 
   deploy-static:
     # Deploys to the beta channel for beta tags (with `-beta` suffix)
-    # or to the release channel for stable tags. The userscript archive
-    # (userscript.tar.gz) contains the .user.js, .meta.js, and assets;
-    # the Deployer extracts it to the module's static-host path.
+    # or to the release channel for stable tags. The `userscript` artifact
+    # contains the .user.js, .meta.js, and assets/ as individual files; the
+    # Deployer publishes each by its exact name to the module's static-host
+    # path.
     needs: [tag, build]
     uses: AdGuardSoftwareLimited/actions/.github/workflows/deploy-to-static.yml@master
     with:
