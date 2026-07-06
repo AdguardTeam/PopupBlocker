@@ -19,13 +19,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
-## [2.5.117-beta.1] - 2026-07-02
+## [2.5.117-beta.1] - 2026-07-06
 
 ### Fixed
 
 - trip.com [#347].
 - Unclickable links on options page.
 - Continue with Google does not work on Claude website [#344].
+
 [#344]: https://github.com/AdguardTeam/PopupBlocker/issues/344
 [#347]: https://github.com/AdguardTeam/PopupBlocker/issues/347
 
