@@ -57,6 +57,10 @@ export class AlertView implements AlertViewInterface {
 
     private pinRoot:HTMLElement;
 
+    private optionsBtn:HTMLElement;
+
+    private optionsList:HTMLElement;
+
     private iframeWidth:number;
 
     private iframeHeight:number;
@@ -108,8 +112,50 @@ export class AlertView implements AlertViewInterface {
 
     private onContinueBlocking = trustedEventListener(this.controller.onContinueBlocking, this.controller);
 
-    // @ts-ignore
-    private onOptionChange = trustedEventListener(this.controller.onOptionChange, this.controller);
+    private onOptionsToggle = trustedEventListener(() => {
+        this.toggleOptionsList(!this.isOptionsListOpen());
+    }, this);
+
+    private onOptionSelect = trustedEventListener((evt?:UIEvent) => {
+        this.toggleOptionsList(false);
+        if (evt) {
+            this.controller.onOptionChange(evt);
+        }
+    }, this);
+
+    // Not wrapped in `trustedEventListener`, because it must not call
+    // `preventDefault` on keystrokes it does not handle.
+    private onKeyDown = (evt:KeyboardEvent) => {
+        if (!evt.isTrusted || !this.isOptionsListOpen()) {
+            return;
+        }
+        const { key } = evt;
+        if (key === 'Escape' || key === 'Esc') {
+            this.toggleOptionsList(false);
+            this.optionsBtn.focus();
+            evt.preventDefault();
+        } else if (key === 'ArrowDown' || key === 'ArrowUp' || key === 'Down' || key === 'Up') {
+            const items = this.optionsList.getElementsByClassName('alert__select-item');
+            if (items.length === 0) {
+                return;
+            }
+            let index = -1;
+            for (let i = 0; i < items.length; i += 1) {
+                if (items[i] === this.frameDoc?.activeElement) {
+                    index = i;
+                    break;
+                }
+            }
+            const down = key === 'ArrowDown' || key === 'Down';
+            if (index === -1) {
+                index = down ? 0 : items.length - 1;
+            } else {
+                index = (index + (down ? 1 : -1) + items.length) % items.length;
+            }
+            (items[index] as HTMLElement).focus();
+            evt.preventDefault();
+        }
+    };
 
     private onMouseEnter = trustedEventListener(this.controller.onMouseEnter, this.controller);
 
@@ -169,16 +215,25 @@ export class AlertView implements AlertViewInterface {
         const closeBtn = doc.getElementsByClassName('alert__close')[0];
         const pin = this.pinRoot;
         const continueBtn = doc.getElementsByClassName('alert__btn')[0];
-        const select = doc.getElementsByClassName('alert__select')[0];
+        this.optionsBtn = doc.getElementsByClassName('alert__select')[0] as HTMLElement;
+        this.optionsList = doc.getElementsByClassName('alert__select-list')[0] as HTMLElement;
+        const optionItems = doc.getElementsByClassName('alert__select-item');
 
         // Attach event listeners.
+        // Listener instances are stable class members, so re-rendering does not
+        // attach duplicates.
         // @ts-ignore
         closeBtn.addEventListener('click', this.onClose);
         pin.addEventListener('click', this.onPinClick);
         // @ts-ignore
         continueBtn.addEventListener('click', this.onContinueBlocking);
         // @ts-ignore
-        select.addEventListener('change', this.onOptionChange);
+        this.optionsBtn.addEventListener('click', this.onOptionsToggle);
+        for (let i = 0; i < optionItems.length; i += 1) {
+            // @ts-ignore
+            optionItems[i].addEventListener('click', this.onOptionSelect);
+        }
+        doc.addEventListener('keydown', this.onKeyDown, true);
         this.alertRoot.addEventListener('mouseenter', this.onMouseEnter);
         this.alertRoot.addEventListener('mouseleave', this.onMouseLeave);
         pin.addEventListener('mouseenter', this.onMouseEnter);
@@ -198,9 +253,25 @@ export class AlertView implements AlertViewInterface {
     }
 
     $collapse() {
+        this.toggleOptionsList(false);
         this.alertRoot.classList.remove('alert--show');
         this.collapsed = true;
         this.updatePosition();
+    }
+
+    private isOptionsListOpen():boolean {
+        return !!this.optionsList && !this.optionsList.hidden;
+    }
+
+    private toggleOptionsList(open:boolean) {
+        if (!this.optionsList || this.isOptionsListOpen() === open) {
+            return;
+        }
+        this.optionsList.hidden = !open;
+        this.optionsBtn.setAttribute('aria-expanded', String(open));
+        // The list is rendered inside the iframe, so the iframe must be resized
+        // to fit it when it is open.
+        this.updateIframePosition();
     }
 
     private updatePosition() {
@@ -221,7 +292,15 @@ export class AlertView implements AlertViewInterface {
             // Adjusts iframe width and height so that the bottom left corner of the element
             // (pinRoot in collapsed, alertRoot in un-collapsed mode) plus its shadow fits in the iframe
             iframeStyle.width = (this.iframeWidth -= offsetLeft - BLUR_OFFSET) + px;
-            iframeStyle.height = (this.iframeHeight = offsetTop + offsetHeight + BLUR_OFFSET) + px;
+            let iframeHeight = offsetTop + offsetHeight + BLUR_OFFSET;
+            if (!this.collapsed && this.isOptionsListOpen()) {
+                // The options list overflows the alert root, extend the iframe to fit it.
+                const listBottom = this.optionsList.getBoundingClientRect().bottom + BLUR_OFFSET;
+                if (listBottom > iframeHeight) {
+                    iframeHeight = listBottom;
+                }
+            }
+            iframeStyle.height = (this.iframeHeight = iframeHeight) + px;
 
             iframeStyle.right = IFRAME_RIGHT + px;
             iframeStyle.top = (this.collapsed ? IFRAME_TOP_COLLAPSED : IFRAME_TOP_EXPANDED) + px;

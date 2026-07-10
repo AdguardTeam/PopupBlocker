@@ -24,23 +24,29 @@ export const Alert: React.FunctionalComponent<AlertProps> = ({
                 </div>
             </div>
             <div class="alert__btns">
-                <select class="alert__select" name="options">
-                    <option value="0" disabled selected>
-                        {preactTranslator.getMessage('options')}
-                    </option>
-                    <option value="1">
+                {/*
+                  * A custom dropdown is used instead of a native <select>, because browsers
+                  * close a native select popup as soon as the document loses focus, which
+                  * allowed pages to dismiss the menu by stealing focus.
+                  * https://github.com/AdguardTeam/PopupBlocker/issues/348
+                  */}
+                <button class="alert__select" aria-haspopup="true" aria-expanded="false">
+                    {preactTranslator.getMessage('options')}
+                </button>
+                <div class="alert__select-list" role="menu" hidden>
+                    <button class="alert__select-item" role="menuitem" data-value="1">
                         {preactTranslator.getMessage('allow_from', { origDomain })}
-                    </option>
-                    <option value="2">
+                    </button>
+                    <button class="alert__select-item" role="menuitem" data-value="2">
                         {preactTranslator.getMessage('silence_noti', { origDomain })}
-                    </option>
-                    <option value="3">
+                    </button>
+                    <button class="alert__select-item" role="menuitem" data-value="3">
                         {preactTranslator.getMessage('manage_pref')}
-                    </option>
-                    <option value="4">
+                    </button>
+                    <button class="alert__select-item" role="menuitem" data-value="4">
                         {preactTranslator.getMessage('show_popup', { destUrl })}
-                    </option>
-                </select>
+                    </button>
+                </div>
                 <button class="alert__btn">
                     {preactTranslator.getMessage('continue_blocking')}
                 </button>

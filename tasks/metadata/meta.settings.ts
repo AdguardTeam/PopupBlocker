@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import pJson from '../../package.json';
 import { exclusions } from '../../exclusions';
 import { TINY_SHIELD_EXCLUSIONS_FILE_PATH } from '../updateTinyShieldWebsites';
 import type { HeadersDataContainer } from './metadata';
@@ -12,6 +11,7 @@ import {
     getHomepageUrl,
     getDownloadUrl,
     getUpdateUrl,
+    getVersion,
 } from '../utils';
 
 type MetaSettingsInterface = {
@@ -61,7 +61,7 @@ const metaSettings: MetaSettingsInterface = {
     headersData: {
         USERSCRIPT_VERSION: {
             headerName: 'version',
-            headerValue: pJson.version,
+            headerValue: getVersion(),
         },
         USERSCRIPT_NAME: {
             headerName: 'name',

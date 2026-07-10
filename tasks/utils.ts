@@ -47,6 +47,20 @@ export const getResourceUrls = (
     return `${relativePath} ${absolutePath}`;
 });
 
+/**
+ * Version used for local builds.
+ *
+ * `package.json` intentionally has no `version` field: the release workflow
+ * injects the real one via `npm pkg set version=...` (see publish-release.yml).
+ */
+const DEV_VERSION = '0.0.0';
+
+/**
+ * Returns the version injected into `package.json` by CI,
+ * or a dev placeholder when building locally.
+ */
+export const getVersion = (): string => (pJson as { version?: string }).version ?? DEV_VERSION;
+
 export const copyFiles = async (buildPath: string, src: string, dest: string) => {
     // output should be flattened (src structure excluded) for non-blob src
     const options = !src.includes('*') ? { flatten: true } : {};
@@ -57,7 +71,7 @@ export const copyFiles = async (buildPath: string, src: string, dest: string) =>
 
 export const createBuildTxt = async (buildPath: string): Promise<void> => {
     const BUILD_TXT_PATH = path.join(buildPath, 'build.txt');
-    const data = `version=${pJson.version}`;
+    const data = `version=${getVersion()}`;
     await fs.ensureDir(buildPath);
     await fs.writeFile(BUILD_TXT_PATH, data, 'utf8');
 };
