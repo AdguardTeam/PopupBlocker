@@ -200,8 +200,8 @@ export class AlertController implements AlertControllerInterface {
     }
 
     onOptionChange(evt:Event) {
-        const select = <HTMLSelectElement>evt.target;
-        const selectedValue = select.value;
+        const item = <HTMLElement>evt.currentTarget;
+        const selectedValue = item.getAttribute('data-value');
         switch (selectedValue) {
             case '1':
                 this.settingsDao.setListItem(

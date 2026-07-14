@@ -17,7 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- issue with opening `Options` menu on pages that steal focus [#348].
+
 ### Security
+
+[#348]: https://github.com/AdguardTeam/PopupBlocker/issues/348
 
 ## [2.5.117] - 2026-07-06
 

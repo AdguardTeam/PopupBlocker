@@ -48,6 +48,21 @@ export class FrameInjector extends SingleEventEmitter implements IFrameInjector 
         'overflow', 'hidden',
         // eslint-disable-next-line no-bitwise
         'z-index', String(-1 - (1 << 31)),
+        // The host element lives in the page's light DOM, so page styles
+        // (e.g. a generic `div { opacity: .8 }` rule, as on example.org) do
+        // apply to it and affect the whole UI subtree, iframe included.
+        // Pin every property that changes how the subtree is painted.
+        // These declarations are `!important` and come from the shadow tree,
+        // so they take precedence even over `!important` page rules.
+        'opacity', '1',
+        'visibility', 'visible',
+        'filter', 'none',
+        // A transform would additionally turn the host into the containing
+        // block of the `position: fixed` iframe, breaking its positioning.
+        'transform', 'none',
+        'clip-path', 'none',
+        'mask', 'none',
+        'contain', 'none',
     ];
 
     private static isIE10OrLower():boolean {

@@ -50,6 +50,7 @@
     &__btns {
         display: flex;
         justify-content: space-between;
+        position: relative;
     }
 
     &__select {
@@ -59,10 +60,43 @@
         background-size: 10px 8px;
         background-position: 153px 17px;
         background-repeat: no-repeat;
-        text-align-last:center;
         @mixin select-reset;
 
         @mixin bnt-white;
+    }
+
+    &__select-list {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        margin-top: 2px;
+        z-index: 1;
+        background-color: var(--white-color);
+        box-shadow: var(--grey-shadow);
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    &__select-item {
+        display: block;
+        width: 100%;
+        padding: 10px 20px;
+        text-align: left;
+        cursor: pointer;
+        word-break: break-all;
+        background-color: var(--white-color);
+        transition: var(--t3) background-color;
+        @mixin select-reset;
+
+        @mixin weight-regular;
+
+        &:hover,
+        &:focus {
+            background-color: var(--green02);
+        }
     }
 
     &__btn {
