@@ -1,6 +1,10 @@
 {
   "name": "popup-blocker",
   "description": "Block popups preemptively by wrapping browser APIs for additional check",
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=10.33.4 <11"
+  },
   "scripts": {
     "userscript-dev": "cross-env NODE_ENV=dev ts-node tasks/builder --target=userscript",
     "userscript-beta": "cross-env NODE_ENV=beta ts-node tasks/builder --target=userscript",
@@ -10,7 +14,7 @@
     "bundle:release": "cross-env NODE_ENV=release ts-node tasks/builder --target=bundle",
     "options-page": "ts-node tasks/builder --target=options",
     "tests": "ts-node tasks/builder --target=tests",
-    "lint": "yarn lint:code",
+    "lint": "pnpm lint:code",
     "lint:code": "eslint .",
     "lint:md": "markdownlint .",
     "locales:download": "ts-node locales.ts download",

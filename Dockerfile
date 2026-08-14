@@ -1,12 +1,13 @@
-FROM adguard/node-ssh:22.17--0 AS base
+FROM adguard/node-ssh:22.22--0 AS base
 WORKDIR /workdir
-ENV YARN_CACHE_FOLDER=/yarn-cache
+ENV npm_config_store_dir=/pnpm-store
 
 FROM base AS deps
-RUN --mount=type=cache,target=/yarn-cache,id=popup-blocker-yarn \
+RUN --mount=type=cache,target=/pnpm-store,id=popup-blocker-pnpm \
     --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=yarn.lock,target=yarn.lock \
-    yarn install --frozen-lockfile
+    --mount=type=bind,source=pnpm-lock.yaml,target=pnpm-lock.yaml \
+    --mount=type=bind,source=pnpm-workspace.yaml,target=pnpm-workspace.yaml \
+    pnpm install --frozen-lockfile --prefer-offline
 
 FROM base AS source-deps
 COPY --from=deps /workdir/node_modules ./node_modules
@@ -20,9 +21,9 @@ COPY . .
 # popupblocker.user.js, popupblocker.meta.js, and assets/. Each file is
 # published by its exact name via the artifact-only deploy-to-static contract.
 FROM source-deps AS test
-RUN yarn lint && \
-    yarn lint:md && \
-    yarn userscript-dev
+RUN pnpm lint && \
+    pnpm lint:md && \
+    pnpm userscript-dev
 
 FROM scratch AS test-output
 COPY --from=test /workdir/build/userscript/. /
@@ -32,7 +33,7 @@ COPY --from=test /workdir/build/userscript/. /
 # =============================================================================
 
 FROM source-deps AS build-beta
-RUN yarn userscript-beta
+RUN pnpm userscript-beta
 
 FROM scratch AS build-beta-output
 COPY --from=build-beta /workdir/build/userscript/. /
@@ -45,7 +46,7 @@ COPY --from=build-beta /workdir/build/build.txt /build.txt
 # The userscript build does not require the extensions-private build context
 # (signing material is only needed for the browser extension bundle target).
 FROM source-deps AS build-release
-RUN yarn userscript-release
+RUN pnpm userscript-release
 
 FROM scratch AS build-release-output
 COPY --from=build-release /workdir/build/userscript/. /

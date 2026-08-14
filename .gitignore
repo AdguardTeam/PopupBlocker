@@ -1,15 +1,17 @@
-node_modules
-build
-build_tsickle
+node_modules/
+build/
+build_tsickle/
 .rpt2_cache
 config
-yarn-error.log
+.pnpm-store/
 .DS_Store
 .idea/
 .vscode/
-tmp
+tmp/
 
 .playwright-mcp/
 
 # Output directory for CI build
 output/
+
+.sdd/

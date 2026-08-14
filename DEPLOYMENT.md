@@ -112,9 +112,9 @@ The userscript runs entirely in the browser page context.
   `${DEPLOYER_BASE_URL}/adguard-popup-release` (org variable
   `DEPLOYER_BASE_URL`). No secrets are required for static deploys.
 - **CI runner**: `team-extensions` (self-hosted GitHub Actions runner).
-- **Build container**: Docker build stages use `adguard/node-ssh:22.17--0` and
+- **Build container**: Docker build stages use `adguard/node-ssh:22.22--0` and
   emit artifacts from `build-output` / `build-beta-output` stages.
-- **Package manager**: yarn.
+- **Package manager**: pnpm.
 
 There are no production databases, caches, queues, object storage clients, or
 server processes in this repository.
