@@ -40,15 +40,13 @@ pnpm --version   # 10.x
 
 ### Clone the Repository
 
+Clone the **private** repository — see the [README](./README.md) for
+repository and mirror details.
+
 ```bash
 git clone https://github.com/AdGuardSoftwareLimited/ext-popup-blocker.git
 cd ext-popup-blocker
 ```
-
-> **Repository**: Development happens in the private repo
-> `AdGuardSoftwareLimited/ext-popup-blocker`. A public mirror at
-> `AdguardTeam/PopupBlocker` is synced automatically but should not be used for
-> development.
 
 ### Install Dependencies
 
@@ -160,6 +158,11 @@ pnpm userscript-dev
 See the [Code Quality](AGENTS.md#code-quality) section in
 `AGENTS.md` for coding standards and ESLint configuration
 details.
+
+### Commit Message Convention
+
+See the [Contribution Instructions](./AGENTS.md#contribution-instructions) in
+`AGENTS.md` for the required commit message format (`AG-XXX` prefix).
 
 ## Common Tasks
 
