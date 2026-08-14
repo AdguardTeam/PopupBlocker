@@ -33,6 +33,7 @@ that lets users manage allowlisted and silenced domains.
 ## Technical Context
 
 - **Language**: TypeScript (ES2015 target), compiled with Rollup
+- **Package Manager**: pnpm 10.x (>=10.33.4 <11), Node.js >= 22
 - **Primary Dependencies**: Preact (UI), `@adguard/translate`
   (i18n), tslib
 - **Storage**: Greasemonkey userscript API (`GM_getValue` /
@@ -106,20 +107,20 @@ that lets users manage allowlisted and silenced domains.
 
 | Command                  | Purpose                              |
 | ------------------------ | ------------------------------------ |
-| `yarn install`           | Install dependencies                 |
-| `yarn lint`              | Run ESLint on the codebase           |
-| `yarn lint:md`           | Run Markdownlint on Markdown files   |
-| `yarn userscript-dev`    | Build userscript (dev, with logging) |
-| `yarn userscript-beta`   | Build userscript (beta)              |
-| `yarn userscript-release`| Build userscript (release, minified) |
-| `yarn bundle:dev`        | Build all targets (dev)              |
-| `yarn bundle:beta`       | Build all targets (beta)             |
-| `yarn bundle:release`    | Build all targets (release)          |
-| `yarn options-page`      | Build the options page               |
-| `yarn tests`             | Build the browser test runner        |
+| `pnpm install`           | Install dependencies                 |
+| `pnpm lint`              | Run ESLint on the codebase           |
+| `pnpm lint:md`           | Run Markdownlint on Markdown files   |
+| `pnpm userscript-dev`    | Build userscript (dev, with logging) |
+| `pnpm userscript-beta`   | Build userscript (beta)              |
+| `pnpm userscript-release`| Build userscript (release, minified) |
+| `pnpm bundle:dev`        | Build all targets (dev)              |
+| `pnpm bundle:beta`       | Build all targets (beta)             |
+| `pnpm bundle:release`    | Build all targets (release)          |
+| `pnpm options-page`      | Build the options page               |
+| `pnpm tests`             | Build the browser test runner        |
 
 Tests are built into an HTML file and run in a browser — there is no
-CLI test runner. After running `yarn tests`, open the generated
+CLI test runner. After running `pnpm tests`, open the generated
 `build/tests.html` in a browser to execute the Mocha suite.
 
 ## Contribution Instructions
@@ -127,13 +128,13 @@ CLI test runner. After running `yarn tests`, open the generated
 - You MUST verify your changes with the linter and type checker.
 
     Use the following commands:
-    - `yarn lint` to run ESLint
-    - `yarn lint:md` to run Markdownlint on Markdown files
-    - `yarn userscript-dev` to check for TypeScript compilation errors
+    - `pnpm lint` to run ESLint
+    - `pnpm lint:md` to run Markdownlint on Markdown files
+    - `pnpm userscript-dev` to check for TypeScript compilation errors
 
 - You MUST update the unit tests for changed code.
 
-- You MUST build the tests with `yarn tests` and verify manually in a
+- You MUST build the tests with `pnpm tests` and verify manually in a
   browser that your changes do not break existing functionality.
 
 - When making changes to the project structure, ensure the Project
@@ -258,7 +259,7 @@ Storage and Shared but not on DOM wrappers or Proxy.
 - **Test entry point**: `test/index.ts` imports all test modules
 - **Mocks**: Located in `test/mocks/` (e.g., `gm-api.ts` mocks
   the Greasemonkey API)
-- **Running tests**: Build with `yarn tests`, then open
+- **Running tests**: Build with `pnpm tests`, then open
   `build/tests.html` in a browser
 - **Coverage**: No automated coverage gate; strive to test all
   heuristic logic (event verification, timeline checks) and
@@ -313,10 +314,10 @@ costs.
   build time via Rollup's `replace` plugin.
 - **Exclusions**: AdGuard exclusion domains are maintained in
   `/exclusions.ts`; TinyShield exclusions are auto-updated via
-  `yarn update-tinyshield-websites` into
+  `pnpm update-tinyshield-websites` into
   `tasks/tinyShieldWebsites.json`.
 - **Locales**: Translation strings live in `src/locales/`. Use
-  `yarn locales:download` and `yarn locales:upload` to sync with
+  `pnpm locales:download` and `pnpm locales:upload` to sync with
   the Crowdin translation platform.
 - **Documentation updates**: Changes to build commands, project
   structure, or public API must be reflected in both `README.md`

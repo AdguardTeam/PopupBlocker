@@ -24,16 +24,16 @@
 
 ## Prerequisites
 
-| Tool    | Version | Notes                                |
-| ------- | ------- | ------------------------------------ |
-| Node.js | >= 18.x | LTS recommended                      |
-| Yarn    | 1.x     | Yarn Classic (`npm install -g yarn`) |
+| Tool    | Version              | Notes                             |
+| ------- | -------------------- | --------------------------------- |
+| Node.js | >= 22.x              | LTS recommended                   |
+| pnpm    | 10.x (>=10.33.4 <11) | `npm install -g pnpm@10.33.4`     |
 
 Verify your setup:
 
 ```bash
-node --version   # v18.x or higher
-yarn --version   # 1.x
+node --version   # v22.x or higher
+pnpm --version   # 10.x
 ```
 
 ## Getting Started
@@ -53,7 +53,7 @@ cd ext-popup-blocker
 ### Install Dependencies
 
 ```bash
-yarn install
+pnpm install
 ```
 
 ### Build the Userscript
@@ -61,7 +61,7 @@ yarn install
 Build a development version with logging enabled:
 
 ```bash
-yarn userscript-dev
+pnpm userscript-dev
 ```
 
 The output is written to the `build/` directory. Install the
@@ -85,16 +85,16 @@ in the `build/` directory:
 
 | Command                   | Description                    |
 | ------------------------- | ------------------------------ |
-| `yarn userscript-dev`     | Build userscript with logging  |
-| `yarn userscript-beta`    | Build userscript (beta)        |
-| `yarn userscript-release` | Build userscript (minified)    |
-| `yarn bundle:dev`         | Build all targets (dev)        |
-| `yarn bundle:beta`        | Build all targets (beta)       |
-| `yarn bundle:release`     | Build all targets (release)    |
-| `yarn options-page`       | Build the options page         |
-| `yarn tests`              | Build the test runner          |
-| `yarn lint`               | Run ESLint                     |
-| `yarn lint:md`            | Run Markdownlint               |
+| `pnpm userscript-dev`     | Build userscript with logging  |
+| `pnpm userscript-beta`    | Build userscript (beta)        |
+| `pnpm userscript-release` | Build userscript (minified)    |
+| `pnpm bundle:dev`         | Build all targets (dev)        |
+| `pnpm bundle:beta`        | Build all targets (beta)       |
+| `pnpm bundle:release`     | Build all targets (release)    |
+| `pnpm options-page`       | Build the options page         |
+| `pnpm tests`              | Build the test runner          |
+| `pnpm lint`               | Run ESLint                     |
+| `pnpm lint:md`            | Run Markdownlint               |
 
 Versions are driven by `CHANGELOG.md` via the `tag-from-changelog.yml`
 reusable workflow — no manual bump script is needed.
@@ -132,7 +132,7 @@ Tests run in the browser — there is no CLI test runner.
 1. Build the test runner:
 
     ```bash
-    yarn tests
+    pnpm tests
     ```
 
 2. Open `build/tests.html` in a browser to execute the Mocha
@@ -147,14 +147,14 @@ The test entry point is `test/index.ts`. Test files mirror the
 Run all linters before submitting changes:
 
 ```bash
-yarn lint        # ESLint
-yarn lint:md     # Markdownlint
+pnpm lint        # ESLint
+pnpm lint:md     # Markdownlint
 ```
 
 Also verify that the project compiles without TypeScript errors:
 
 ```bash
-yarn userscript-dev
+pnpm userscript-dev
 ```
 
 See the [Code Quality](AGENTS.md#code-quality) section in
@@ -168,7 +168,7 @@ details.
 1. Build the options page:
 
     ```bash
-    yarn options-page
+    pnpm options-page
     ```
 
 2. Serve the `build/` directory with a local HTTP server:
@@ -201,7 +201,7 @@ notification in the top-right corner.
 **TinyShield exclusions** are auto-updated:
 
 ```bash
-yarn update-tinyshield-websites
+pnpm update-tinyshield-websites
 ```
 
 This downloads the latest TinyShield domains and writes them to
@@ -214,8 +214,8 @@ Translation strings live in `src/locales/`. To sync with the
 Crowdin translation platform:
 
 ```bash
-yarn locales:download   # Pull latest translations
-yarn locales:upload     # Push source strings
+pnpm locales:download   # Pull latest translations
+pnpm locales:upload     # Push source strings
 ```
 
 ## Running the Full CI Pipeline Locally
@@ -236,18 +236,18 @@ and `assets/`) appear in `./artifacts/`.
 
 ## Troubleshooting
 
-- **`ts-node` errors on build** — ensure you are using Node.js 18.x or higher.
+- **`ts-node` errors on build** — ensure you are using Node.js 22.x or higher.
   Older versions may lack required ES module support.
 
 - **Tests page is blank** — make sure you opened
   `build/tests.html` (not `test/index.html`). The raw HTML
   file does not include the compiled test bundle.
 
-- **Lint errors after pulling** — run `yarn install` to ensure
-  dependencies are up to date, then `yarn lint`.
+- **Lint errors after pulling** — run `pnpm install` to ensure
+  dependencies are up to date, then `pnpm lint`.
 
 - **Build fails with missing module** — delete `node_modules/`,
-  then run `yarn install` again.
+  then run `pnpm install` again.
 
 - **Options page not loading settings** — the options page
   communicates with the userscript via message passing. Ensure
