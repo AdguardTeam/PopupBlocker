@@ -18,12 +18,12 @@
     &__in {
         position: relative;
         padding: 30px 40px;
-        background-color: var(--white-color);
+        background-color: var(--bg-card);
 
         &--popup {
             width: 400px;
             min-height: 0;
-            box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.15);
+            box-shadow: var(--shadow-card);
         }
     }
 
@@ -56,9 +56,9 @@
         position: relative;
         display: flex;
         justify-content: space-between;
-        box-shadow: inset 0 1px 0 0 var(--grayc5);
+        box-shadow: inset 0 1px 0 0 var(--stroke-divider);
         padding: 20px 0;
-        background-color: var(--white-color);
+        background-color: var(--bg-card);
 
         &:first-child {
             box-shadow: none;
@@ -68,7 +68,7 @@
             position: absolute;
             width: 100%;
             padding: 20px 20px;
-            color: var(--grayc5);
+            color: var(--text-disabled);
             left: 0;
             bottom: -100%;
             text-align: center;
@@ -90,7 +90,7 @@
             padding: 0;
             @mixin ellipsis;
 
-            color: var(--green5B);
+            color: var(--product-primary);
 
             &:last-child {
                 margin-left: 25px;
@@ -102,10 +102,9 @@
         display: block;
         width: 15px;
         height: 16px;
-        background-repeat: no-repeat;
-        background-image: svg-load("../../../../assets/icons/del.svg");
         cursor: pointer;
         padding: 0;
+        @mixin icon-mask var(--icon-del);
     }
 
     &__input {
@@ -115,7 +114,9 @@
         border: 0;
         padding: 10px 0;
         margin-bottom: 25px;
-        box-shadow: inset 0 -1px 0 0 var(--grayc5);
+        color: var(--text-main);
+        background-color: var(--bg-card);
+        box-shadow: inset 0 -1px 0 0 var(--stroke-input);
         @mixin weight-regular;
     }
 
@@ -125,16 +126,16 @@
         height: 40px;
         padding: 10px;
         font-size: 1.5rem;
-        color: var(--white-color);
+        color: var(--text-on-primary);
         border: 0;
-        background-color: var(--green74);
+        background-color: var(--product-primary);
         transition: var(--t3) background-color;
         @mixin ellipsis;
 
         @mixin weight-regular;
 
         &:hover {
-            background-color: #58a273;
+            background-color: var(--product-primary-hover);
         }
     }
 
@@ -158,7 +159,7 @@
             text-decoration: none;
             max-width: 80px;
             cursor: pointer;
-            color: #66B574;
+            color: var(--product-primary);
 
             &:hover {
                 text-decoration: underline;

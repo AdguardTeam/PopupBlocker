@@ -119,6 +119,12 @@
         },
         "settings_saved": {
             "message": "Settings saved"
+        },
+        "theme_switch_to_dark": {
+            "message": "Switch to dark theme"
+        },
+        "theme_switch_to_light": {
+            "message": "Switch to light theme"
         }
     },
     "ar": {

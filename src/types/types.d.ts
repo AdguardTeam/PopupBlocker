@@ -24,7 +24,19 @@ interface Document {
     msElementsFromPoint(x:number, y:number):NodeListOf<Element>
 }
 
+/**
+ * Options api that the userscript exposes on its own options page.
+ *
+ * Composed in `src/init/utils.ts`, so the theme option is grafted on there rather than
+ * living inside `optionsApi` itself. Optional because the options page is also served
+ * to visitors who have not installed the userscript.
+ */
+type ExposedOptionsApi = import('../storage/Option').OptionsApi & {
+    theme: import('../storage/ThemeOption').ThemeOptionInterface,
+};
+
 interface Window {
+    optionsApi?:ExposedOptionsApi
     Window:typeof Window
     Node:typeof Node
     EventTarget:typeof EventTarget

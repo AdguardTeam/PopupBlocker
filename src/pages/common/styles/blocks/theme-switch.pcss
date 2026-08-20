@@ -1,0 +1,48 @@
+.theme-switch {
+    display: block;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 100%;
+    background-color: var(--bg-card);
+    box-shadow: 0 0 0 1px var(--stroke-divider);
+    transition: var(--t3) background-color, var(--t3) box-shadow;
+
+    &:hover {
+        background-color: var(--product-primary-subtle);
+    }
+
+    &:focus-visible {
+        box-shadow: 0 0 0 2px var(--product-primary);
+    }
+
+    /**
+     * The glyph lives on a child element: a `mask-image` on the button itself would
+     * clip its round background away.
+     */
+    &__icon {
+        display: block;
+        margin: 0 auto;
+        width: 18px;
+        height: 18px;
+        @mixin icon-mask var(--icon-moon);
+    }
+}
+
+/**
+ * The switch shows what a click will do: a moon in light mode, a sun in dark mode.
+ * Mirrors the two-block override pattern used for the color tokens in `theme.pcss`.
+ */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-switch__icon {
+        -webkit-mask-image: var(--icon-sun);
+        mask-image: var(--icon-sun);
+    }
+}
+
+:root[data-theme="dark"] .theme-switch__icon {
+    -webkit-mask-image: var(--icon-sun);
+    mask-image: var(--icon-sun);
+}

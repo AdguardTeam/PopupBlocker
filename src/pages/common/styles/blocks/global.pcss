@@ -12,7 +12,7 @@ body {
     margin: 0;
     font-size: 1.3rem;
     line-height: 1.428571429;
-    color: var(--gray-base);
+    color: var(--text-main);
     @mixin weight-regular;
 
     &.body--overflow {
@@ -56,13 +56,13 @@ select::-ms-expand {
             width: 18px;
             height: 18px;
             border-radius: 100%;
-            box-shadow: 0 0 0 1px var(--graycc);
+            box-shadow: 0 0 0 1px var(--stroke-input);
             transition: var(--t3) box-shadow;
         }
 
         &:hover {
             &:after {
-                box-shadow: 0 0 0 1px var(--green74);
+                box-shadow: 0 0 0 1px var(--product-primary);
             }
         }
     }
@@ -76,20 +76,20 @@ select::-ms-expand {
             width: 10px;
             height: 10px;
             border-radius: 100%;
-            background-color: var(--green74);
+            background-color: var(--product-primary);
         }
     }
 
     &:disabled {
         & + .radio-label {
             &:after {
-                background-color: var(--grayf1);
+                background-color: var(--bg-inset);
                 cursor: default;
             }
 
             &:hover {
                 &:after {
-                    box-shadow: 0 0 0 1px var(--graycc);
+                    box-shadow: 0 0 0 1px var(--stroke-input);
                 }
             }
         }
@@ -112,13 +112,13 @@ select::-ms-expand {
             width: 19px;
             height: 19px;
             border-radius: 3px;
-            box-shadow: 0 0 0 1px var(--graycc);
+            box-shadow: 0 0 0 1px var(--stroke-input);
             transition: var(--t3) box-shadow, var(--t3) background-color;
         }
 
         &:hover {
             &:after {
-                box-shadow: 0 0 0 1px var(--green74);
+                box-shadow: 0 0 0 1px var(--product-primary);
             }
         }
     }
@@ -126,8 +126,8 @@ select::-ms-expand {
     &:checked {
         & + .checkbox-label {
             &:after {
-                background-color: var(--green74);
-                box-shadow: 0 0 0 1px var(--green74);
+                background-color: var(--product-primary);
+                box-shadow: 0 0 0 1px var(--product-primary);
             }
 
             &:before {
@@ -139,12 +139,13 @@ select::-ms-expand {
                 left: 4px;
                 width: 11px;
                 height: 9px;
-                background-image: svg-load("../../../../assets/icons/checked.svg");
+                /* The checkmark sits on the green fill, so it keeps its own white color. */
+                background-image: var(--icon-checked);
             }
 
             &:hover {
                 &:after {
-                    background-color: var(--green5B);
+                    background-color: var(--product-primary-hover);
                 }
             }
         }
@@ -153,13 +154,13 @@ select::-ms-expand {
     &:disabled {
         & + .checkbox-label {
             &:after {
-                background-color: var(--grayf1);
+                background-color: var(--bg-inset);
                 cursor: default;
             }
 
             &:hover {
                 &:after {
-                    box-shadow: 0 0 0 1px var(--graycc);
+                    box-shadow: 0 0 0 1px var(--stroke-input);
                 }
             }
         }
@@ -167,7 +168,7 @@ select::-ms-expand {
 }
 
 .userscript-options-page {
-    background-color: #e6e6e6;
+    background-color: var(--bg-page);
 
     & .settings {
         justify-content: center;

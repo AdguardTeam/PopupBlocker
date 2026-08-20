@@ -1,0 +1,36 @@
+import { gmWrapper } from './GMWrapper';
+import { StorageKey } from './storage-key';
+import { parseTheme, Theme } from '../theme';
+
+export interface ThemeOptionInterface {
+    getStored(): Theme | null
+    setStored(theme: Theme): void
+    addChangeListener(listener: ValueListener): void
+}
+
+/**
+ * Represents the userscript's theme option.
+ *
+ * Unlike {@link Option} this holds a single scalar rather than a list, and an empty value
+ * is meaningful: it means "follow the operating system".
+ */
+class ThemeOption implements ThemeOptionInterface {
+    /**
+     * Reads the explicitly chosen theme, if there is one
+     */
+    getStored = (): Theme | null => parseTheme(gmWrapper.getValue<string>(StorageKey.Theme, ''));
+
+    /**
+     * Stores an explicit theme choice
+     */
+    setStored = (theme: Theme): void => gmWrapper.setValue(StorageKey.Theme, theme);
+
+    /**
+     * Subscribes to theme changes made within the same document
+     */
+    addChangeListener = (listener: ValueListener): void => {
+        gmWrapper.addValueChangeListener(StorageKey.Theme, listener);
+    };
+}
+
+export const themeOption = new ThemeOption();

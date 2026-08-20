@@ -1,18 +1,21 @@
 .footer {
-    border-top: 1px solid rgba(197, 197, 197, .47);
+    border-top: 1px solid var(--stroke-divider);
 
     &__in {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         margin: 0 auto;
         width: 540px;
         padding: 30px 40px;
-        background-color: var(--white-color);
+        background-color: var(--bg-card);
     }
 
     &__link {
         text-decoration: none;
         max-width: 80px;
         cursor: pointer;
-        color: var(--green5B);
+        color: var(--product-primary);
 
         &:last-child {
             margin-left: 25px;

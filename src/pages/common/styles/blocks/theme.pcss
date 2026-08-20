@@ -1,0 +1,81 @@
+/**
+ * Semantic color tokens — the single place where colors are chosen.
+ *
+ * To re-color the UI, change the mapping here (or the base scale in `palette.pcss`).
+ * Nothing else in the codebase should contain a literal color.
+ *
+ * Light values live on a bare `:root`. Dark values are declared TWICE, on purpose:
+ *
+ *   1. inside `@media (prefers-color-scheme: dark)`, guarded by `:not([data-theme="light"])`
+ *      — this is the default for a user who never touched the theme switch;
+ *   2. under `:root[data-theme="dark"]` — this is the explicit user choice, and it has to
+ *      win even when the OS is set to light.
+ *
+ * Both blocks are required: dropping (1) breaks "follow the system", dropping (2) breaks
+ * "switch to dark while the OS is light". The values themselves are kept in one place via
+ * the `theme-dark` mixin below, so there is still only one copy to edit.
+ */
+
+@define-mixin theme-dark {
+    --bg-page: var(--canvas-dark);
+    --bg-card: var(--gray-80);
+    --bg-button-secondary: var(--gray-80);
+    --bg-inset: var(--gray-80);
+    --bg-pin: var(--canvas-dark);
+    --bg-pin-hover: var(--canvas-dark-hover);
+    --bg-toast: rgba(0, 0, 0, 0.85);
+
+    --text-main: var(--gray-20);
+    --text-description: var(--gray-30);
+    --text-disabled: var(--gray-50);
+    --text-on-primary: var(--gray-0);
+
+    --stroke-divider: var(--gray-70);
+    --stroke-input: var(--gray-70);
+
+    --icon-gray: var(--gray-40);
+
+    --product-primary-subtle: rgba(103, 178, 121, 0.28);
+
+    --shadow-card: 0 0 10px 3px rgba(0, 0, 0, 0.3);
+}
+
+:root {
+    --bg-page: var(--gray-20);
+    --bg-card: var(--gray-0);
+    --bg-button-secondary: var(--gray-0);
+    --bg-inset: var(--gray-10);
+    --bg-pin: var(--gray-0);
+    --bg-pin-hover: var(--product-primary-subtle);
+    --bg-toast: rgba(0, 0, 0, 0.7);
+
+    --text-main: var(--gray-80);
+    --text-description: var(--gray-70);
+    --text-disabled: var(--gray-50);
+    --text-on-primary: var(--gray-0);
+
+    --stroke-divider: var(--gray-30);
+    --stroke-input: var(--gray-30);
+
+    --icon-gray: var(--gray-60);
+
+    /**
+     * The product green is deliberately NOT re-themed — same as in AdGuard Assistant,
+     * where the switch/checkbox accent keeps `product-primary-50` in both modes.
+     */
+    --product-primary: var(--product-primary-50);
+    --product-primary-hover: #5ea76b;
+    --product-primary-subtle: rgba(103, 178, 121, 0.2);
+
+    --shadow-card: 0 0 10px 3px rgba(162, 161, 161, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        @mixin theme-dark;
+    }
+}
+
+:root[data-theme="dark"] {
+    @mixin theme-dark;
+}

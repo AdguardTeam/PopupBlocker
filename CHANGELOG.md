@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Dark theme for the options page and the blocked-popup notification,
+  toggled by a moon/sun switch in the options page footer. Follows the
+  operating system setting until the switch is used [#217].
+
 ### Changed
 
 - Migrated package manager from Yarn to pnpm.
@@ -23,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+[#217]: https://github.com/AdguardTeam/PopupBlocker/issues/217
 [#348]: https://github.com/AdguardTeam/PopupBlocker/issues/348
 
 ## [2.5.117] - 2026-07-06

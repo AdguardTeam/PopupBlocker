@@ -9,4 +9,5 @@ export const StorageKey = {
     InstanceId: '#id',
     AllowedDomains: OptionName.Allowed,
     SilencedDomains: OptionName.Silenced,
+    Theme: 'theme',
 } as const;

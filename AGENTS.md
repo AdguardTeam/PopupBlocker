@@ -80,6 +80,7 @@ that lets users manage allowlisted and silenced domains.
 │   ├── storage/                # Settings DAO and GM API wrapper
 │   ├── pages/                  # Options and notification pages (Preact)
 │   ├── ui/                     # Alert and toast UI components
+│   ├── theme/                  # Light/dark theme resolution and persistence
 │   ├── i18n/                   # Internationalization utilities
 │   ├── shared/                 # Protected APIs, utilities, constants
 │   ├── types/                  # TypeScript type definitions

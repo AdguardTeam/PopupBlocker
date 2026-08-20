@@ -3,3 +3,4 @@ export { LoadingSubtitle } from './LoadingSubtitle';
 export { NotInstalled } from './NotInstalled';
 export { Options } from './Options';
 export { Portal } from './Portal';
+export { ThemeSwitch } from './ThemeSwitch';

@@ -2,6 +2,9 @@
 // also used to detect userscript on options page
 export const OPTIONS_API_PROP = 'optionsApi';
 
+// key of the theme option inside the exposed options api
+export const THEME_OPTION_PROP = 'theme';
+
 export const OPTIONS_PAGE_CONTEXT_NAME = '__popupBlocker_options_page__';
 
 // __userscriptResourceEnv__ and __userscriptResourceVersion__ will be replaced

@@ -180,8 +180,10 @@ See the [Contribution Instructions](./AGENTS.md#contribution-instructions) in
     cd build && npx serve .
     ```
 
-3. In `src/pages/options/option-init.ts`, modify `isOptionsPage`
-   to allow your local address and port.
+3. `isOptionsPage` in `src/init/utils.ts` already whitelists
+   `localhost:` and `http://127.0.0.1` addresses ending in
+   `/options.html`, so no source change is needed for those. For any
+   other address, add it there.
 
 4. Ensure the userscript (e.g., installed in AdGuard) also
    references the same local address.

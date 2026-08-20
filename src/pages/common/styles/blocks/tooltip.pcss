@@ -4,10 +4,20 @@
     vertical-align: middle;
     width: 15px;
     height: 14px;
-    background-size: cover;
     position: relative;
     margin-left: 10px;
-    background-image: svg-load("../../../../assets/icons/tooltip.svg");
+
+    /**
+     * The icon lives on a child element rather than on `.tooltip` itself:
+     * a `mask-image` clips everything the element renders, which would hide the
+     * `:before` bubble and the `:after` arrow below.
+     */
+    &__icon {
+        display: block;
+        width: 100%;
+        height: 100%;
+        @mixin icon-mask var(--icon-tooltip);
+    }
 
     &-container {
         display: flex;
@@ -27,10 +37,10 @@
         content: attr(data-tooltip);
         border-radius: 3px;
         padding: 10px 15px;
-        color: var(--gray-base);
-        background-color: var(--white-color);
+        color: var(--text-main);
+        background-color: var(--bg-card);
         transition: var(--t3) opacity;
-        box-shadow: var(--grey-shadow);
+        box-shadow: var(--shadow-card);
     }
 
     &:after {
@@ -45,7 +55,7 @@
         width: 0;
         height: 0;
         border-top: 8px solid transparent;
-        border-right: 8px solid var(--white-color);
+        border-right: 8px solid var(--bg-card);
         border-bottom: 8px solid transparent;
         transition: var(--t3) opacity;
     }

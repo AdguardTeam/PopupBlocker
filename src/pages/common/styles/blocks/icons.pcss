@@ -1,0 +1,49 @@
+/**
+ * Icon registry — the single place where icons are chosen.
+ *
+ * To swap an icon, drop the new file into `src/assets/icons/` and change the one line here.
+ *
+ * Monochrome icons are applied with `@mixin icon-mask` (see below), which paints them with
+ * `--icon-gray` instead of using the color baked into the SVG. That means they follow the
+ * theme automatically and need no dark-mode duplicates.
+ *
+ * A mask is driven by alpha, so an `opacity` attribute in the source SVG no longer dims
+ * the icon's own ink — it dims how much of `--icon-gray` shows through, and the token can
+ * no longer fully control the icon's strength. `arrow` (0.34), `cross` (0.66) and `del`
+ * (0.60) carry one from their `background-image` days, which is why they render lighter
+ * than `tooltip`, which has none. Keep that in mind when adding an icon.
+ *
+ * Brand icons (the green window and shield) keep their own colors and read correctly on
+ * both backgrounds, so they are used as plain `background-image`.
+ */
+:root {
+    /* Monochrome — painted with var(--icon-gray) through @mixin icon-mask */
+    --icon-close: svg-load("../../../../assets/icons/cross.svg");
+    --icon-del: svg-load("../../../../assets/icons/del.svg");
+    --icon-tooltip: svg-load("../../../../assets/icons/tooltip.svg");
+    --icon-arrow: svg-load("../../../../assets/icons/arrow.svg");
+    --icon-moon: svg-load("../../../../assets/icons/moon.svg");
+    --icon-sun: svg-load("../../../../assets/icons/sun.svg");
+    --icon-checked: svg-load("../../../../assets/icons/checked.svg");
+
+    /* Brand — full color, used as-is */
+    --icon-window: svg-load("../../../../assets/icons/window.svg");
+    --icon-shield: svg-load("../../../../assets/icons/shield.svg");
+}
+
+/**
+ * Paints a monochrome icon with the current theme's icon color.
+ *
+ * @param $icon one of the `--icon-*` tokens above, e.g. `@mixin icon-mask var(--icon-close);`
+ */
+@define-mixin icon-mask $icon {
+    -webkit-mask-image: $icon;
+    mask-image: $icon;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    background-color: var(--icon-gray);
+}

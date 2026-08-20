@@ -1,0 +1,29 @@
+/**
+ * Base color scale, shared by both themes.
+ *
+ * Mirrors AdGuard Assistant's `src/styles/base/palette.less` so that both products
+ * stay on the same set of base colors.
+ *
+ * These are raw values with no meaning attached — do NOT reference them outside of
+ * `theme.pcss`. Use the semantic tokens defined there instead.
+ */
+:root {
+    --gray-0: #ffffff;
+    --gray-10: #f6f6f6;
+    --gray-20: #e4e4e4;
+    --gray-30: #d2d2d2;
+    --gray-40: #c0c0c0;
+    --gray-50: #a4a4a4;
+    --gray-60: #7f7f7f;
+    --gray-70: #5b5b5b;
+    --gray-80: #3d3d3d;
+
+    --product-primary-50: #67b279;
+
+    /**
+     * Dark canvas colors. Assistant defines these inline in `src/styles/button.less`
+     * for its floating button rather than in the palette, so they have no scale name.
+     */
+    --canvas-dark: #1d2021;
+    --canvas-dark-hover: #2c2f30;
+}

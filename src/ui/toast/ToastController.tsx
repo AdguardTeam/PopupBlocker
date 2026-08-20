@@ -5,6 +5,8 @@ import { concatStyle } from '../utils/ui-utils';
 import TextSizeWatcher from '../utils/TextSizeWatcher';
 
 import { NotificationHead, Toast } from '../../pages/notifications/components';
+import { applyStoredTheme } from '../../theme';
+import { themeOption } from '../../storage/ThemeOption';
 
 const px = 'px';
 
@@ -67,6 +69,7 @@ export default class ToastController {
             const head = doc?.documentElement.querySelector('head');
 
             if (head && doc) {
+                applyStoredTheme(doc, themeOption.getStored());
                 render(<NotificationHead />, head);
                 render(<Toast message={message} />, doc?.body);
             }

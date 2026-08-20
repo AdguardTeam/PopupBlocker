@@ -6,4 +6,8 @@ type TooltipProps = {
 
 export const Tooltip: React.FunctionalComponent<TooltipProps> = ({
     tooltip,
-}) => (<div class="tooltip" data-tooltip={tooltip} />);
+}) => (
+    <div class="tooltip" data-tooltip={tooltip}>
+        <span class="tooltip__icon" />
+    </div>
+);

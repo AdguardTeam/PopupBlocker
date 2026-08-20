@@ -6,7 +6,7 @@ import {
     Footer,
 } from './components';
 import { translator } from '../../i18n';
-import { useDetectUserscript } from './hooks';
+import { useDetectUserscript, useTheme } from './hooks';
 import { AppState } from './constants';
 import '../common/styles/options.pcss';
 
@@ -16,6 +16,8 @@ export const App = () => {
     const [state, setState] = useState(AppState.Detecting);
 
     useDetectUserscript(setState);
+
+    const [theme, toggleTheme] = useTheme(state);
 
     // This is a placeholder for the channel value from the rollup replace plugin.
     const channel = '__channel__' as Channel;
@@ -38,7 +40,7 @@ export const App = () => {
                     {state === AppState.NotInstalled && <NotInstalled />}
                     {state === AppState.Installed && <Options />}
                 </div>
-                <Footer />
+                <Footer theme={theme} toggleTheme={toggleTheme} />
             </div>
             <div id="portal" />
         </>
