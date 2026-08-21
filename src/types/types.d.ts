@@ -31,9 +31,9 @@ interface Document {
  * living inside `optionsApi` itself. Optional because the options page is also served
  * to visitors who have not installed the userscript.
  */
-type ExposedOptionsApi = import('../storage/Option').OptionsApi & {
-    theme: import('../storage/ThemeOption').ThemeOptionInterface,
-};
+type ThemeApiProp = typeof import('../shared/constants').THEME_OPTION_PROP;
+type ThemeApi = import('../storage/ThemeOption').ThemeOptionInterface;
+type ExposedOptionsApi = import('../storage/Option').OptionsApi & Record<ThemeApiProp, ThemeApi>;
 
 interface Window {
     optionsApi?:ExposedOptionsApi
