@@ -23,7 +23,7 @@
         &--popup {
             width: 400px;
             min-height: 0;
-            box-shadow: var(--shadow-card);
+            box-shadow: var(--shadow-modal);
         }
     }
 
@@ -105,6 +105,8 @@
         cursor: pointer;
         padding: 0;
         @mixin icon-mask var(--icon-del);
+
+        background-color: var(--icon-del-color);
     }
 
     &__input {
@@ -114,7 +116,7 @@
         border: 0;
         padding: 10px 0;
         margin-bottom: 25px;
-        color: var(--text-main);
+        color: var(--text-input);
         background-color: var(--bg-card);
         box-shadow: inset 0 -1px 0 0 var(--stroke-input);
         @mixin weight-regular;
