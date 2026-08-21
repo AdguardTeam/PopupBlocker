@@ -5,7 +5,6 @@ import { parseTheme, Theme } from '../theme';
 export interface ThemeOptionInterface {
     getStored(): Theme | null
     setStored(theme: Theme): void
-    addChangeListener(listener: ValueListener): void
 }
 
 /**
@@ -24,13 +23,6 @@ class ThemeOption implements ThemeOptionInterface {
      * Stores an explicit theme choice
      */
     setStored = (theme: Theme): void => gmWrapper.setValue(StorageKey.Theme, theme);
-
-    /**
-     * Subscribes to theme changes made within the same document
-     */
-    addChangeListener = (listener: ValueListener): void => {
-        gmWrapper.addValueChangeListener(StorageKey.Theme, listener);
-    };
 }
 
 export const themeOption = new ThemeOption();
