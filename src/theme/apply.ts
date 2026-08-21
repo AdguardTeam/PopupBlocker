@@ -31,17 +31,6 @@ export const getSystemTheme = (context: Window): Theme => {
 };
 
 /**
- * Resolves the theme that is actually displayed.
- * An explicitly stored theme always wins; without one we follow the OS.
- *
- * @param stored stored theme, or null to follow the OS
- * @param context window to read the OS setting from
- */
-export const resolveTheme = (stored: Theme | null, context: Window): Theme => (
-    stored ?? getSystemTheme(context)
-);
-
-/**
  * Pins an explicitly chosen theme on a document, or hands control back to the
  * `prefers-color-scheme` rules when there is no choice to honour.
  *
