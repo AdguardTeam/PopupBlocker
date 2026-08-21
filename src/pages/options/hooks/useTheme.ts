@@ -43,6 +43,35 @@ const writeThemeMirror = (theme: Theme): void => {
 };
 
 /**
+ * Subscribes to theme changes made in another options page tab.
+ *
+ * Writing the `localStorage` mirror raises a `storage` event in every other same-origin
+ * document, so a toggle in one tab reaches the rest. The event never fires in the tab
+ * that made the change, so the toggle itself needs no guard against it.
+ *
+ * The new theme is taken from the event rather than re-read from the userscript storage:
+ * `GM_getValue` is served from a per-document cache that the receiving tab has not
+ * necessarily refreshed yet, so reading it here can hand back the previous value.
+ *
+ * @param onChange called with the theme another tab switched to
+ * @returns an unsubscribe function
+ */
+const watchOtherTabs = (onChange: (theme: Theme | null) => void): (() => void) => {
+    const onStorage = (event: StorageEvent) => {
+        if (event.key === THEME_MIRROR_KEY) {
+            onChange(parseTheme(event.newValue));
+            return;
+        }
+        // `key` is null when the whole store is cleared
+        if (event.key === null) {
+            onChange(readThemeMirror());
+        }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+};
+
+/**
  * Subscribes to OS theme changes, across both `MediaQueryList` listener generations.
  *
  * Note that the theme itself does not depend on this — with no stored choice the
@@ -124,6 +153,8 @@ export const useTheme = (appState: AppState): [Theme, () => void] => {
     }, [appState]);
 
     useEffect(() => watchSystemTheme(() => setSystemTheme(getSystemTheme(window))), []);
+
+    useEffect(() => watchOtherTabs(setStored), []);
 
     useEffect(() => {
         applyStoredTheme(document, stored);
