@@ -17,13 +17,15 @@
  */
 
 @define-mixin theme-dark {
-    --bg-page: var(--canvas-dark);
+    --bg-page: var(--gray-90);
     --bg-card: var(--gray-80);
+    --bg-card-hover: var(--green-subtle);
     --bg-button-secondary: var(--gray-80);
-    --bg-inset: var(--gray-80);
-    --bg-pin: var(--canvas-dark);
-    --bg-pin-hover: var(--canvas-dark-hover);
-    --bg-toast: rgba(0, 0, 0, 0.85);
+    --bg-inset: var(--gray-70);
+    --bg-tooltip: var(--gray-70);
+    --bg-pin: var(--gray-90);
+    --bg-pin-hover: var(--green-subtle);
+    --bg-toast: var(--gray-100);
 
     --text-main: var(--gray-20);
     --text-input: var(--gray-20);
@@ -39,8 +41,7 @@
     --icon-arrow-color: var(--gray-40);
 
     --product-primary: var(--product-primary-50);
-    --product-primary-hover: #5ea76b;
-    --product-primary-subtle: rgba(103, 178, 121, 0.28);
+    --product-primary-hover: var(--product-primary-60);
 
     --shadow-card: 0 0 10px 3px rgba(0, 0, 0, 0.3);
     --shadow-modal: 0 0 10px 0 rgba(0, 0, 0, 0.5);
@@ -49,11 +50,13 @@
 :root {
     --bg-page: var(--light-page);
     --bg-card: var(--gray-0);
+    --bg-card-hover: var(--green-subtle);
     --bg-button-secondary: var(--gray-0);
     --bg-inset: var(--light-control-disabled);
+    --bg-tooltip: var(--gray-0);
     --bg-pin: var(--gray-0);
-    --bg-pin-hover: var(--product-primary-subtle);
-    --bg-toast: rgba(0, 0, 0, 0.7);
+    --bg-pin-hover: var(--green-subtle);
+    --bg-toast: var(--light-toast);
 
     --text-main: var(--light-text);
     --text-input: var(--light-input-text);
@@ -70,7 +73,6 @@
 
     --product-primary: var(--light-green);
     --product-primary-hover: var(--light-green-hover);
-    --product-primary-subtle: var(--light-green-subtle);
 
     --shadow-card: 0 0 10px 3px rgba(162, 161, 161, 0.3);
     --shadow-modal: var(--light-modal-shadow);

@@ -8,12 +8,18 @@
     margin-left: 10px;
 
     /**
-     * The icon lives on a child element rather than on `.tooltip` itself:
-     * a `mask-image` clips everything the element renders, which would hide the
-     * `:before` bubble and the `:after` arrow below.
+     * The icon lives on a child element rather than on `.tooltip` itself: a `mask-image`
+     * clips everything the element renders, which would hide the `:before` bubble and the
+     * `:after` arrow below.
+     *
+     * It is taken out of flow because the `:after` arrow is positioned relatively, so an
+     * in-flow child would push it down by the icon's height.
      */
     &__icon {
         display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
         @mixin icon-mask var(--icon-tooltip);
@@ -38,7 +44,7 @@
         border-radius: 3px;
         padding: 10px 15px;
         color: var(--text-main);
-        background-color: var(--bg-card);
+        background-color: var(--bg-tooltip);
         transition: var(--t3) opacity;
         box-shadow: var(--shadow-card);
     }
@@ -55,7 +61,7 @@
         width: 0;
         height: 0;
         border-top: 8px solid transparent;
-        border-right: 8px solid var(--bg-card);
+        border-right: 8px solid var(--bg-tooltip);
         border-bottom: 8px solid transparent;
         transition: var(--t3) opacity;
     }

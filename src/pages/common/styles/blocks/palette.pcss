@@ -17,15 +17,19 @@
     --gray-60: #7f7f7f;
     --gray-70: #5b5b5b;
     --gray-80: #3d3d3d;
+    --gray-90: #1f1f1f;
+    --gray-100: #000000;
 
     --product-primary-50: #67b279;
+    --product-primary-60: #589968;
 
     /**
-     * Dark canvas colors, outside the Figma scale — Assistant defines these inline in
-     * `src/styles/button.less` for its floating button.
+     * The translucent green used for hover states. Shared verbatim with AdGuard
+     * Assistant, where it is `@assist-green02` in `src/styles/base/variables.less`;
+     * Popup Blocker carried the same value as `--green02`. Used in both themes so the
+     * two products highlight identically.
      */
-    --canvas-dark: #1d2021;
-    --canvas-dark-hover: #2c2f30;
+    --green-subtle: rgba(104, 188, 113, 0.2);
 
     /**
      * Popup Blocker's own colors, predating the Assistant palette. Kept verbatim so that
@@ -38,7 +42,7 @@
     --light-control-disabled: #f1f1f1;
     --light-green: #66b574;
     --light-green-hover: #58a273;
-    --light-green-subtle: rgba(104, 188, 113, 0.2);
+    --light-toast: rgba(0, 0, 0, 0.7);
     --light-input-text: #000000;
     --light-icon: #979797;
     --light-icon-del: #868686;
