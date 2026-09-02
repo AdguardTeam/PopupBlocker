@@ -153,7 +153,7 @@ export class AlertController implements AlertControllerInterface {
                 break;
             default:
                 break;
-            // If a new alert has arrived while it is in a collpased state,
+            // If a new alert has arrived while it is in a collapsed state,
             // do nothing.
         }
     }
@@ -168,7 +168,7 @@ export class AlertController implements AlertControllerInterface {
 
     onMouseLeave() {
         if (!isNumber(this.remainingAfterMouseLeave)) { return; }
-        // The alert should not be collapsed within 2 sec of of mouseleave event.
+        // The alert should not be collapsed within 2 sec of mouseleave event.
         this.scheduleTransition(
             this.$state === AlertStates.EXPANDED ? this.$collapse : this.$destroy,
             Math.max(
