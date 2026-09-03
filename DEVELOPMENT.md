@@ -133,8 +133,8 @@ Tests run in the browser — there is no CLI test runner.
     pnpm tests
     ```
 
-2. Open `build/tests.html` in a browser to execute the Mocha
-   suite.
+2. Open `test/index.html` in a browser to execute the Mocha suite. It
+   loads the compiled test bundle from `test/build/index.js`.
 
 The test entry point is `test/index.ts`. Test files mirror the
 `src/` structure (e.g., `test/events/verify.ts` tests
@@ -244,9 +244,8 @@ and `assets/`) appear in `./artifacts/`.
 - **`ts-node` errors on build** — ensure you are using Node.js 22.x or higher.
   Older versions may lack required ES module support.
 
-- **Tests page is blank** — make sure you opened
-  `build/tests.html` (not `test/index.html`). The raw HTML
-  file does not include the compiled test bundle.
+- **Tests page is blank** — run `pnpm tests`, make sure
+  `test/build/index.js` exists, and then open `test/index.html`.
 
 - **Lint errors after pulling** — run `pnpm install` to ensure
   dependencies are up to date, then `pnpm lint`.
