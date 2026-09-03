@@ -21,6 +21,10 @@
             function popupBlocker() {};
             _BRIDGE_KEY = 'key';
             window['key'] = {};
+            // The page script is wrapped in `popupBlocker(externalWindow, externalBridgeKey)`
+            // at build time, so its modules refer to `externalWindow` as a free variable.
+            // The test bundle is not wrapped, so the harness has to provide it.
+            var externalWindow = window;
         </script>
 
         <script src="third-party/bluebird-3.5.0.min.js"></script>

@@ -6,136 +6,140 @@ const { expect } = chai;
 
 declare const $: any; // jQuery
 
-describe('JQueryEventStack', async () => {
-    // Setup tests
-    // @ts-ignore
-    const { JQueryTestRoot } = window;
+// The harness loads jQuery 1.12.4, 2.2.4 and 3.3.1 in that order, so `$` starts out as 3.3.1.
+// Each suite hands the global back to the previously loaded version with `$.noConflict(true)`.
+// The builds live in `test/third-party` and are the official minified releases:
+//  - https://code.jquery.com/jquery-3.3.1.min.js
+//  - https://code.jquery.com/jquery-2.2.4.min.js
+//  - https://code.jquery.com/jquery-1.12.4.min.js
+const JQUERY_VERSIONS = ['3.3.1', '2.2.4', '1.12.4'];
 
-    // Test implementations
-    async function testOnJQuery(jQuery:{ version:string, url:string }, prev:Promise<void>) {
-        return new Promise<void>((resolve) => {
-            describe(`jQuery ${jQuery.version}`, () => {
-                function checkVersions(done) {
-                    this.timeout(10000);
-                    // Run tests after `prev` test ends.
-                    prev.then(() => {
-                        // Check that the jQuery currently loaded has the expected version.
-                        expect($.fn.jquery).to.equal(jQuery.version);
-                        done();
-                    });
-                }
+const TEST_ROOT_ID = 'JQueryTestRoot';
 
-                before(checkVersions);
+/**
+ * Looks the test root up at test time; the harness adds it to the page after the test bundle runs.
+ *
+ * @returns the element the clicks are dispatched on
+ */
+const getTestRoot = (): HTMLElement | null => document.getElementById(TEST_ROOT_ID);
 
-                it(`detects simple target in ${jQuery.version}`, (done) => {
-                    $('#JQueryTestRoot').one('click', () => {
-                        const expected = JQueryTestRoot;
-                        const got = JQueryEventStack.getCurrentJQueryTarget(<MouseEvent>window.event);
+/**
+ * Dispatches a native click on the test root, the way a user's click reaches jQuery.
+ *
+ * jQuery's own `.click()` would only run the handlers synthetically, outside of any native
+ * dispatch, so `window.event` would be empty and JQueryEventStack would have nothing to map.
+ */
+const clickTestRoot = (): void => {
+    getTestRoot()?.click();
+};
 
-                        expect(got).to.equal(expected);
-                        done();
-                    });
+/**
+ * Fires a native mousedown, which is what makes JQueryEventStack patch the jQuery instance
+ * currently exposed on `window`.
+ */
+const patchCurrentJQuery = (): void => {
+    const evt = document.createEvent('MouseEvents');
+    evt.initMouseEvent('mousedown', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+    document.body.dispatchEvent(evt);
+};
 
-                    $('#JQueryTestRoot').click();
+/**
+ * Asks JQueryEventStack for the intended target of the event being dispatched right now.
+ *
+ * @returns the detected target
+ */
+const getCurrentTarget = (): EventTarget => JQueryEventStack.getCurrentJQueryTarget(<MouseEvent>window.event);
+
+describe('JQueryEventStack', () => {
+    before(patchCurrentJQuery);
+
+    JQUERY_VERSIONS.forEach((version) => {
+        describe(`jQuery ${version}`, () => {
+            before(() => {
+                // Check that the jQuery currently loaded has the expected version.
+                expect($.fn.jquery).to.equal(version);
+            });
+
+            after(() => {
+                // Expose the previously loaded jQuery to the global scope for the next suite.
+                // `noConflict` is wrapped by JQueryEventStack, so the newly exposed instance gets patched.
+                $.noConflict(true);
+            });
+
+            it(`detects simple target in ${version}`, () => {
+                let got: EventTarget;
+                $(`#${TEST_ROOT_ID}`).one('click', () => {
+                    got = getCurrentTarget();
                 });
 
-                it(`detects delegated target in ${jQuery.version}`, (done) => {
-                    $(document).one('click', '#JQueryTestRoot', () => {
-                        const expected = JQueryTestRoot;
-                        const got = JQueryEventStack.getCurrentJQueryTarget(<MouseEvent>window.event);
+                clickTestRoot();
 
-                        expect(got).to.equal(expected);
-                        done();
-                    });
+                expect(got).to.equal(getTestRoot());
+            });
 
-                    $('#JQueryTestRoot').click();
+            it(`detects delegated target in ${version}`, () => {
+                let got: EventTarget;
+                $(document).one('click', `#${TEST_ROOT_ID}`, () => {
+                    got = getCurrentTarget();
                 });
 
-                it(`detects nested delegated target in ${jQuery.version}`, (done) => {
-                    $(document).one('click', (evt) => {
-                        const { target } = evt;
-                        $(target).trigger('CustomClick_1');
-                    });
-                    $(document).one('CustomClick_1', 'body', (evt) => {
-                        const { target } = evt;
-                        $(target).trigger('CustomClick_2');
-                    });
-                    $('#JQueryTestRoot').one('CustomClick_2', () => {
-                        const expected = JQueryTestRoot;
-                        const got = JQueryEventStack.getCurrentJQueryTarget(<MouseEvent>window.event);
+                clickTestRoot();
 
-                        expect(got).to.equal(expected);
-                        done();
-                    });
+                expect(got).to.equal(getTestRoot());
+            });
 
-                    $('#JQueryTestRoot').click();
+            it(`detects nested delegated target in ${version}`, () => {
+                let got: EventTarget;
+                $(document).one('click', (evt) => {
+                    $(evt.target).trigger('CustomClick_1');
+                });
+                $(document).one('CustomClick_1', 'body', (evt) => {
+                    $(evt.target).trigger('CustomClick_2');
+                });
+                $(`#${TEST_ROOT_ID}`).one('CustomClick_2', () => {
+                    got = getCurrentTarget();
                 });
 
-                it(`ignores jumps in delgated targets ${jQuery.version}`, (done) => {
-                    $(document).one('click', (evt) => {
-                        const { target } = evt;
-                        $(target).trigger('CustomClick_1');
-                    });
-                    $(document).one('CustomClick_1', 'body', (evt) => {
-                        const { target } = evt;
-                        $(target).trigger('CustomClick_2');
-                    });
-                    $('#JQueryTestRoot').one('CustomClick_2', () => {
-                        $('head').trigger('CustomClick_3');
-                    });
-                    $('head').one('CustomClick_3', () => {
-                        const expected = JQueryTestRoot;
-                        const got = JQueryEventStack.getCurrentJQueryTarget(<MouseEvent>window.event);
+                clickTestRoot();
 
-                        expect(got).to.equal(expected);
-                        done();
-                    });
+                expect(got).to.equal(getTestRoot());
+            });
 
-                    $('#JQueryTestRoot').click();
+            it(`ignores jumps in delegated targets in ${version}`, () => {
+                let got: EventTarget;
+                $(document).one('click', (evt) => {
+                    $(evt.target).trigger('CustomClick_1');
+                });
+                $(document).one('CustomClick_1', 'body', (evt) => {
+                    $(evt.target).trigger('CustomClick_2');
+                });
+                $(`#${TEST_ROOT_ID}`).one('CustomClick_2', () => {
+                    $('head').trigger('CustomClick_3');
+                });
+                $('head').one('CustomClick_3', () => {
+                    got = getCurrentTarget();
                 });
 
-                it(`works in a nested dispatch task ${jQuery.version}`, (done) => {
-                    $(document).one('click', '#JQueryTestRoot', (evt) => {
-                        $(document).one('click', '#JQueryTestRoot', () => {
-                            const expected = JQueryTestRoot;
-                            const got = JQueryEventStack.getCurrentJQueryTarget(<MouseEvent>window.event);
-                            expect(got).to.equal(expected);
-                            done();
-                        });
-                        const { target } = evt;
-                        target.click();
+                clickTestRoot();
+
+                expect(got).to.equal(getTestRoot());
+            });
+
+            it(`works in a nested dispatch task in ${version}`, () => {
+                let got: EventTarget;
+                $(document).one('click', `#${TEST_ROOT_ID}`, (evt) => {
+                    $(document).one('click', `#${TEST_ROOT_ID}`, () => {
+                        got = getCurrentTarget();
                     });
+                    evt.target.click();
                 });
 
-                after(() => {
-                    $.noConflict(true); // Expose the previously-loaded jQuery to the global scope
-                    // for the next test.
-                    resolve();
-                });
+                // Start from jQuery's synthetic trigger here: a native `click()` sets the element's
+                // "click in progress" flag, which would make the nested `click()` above a no-op.
+                $(`#${TEST_ROOT_ID}`).click();
+
+                expect(got).to.equal(getTestRoot());
             });
         });
-    }
-
-    const jQueryVersions = [
-        { version: '3.3.1', url: 'https://code.jquery.com/jquery-3.3.1.min.js' },
-        { version: '2.2.4', url: 'https://code.jquery.com/jquery-2.2.4.min.js' },
-        { version: '1.12.4', url: 'https://code.jquery.com/jquery-1.12.4.min.js' },
-    ];
-
-    const tests = [];
-
-    let prev = Promise.resolve();
-
-    // Test for the lastly loaded jQuery, then test for the previous one by executing
-    // $.noConflict(true), and so on.
-    // eslint-disable-next-line no-restricted-syntax
-    for (const jQuery of jQueryVersions) {
-        // @ts-ignore
-        tests.push(prev = testOnJQuery(jQuery, prev));
-    }
-
-    document.body.click(); // So that JQueryEventStack patches the initial jQuery.
-
-    // Run tests
-    await Promise.all(tests);
+    });
 });

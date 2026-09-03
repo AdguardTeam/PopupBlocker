@@ -5,7 +5,6 @@ const currentEvent = (new CurrentMouseEvent()).getCurrentMouseEvent;
 const { expect } = chai;
 const getEvt = (type) => {
     const evt = document.createEvent('MouseEvents');
-    window.event = document.createEvent('MouseEvents');
     evt.initMouseEvent(type, true, true, window, 0, 0, 0, 80, 20, false, false, false, false, 0, null);
     return evt;
 };
@@ -16,6 +15,12 @@ const types = ['mousedown', 'mouseup', 'click'];
 const getType = () => types[Math.floor(Math.random() * 3)];
 
 describe('CurrentMouseEvent', () => {
+    // The listeners are attached inside the test and must not outlive it: they stop the
+    // propagation of every tenth event they see, which would break later tests' clicks.
+    let removeListeners = () => {};
+
+    afterEach(() => removeListeners());
+
     it('retrieves a current mouse event in multiple nested event handlers', function (done) {
         this.timeout(5000);
         const LIMIT = 1000;
@@ -73,17 +78,18 @@ describe('CurrentMouseEvent', () => {
             }
         };
 
-        document.addEventListener('mousedown', callback);
-        document.addEventListener('mousedown', callback, true);
-        document.body.addEventListener('mousedown', callback);
-
-        document.addEventListener('mouseup', callback);
-        document.addEventListener('mouseup', callback, true);
-        document.body.addEventListener('mouseup', callback);
-
-        document.addEventListener('click', callback);
-        document.addEventListener('click', callback, true);
-        document.body.addEventListener('click', callback);
+        types.forEach((type) => {
+            document.addEventListener(type, callback);
+            document.addEventListener(type, callback, true);
+            document.body.addEventListener(type, callback);
+        });
+        removeListeners = () => {
+            types.forEach((type) => {
+                document.removeEventListener(type, callback);
+                document.removeEventListener(type, callback, true);
+                document.body.removeEventListener(type, callback);
+            });
+        };
 
         document.body.dispatchEvent(getRndEvt());
 

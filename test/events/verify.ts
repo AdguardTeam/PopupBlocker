@@ -1,6 +1,16 @@
 import { retrieveEvent, verifyEvent } from '../../src/events/verify';
 
 const { expect } = chai;
+
+// Assigning `window.event`, as the tests below do, replaces the native accessor with a plain
+// data property. Without putting the accessor back, every later test would read a stale event.
+const windowEventDescriptor = Object.getOwnPropertyDescriptor(window, 'event');
+const restoreWindowEvent = () => {
+    if (windowEventDescriptor) {
+        Object.defineProperty(window, 'event', windowEventDescriptor);
+    }
+};
+
 const getEvt = () => {
     const evt = document.createEvent('MouseEvents');
     window.event = evt;
@@ -9,6 +19,8 @@ const getEvt = () => {
 };
 
 describe('retrieveEvent', () => {
+    afterEach(restoreWindowEvent);
+
     it('returns window.event if available', () => {
         if ('event' in window) {
             const desc = Object.getOwnPropertyDescriptor(window, 'event');
@@ -35,6 +47,8 @@ describe('retrieveEvent', () => {
 });
 
 describe('verifyEvent', () => {
+    afterEach(restoreWindowEvent);
+
     it('returns true for non-dispatched events', () => {
         const evt = getEvt();
         window.event = evt;
@@ -43,10 +57,17 @@ describe('verifyEvent', () => {
     });
     it('returns false for events of which currentTarget is document', () => {
         const evt = getEvt();
-        document.addEventListener('click', (event) => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-            expect(verifyEvent(event)).to.be.false;
-        });
-        document.dispatchEvent(evt);
+        let result: boolean;
+        const listener = (event: Event) => {
+            result = verifyEvent(event);
+        };
+        document.addEventListener('click', listener);
+        try {
+            document.dispatchEvent(evt);
+        } finally {
+            // Must not outlive the test, or it would run against every later click on the page
+            document.removeEventListener('click', listener);
+        }
+        expect(result).to.equal(false);
     });
 });
