@@ -1,13 +1,22 @@
 /**
- * Base color scale, shared by both themes.
+ * Raw color values — the only place a literal color may appear.
  *
- * Mirrors AdGuard Assistant's `src/styles/base/palette.less` so that both products
- * stay on the same set of base colors.
+ * Use these only in `theme.pcss`, which turns them into semantic tokens such as
+ * `--bg-card` and `--text-main`. Everything else uses those tokens, never a raw color.
  *
- * These are raw values with no meaning attached — do NOT reference them outside of
- * `theme.pcss`. Use the semantic tokens defined there instead.
+ * Three groups live here:
+ *
+ *   1. the base scale (`--gray-*`, `--product-primary-*`), mirrored from AdGuard
+ *      Assistant's `src/styles/base/palette.less` so that both products stay on the
+ *      same set of base colors;
+ *   2. the shared hover accent (`--green-subtle` and the opaque variants derived from
+ *      it), used by both themes;
+ *   3. Popup Blocker's legacy light-only colors (`--light-*`), which predate the
+ *      Assistant palette and are kept verbatim so that light mode renders exactly as
+ *      it did before the dark theme was added. Dark mode uses the base scale instead.
  */
 :root {
+    /* 1. Base scale */
     --gray-0: #ffffff;
     --gray-10: #f6f6f6;
     --gray-20: #e4e4e4;
@@ -24,10 +33,9 @@
     --product-primary-60: #589968;
 
     /**
-     * The translucent green used for hover states. Shared verbatim with AdGuard
-     * Assistant, where it is `@assist-green02` in `src/styles/base/variables.less`;
-     * Popup Blocker carried the same value as `--green02`. Used in both themes so the
-     * two products highlight identically.
+     * 2. Shared hover accent. Kept verbatim from AdGuard Assistant, where it is
+     * `@assist-green02` in `src/styles/base/variables.less` (Popup Blocker carried the
+     * same value as `--green02`), so that the two products highlight identically.
      */
     --green-subtle: rgba(104, 188, 113, 0.2);
 
@@ -39,10 +47,7 @@
     --green-subtle-on-white: #e1f2e3;
     --green-subtle-on-gray-90: #2e3e2f;
 
-    /**
-     * Popup Blocker's own colors, predating the Assistant palette. Kept verbatim so that
-     * light mode renders exactly as it did before the dark theme was added.
-     */
+    /* 3. Legacy light-only colors */
     --light-page: #e6e6e6;
     --light-text: #282828;
     --light-border: rgba(197, 197, 197, 0.47);
