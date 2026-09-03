@@ -17,6 +17,10 @@ export const closest = 'closest' in Element.prototype
 /**
  * This serves as an allowlist on various checks where we block re-triggering of events.
  * See dom/dispatchEvent.ts.
+ *
+ * @param prev target of the previous event
+ * @param next target of the next event
+ * @returns true if the next event is a legitimate re-trigger of the previous one
  */
 export function targetsAreChainable(prev: Node, next: Node): boolean {
     if (prev.nodeType === 3 /* Node.TEXT_NODE */) {
@@ -47,6 +51,9 @@ const getFrameElement = frameElementDesc.get;
  * and this is actually common for popup/popunder scripts.
  * However, `frameElement` property is defined with a getter, so we can keep its reference
  * and use it afterhands.
+ *
+ * @param window window of an iframe
+ * @returns the parent window, or null if the frame element is not available
  */
 const getSafeParent = (window: Window): Window => {
     const frameElement = getFrameElement.call(window);

@@ -10,6 +10,8 @@ const isUserscriptLoaded = () => typeof window[OPTIONS_API_PROP] !== 'undefined'
  * Checks if popupblocker userscript is present on a page
  * by looking for options api on window
  * These are put into global scope on options page only
+ *
+ * @param detectSetter state setter receiving the detection result
  */
 export const useDetectUserscript = (detectSetter: StateUpdater<AppState>) => {
     useEffect(() => {

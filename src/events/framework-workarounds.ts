@@ -100,6 +100,10 @@ export class JQueryEventStack {
      * Wraps jQuery.event.dispatch.
      * It is used in jQuery to call event handlers attached via $(..).on and such,
      * in case of native events and $(..).trigger().
+     *
+     * @param ctxt wrapped execution context
+     * @param _arguments original arguments, the first being the dispatched event
+     * @returns whatever the original dispatch returns
      */
     private dispatchApplyHandler:ApplyHandler<any, any> = (ctxt, _arguments) => {
         const event:Event | JQueryEvent = _arguments[0];
@@ -114,6 +118,10 @@ export class JQueryEventStack {
 
     /**
      * Wraps jQuery.event.fix
+     *
+     * @param ctxt wrapped execution context
+     * @param _arguments original arguments, the first being the event to fix
+     * @returns the jQuery event created by the original fix
      */
     private fixApplyHandler:ApplyHandler<any, any> = (ctxt, _arguments) => {
         const event:Event | JQueryEvent = _arguments[0];
@@ -150,6 +158,9 @@ export class JQueryEventStack {
      *
      * This is a heuristic to determine an 'intended target' that is useful in detection of
      * unwanted popups; It does not claim to be a perfect solution.
+     *
+     * @param event native event being handled
+     * @returns the intended target, or undefined if it cannot be determined
      */
     private getNestedTarget(event:MouseEvent | TouchEvent):EventTarget {
         const { eventStack } = this;
@@ -322,6 +333,9 @@ export function isReactInstancePresent():boolean {
 
 /**
  * https://github.com/google/jsaction
+ *
+ * @param event event being handled
+ * @returns the element carrying a jsaction handler for the event, or undefined if there is none
  */
 export function jsActionTarget(event:Event):EventTarget {
     const { target } = event;
@@ -357,6 +371,10 @@ const gtmLinkClickEventName = 'gtm.linkClick';
  * suspicious by `verifyEvent`.
  * This function performs a minimal check of whether the `open` call is triggered by gtm.
  * See: https://github.com/AdguardTeam/PopupBlocker/issues/36
+ *
+ * @param event event being handled
+ * @param windowName name passed to `window.open`
+ * @returns true if the call looks like a gtm simulated anchor click
  */
 export function isGtmSimulatedAnchorClick(event:Event, windowName:string):boolean {
     if (!reGtmWindowName.test(windowName)) { return false; }

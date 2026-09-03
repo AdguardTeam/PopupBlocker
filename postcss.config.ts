@@ -27,7 +27,11 @@ export const userscriptPostcssConfig = {
      * see postcss.config.ts:userscriptPostcssConfig
      *
      * These props won't pollute global scope as they are assigned inside iframe inside shadow root.
-    */
+     *
+     * @param cssVariableName name of the variable holding the processed css
+     * @param fileId path of the source stylesheet
+     * @returns code assigning the css to a global prop, or an empty string for other stylesheets
+     */
     inject: (cssVariableName: string, fileId: string): string => {
         if (fileId.includes('alerts.pcss')) {
             return `window.${GlobalStyleProp.Alert} = (${cssVariableName})`;

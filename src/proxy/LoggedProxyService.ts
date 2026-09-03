@@ -94,6 +94,11 @@ export default class LoggedProxyService implements ILoggedProxyService, ProxyHan
 
     /**
      * Below methods are only used in DEBUG mode for `makeObjectProxy` method.
+     *
+     * @param target proxied object
+     * @param prop accessed property
+     * @param receiver proxy or object the property is read from
+     * @returns the property value, wrapped or proxied where needed
      */
     get(target, prop:PropertyKey, receiver) {
         const _receiver = ProxyService.proxyToReal.get(receiver) || receiver;

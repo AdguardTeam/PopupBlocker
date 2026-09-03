@@ -46,6 +46,7 @@ export class Option implements OptionInterface {
     /**
      * Checks if given string is already stored
      * @param value arbitrary string value
+     * @returns true if the value is in the list
      */
     isMember = (value: string): boolean => this.list.includes(value);
 
@@ -63,6 +64,8 @@ export class Option implements OptionInterface {
 
     /**
      * Removes items from script storage and own list
+     *
+     * @param item arbitrary string
      */
     removeItem = (item: string) => {
         if (!this.isMember(item)) {

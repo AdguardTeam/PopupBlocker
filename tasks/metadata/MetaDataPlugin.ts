@@ -49,7 +49,7 @@ export default class MetaDataPlugin implements IMetaDataPlugin {
     /**
      * Generates header content line(s)
      *
-     * @param headerData
+     * @param headerData header name and value(s)
      * @returns header content
      * @throws error on invalid header value
      */
@@ -70,7 +70,7 @@ export default class MetaDataPlugin implements IMetaDataPlugin {
     /**
      * Generates header content for localized headers (e.g name, description)
      *
-     * @param headerData
+     * @param headerData header name and locale key
      * @returns header content
      */
     private getLocalizedHeaderContent(headerData: LocalizedHeaderData): string {
@@ -117,7 +117,7 @@ export default class MetaDataPlugin implements IMetaDataPlugin {
     /**
      * Generates metadata by filling placeholders in a template file
      *
-     * @param outputPath
+     * @param outputPath userscript build path
      */
     private prepareMetadata(outputPath: string) {
         // Calculate result metadata file path

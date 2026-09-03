@@ -46,6 +46,11 @@ type SettingBlockProps = {
 
 /**
  * Manages userscript's settings storage (allowed/silenced domains)
+ *
+ * @param props component props
+ * @param props.messages localized strings for the block
+ * @param props.option option whose list is managed
+ * @returns rendered settings block
  */
 export const SettingBlock: React.FunctionalComponent<SettingBlockProps> = ({
     messages,

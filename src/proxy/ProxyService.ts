@@ -71,6 +71,9 @@ const reIsNative = new RegExp(`^${_toStringFn.call(hasOwnProperty)
  * If isNativeFn test is passed, the object is either a native function,
  * or a non-native function whose function body consists of '[native code]',
  * which obviously does not have access to the internal slot of 'this'.
+ *
+ * @param fn function to test
+ * @returns true if the function is native, or looks like one
  */
 export const isNativeFn = function (fn:Function):boolean {
     if (typeof fn !== 'function') { return false; }
@@ -113,7 +116,8 @@ export type RawApplyHandler<T, R> = (target:Function, _this:T, _arguments:IArgum
  *
  * @param target Must be one of Function#(bind, apply, call).
  * @param _this A function which called (bind, apply, call).
- * @param _arguments
+ * @param _arguments Arguments of the (bind, apply, call) call.
+ * @returns whatever the target returns
  */
 const applyWithUnproxiedThis:RawApplyHandler<Function, any> = (target, _this, _arguments) => {
     // Convert _arguments[0] to its unproxied version
@@ -133,6 +137,11 @@ const applyWithUnproxiedThis:RawApplyHandler<Function, any> = (target, _this, _a
 /**
  * An apply handler to make Reflect.apply handler
  * Reflect.apply(EventTarget.prototype.addEventListener, proxideWindow, ['click', function(){}])
+ *
+ * @param target Reflect.apply
+ * @param _this receiver of the Reflect.apply call
+ * @param _arguments arguments of the Reflect.apply call
+ * @returns whatever the target returns
  */
 const reflectWithUnproxiedThis:RawApplyHandler<Function, any> = (target, _this, _arguments) => {
     let appliedFn = _arguments[0];
@@ -147,6 +156,11 @@ const reflectWithUnproxiedThis:RawApplyHandler<Function, any> = (target, _this, 
 
 /**
  * An apply handler to make invoke handler.
+ *
+ * @param target wrapped function
+ * @param _this receiver, possibly a proxy
+ * @param _arguments arguments of the call
+ * @returns whatever the target returns
  */
 export const invokeWithUnproxiedThis:RawApplyHandler<Function, any> = (target, _this, _arguments) => {
     let unproxied = proxyToReal.get(_this);
@@ -163,6 +177,11 @@ export const invokeWithUnproxiedThis:RawApplyHandler<Function, any> = (target, _
 
 /**
  * An apply handler to be used for MessageEvent.prototype.source.
+ *
+ * @param target original getter
+ * @param _this receiver of the getter
+ * @param _arguments arguments of the call
+ * @returns the source window, proxied if a proxy for it exists
  */
 const proxifyReturn:RawApplyHandler<any, any> = (target, _this, _arguments) => {
     let ret = _reflect(target, _this, _arguments);
@@ -240,6 +259,10 @@ export function $apply(externalWindow:Window) {
 
 /**
  * Internal errors shall not be re-thrown and will be reported in dev versions.
+ *
+ * @param error error thrown while invoking the target
+ * @param target function that was being invoked
+ * @returns true if the error is external and should be re-thrown
  */
 function reportIfInternalError(error, target):error is ProxyServiceExternalError {
     if (error instanceof ProxyServiceExternalError) { return true; }

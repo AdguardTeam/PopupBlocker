@@ -121,6 +121,8 @@ export default class ChildContextInjector implements IChildContextInjector {
     /**
      * This should be called when we are sure that `childWindow` is not subject to
      * CORS restrictions.
+     *
+     * @param childWindow window of a same-origin child frame
      */
     private processChildWindow(childWindow:Window) {
         const { callbacks } = this;

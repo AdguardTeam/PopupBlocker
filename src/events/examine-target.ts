@@ -229,6 +229,9 @@ const initMouseEventArgs = [
  *         every element between E and R must be invisible or barely be contained in E.
  *         E almost covers T.
  *
+ * @param currentEvent event being handled
+ * @param popupHref url the popup is about to open
+ * @param popupContext context to store the intended target's href on, if any
  * @todo We may need to prevent `preventDefault` in touch events
  */
 const examineTarget = elementsFromPoint ? (currentEvent:Event, popupHref:string, popupContext?:PopupContext):void => {
@@ -274,7 +277,7 @@ const examineTarget = elementsFromPoint ? (currentEvent:Event, popupHref:string,
     }
 
     /**
-     * @return true if found a goal; false if we should stop iterating over candidates
+     * @returns true if found a goal; false if we should stop iterating over candidates
      * undefined otherwise;
      */
     // eslint-disable-next-line consistent-return

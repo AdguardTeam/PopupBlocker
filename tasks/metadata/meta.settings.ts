@@ -44,7 +44,7 @@ const tinyShieldWebsites = readTinyShieldWebsiteURLs(TINY_SHIELD_EXCLUSIONS_FILE
 
 /**
  * Reads an image file from path and returns a Base64 data‑URL.
- * @param {string} filePath
+ * @param {string} filePath path to the image, relative to this file
  * @returns {string} e.g. "data:image/png;base64,..."
  */
 const imageToBase64 = (filePath) => {

@@ -10,6 +10,9 @@ import {
  * Detects a common stacking context root pattern.
  * Stacking context root: https://philipwalton.com/articles/what-no-one-told-you-about-z-index/
  * https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
+ *
+ * @param el element to test
+ * @returns true if the element creates a stacking context with a very high z-index
  */
 export function isArtificialStackingContextRoot(el:Element) {
     const { zIndex, position, opacity } = getComputedStyle(el);
@@ -29,8 +32,10 @@ export function numsAreClose(x:number, y: number, threshold:number) {
 }
 
 /**
+ * @param rect bounding rect of an element
  * @param w view.innerWidth
  * @param h view.innerHeight
+ * @returns true if the rect covers almost the whole view
  */
 export function rectAlmostCoversView(rect:ClientRect, w:number, h:number) {
     const {
@@ -66,7 +71,7 @@ export const maskContentTest = (el:Element):boolean => {
 /**
  * Detects common overlay pattern.
  * @param el an element to check whether it is an overlay.
- * @return true if el is an overlay.
+ * @returns true if el is an overlay.
  */
 export function maybeOverlay(el:Element):boolean {
     if (!isHTMLElement(el)) { return false; } // not an HTMLElement instance

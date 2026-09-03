@@ -56,6 +56,8 @@ export class UserscriptApiFacade implements UserscriptApiFacadeInterface {
     /**
      * Methods are defined in privileged context, we need to expose it to the
      * page's context in order to use it in injected script.
+     *
+     * @returns key under which the facade is exposed on the page's window
      */
     expose():string {
         const BRIDGE_KEY = `__PB${Math.floor(Math.random() * 1000000000)}__`;

@@ -9,6 +9,7 @@ module.exports = {
         '@typescript-eslint',
         'import',
         'import-newlines',
+        'jsdoc',
     ],
     env: {
         browser: true,
@@ -47,6 +48,10 @@ module.exports = {
         ],
         'import/no-extraneous-dependencies': 0,
         'import/prefer-default-export': 0,
+        'jsdoc/require-param': 'error',
+        'jsdoc/require-param-description': 'error',
+        'jsdoc/require-returns': 'error',
+        'jsdoc/require-returns-description': 'error',
     },
     settings: {
         jsdoc: {

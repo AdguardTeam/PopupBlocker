@@ -33,6 +33,7 @@ if (!supported) {
 /**
  * Gets the event that is being currently handled.
  * @suppress {es5Strict}
+ * @returns the current event, or undefined if it cannot be retrieved
  */
 export function retrieveEvent():Event {
     log.call('Retrieving event');

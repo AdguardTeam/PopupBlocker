@@ -15,6 +15,8 @@ export default class TextSizeWatcher extends SingleEventEmitter {
 
     /**
      * Returns !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz
+     *
+     * @returns the printable ascii range as a string
      */
     private static getTestText() {
         const codePoints = [];

@@ -58,6 +58,8 @@ const DEV_VERSION = '0.0.0';
 /**
  * Returns the version injected into `package.json` by CI,
  * or a dev placeholder when building locally.
+ *
+ * @returns version string
  */
 export const getVersion = (): string => (pJson as { version?: string }).version ?? DEV_VERSION;
 

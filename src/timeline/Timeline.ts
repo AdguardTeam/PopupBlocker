@@ -21,6 +21,9 @@ export default class Timeline {
      * which accepts an existing events as a first argument, and an incoming event as a second argument.
      * An object at which the event is happened is included in the event as a `data` property,
      * and such functions can act on it appropriately, for example, it can close a popup window.
+     *
+     * @param event event to register
+     * @param index position of the frame the event happened in
      */
     registerEvent(event:TimelineEvent<any>, index:number):void {
         if (this.isRecording) {
@@ -43,6 +46,9 @@ export default class Timeline {
      * Wrapped window.open calls this. If it returns false, it does not call window.open.
      * beforeTests are basically the same as the afterTests except that
      * it does not accept a second argument.
+     *
+     * @param index position of the frame calling window.open
+     * @returns true if window.open may be called
      */
     canOpenPopup(index:number):boolean {
         log.call('Inquiring events timeline about whether window.open can be called...');
@@ -85,6 +91,8 @@ export default class Timeline {
     /**
      * Returns an array. Its elements corresponds to frames to which the current window
      * has access, and the first element corresponds to the current window.
+     *
+     * @returns recorded events per frame
      */
     'takeRecords'():TimelineEvent<any>[][] {
         this.isRecording = false;

@@ -25,6 +25,7 @@ export const appendScript = (text: string): void => {
  * Checks if current page is own options page
  *
  * @param context global context
+ * @returns true if the page is the options page
  */
 export function isOptionsPage(context: Window & typeof globalThis): boolean {
     const LOCAL_OPTIONS_URL_REGEX = /(localhost:|http:\/\/127\.0\.0\.1).*(\/options\.html)/;

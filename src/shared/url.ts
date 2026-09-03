@@ -8,6 +8,9 @@ const reCommonProtocol = /^http/;
  * null --> 'about:blank', except for Firefox, in which it is converted to 'null'.
  * false --> 'about:blank', except for Edge, in which it is converted to 'false'.
  * These behaviors are different from how anchor tag's href attributes behaves with non-string values.
+ *
+ * @param href value passed as a url
+ * @returns the value as a string, or an empty string for non-object primitives
  */
 export const convertToString = (href:any):string => {
     if (typeof href !== 'string') {
@@ -25,6 +28,9 @@ export const convertToString = (href:any):string => {
 /**
  * Creates an object that implements properties of Location api.
  * It resolves the provided href within a context of a current browsing context.
+ *
+ * @param href absolute or relative url
+ * @returns location-like object for the resolved url
  */
 export const createLocation = (href:string):URL => {
     const anchor = document.createElement('a');
@@ -42,6 +48,9 @@ export const createLocation = (href:string):URL => {
  * The first string is a `displayUrl`, which will be used to show as
  * a shortened url. The second string is a `canonicalUrl`, which is used to match against allowlist data in gmWrapper.
  * The third string is a full absolute url.
+ *
+ * @param href value passed as a url
+ * @returns display url, canonical url and absolute url
  */
 export const createUrl = (href:any):[string, string, string] => {
     // eslint-disable-next-line no-param-reassign
@@ -66,6 +75,7 @@ export const createUrl = (href:any):[string, string, string] => {
  * @param url_A absolute or relative url of the context A
  * @param location_B location object of the context B
  * @param domain_B `document.domain` of the context B
+ * @returns true if the contexts are same-origin
  */
 export function isSameOrigin(url_A:string, location_B:Location, domain_B:string):boolean {
     const location_A = createLocation(url_A);

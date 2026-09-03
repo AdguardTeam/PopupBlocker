@@ -19,6 +19,7 @@ export const parseTheme = (value: unknown): Theme | null => (
  * Callers include notification rendering, where a throw would abort the whole alert.
  *
  * @param context window to read the media query from
+ * @returns the OS theme, or light if it cannot be read
  */
 export const getSystemTheme = (context: Window): Theme => {
     try {
@@ -53,6 +54,7 @@ export const applyStoredTheme = (doc: Document, stored: Theme | null): void => {
  * Returns the theme opposite to the given one.
  *
  * @param theme current theme
+ * @returns the other theme
  */
 export const oppositeTheme = (theme: Theme): Theme => (
     theme === Theme.Dark ? Theme.Light : Theme.Dark

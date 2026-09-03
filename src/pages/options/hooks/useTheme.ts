@@ -19,12 +19,16 @@ import { AppState } from '../constants';
  *
  * The options page is also served to visitors without the userscript installed,
  * so this is expected to be missing.
+ *
+ * @returns the theme option, or undefined if the userscript is not present
  */
 const getThemeOption = () => window[OPTIONS_API_PROP]?.[THEME_OPTION_PROP];
 
 /**
  * Reads the `localStorage` mirror. Wrapped because `localStorage` throws
  * when cookies are blocked.
+ *
+ * @returns the mirrored theme, or null if there is none or the storage is unavailable
  */
 export const readThemeMirror = (): Theme | null => {
     try {

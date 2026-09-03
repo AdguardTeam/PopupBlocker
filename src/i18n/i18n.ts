@@ -37,6 +37,8 @@ const getBaseUILanguage = (): typeof BASE_LOCALE => BASE_LOCALE;
 // TODO replace any after export Locales from @adguard/translate
 /**
  * Returns currently selected locale or base locale
+ *
+ * @returns locale code
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getUILanguage = (): any => {
@@ -73,6 +75,9 @@ const getBaseMessage = (key: string) => {
 
 /**
  * Returns message by key
+ *
+ * @param key message key
+ * @returns message in the current locale, falling back to the base locale
  */
 const getMessage = (key: string): string => {
     const locale = getUILanguage();

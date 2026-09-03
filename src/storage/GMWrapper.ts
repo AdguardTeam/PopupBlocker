@@ -86,6 +86,8 @@ class GMWrapper implements StorageInterface {
 
     /**
      * Gets a list of keys of all stored data
+     *
+     * @returns stored keys
      */
     listValues(): string[] {
         return GM_listValues();
@@ -93,6 +95,8 @@ class GMWrapper implements StorageInterface {
 
     /**
      * Sets new storage
+     *
+     * @param storage key-value pairs replacing the current storage contents
      */
     setStorage(storage: GMStorage): void {
         // Remove old values
@@ -108,6 +112,8 @@ class GMWrapper implements StorageInterface {
 
     /**
      * Iterate through script manager storage
+     *
+     * @param callback called with each stored key and its value
      */
     iterateStorage(callback: StorageIteratorCallback): void {
         const keys = this.listValues();

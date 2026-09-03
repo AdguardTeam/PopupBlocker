@@ -5,8 +5,10 @@
  *  - the function's arguments, which are used as a global variable throughout
  *    the page script.
  *
+ * @param window global object the page script runs against
  * @param CONTENT_SCRIPT_KEY It is used for communication between a userscript and
  * page script injected by the userscript.
+ * @returns whatever the wrapped page script returns
  */
 declare function popupBlocker(window, CONTENT_SCRIPT_KEY?:string):any;
 /**

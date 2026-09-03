@@ -33,9 +33,10 @@ const LOCALES_EQUIVALENTS_MAP = {
 };
 
 /**
- * Build query string for downloading tranlations
+ * Build query string for downloading translations
  * @param lang locale code
  * @param file crowdin file name
+ * @returns query string
  */
 const getQueryString = (lang: string, file: string) => {
     let res = '?format=json';
@@ -46,8 +47,9 @@ const getQueryString = (lang: string, file: string) => {
 };
 
 /**
- * Build form data for uploading tranlation
+ * Build form data for uploading translation
  * @param file crowdin file name
+ * @returns form data with the base locale file attached
  */
 const getFormData = (file: string) => {
     const pathToBaseFile = path.resolve(LOCALES_DIR, file);
@@ -65,6 +67,7 @@ const getFormData = (file: string) => {
  * Returns link for downloading translations
  * @param lang locale code
  * @param file crowdin file name
+ * @returns download url
  */
 const getDownloadURL = (lang: string, file: string) => BASE_DOWNLOAD_URL + getQueryString(lang, file);
 
@@ -77,6 +80,7 @@ const getDownloadURL = (lang: string, file: string) => BASE_DOWNLOAD_URL + getQu
  *
  * @param {string} key member of message object
  * @param {Object} data translation for specific locale
+ * @returns translation with arrays restored
  */
 const replaceObjectToArray = (key: string, data: Record<string, unknown>) => {
     const result = {};
@@ -98,13 +102,14 @@ const replaceObjectToArray = (key: string, data: Record<string, unknown>) => {
 /**
  * Returns equivalent of specified locale code
  * @param locale locale
+ * @returns equivalent locale code, or the locale itself if there is none
  */
 const getEquivalent = (locale: string) => LOCALES_EQUIVALENTS_MAP[locale] || locale;
 
 /**
  * Save file by path with passed content
  * @param filePath path to file
- * @param content
+ * @param content json content to write
  */
 async function saveFile(filePath: string, content: any) {
     await fs.outputJson(filePath, content, { spaces: 4 });

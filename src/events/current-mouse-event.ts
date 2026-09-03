@@ -31,6 +31,9 @@ export default class CurrentMouseEvent {
          * either by bubbling up to `window` or by `Event#(stopPropagation,stopImmediatePropagation)`
          * or by `Event#cancelBubble`. Such events will satisfy `.currentTarget === null`. We skip
          * such events.
+         *
+         * @param queue event queue to search
+         * @returns the latest event still being dispatched, or undefined if there is none
          */
         const getLatest = (queue) => {
             let l = queue.length;
@@ -45,6 +48,10 @@ export default class CurrentMouseEvent {
         /**
          * When there are latest events of different types,
          * we choose the latest one.
+         *
+         * @param a first event, may be undefined
+         * @param b second event, may be undefined
+         * @returns a negative number when `a` is the later event, so that sorting puts the latest first
          */
         const compareTimestamp = (a:Event, b:Event) => {
             if (!a) { return 1; }

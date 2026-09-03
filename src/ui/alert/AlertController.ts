@@ -76,7 +76,10 @@ export class AlertController implements AlertControllerInterface {
     }
 
     /**
-     * Not providing @param callback means that a currently scheduled transition will be canceled.
+     * Not providing a callback means that a currently scheduled transition will be canceled.
+     *
+     * @param callback transition to run once the timeout elapses
+     * @param timeout delay in milliseconds
      */
     private scheduleTransition(callback?:()=>void, timeout?:number) {
         clearTimeout(this.stateTransitionTimer);
@@ -120,6 +123,9 @@ export class AlertController implements AlertControllerInterface {
 
     /**
      * Public methods
+     *
+     * @param origDomain domain of the page that tried to open the popup
+     * @param destUrl url of the blocked popup
      */
     createAlert(origDomain:string, destUrl:string) {
         const { domainToPopupCount } = this;
