@@ -6,8 +6,8 @@ const { expect } = chai;
 
 declare const $: any; // jQuery
 
-// The harness loads jQuery 1.12.4, 2.2.4 and 3.3.1 in that order, so `$` starts out as 3.3.1.
-// Each suite hands the global back to the previously loaded version with `$.noConflict(true)`.
+// The harness loads jQuery 1.12.4, 2.2.4 and 3.3.1 in that order, so `$` starts out as 3.3.1
+// and `$.noConflict(true)` hands the global back to the previously loaded version.
 // The builds live in `test/third-party` and are the official minified releases:
 //  - https://code.jquery.com/jquery-3.3.1.min.js
 //  - https://code.jquery.com/jquery-2.2.4.min.js
@@ -56,14 +56,14 @@ describe('JQueryEventStack', () => {
     JQUERY_VERSIONS.forEach((version) => {
         describe(`jQuery ${version}`, () => {
             before(() => {
-                // Check that the jQuery currently loaded has the expected version.
+                // Pop the newer versions off the global scope until this suite's one is exposed.
+                // Done here rather than in an `after` hook so that a suite also works on its own,
+                // e.g. when opened through Mocha's `?grep=`. `noConflict` is wrapped by
+                // JQueryEventStack, so each newly exposed instance gets patched along the way.
+                while (typeof $ !== 'undefined' && $.fn.jquery !== version) {
+                    $.noConflict(true);
+                }
                 expect($.fn.jquery).to.equal(version);
-            });
-
-            after(() => {
-                // Expose the previously loaded jQuery to the global scope for the next suite.
-                // `noConflict` is wrapped by JQueryEventStack, so the newly exposed instance gets patched.
-                $.noConflict(true);
             });
 
             it(`detects simple target in ${version}`, () => {
