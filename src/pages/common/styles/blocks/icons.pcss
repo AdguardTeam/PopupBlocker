@@ -3,6 +3,10 @@
  *
  * To swap an icon, drop the new file into `src/assets/icons/` and change the one line here.
  *
+ * This file is imported by `alerts.pcss` too, which is baked into the userscript as a string
+ * and injected on every blocked popup, so it holds only the icons the notification paints.
+ * Icons that only the options page uses live in `icons-options.pcss`.
+ *
  * Monochrome icons are applied with `@mixin icon-mask` (see below), which paints them with
  * `--icon-gray` instead of using the color baked into the SVG. That means they follow the
  * theme automatically and need no dark-mode duplicates.
@@ -13,22 +17,16 @@
  * (0.60) carry one from their `background-image` days, which is why they render lighter
  * than `tooltip`, which has none. Keep that in mind when adding an icon.
  *
- * Brand icons (the green window and shield) keep their own colors and read correctly on
- * both backgrounds, so they are used as plain `background-image`.
+ * The brand icon (the green window) keeps its own colors and reads correctly on both
+ * backgrounds, so it is used as a plain `background-image`.
  */
 :root {
     /* Monochrome — painted with var(--icon-gray) through @mixin icon-mask */
     --icon-close: svg-load("../../../../assets/icons/cross.svg");
-    --icon-del: svg-load("../../../../assets/icons/del.svg");
-    --icon-tooltip: svg-load("../../../../assets/icons/tooltip.svg");
     --icon-arrow: svg-load("../../../../assets/icons/arrow.svg");
-    --icon-moon: svg-load("../../../../assets/icons/moon.svg");
-    --icon-sun: svg-load("../../../../assets/icons/sun.svg");
-    --icon-checked: svg-load("../../../../assets/icons/checked.svg");
 
     /* Brand — full color, used as-is */
     --icon-window: svg-load("../../../../assets/icons/window.svg");
-    --icon-shield: svg-load("../../../../assets/icons/shield.svg");
 }
 
 /**

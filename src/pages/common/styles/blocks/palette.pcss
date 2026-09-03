@@ -32,6 +32,14 @@
     --green-subtle: rgba(104, 188, 113, 0.2);
 
     /**
+     * `--green-subtle` flattened onto the two pin backgrounds. The pin floats over the host
+     * page through the transparent notification iframe, so its hover color has to be opaque:
+     * the translucent green would show the page through instead of the pin's own color.
+     */
+    --green-subtle-on-white: #e1f2e3;
+    --green-subtle-on-gray-90: #2e3e2f;
+
+    /**
      * Popup Blocker's own colors, predating the Assistant palette. Kept verbatim so that
      * light mode renders exactly as it did before the dark theme was added.
      */
