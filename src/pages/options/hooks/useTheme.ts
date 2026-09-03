@@ -1,6 +1,7 @@
 import {
     useCallback,
     useEffect,
+    useRef,
     useState,
 } from 'preact/hooks';
 import {
@@ -128,6 +129,11 @@ export const useTheme = (appState: AppState): [Theme, () => void] => {
     const [stored, setStored] = useState<Theme | null>(readThemeMirror);
     const [systemTheme, setSystemTheme] = useState(() => getSystemTheme(window));
 
+    // A choice made on this page before the userscript api showed up. It could only reach
+    // the mirror at the time, but it is newer than whatever the userscript storage holds,
+    // so the reconciliation below has to hand it over rather than revert it.
+    const pendingChoice = useRef<Theme | null>(null);
+
     const theme = stored ?? systemTheme;
 
     // Reconcile with the userscript storage as soon as it becomes available
@@ -137,6 +143,14 @@ export const useTheme = (appState: AppState): [Theme, () => void] => {
         }
         const themeOption = getThemeOption();
         if (!themeOption) {
+            return;
+        }
+
+        const pending = pendingChoice.current;
+        if (pending) {
+            pendingChoice.current = null;
+            // The mirror is preferred as it also reflects a later toggle made in another tab
+            themeOption.setStored(readThemeMirror() ?? pending);
             return;
         }
 
@@ -169,7 +183,13 @@ export const useTheme = (appState: AppState): [Theme, () => void] => {
         writeThemeMirror(next);
         // Persisting to the userscript storage is what makes the blocked-popup
         // notification pick the theme up
-        getThemeOption()?.setStored(next);
+        const themeOption = getThemeOption();
+        if (themeOption) {
+            themeOption.setStored(next);
+        } else {
+            // The api is not there yet, or not at all; hand the choice over once it shows up
+            pendingChoice.current = next;
+        }
         setStored(next);
     }, [theme]);
 

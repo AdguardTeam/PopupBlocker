@@ -8,3 +8,4 @@ import './shared/url';
 import './init/utils';
 import './theme/apply';
 import './storage/ThemeOption';
+import './pages/options/hooks/useTheme';
