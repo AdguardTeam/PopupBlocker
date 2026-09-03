@@ -5,3 +5,4 @@ export {
     oppositeTheme,
     parseTheme,
 } from './apply';
+export { readThemeMirror, writeThemeMirror } from './mirror';

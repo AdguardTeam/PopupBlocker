@@ -1,8 +1,7 @@
 import React, { render } from 'preact';
 import { i18n, translator } from '../../i18n';
 import { App } from './App';
-import { applyStoredTheme } from '../../theme';
-import { readThemeMirror } from './hooks';
+import { applyStoredTheme, readThemeMirror } from '../../theme';
 
 const DEFAULT_PAGE_TITLE = 'AdGuard Popup Blocker';
 

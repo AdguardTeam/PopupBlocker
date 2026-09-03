@@ -9,8 +9,10 @@ import {
     getSystemTheme,
     oppositeTheme,
     parseTheme,
+    readThemeMirror,
     Theme,
     THEME_MIRROR_KEY,
+    writeThemeMirror,
 } from '../../../theme';
 import { OPTIONS_API_PROP, THEME_OPTION_PROP } from '../../../shared/constants';
 import { AppState } from '../constants';
@@ -24,28 +26,6 @@ import { AppState } from '../constants';
  * @returns the theme option, or undefined if the userscript is not present
  */
 const getThemeOption = () => window[OPTIONS_API_PROP]?.[THEME_OPTION_PROP];
-
-/**
- * Reads the `localStorage` mirror. Wrapped because `localStorage` throws
- * when cookies are blocked.
- *
- * @returns the mirrored theme, or null if there is none or the storage is unavailable
- */
-export const readThemeMirror = (): Theme | null => {
-    try {
-        return parseTheme(window.localStorage.getItem(THEME_MIRROR_KEY));
-    } catch (e) {
-        return null;
-    }
-};
-
-const writeThemeMirror = (theme: Theme): void => {
-    try {
-        window.localStorage.setItem(THEME_MIRROR_KEY, theme);
-    } catch (e) {
-        // storage is unavailable, the choice simply won't survive a reload
-    }
-};
 
 /**
  * Subscribes to theme changes made in another options page tab.
