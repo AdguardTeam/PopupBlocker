@@ -5,8 +5,7 @@ import { concatStyle } from '../utils/ui-utils';
 import TextSizeWatcher from '../utils/TextSizeWatcher';
 
 import { NotificationHead, Toast } from '../../pages/notifications/components';
-import { applyStoredTheme } from '../../theme';
-import { themeOption } from '../../storage/ThemeOption';
+import { applyStoredTheme, Theme } from '../../theme';
 
 const px = 'px';
 
@@ -51,7 +50,14 @@ export default class ToastController {
 
     private static TRANSITION_DURATION = 300;
 
-    showNotification(message: string) {
+    /**
+     * Shows a toast with the given message.
+     *
+     * @param message text to show
+     * @param theme stored theme to pin on the toast's document, or null to follow the OS.
+     *  Passed in by the caller so that this class stays storage-free.
+     */
+    showNotification(message: string, theme: Theme | null) {
         // Stores duration of the current toast
         this.currentDuration = this.defaultDuration;
 
@@ -69,7 +75,7 @@ export default class ToastController {
             const head = doc?.documentElement.querySelector('head');
 
             if (head && doc) {
-                applyStoredTheme(doc, themeOption.getStored());
+                applyStoredTheme(doc, theme);
                 render(<NotificationHead />, head);
                 render(<Toast message={message} />, doc?.body);
             }
