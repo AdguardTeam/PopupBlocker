@@ -99,7 +99,7 @@ export default class InterContextMessageHub implements InterContextMessageHubInt
     registerChildPort(child:Window, port:MessagePort) {
         // eslint-disable-next-line no-param-reassign
         port.onmessage = (evt) => {
-            log.print('MesageHub: received a message from a port');
+            log.print('MessageHub: received a message from a port');
             this.onMessage(evt);
         };
         this.framePortMap.set(child, {
@@ -144,7 +144,7 @@ export default class InterContextMessageHub implements InterContextMessageHubInt
             $type: type,
             $data: data,
         };
-        log.print('MesageHub: sending a message to a port');
+        log.print('MessageHub: sending a message to a port');
         port.postMessage(msgData, transferList);
     }
 }

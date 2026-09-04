@@ -33,7 +33,7 @@ const LOCALES_EQUIVALENTS_MAP = {
 };
 
 /**
- * Build query string for downloading tranlations
+ * Build query string for downloading translations
  * @param lang locale code
  * @param file crowdin file name
  */
@@ -46,7 +46,7 @@ const getQueryString = (lang: string, file: string) => {
 };
 
 /**
- * Build form data for uploading tranlation
+ * Build form data for uploading translation
  * @param file crowdin file name
  */
 const getFormData = (file: string) => {
