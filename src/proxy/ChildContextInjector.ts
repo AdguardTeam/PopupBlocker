@@ -15,7 +15,7 @@ import {
 
 export default class ChildContextInjector implements IChildContextInjector {
     /**
-     * A Weakmap instance that maps iframe elements to its contentDocument.
+     * A Weakmap instance that maps iframe elements to their contentDocument.
      * If an iframe's contentDocument is not available, it is mapped to `null`.
      */
     private frameToDocument:IWeakMap<HTMLIFrameElement, Document>;
