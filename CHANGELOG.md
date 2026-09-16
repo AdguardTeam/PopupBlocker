@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [2.5.118-beta.1] - 2026-09-16
+
+### Added
+
 - Dark theme for the options page and the blocked-popup notification,
   toggled by a moon/sun switch in the options page footer. Follows the
   operating system setting until the switch is used [#217].
@@ -17,18 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Migrated package manager from Yarn to pnpm.
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - issue with opening `Options` menu on pages that steal focus [#348].
-
-### Security
-
-[#217]: https://github.com/AdguardTeam/PopupBlocker/issues/217
-[#348]: https://github.com/AdguardTeam/PopupBlocker/issues/348
 
 ## [2.5.117] - 2026-07-06
 
@@ -206,6 +211,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [rollup]: https://rollupjs.org/
 [preact]: https://preactjs.com/
 
-[Unreleased]: https://github.com/AdguardTeam/PopupBlocker/compare/v2.5.117...HEAD
+[Unreleased]: https://github.com/AdguardTeam/PopupBlocker/compare/v2.5.118-beta.1...HEAD
+[2.5.118-beta.1]: https://github.com/AdguardTeam/PopupBlocker/compare/v2.5.117...v2.5.118-beta.1
 [2.5.117]: https://github.com/AdguardTeam/PopupBlocker/compare/v2.5.117-beta.1...v2.5.117
 [2.5.117-beta.1]: https://github.com/AdguardTeam/PopupBlocker/compare/v2.5.116...v2.5.117-beta.1
+
+[#217]: https://github.com/AdguardTeam/PopupBlocker/issues/217
+[#348]: https://github.com/AdguardTeam/PopupBlocker/issues/348
