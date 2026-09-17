@@ -13,6 +13,8 @@
     "bundle:beta": "cross-env NODE_ENV=beta ts-node tasks/builder --target=bundle",
     "bundle:release": "cross-env NODE_ENV=release ts-node tasks/builder --target=bundle",
     "options-page": "ts-node tasks/builder --target=options",
+    "options-page:beta": "cross-env NODE_ENV=beta ts-node tasks/builder --target=options",
+    "options-page:release": "cross-env NODE_ENV=release ts-node tasks/builder --target=options",
     "tests": "ts-node tasks/builder --target=tests",
     "lint": "pnpm lint:code",
     "lint:code": "eslint .",

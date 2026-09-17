@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Options page is deployed to GitHub Pages on every release again, so it no
+  longer stays on an old build after releases.
+
 ### Security
 
 ## [2.5.118-beta.1] - 2026-09-16

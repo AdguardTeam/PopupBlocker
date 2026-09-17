@@ -21,4 +21,8 @@ jobs:
     with:
       team: extensions
       target_repo: git@github.com:AdguardTeam/PopupBlocker.git
+      # Keep deploy-pages.yml enabled in the public mirror: the release tag
+      # pushed by mirror-and-release must trigger the options page deploy
+      # there. The reusable default ("all") disables it.
+      disable_workflows_target: "all -deploy-pages.yml"
     secrets: inherit
