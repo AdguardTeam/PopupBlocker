@@ -139,11 +139,6 @@ Instructions](#contribution-instructions) below.
   commits made by CI (e.g. the CHANGELOG finalization in the release
   PRs) use a [Conventional Commits] prefix such as `docs:` instead.
 
-- When opening a pull request, use the repository's pull request
-  description template (for example, `.github/pull_request_template.md`)
-  instead of writing a free-form description. The template is shared
-  across AdGuard extension repositories, so fill in its sections as-is.
-
 [Conventional Commits]: https://www.conventionalcommits.org/en/v1.0.0/
 
 ## Code Guidelines
