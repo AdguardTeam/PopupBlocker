@@ -1,0 +1,158 @@
+name: Deploy options page to GitHub Pages
+
+description: >-
+  Builds the options page for the beta and release channels and deploys the
+  whole site to GitHub Pages of the public mirror (AdguardTeam/PopupBlocker).
+  Triggered by release tags pushed by mirror-and-release; also supports manual
+  dispatch. Runs only in the public mirror, which owns the Pages site.
+
+on:
+  push:
+    tags:
+      - v*
+  workflow_dispatch:
+    inputs:
+      version:
+        description: >-
+          Version to write to build.txt (required for manual runs; tag pushes
+          derive it from the tag instead).
+        required: true
+        type: string
+
+# Least privilege: the deploy job widens this locally with pages/id-token.
+permissions:
+  contents: read
+
+# Serialize deployments; never cancel a Pages deployment in progress.
+concurrency:
+  group: deploy-options-pages
+  cancel-in-progress: false
+
+env:
+  PNPM_VERSION: 10.33.4
+
+jobs:
+  deploy:
+    name: Build and deploy options page
+    # This workflow is mirrored into the public repo and must run only there:
+    # the private repo has no GitHub Pages site.
+    if: github.repository == 'AdguardTeam/PopupBlocker'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      # deploy-pages rejects deployments when the Pages site still builds from
+      # a legacy source branch; the workflow cannot switch the source itself,
+      # so fail with an actionable message instead of an opaque deploy error.
+      - name: Verify Pages source is GitHub Actions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          build_type=$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq .build_type)
+          if [ "$build_type" != "workflow" ]; then
+            echo "::error::GitHub Pages source is '${build_type}'; set Settings -> Pages -> Source to 'GitHub Actions' before deploying"
+            exit 1
+          fi
+
+      # Setup pnpm before setup-node: `cache: pnpm` needs pnpm on PATH to
+      # resolve the store path.
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.x
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build beta options page
+        run: |
+          set -euo pipefail
+          pnpm options-page:beta
+          test -f build/options.html
+          test -f build/options.js
+          test -d build/assets
+          grep -q "channel = 'beta'" build/options.js
+          if grep -q '__channel__' build/options.js; then
+            echo "::error::__channel__ placeholder was not replaced in the beta build"
+            exit 1
+          fi
+          if ! grep -q 'popupblocker-theme' build/options.js; then
+            echo "::error::dark theme marker is missing in the beta build"
+            exit 1
+          fi
+          mkdir -p site/beta/v1
+          cp -R build/. site/beta/v1/
+
+      - name: Build release options page
+        run: |
+          set -euo pipefail
+          pnpm options-page:release
+          test -f build/options.html
+          test -f build/options.js
+          test -d build/assets
+          # Rollup tree-shakes the channel branch for the release value, so a
+          # release build contains no channel literal; any channel literal here
+          # means a dev or beta build would be published as release.
+          if grep -q 'channel = ' build/options.js; then
+            echo "::error::release options page contains a channel literal; expected a release build"
+            exit 1
+          fi
+          if grep -q '__channel__' build/options.js; then
+            echo "::error::__channel__ placeholder was not replaced in the release build"
+            exit 1
+          fi
+          if ! grep -q 'popupblocker-theme' build/options.js; then
+            echo "::error::dark theme marker is missing in the release build"
+            exit 1
+          fi
+          mkdir -p site/release/v1
+          cp -R build/. site/release/v1/
+          # Legacy root-level options page: OPTIONS_PAGE_URL_ROOT and the
+          # absolute /assets/favicon.ico reference in options.html need it.
+          cp -R build/. site/
+
+      - name: Write build info
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            version="${GITHUB_REF_NAME#v}"
+          elif [ -n "${INPUT_VERSION}" ]; then
+            version="${INPUT_VERSION#v}"
+          else
+            echo "::error::manual runs must pass the 'version' input (tag pushes derive it from the tag)"
+            exit 1
+          fi
+          for dir in site/beta/v1 site/release/v1 site; do
+            echo "version=${version}" > "$dir/build.txt"
+          done
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

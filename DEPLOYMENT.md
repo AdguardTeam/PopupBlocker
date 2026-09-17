@@ -8,6 +8,7 @@ artifacts.
 - [Deployment Model](#deployment-model)
 - [Release Channels](#release-channels)
 - [Deployment Artifacts](#deployment-artifacts)
+- [Options Page Deployment](#options-page-deployment)
 - [Environment Variables](#environment-variables)
 - [Infrastructure Dependencies](#infrastructure-dependencies)
 - [External Integrations](#external-integrations)
@@ -21,7 +22,9 @@ artifacts.
 
 Popup Blocker has no long-running production server. Production consists of
 static userscript files published to `userscripts.adtidy.org` and executed by
-userscript hosts or AdGuard for Windows.
+userscript hosts or AdGuard for Windows. It also includes the options page — a
+static site served by GitHub Pages at `https://popupblocker.adguard.com` (see
+[Options Page Deployment](#options-page-deployment)).
 
 Deployment is handled by GitHub Actions (`publish-release.yml`). The tag name
 entered in `prepare-release.yml` determines which channel receives the build:
@@ -42,6 +45,9 @@ Deployer module and environment are selected dynamically from the tag
 (`-beta` suffix → beta channel, no suffix → release channel). The Deployer
 publishes each artifact file by its exact name to the module's static-host
 path.
+
+The options page is deployed by a separate workflow, `deploy-pages.yml`, which
+runs in the public mirror; see [Options Page Deployment](#options-page-deployment).
 
 GitHub Releases are created **only** on the public mirror
 (`AdguardTeam/PopupBlocker`) by the `mirror-and-release` job, which also
@@ -86,6 +92,41 @@ and injected into `package.json` at build time. The `increment` script has been
 removed — the version is driven by the changelog and injected at build time.
 The compiled userscript metadata carries the release tag version.
 
+## Options Page Deployment
+
+The user-facing options page
+`https://popupblocker.adguard.com/{beta|release}/v1/options.html` is deployed
+separately from the userscript by `.github/workflows/deploy-pages.yml`.
+
+- **Trigger**: the `tag` job of `publish-release.yml` creates the release tag,
+  and `mirror-and-release` pushes it to the public mirror; the tag push starts
+  the deployment. The workflow can also be run with `workflow_dispatch` for
+  backfills and hotfixes; manual runs require the `version` input, which the
+  workflow records in `build.txt`.
+- **Where it runs**: in the public mirror, `AdguardTeam/PopupBlocker`, because
+  GitHub Pages belongs to that repository. In the private repository the job is
+  skipped (`if: github.repository == 'AdguardTeam/PopupBlocker'`).
+- **Pages source**: GitHub Actions
+  (`Settings → Pages → Build and deployment → Source: GitHub Actions`) with the
+  custom domain `popupblocker.adguard.com`. Switching from the legacy `gh-pages`
+  source is a one-time manual step that the workflow cannot perform itself;
+  until it is done, `actions/deploy-pages` rejects the deployment and the site
+  keeps serving the old `gh-pages` build. The `gh-pages` branch is no longer
+  updated.
+- **Content**: every run builds both channels
+  (`pnpm options-page:beta`, `pnpm options-page:release`) and publishes the whole
+  site: `beta/v1/`, `release/v1/`, plus root-level `options.html`, `options.js`,
+  `index.html`, `assets/`, and `build.txt`. The root files keep the legacy
+  `OPTIONS_PAGE_URL_ROOT` URL and the absolute `/assets/favicon.ico` reference in
+  `options.html` working. Because a Pages deployment replaces the whole site,
+  both channels are rebuilt on every run.
+- **Mirror exception**: `mirror.yml` passes
+  `disable_workflows_target: "all -deploy-pages.yml"` so the public mirror keeps
+  this workflow enabled while disabling every other workflow.
+
+The workflow is edited in this repository and reaches the public mirror with the
+next push to `master`.
+
 ## Environment Variables
 
 - `NODE_ENV`
@@ -107,6 +148,11 @@ The userscript runs entirely in the browser page context.
 
 - **Static artifact hosting**: `userscripts.adtidy.org` serves beta and release
   userscript files.
+- **GitHub Pages**: the options page is served from the GitHub Pages site of
+  `AdguardTeam/PopupBlocker` at `popupblocker.adguard.com`. Its source must be
+  set to GitHub Actions (a one-time manual step, see
+  [Options Page Deployment](#options-page-deployment));
+  `.github/workflows/deploy-pages.yml` builds and deploys it.
 - **Deployer service**: The `deploy-to-static.yml` workflow uploads artifacts
   to `${DEPLOYER_BASE_URL}/adguard-popup-beta` and
   `${DEPLOYER_BASE_URL}/adguard-popup-release` (org variable

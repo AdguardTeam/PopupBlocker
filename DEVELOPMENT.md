@@ -15,6 +15,7 @@
     - [Linting](#linting)
 - [Common Tasks](#common-tasks)
     - [Debugging the Options Page](#debugging-the-options-page)
+    - [Previewing the Options Page Deployment](#previewing-the-options-page-deployment)
     - [Manual Testing](#manual-testing)
     - [Managing Exclusions](#managing-exclusions)
     - [Working with Locales](#working-with-locales)
@@ -81,18 +82,20 @@ in the `build/` directory:
 
 ### Available Scripts
 
-| Command                   | Description                    |
-| ------------------------- | ------------------------------ |
-| `pnpm userscript-dev`     | Build userscript with logging  |
-| `pnpm userscript-beta`    | Build userscript (beta)        |
-| `pnpm userscript-release` | Build userscript (minified)    |
-| `pnpm bundle:dev`         | Build all targets (dev)        |
-| `pnpm bundle:beta`        | Build all targets (beta)       |
-| `pnpm bundle:release`     | Build all targets (release)    |
-| `pnpm options-page`       | Build the options page         |
-| `pnpm tests`              | Build the test runner          |
-| `pnpm lint`               | Run ESLint                     |
-| `pnpm lint:md`            | Run Markdownlint               |
+| Command                     | Description                    |
+| --------------------------- | ------------------------------ |
+| `pnpm userscript-dev`       | Build userscript with logging  |
+| `pnpm userscript-beta`      | Build userscript (beta)        |
+| `pnpm userscript-release`   | Build userscript (minified)    |
+| `pnpm bundle:dev`           | Build all targets (dev)        |
+| `pnpm bundle:beta`          | Build all targets (beta)       |
+| `pnpm bundle:release`       | Build all targets (release)    |
+| `pnpm options-page`         | Build the options page         |
+| `pnpm options-page:beta`    | Build the beta options page    |
+| `pnpm options-page:release` | Build the release options page |
+| `pnpm tests`                | Build the test runner          |
+| `pnpm lint`                 | Run ESLint                     |
+| `pnpm lint:md`              | Run Markdownlint               |
 
 Versions are driven by `CHANGELOG.md` via the `tag-from-changelog.yml`
 reusable workflow — no manual bump script is needed.
@@ -190,6 +193,37 @@ See the [Contribution Instructions](./AGENTS.md#contribution-instructions) in
 
 5. Verify that your ad blocker is filtering the debug page so
    the userscript is active.
+
+### Previewing the Options Page Deployment
+
+The options page is deployed to GitHub Pages by
+`.github/workflows/deploy-pages.yml` when a release tag (`v*`) is pushed to the
+public mirror, so no manual step is needed for a normal release.
+
+To preview exactly what the workflow publishes:
+
+```bash
+pnpm install --frozen-lockfile
+rm -rf site
+pnpm options-page:beta
+mkdir -p site/beta/v1
+cp -R build/. site/beta/v1/
+pnpm options-page:release
+mkdir -p site/release/v1
+cp -R build/. site/release/v1/
+cp -R build/. site/
+# The workflow derives this from the release tag; any version works for a preview.
+version=0.0.0
+for dir in site/beta/v1 site/release/v1 site; do
+  echo "version=${version}" > "$dir/build.txt"
+done
+find site -maxdepth 3 -type f | sort
+```
+
+To re-deploy without a release, run the `Deploy options page to GitHub Pages`
+workflow manually from the Actions tab of the public repository
+(`AdguardTeam/PopupBlocker`). Manual runs must pass the `version` input, which
+the workflow records in `build.txt`.
 
 ### Manual Testing
 
