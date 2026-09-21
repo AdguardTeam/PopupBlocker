@@ -1,6 +1,11 @@
 import React from 'preact';
 import { preactTranslator } from '../../../../i18n';
 import { GlobalStyleProp } from '../../../common/constants';
+import {
+    ArrowIcon,
+    CloseIcon,
+    ShieldIcon,
+} from '../../../common/components/Icons';
 import '../../../common/styles/alerts.pcss';
 
 type AlertProps = {
@@ -16,9 +21,13 @@ export const Alert: React.FunctionalComponent<AlertProps> = ({
 }) => (
     <>
         <div class="alert">
-            <button class="alert__close" />
+            <button class="alert__close">
+                <CloseIcon />
+            </button>
             <div class="alert__in">
-                <div class="alert__ico alert__ico--windows" />
+                <div class="alert__ico">
+                    <ShieldIcon gradientId="alert-shield-gradient" />
+                </div>
                 <div class="alert__text">
                     {preactTranslator.getMessage('popup_text', { numPopup })}
                 </div>
@@ -32,6 +41,7 @@ export const Alert: React.FunctionalComponent<AlertProps> = ({
                   */}
                 <button class="alert__select" aria-haspopup="true" aria-expanded="false">
                     {preactTranslator.getMessage('options')}
+                    <ArrowIcon />
                 </button>
                 <div class="alert__select-list" role="menu" hidden>
                     <button class="alert__select-item" role="menuitem" data-value="1">
@@ -52,7 +62,9 @@ export const Alert: React.FunctionalComponent<AlertProps> = ({
                 </button>
             </div>
         </div>
-        <button class="pin pin--win-hidden pin--show" />
+        <button class="pin pin--show">
+            <ShieldIcon gradientId="pin-shield-gradient" size={16} />
+        </button>
         <style>{
             /**
              * This is required to pass processed styles into iframe for Alert notification

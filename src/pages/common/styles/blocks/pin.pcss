@@ -8,8 +8,6 @@
     border-radius: 100%;
     box-shadow: var(--shadow-card);
     background-color: var(--bg-pin);
-    background-repeat: no-repeat;
-    background-position: 50%;
     transition: var(--t3) background-color;
     padding: 0;
 
@@ -21,8 +19,8 @@
         display: block;
     }
 
-    &--win-hidden {
-        background-size: 16px 16px;
-        background-image: var(--icon-window);
+    & > svg {
+        display: block;
+        margin: auto;
     }
 }

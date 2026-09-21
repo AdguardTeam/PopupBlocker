@@ -34,13 +34,8 @@
     &__ico {
         margin-right: 20px;
 
-        &--windows {
-            background-image: var(--icon-window);
-            background-repeat: no-repeat;
-            background-size: contain;
-            width: 48px;
-            height: 48px;
-            margin-right: 20px;
+        & > svg {
+            display: block;
         }
     }
 
@@ -61,21 +56,12 @@
 
         @mixin bnt-white;
 
-        /**
-         * The chevron sits on a pseudo-element rather than on the button itself:
-         * a `mask-image` on the button would clip its label away.
-         */
-        &:after {
-            content: "";
+        & > svg {
             position: absolute;
             right: 7px;
             top: 50%;
             margin-top: -3px;
-            width: 10px;
-            height: 8px;
-            @mixin icon-mask var(--icon-arrow);
-
-            background-color: var(--icon-arrow-color);
+            color: var(--icon-arrow-color);
         }
     }
 

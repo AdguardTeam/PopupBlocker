@@ -62,5 +62,10 @@
     right: 20px;
     width: 15px;
     height: 15px;
-    @mixin icon-mask var(--icon-close);
+    padding: 0;
+    color: var(--icon-color);
+
+    & > svg {
+        display: block;
+    }
 }

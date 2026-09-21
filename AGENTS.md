@@ -79,6 +79,9 @@ that lets users manage allowlisted and silenced domains.
 │   ├── messaging/              # Cross-frame message hub
 │   ├── storage/                # Settings DAO and GM API wrapper
 │   ├── pages/                  # Options and notification pages (Preact)
+│   │   ├── common/             # Shared icon components, styles, and constants
+│   │   ├── notifications/      # Alert and toast notification components
+│   │   └── options/            # Standalone options page
 │   ├── ui/                     # Alert and toast UI components
 │   ├── theme/                  # Light/dark theme resolution and persistence
 │   ├── i18n/                   # Internationalization utilities
@@ -93,7 +96,7 @@ that lets users manage allowlisted and silenced domains.
 └── test/                       # Unit tests (Mocha + Chai)
     ├── index.ts                # Test entry point
     ├── events/                 # Event verification tests
-    ├── pages/                  # Options-page hook tests
+    ├── pages/                  # Page component and hook tests
     ├── storage/                # Storage migration tests
     ├── theme/                  # Theme helper and mirror tests
     ├── timeline/               # Timeline heuristic tests
@@ -168,6 +171,11 @@ Design for a browser extension (userscript):
   frames. Treat each frame context as an independent process.
 - React to browser events asynchronously; never block the main
   thread of the page.
+- Render notification icons as inline SVG elements. The injected
+  iframe inherits the host page's CSP, so image URLs (including
+  `data:` URLs in CSS backgrounds and masks) may be blocked.
+  Give each SVG explicit dimensions, and keep inline artwork in
+  shared components instead of duplicating it in SVG asset files.
 - The script MUST be invisible to other scripts — do not expose
   globals, do not modify observable behavior of native APIs beyond
   what is necessary for popup blocking, and ensure wrapped functions
@@ -226,6 +234,9 @@ Storage, Theme, and Shared but not on DOM wrappers or Proxy.
 
 ### Code Quality
 
+- **Component layout**: Keep reusable page components in a named
+  directory with a matching `.tsx` file and an `index.tsx` export
+  barrel.
 - **Linting**: ESLint with `airbnb-typescript/base` config.
   Indentation, line length, import style, and other formatting
   rules are defined in `.eslintrc.js` — refer to that file as
@@ -254,6 +265,9 @@ Storage, Theme, and Shared but not on DOM wrappers or Proxy.
   storage migration paths
 - **What to mock**: GM API methods, `window.event`, browser APIs
   that are unavailable in test context
+- **Event assertions**: Identify awaited browser events by their source,
+  then assert their payload after awaiting them so unexpected values
+  produce assertion failures instead of generic timeouts.
 - **No E2E tests**: The project has no end-to-end integration
   tests; unit tests focus on individual components in isolation
 

@@ -129,6 +129,7 @@ const testsConfig = {
                 target: 'es5',
             },
         }),
+        postcss(userscriptPostcssConfig),
     ],
 };
 
