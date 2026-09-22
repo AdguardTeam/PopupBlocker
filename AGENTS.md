@@ -96,6 +96,7 @@ that lets users manage allowlisted and silenced domains.
 └── test/                       # Unit tests (Mocha + Chai)
     ├── index.ts                # Test entry point
     ├── events/                 # Event verification tests
+    ├── locales/                # Locale catalog consistency tests
     ├── pages/                  # Page component and hook tests
     ├── storage/                # Storage migration tests
     ├── theme/                  # Theme helper and mirror tests

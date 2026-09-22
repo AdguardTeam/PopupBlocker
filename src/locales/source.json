@@ -14,6 +14,10 @@
     "popup_text": {
         "message": "AdGuard prevented this website from opening %numPopup% pop-up windows"
     },
+    "popup_text_one": {
+        "message": "AdGuard prevented this website from opening %numPopup% pop-up window",
+        "description": "Shown only when exactly one pop-up was blocked, so %numPopup% is always 1. If your language uses the same wording for every number, copy your translation of popup_text."
+    },
     "options": {
         "message": "Options"
     },

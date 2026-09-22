@@ -1,6 +1,7 @@
 import { h, render } from 'preact';
 import { Alert } from '../../../../../src/pages/notifications/components/Alert/Alert';
 import { applyStoredTheme, Theme } from '../../../../../src/theme';
+import translations from '../../../../../src/locales/translations.json';
 
 const { expect } = chai;
 
@@ -208,5 +209,70 @@ describe('Notification icons', () => {
             expect(Array.from(fallback.data.slice(top, top + 4))).to.deep.equal([20, 180, 40, 255]);
             expect(Array.from(fallback.data.slice(bottom, bottom + 4))).to.deep.equal([20, 180, 40, 255]);
         });
+    });
+});
+
+describe('Notification popup count text', () => {
+    const catalog: Record<string, Record<string, { message: string }>> = translations;
+    let container: HTMLDivElement;
+    let locale: string;
+    let languagesDescriptor: PropertyDescriptor | undefined;
+    let originalMessages: Record<string, Record<string, { message: string }>>;
+
+    const renderCount = (numPopup: number): string => {
+        render(h(Alert, { numPopup, origDomain: 'example.org', destUrl: 'https://example.com/' }), container);
+        return container.querySelector('.alert__text').textContent;
+    };
+
+    beforeEach(() => {
+        locale = 'en';
+        languagesDescriptor = Object.getOwnPropertyDescriptor(window.navigator, 'languages');
+        Object.defineProperty(window.navigator, 'languages', { configurable: true, get: () => [locale] });
+        // Stub the messages so translation syncs cannot change the expected text.
+        originalMessages = { en: catalog.en, pl: catalog.pl };
+        catalog.en = {
+            ...catalog.en,
+            popup_text: { message: 'Blocked %numPopup% pop-up windows' },
+            popup_text_one: { message: 'Blocked %numPopup% pop-up window' },
+        };
+        catalog.pl = { ...catalog.pl, popup_text: { message: 'Zablokowano okna: %numPopup%' } };
+        delete catalog.pl.popup_text_one;
+        container = document.createElement('div');
+        document.body.appendChild(container);
+    });
+
+    afterEach(() => {
+        render(null, container);
+        container.remove();
+        Object.assign(catalog, originalMessages);
+        if (languagesDescriptor) {
+            Object.defineProperty(window.navigator, 'languages', languagesDescriptor);
+        } else {
+            Reflect.deleteProperty(window.navigator, 'languages');
+        }
+    });
+
+    it('uses the singular message only for one popup', () => {
+        expect(renderCount(1)).to.equal('Blocked 1 pop-up window');
+        expect(renderCount(2)).to.equal('Blocked 2 pop-up windows');
+        expect(renderCount(21)).to.equal('Blocked 21 pop-up windows');
+    });
+
+    it('keeps the existing translation when the singular message is not translated', () => {
+        locale = 'pl';
+        expect(renderCount(1)).to.equal('Zablokowano okna: 1');
+    });
+
+    it('keeps the existing translation when the singular message is empty', () => {
+        locale = 'pl';
+        catalog.pl.popup_text_one = { message: '' };
+        expect(renderCount(1)).to.equal('Zablokowano okna: 1');
+    });
+
+    it('uses a translated singular message', () => {
+        locale = 'pl';
+        catalog.pl.popup_text_one = { message: 'Zablokowano %numPopup% okno' };
+        expect(renderCount(1)).to.equal('Zablokowano 1 okno');
+        expect(renderCount(2)).to.equal('Zablokowano okna: 2');
     });
 });
