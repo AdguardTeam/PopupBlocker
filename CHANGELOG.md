@@ -17,16 +17,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+### Security
+
+## [2.5.119-beta.1] - 2026-09-25
+
+### Fixed
+
 - English blocked-popup notification says "1 pop-up window" instead of "1 pop-up windows".
 - Italian blocked-popup notification showed `{$numPopup}` instead of the number of blocked popups.
 - Notification icons missing on websites with restrictive image
   Content Security Policies [#354].
 - Options page is deployed to GitHub Pages on every release again, so it no
   longer stays on an old build after releases.
-
-### Security
-
-[#354]: https://github.com/AdguardTeam/PopupBlocker/issues/354
 
 ## [2.5.118-beta.1] - 2026-09-16
 
@@ -220,10 +222,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [rollup]: https://rollupjs.org/
 [preact]: https://preactjs.com/
 
-[Unreleased]: https://github.com/AdguardTeam/PopupBlocker/compare/v2.5.118-beta.1...HEAD
+[Unreleased]: https://github.com/AdguardTeam/PopupBlocker/compare/v2.5.119-beta.1...HEAD
+[2.5.119-beta.1]: https://github.com/AdguardTeam/PopupBlocker/compare/v2.5.118-beta.1...v2.5.119-beta.1
 [2.5.118-beta.1]: https://github.com/AdguardTeam/PopupBlocker/compare/v2.5.117...v2.5.118-beta.1
 [2.5.117]: https://github.com/AdguardTeam/PopupBlocker/compare/v2.5.117-beta.1...v2.5.117
 [2.5.117-beta.1]: https://github.com/AdguardTeam/PopupBlocker/compare/v2.5.116...v2.5.117-beta.1
 
 [#217]: https://github.com/AdguardTeam/PopupBlocker/issues/217
 [#348]: https://github.com/AdguardTeam/PopupBlocker/issues/348
+
+[#354]: https://github.com/AdguardTeam/PopupBlocker/issues/354
