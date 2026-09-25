@@ -91,6 +91,19 @@ const getMessage = (key: string): string => {
     return message;
 };
 
+/**
+ * Checks whether the current UI language's catalog has a non-empty message for the key.
+ * Unlike getMessage, it does not substitute the base-locale message for a missing key.
+ * Unsupported browser languages resolve to the base locale, so its catalog is checked for them.
+ *
+ * @param key message key
+ * @returns true if the current UI language's catalog has the message
+ */
+export const hasLocaleMessage = (key: string): boolean => {
+    const localeMessages = translations[getUILanguage()];
+    return !!(localeMessages && localeMessages[key] && localeMessages[key].message);
+};
+
 export const i18n: I18nInterface = {
     getMessage,
     getUILanguage,

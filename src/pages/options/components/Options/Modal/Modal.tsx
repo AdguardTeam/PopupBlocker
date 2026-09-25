@@ -2,6 +2,7 @@ import React from 'preact';
 import { useState, useCallback } from 'preact/hooks';
 import { isValidDomain } from '../../../utils';
 import { preactTranslator, translator } from '../../../../../i18n';
+import { CloseIcon } from '../../../../common/components/Icons';
 
 type ModalProps = {
     hideModal: ()=>void,
@@ -30,7 +31,9 @@ export const Modal: React.FunctionalComponent<ModalProps> = ({
     return (
         <div class="settings settings-modal">
             <div class="settings__in settings__in--popup">
-                <div class="settings__close" onClick={hideModal} />
+                <div class="settings__close" onClick={hideModal}>
+                    <CloseIcon />
+                </div>
                 <div class="settings__title">
                     {preactTranslator.getMessage('add_site')}
                 </div>

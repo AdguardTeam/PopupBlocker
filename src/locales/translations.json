@@ -15,6 +15,9 @@
         "popup_text": {
             "message": "AdGuard prevented this website from opening %numPopup% pop-up windows"
         },
+        "popup_text_one": {
+            "message": "AdGuard prevented this website from opening %numPopup% pop-up window"
+        },
         "options": {
             "message": "Options"
         },
@@ -1971,7 +1974,7 @@
             "message": "Gestisci preferenze..."
         },
         "popup_text": {
-            "message": "AdGuard ha impedito a questo sito web di aprire {$numPopup} finestre pop-up"
+            "message": "AdGuard ha impedito a questo sito web di aprire %numPopup% finestre pop-up"
         },
         "options": {
             "message": "Opzioni"
