@@ -269,7 +269,7 @@
             "message": "AdGuard запабег паказ %numPopup% усплывальных вокнаў на гэтым сайце"
         },
         "options": {
-            "message": "Опцыі"
+            "message": "Параметры"
         },
         "silence_noti": {
             "message": "Не паказваць гэта паведамленне на %origDomain%"
@@ -278,7 +278,7 @@
             "message": "Увядзіце імя сайта"
         },
         "add_site": {
-            "message": "Дадаць сайт"
+            "message": "Дадаць вэб-сайт"
         },
         "add": {
             "message": "Дадаць"
@@ -287,10 +287,10 @@
             "message": "Спіс выняткаў пусты"
         },
         "allowed": {
-            "message": "Выняткі"
+            "message": "Дазволена"
         },
         "silenced_empty": {
-            "message": "Спіс сайтаў з адключанымі апавяшчэннямі пусты"
+            "message": "Спіс вэб-сайтаў з адключанымі апавяшчэннямі пусты"
         },
         "silenced": {
             "message": "Без апавяшчэнняў"
@@ -1007,10 +1007,10 @@
             "message": "No mostrar este mensaje en %origDomain%"
         },
         "site_input_ph": {
-            "message": "Ingrese el nombre del sitio"
+            "message": "Ingresar el nombre del sitio"
         },
         "add_site": {
-            "message": "Añadir un sitio"
+            "message": "Añadir sitio"
         },
         "add": {
             "message": "Añadir"
@@ -1037,7 +1037,7 @@
             "message": "Instalar desde <a>%name%</a>"
         },
         "noinst_step_3": {
-            "message": "Paso 3: Actualice esta página para acceder a la configuración del userscript"
+            "message": "Paso 3: Actualiza esta página para acceder a la configuración del userscript"
         },
         "noinst_ignore_if_ag": {
             "message": "Si tienes instalado AdGuard para Windows, puedes ignorar este paso ya que el userscript Popup Blocker viene preinstalado."
@@ -1058,7 +1058,7 @@
             "message": "Página de inicio"
         },
         "noinst_step_1": {
-            "message": "Paso 1: Instale el gestor de userscript"
+            "message": "Paso 1: Instala un administrador de userscripts"
         },
         "noinst_step_2": {
             "message": "Paso 2: Userscript"
@@ -2989,7 +2989,7 @@
             "message": "Installeren vanaf <a>%name%</a>"
         },
         "noinst_step_3": {
-            "message": "Stap 3: Deze pagina vernieuwen om naar instellingen voor gebruikerscripts te gaan"
+            "message": "Stap 3: Deze pagina vernieuwen om naar instellingen voor gebruikersscripts te gaan"
         },
         "noinst_ignore_if_ag": {
             "message": "Als u AdGuard voor Windows heeft geïnstalleerd, kunt u deze stap negeren omdat het gebruikersscript voor pop-up blokkering vooraf is geïnstalleerd."
@@ -3004,7 +3004,7 @@
             "message": "Om een gebruikersscript te gebruiken, heb je eerst een speciaal programma of extensie nodig die gebruikersscript uitvoert."
         },
         "noinst_subtitle": {
-            "message": "De AdGuard Popup Blocker-gebruikerscript is niet geïnstalleerd. Zie de onderstaande instructie."
+            "message": "De AdGuard Popup Blocker-gebruikersscript is niet geïnstalleerd. Zie de onderstaande instructie."
         },
         "homepage": {
             "message": "Startpagina"
@@ -4438,10 +4438,10 @@
             "message": "İzin verilen"
         },
         "silenced_empty": {
-            "message": "Sessize alınmış olan sitelerin listesi boş"
+            "message": "Sessize alınan sitelerin listesi boş"
         },
         "silenced": {
-            "message": "Sessize alınmış"
+            "message": "Sessize alınan"
         },
         "allowed_tooltip": {
             "message": "Burada listelenen alan adları için açılır pencerelere izin verilecektir."
@@ -4453,13 +4453,13 @@
             "message": "<a>%name%</a>'dan yükle"
         },
         "noinst_step_3": {
-            "message": "Adım 3: Kullanıcı betikleri ayarlarını almak için bu sayfayı yenile"
+            "message": "Adım 3: Kullanıcı betiği ayarlarına gitmek için bu sayfayı yenileyin"
         },
         "noinst_ignore_if_ag": {
-            "message": "Windows için AdGuard yüklediyseniz, Açılır Pencere Engelleyici betiği önceden yüklü olarak geldiği için bu adımı görmezden gelebilirsiniz."
+            "message": "Windows için AdGuard yüklediyseniz, bu adımı atlayabilirsiniz çünkü Açılır Pencere Engelleyici kullanıcı betiği yüklü olarak gelir."
         },
         "noinst_rec": {
-            "message": "(Önerilir)"
+            "message": "(Önerilen)"
         },
         "please_wait": {
             "message": "Lütfen bekleyin, Açılır Pencere Engelleyici tespit ediliyor"
@@ -4468,13 +4468,13 @@
             "message": "Bir kullanıcı betiği kullanmak için öncelikle kullanıcı betiği çalıştıran özel bir programa veya uzantıya ihtiyacınız var."
         },
         "noinst_subtitle": {
-            "message": "AdGuard Açılır Pencere Engelleyicisi kullanıcı betiği yüklü değil. Lütfen aşağıdaki talimata bakın."
+            "message": "AdGuard Açılır Pencere Engelleyici kullanıcı betiği yüklü değil. Lütfen aşağıdaki talimata bakın."
         },
         "homepage": {
             "message": "Ana sayfa"
         },
         "noinst_step_1": {
-            "message": "1. Adım: Bir kullanıcı betiği yöneticisi yükle"
+            "message": "1. Adım: Bir kullanıcı betiği yöneticisi yükleyin"
         },
         "noinst_step_2": {
             "message": "2. Adım: Kullanıcı betiği"
@@ -4493,19 +4493,19 @@
             "message": "Web sayfalarında açılır pencere reklamlarını engeller"
         },
         "on_navigation_by_popunder": {
-            "message": "Yeni sayfaya geçiş, bir gizli pencere nedeniyle meydana gelmiş olabilir. Devam etmek istiyor musunuz?",
+            "message": "Yeni sayfaya yapılan bu geçiş büyük olasılıkla bir gizli pencereden kaynaklanıyor. Devam etmek istiyor musunuz?",
             "platform": [
                 "userscript"
             ]
         },
         "aborted_popunder_execution": {
-            "message": "Açılır Pencere Engelleyici arka plan yönlendirmesini önlemek için bir komut dosyasının çalışmasını durdurdu",
+            "message": "Açılır Pencere Engelleyici arka plan yönlendirmesini önlemek için bir betiğin çalışmasını önledi",
             "platform": [
                 "userscript"
             ]
         },
         "ext_enabled": {
-            "message": "Açılır Pencere Engelleyici görevinin başında"
+            "message": "Açılır Pencere Engelleyici görev başında"
         },
         "ext_disabled": {
             "message": "Açılır Pencere Engelleyici $DOMAIN$ için devre dışı bırakıldı",
@@ -5042,10 +5042,10 @@
             "message": "新增"
         },
         "allowed_empty": {
-            "message": "已允許的網站之清單為空"
+            "message": "被允許的網站之清單為空"
         },
         "allowed": {
-            "message": "已允許的"
+            "message": "被允許的"
         },
         "silenced_empty": {
             "message": "已靜默的網站之清單為空"
