@@ -257,16 +257,16 @@
             "message": "Паказаць %destUrl%"
         },
         "continue_blocking": {
-            "message": "Працягнуць блакаванне"
+            "message": "Працягнуць блакіраванне"
         },
         "allow_from": {
             "message": "Дазволіць усплывальныя вокны на %origDomain%"
         },
         "manage_pref": {
-            "message": "Кіраваць наладамі..."
+            "message": "Кіраваць параметрамі..."
         },
         "popup_text": {
-            "message": "AdGuard запабег паказ %numPopup% усплывальных вокнаў на гэтым сайце"
+            "message": "AdGuard прадухіліў адкрыццё %numPopup% усплывальных вокнаў на гэтым вэб-сайце"
         },
         "options": {
             "message": "Параметры"
@@ -275,7 +275,7 @@
             "message": "Не паказваць гэта паведамленне на %origDomain%"
         },
         "site_input_ph": {
-            "message": "Увядзіце імя сайта"
+            "message": "Увядзіце назву вэб-сайта"
         },
         "add_site": {
             "message": "Дадаць вэб-сайт"
@@ -284,16 +284,16 @@
             "message": "Дадаць"
         },
         "allowed_empty": {
-            "message": "Спіс выняткаў пусты"
+            "message": "Спіс дазволеных вэб-сайтаў пусты"
         },
         "allowed": {
-            "message": "Дазволена"
+            "message": "Дазволеныя"
         },
         "silenced_empty": {
             "message": "Спіс вэб-сайтаў з адключанымі апавяшчэннямі пусты"
         },
         "silenced": {
-            "message": "Без апавяшчэнняў"
+            "message": "Бясшумны"
         },
         "allowed_tooltip": {
             "message": "Усплывальныя вокны будуць дазволены на сайтах, пералічаных тут."
@@ -311,38 +311,38 @@
             "message": "Калі вы ўсталявалі AdGuard для Windows, вы можаце праігнараваць гэты крок, бо Блакавальнік усплывальнай рэкламы ўжо ўсталяваны."
         },
         "noinst_rec": {
-            "message": "(Рэкамендуецца)"
+            "message": "(рэкамендавана)"
         },
         "please_wait": {
-            "message": "Калі ласка, пачакайце, спроба выявіць Блакавальнік усплывальнай рэкламы"
+            "message": "Пачакайце... Адбываецца спроба выявіць блакіроўшчык усплывальных вокнаў"
         },
         "noinst_special_prog": {
             "message": "Для выкарыстання скрыпту вам, перадусім, патрэбна адмысловая праграма (ці пашырэнне), якая можа працаваць з карыстацкімі скрыптамі."
         },
         "noinst_subtitle": {
-            "message": "Блакавальнік усплывальнай рэкламы AdGuard не пастаўлены. Калі ласка, звярніцеся да інструкцыі ніжэй."
+            "message": "Карыстальніцкі сцэнарый блакіроўкі ўсплывальных вокнаў AdGuard не ўсталяваны. Выканайце крокі ніжэй, каб усталяваць яго."
         },
         "homepage": {
             "message": "Хатняя старонка"
         },
         "noinst_step_1": {
-            "message": "Крок 1: усталюйце праграму для кіравання карыстацкімі скрыптамі"
+            "message": "Крок 1: усталюйце менеджар сцэнарыяў карыстальніка"
         },
         "noinst_step_2": {
-            "message": "Крок 2: карыстацкі скрыпт"
+            "message": "Крок 2: сцэнарый карыстальніка"
         },
         "extension_name": {
-            "message": "Блакавальнік усплывальнай рэкламы ад AdGuard"
+            "message": "Блакіроўшчык усплывальных вокнаў ад AdGuard"
         },
         "userscript_name": {
-            "message": "Блакавальнік усплывальнай рэкламы ад AdGuard",
+            "message": "Блакіроўшчык усплывальных вокнаў AdGuard",
             "platform": [
                 "userscript",
                 "userscript_settings"
             ]
         },
         "extension_description": {
-            "message": "Блакуе ўсплывальную рэкламу на старонках"
+            "message": "Блакіруе ўсплывальную рэкламу на вэб-старонках"
         },
         "on_navigation_by_popunder": {
             "message": "Гэты пераход на новую старонку найхутчэй выкліканы поп-андэрам. Усё адно працягнуць?",
@@ -357,7 +357,7 @@
             ]
         },
         "ext_enabled": {
-            "message": "Блакавальнік усплывальнай рэкламы гатоў да працы"
+            "message": "Блакіроўшчык усплывальных вокнаў гатовы да працы"
         },
         "ext_disabled": {
             "message": "Блакавальнік усплывальнай рэкламы адключаны для $DOMAIN$",
@@ -3004,7 +3004,7 @@
             "message": "Om een gebruikersscript te gebruiken, heb je eerst een speciaal programma of extensie nodig die gebruikersscript uitvoert."
         },
         "noinst_subtitle": {
-            "message": "De AdGuard Popup Blocker-gebruikersscript is niet geïnstalleerd. Zie de onderstaande instructie."
+            "message": "AdGuard Popup-blokker-gebruikersscript is niet geïnstalleerd. Zie de onderstaande instructie."
         },
         "homepage": {
             "message": "Startpagina"
