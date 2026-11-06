@@ -81,8 +81,10 @@ jobs:
       artifact-name: userscript
       environment: ${{ contains(needs.tag.outputs.tag, '-beta') && 'beta-static' || 'production-static' }}
     # `contents: read` — download artifact only
+    # `id-token: write` — OIDC token for authenticated Deployer upload
     permissions:
       contents: read
+      id-token: write
 
   mirror-and-release:
     # Mirrors the repo (including the tag) to the public mirror and
