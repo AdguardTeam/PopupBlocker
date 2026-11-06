@@ -11,5 +11,6 @@ import './storage/ThemeOption';
 import './pages/options/hooks/useTheme';
 import './theme/mirror';
 import './locales/translations';
+import './tasks/tinyShieldMetadata';
 import './pages/notifications/components/Alert/Alert';
 import './pages/options/components/Options/Modal/Modal';
